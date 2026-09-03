@@ -1,0 +1,9 @@
+{
+  "scenario": "NL-A-later-grant-excludes-what-earlier-admits",
+  "evaluate_verdict": "PERMITTED",
+  "evaluate_detail": "covered by grant:older-unrestricted",
+  "evaluate_grant_id": "grant:older-unrestricted",
+  "cedar_validation_errors": [],
+  "cedar_decision": "deny",
+  "diverges": true
+}

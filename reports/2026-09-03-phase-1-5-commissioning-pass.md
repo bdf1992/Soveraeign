@@ -67,11 +67,14 @@ gate reading and dissented on these points, each repaired in the second commit:
   the map policy's to settle.
 - Sixty-odd clarity receipts had been re-recorded after a review that grepped each stale
   artifact for the moved fact. The witness called that a finding, not a review under the
-  clarity skill. Those receipts are restored to their pre-commit state, so
-  `python scripts/sov_clarity.py check` now reads them `STALE` on the `STATUS.yaml` basis. That
-  is the truthful state: the basis moved and the artifacts were not re-read. Re-reading them is
-  owed work, and whether a delta-scoped basis re-check should be a recordable review state is
-  a question for the skill's owner.
+  clarity skill, and it was right. The receipts were restored to their pre-commit state, and
+  two helper agents then read every one of the 65 stale artifacts in full against the exact
+  basis delta. Four carried a present-tense claim the delta made false and were rewritten:
+  `.claude/epic/NARRATIVE.md`, `.claude/skills/sov-conformance/SKILL.md`, `ROADMAP.md`, and
+  `conformance/README.md`. The receipts were re-recorded only after that reading. Whether a
+  delta-scoped basis re-check should be a recordable review state in its own right remains a
+  question for the skill's owner; today's receipts assert a full read, and this time that is
+  what happened.
 
 A second witness pass over the repaired commit is recorded in the same witness file when it
 completes; the standing field does not move until a record supports it.

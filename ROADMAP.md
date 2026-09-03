@@ -293,8 +293,8 @@ It does not exit because Gateway is 80%, Asset 90% and Record 85%.
 *Repository reading.* The operation surface currently reads 135 declared and 5
 reachable. Proofing and Projection are boundaries with no implementation;
 Observation, Gateway and Registry are not - `services/README.md` records a thin
-slice built and self-tested for Observation (five of eight declared operations,
-nothing has observed it), a first in-process route built and self-tested for
+slice built, self-tested, and witnessed for Observation (five of eight declared
+operations, no run observed yet), a first in-process route built and self-tested for
 Gateway, and a read-only resolve slice for Registry. That is a lower reading than
 55–65% and the two are measuring
 different things: the estimate counts contracts and design settled, the surface

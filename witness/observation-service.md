@@ -2,10 +2,332 @@
 
 ```witness
 standing_supported  WITNESSED
+subject  observation-service
+revision  308771445a669dba6810848d99586e16d732e02f
+pass  3
 ```
 
-Two passes by the same role, different commits. Pass 2 (commit `540bc01`) is current and owns
-the declaration above. Pass 1 (commit `169182f`) follows it unchanged as history.
+Three passes by the same role, different commits. Pass 3 (commit `3087714`) is current and
+owns the declaration above. Pass 2 (commit `540bc01`) and pass 1 (commit `169182f`) follow it
+unchanged as history.
+
+## Pass 3: commit 3087714 (2026-09-03)
+
+Verdict: **RATIFIABLE-WITH-CONDITIONS**.
+
+Subject: `observation_service_status` in `STATUS.yaml`, value
+`BUILT_THIN_SLICE_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED`, scoped this pass to the
+residuals R1-R9 pass 2 recorded and to whether pass 2's conclusions still hold on the new bytes.
+
+Commit witnessed: `308771445a669dba6810848d99586e16d732e02f` on `claude/phase-1-5-to-2-hbsv79`,
+one commit past `540bc01` (`git log --oneline 540bc01..3087714` lists exactly it).
+`git status --short` was empty before and after every command below and `git rev-parse HEAD`
+read the same commit throughout. The builder's report
+(`reports/2026-09-03-phase-1-5-commissioning-pass.md`) came up as a diff in the same batch as
+the probe, after the probe had run; nothing below is taken from it, and where it is named it is
+named as a claim.
+
+Witness: `claude-fable-5-1/sov-witness@2026-09-03`, third invocation. This participant did not
+build, edit, stage, or commit anything under the subject. The only files it changed are this
+record and `witness/observations/2026-09-03-observation-service-observation-3.json`. The probe
+ran from a scratch directory and is quoted in full under `Probe`; the invocation permitted no
+file under `witness/probes/`.
+
+### Standing supported
+
+`BUILT -> WITNESSED` for `observation_service_status` at `3087714`. Six of the nine residuals
+are repaired through the declared surface with a refusing or direct-edge case each (R1, R2, R4,
+R6, R7, R8); two are carried as documented defaults (R3 in part, R5); one is outside the
+witness's files (R9). Every pass-1 and pass-2 conclusion re-run on the new bytes holds. The
+record binds to the subject `observation-service`, the field `observation_service_status`,
+the revision above, and this claim: the five operations `request-observation`,
+`declare-predicates`, `infer-relation`, `observe-run`, and `read-observation` are built,
+self-tested, and independently observed through `ObservationService` and
+`RunRecord.from_entries`; `list-pending-observations`, `counter-observation`, and
+`attest-observation` are declared and unbuilt; no binding routes any of the eight. A moved
+value must assert `WITNESSED` as a whole token for the thin slice only and assert neither
+reachability nor ratification; `contracts/status-claims.json:160-163` still reads "no
+independent observation exists" and moves with it. This is an observation. It supports the
+transition and ratifies nothing.
+
+### Verified
+
+Commands run from the repository root at the commit above.
+
+| Command | Exit | Excerpt |
+| --- | --- | --- |
+| `git rev-parse HEAD`; `git status --short` | 0; 0 | `308771445a669dba6810848d99586e16d732e02f`; empty |
+| `python scripts/verify.py` | 0 | `PASS: 50 checks in 14.754s wall`; `GRADE: SILVER`; `BUDGET DEBT: 9 check(s) over ceiling` (attributed, non-refusing). The `FAIL` lines in its output are emitted by the tooling self-tests over planted trees inside `repository tooling tests`; the verdict line is the `PASS: 50 checks` line and the exit code |
+| `python scripts/lint.py` | 0 | `PASS: repository hygiene (1169 text files, 546 Python modules, 10 named debt)` |
+| `python -m unittest discover -s tests` in `services/observation` | 0 | `Ran 49 tests OK` (43 at pass 2; six new in `WitnessResidualsOn540bc01`) |
+| `python conformance/run.py` | 0 | `SUITE PASS cases=33 coverage_gaps=0`; every `*-DEF` control `FAIL`, every `*-POS` `PASS` |
+| `python -m unittest discover -s conformance/tests` | 0 | `Ran 79 tests OK` |
+| `python scripts/sov_f2_gate.py` | 1 | `requirement 25/25`, `transition 14/14`, `parity 5/5`; `participants 1/2 bound`; `OPEN` on the second participant only |
+| `python scripts/sov_phase_progress.py check` | 0 | `PASS: the gate reading meets its floor and every gap below it is declared`; `NONE_ACTIVE` |
+| `python scripts/sov_baseline.py` | 0 | `PASS: participant matches its recorded baseline (9 requirements, 8 failing as recorded)` |
+| `python scripts/sov_clarity.py status` / `check` | 0 / 0 | `STALE 0, UNCHECKED 1, EXEMPT 88`; `PASS`. The one `UNCHECKED` is this file (R9) |
+| participant mode: `services/asset/scripts/conformance_observations.py`, then `run.py --cases conformance/scenarios.json --observations ... --json` | 0 / 1 | `suite FAIL`, 9 cases, `missing_positive_and_defeating_coverage []`; `PROD-I-2 PASS`, eight `FAIL` on requirement defects (C4 holds) |
+| mutation probe, targeted (scratch copy of `conformance/`, one `defects.append` replaced with `pass`, `unittest discover -s tests`; scratch baseline `FAILED (errors=2)` from two loader errors) | n/a | 11 of 11 rules pass 2 named still noticed (`kernel_predicates.py:44,80,126,150,153,160,164,181,183,233`, `requirements.py:109`: `failures>=1`). Three rules a random sample reached are not: `:168`, `:214`, `:219` read the baseline `errors=2` only (R12). `run.py` alone reads `SUITE PASS` for every deletion but `:105`, as before |
+| join-grader defeat (scratch copy; `CONF-RUN-SETTLE-DEF` additionally declares `TRANS-observe_run`) | n/a | `test_defeating_controls_defeat_what_they_claim` fails: `CONF-RUN-SETTLE-DEF claims TRANS-observe_run; defects: settlement cites no observation of this run run settled against a stale state`; `run.py` alone still `SUITE PASS` (R7) |
+| R6 regression strength (scratch copy of `services/observation` with `observe.py:116` `\| {record.run_id}` reverted; `WitnessResidualsOn540bc01` only) | n/a | `Ran 6 tests OK`: the R6 test passes without the R6 repair (R13) |
+| relation/receipt probe (quoted below) | 0 | outputs recorded per residual under `Residuals re-derived`; the happy path reads `UNRESOLVED`, `INDEPENDENT`, `{'p': True}`, four receipts `RECORDED, COMMITTED, COMMITTED, COMMITTED` |
+| `sha256sum` | 0 | `scripts/sovkernel/transitions.py` `478fe0a0...`, `conformance/kernel_predicates.py` `f1d81c80...`, `conformance/requirements.py` `4b2fe7b3...`, `conformance/run.py` `c049f9e6...`, `conformance/oracle-controls.json` `75b4cf02...`, `scripts/sovverify/checks.py` `a5316c26...`, `service.py` `e20b03b9...`, `errors.py` `8ce373e7...`: byte-identical to pass 2, so pass 2's readings of the kernel parity, the oracle, the verify harness, and the service façade carry. Changed under the subject: `record.py`, `relation.py`, `observe.py`, `test_thin_slice.py`, `KNOWN-GAPS.md`, `test_kernel_predicates.py`, `CLAUDE.md`, `.clarity/coverage.json` (two receipts) |
+
+### Residuals re-derived
+
+Each verdict comes from a probe through `ObservationService` and `RunRecord.from_entries`, from
+a scratch mutation, or from a repository gate. The builder's list of repairs was not consulted
+for any of them.
+
+| Residual | Verdict | Evidence |
+| --- | --- | --- |
+| R1 anonymous entry dropped | **REPAIRED** for entries on the run; **changed shape** off the run (R10) | `record.py:78-95` `malformed()` requires an actor on every entry whose subject is the run; `relation.py:123-125` refuses `UNREADABLE` before anything else is read. P1b (anonymous `REPORTED`), P2c (anonymous second `ATTEMPTED`), P1c (`actor` key absent): each `REFUSED UNREADABLE`, one receipt, detail `entry <address> on the run names no actor`. P1d: an `OUTPUT` entry with an empty actor is off the run, so it is not refused; the candidate reads `INDEPENDENT []` |
+| R2 first attempt's lease and grant only | **REPAIRED** | `relation.py:137-150` reads every attempt. P2b: lease holder `lessee-c` of a second attempt reads `DIRECT [HOLDS_RUN_LEASE@attempt2, GRANT_DESCENDS_FROM_RUN@g-c]`. P2d: `helper-b`, whose grant descends from the second attempt's grant, reads `DIRECT [GRANT_DESCENDS_FROM_RUN@g-b2]`. P2e: a second attempt whose payload omits `grant_id` reads `RELATION_UNDETERMINED`, the absent-key rule applied per attempt. P2 now reads three edges for the second attempt's actor |
+| R3 refused run refuses `INCOMPLETE_PROPOSAL`; surface untested | **changed shape**: tested, not renamed, not in `KNOWN-GAPS.md` | `test_thin_slice.py` `test_a_refused_run_with_nothing_to_read_is_refused_through_the_surface` drives `request_observation` on a refused run and asserts the refusal's detail, which closes the untested half. P8b: `is_terminal() True`, `terminal_outcome() REFUSED`, request `REFUSED INCOMPLETE_PROPOSAL: the run reported no durable output to observe`, unchanged. `observation-request.schema.json:33-36` requires `durable_output_addresses` with `minItems: 1`, so the reason has a defensible reading: a request the schema cannot carry. `grep INCOMPLETE_PROPOSAL services/observation/KNOWN-GAPS.md` finds nothing; the default is stated in the builder's report only |
+| R4 `OUTPUT` without subject refuses under the wrong name | **REPAIRED** | P4b (`subject` absent) and P4b' (`subject` empty): `REFUSED UNREADABLE: entry out1 has no subject`, one receipt. P4 (`GRANT` without subject) moved from `RELATION_UNDETERMINED` to `UNREADABLE` by the same guard |
+| R5 docstring says a settled run could never be observed | **REPAIRED** as documentation | `record.py:21-25` and `KNOWN-GAPS.md` "Terminal means no longer in flight" now say a settled run may still be observed and name `counter-observation` as the reason. P8d unchanged: `COMMITTED`, `INDEPENDENT`. `test_a_settled_run_may_still_be_observed` covers it through the surface |
+| R6 own-entry guard keys on `entry_id` | **REPAIRED** at the surface, with two notes (R11, R13) | `observe.py:116` adds the run id to the guarded set. P7b: the run id reported as an output and recorded by an `OUTPUT` entry refuses `PREDICATES_UNDECLARED: reads-run reads urn:soveraeign:run:probe, which is the run's own entry`. P4e: a `REPORTED` entry without `entry_id` now refuses `UNREADABLE` at inference. P4f (`kind` empty), P4g (bad `entry_digest`): `UNREADABLE` |
+| R7 join grader matches substrings | **REPAIRED** | `test_kernel_predicates.py:224-246` `WORDS` holds rule-specific defect prefixes; each listed phrase is the opening of one `defects.append` string in `kernel_predicates.py` or `requirements.py` (44 strings listed and compared). Defeat run above: an over-declaring control now fails the test while `run.py` alone still passes. It remains a text classifier over the joined defect text, but the phrases no longer cross rule families, and a rule whose text matches no phrase credits nothing, which fails in the safe direction |
+| R8 `CLAUDE.md` contradicts itself on Gateway | **REPAIRED** | `CLAUDE.md:118-119`: "Proofing and Asset Projection are boundaries with no implementation; Gateway has the one in-process route named above and nothing more", consistent with `:85` and `services/README.md:15`; `sov_snapshot` passes inside `verify.py`. The page's clarity receipt was re-recorded (`.clarity/coverage.json`, `changed: true`) |
+| R9 this record has no clarity receipt | **STILL OPEN** | `sov_clarity.py status` reads `UNCHECKED 1`, this file. The receipt lives in `.clarity/coverage.json`, which this invocation does not permit the witness to write. A reviewer who is not this witness may record it; it is not a build claim |
+
+### Pass-2 conclusions, re-run on the new bytes
+
+| Conclusion | Holds | Evidence |
+| --- | --- | --- |
+| F1 reporter is an executor edge | yes | P1: `DIRECT [SAME_ACTOR@report]` |
+| F2 second attempt's actor is an edge | yes | P2: `DIRECT [SAME_ACTOR@attempt2, HOLDS_RUN_LEASE@attempt2, GRANT_DESCENDS_FROM_RUN@g-b]` |
+| F3 malformed record refuses `UNREADABLE` with one receipt | yes, widened | P3, P3b, P4c, P4d as at pass 2; P4, P4b, P4e, P4f, P4g now also `UNREADABLE`, one receipt each |
+| F4 reported unsettled run is not named `COMMITTED` | yes | P8: `UNRESOLVED`; P8c: `REFUSED`; the default is now written in `KNOWN-GAPS.md`; J1 stands |
+| F5 malformed declared digest refuses | yes | P6: `REFUSED UNREADABLE: the record declares no sha256 digest for out/1` |
+| F6 run's grant absent reads `INDEPENDENT` | still open, note | P5: `INDEPENDENT []`, unchanged |
+| F7 report entry is not a predicate address | yes | P7: `PREDICATES_UNDECLARED ... run's own entry` |
+| F8 notes | unchanged, plus R11 | P9: thin record refuses `PREDICATES_UNDECLARED`; P10 `False`; P10b `True` |
+| C2 `CONF-RUN-DEF` declares only what it defeats | yes | `oracle-controls.json` unchanged (`75b4cf02...`); control declares `TRANS-observe_run`, `TRANS-settle_run`, `defects=4` |
+| C3 rules can be seen to disappear | yes for the 11 named; see R12 | targeted mutation round above |
+| C4 participant mode scoped to declared requirements | yes | `missing_positive_and_defeating_coverage []` |
+| S3 no current document quotes the retired value | yes | `grep` at pass 2; `SERVICE-SPEC.md` unchanged since |
+
+### New residuals (the builder's to absorb; none holds the transition)
+
+- **R10 - LOW, `record.py:92-94` against `relation.py:101`.** `malformed()` requires an actor
+  only on entries whose subject is the run. P1d: an `OUTPUT` entry with an empty actor is kept,
+  and `PRODUCED_THE_OUTPUT` compares that empty actor to the candidate, so an output nobody
+  signed is nobody's and the candidate reads `INDEPENDENT []`. Consequence if left: a projection
+  that loses an output's producer admits the producer as observer. The same rule R1 applied
+  to the run's entries applies here.
+- **R11 - LOW, `observe.py:97-137`.** `observe_run` never calls `record.malformed()`; only
+  `infer_relation` does. P7d: infer over a well-formed record, then observe over a record whose
+  `REPORTED` entry has lost its `entry_id`, with a predicate over the report's address: it
+  evaluates `True` with three `COMMITTED` receipts. Reachable only by handing `observe_run` a
+  different record than the one inferred over (`service.py:143-145`, pass 1's F8), so it is
+  F8's note widened, not R6 reopened.
+- **R12 - LOW, `conformance/kernel_predicates.py:168,214,219`.** Three rules ("observation
+  entered with a standing other than OBSERVATION", "discovery names no interface", "binding
+  missing <field>") can be replaced with `pass` without `conformance/tests` noticing. C3 was
+  repaired over the sample pass 2 named and holds for it; the corpus pin is still partial.
+- **R13 - LOW, `test_thin_slice.py` `test_the_run_id_itself_is_not_a_predicate_address`.**
+  The test declares a predicate over the run id, which is also unreported, so the older
+  "not a recorded durable output" guard raises the same `PredicatesUndeclared` and the test
+  passes with `observe.py:116` reverted. It is a positive case for R6, not its defeating
+  fixture; P7b above is.
+
+### Conditions
+
+- **C1 (pass-1 S1, pass-2 C1), carried and re-attributed.** The five observation operations
+  still read `activation: ACTIVE`, `address: observation:in-process` in
+  `contracts/fixtures/capability-map.reference.json` while `scripts/sovnode/composition.py:187-190`
+  routes no such address and the Node Interface shows `reachability: []` beside them. This
+  pass read the source of that row: `scripts/sovkernel/capability_map.py:76-78` sets `ACTIVE`
+  at `<service>:in-process` for every built operation on the `IN_PROCESS` transport, and
+  `scripts/sov_capability.py` rebuilds the fixture from that rule. The row is the map policy's
+  output, not a hand edit inside this concern; pass 2's "repair the row" framing was wrong, and
+  the Record Service reads the same way. What would discharge it: either the rule activates
+  `IN_PROCESS` only when the composition routes the address, or the map's owner writes what
+  `ACTIVE` at an in-process address means and where a reader learns that. Until then a derived
+  artifact declares a door the composition does not open. It does not falsify the standing
+  value, which claims no reachability.
+- **C2 (pass 2), discharged.** Regression cases through the surface now exist for the
+  anonymous entry, the second attempt's lease and grant, and the refused run.
+
+### Judgement items (questions, not the witness's to answer)
+
+- **J1.** Carried: may `run_outcome` carry `UNRESOLVED`, a `settle_run` outcome, for a run the
+  kernel has not settled? `KNOWN-GAPS.md` now records the default and asks the same question.
+- **J2.** Carried: is a false declaration in a derived artifact admissible under
+  `REMAINDER_DECLARED` when it is the output of the map's own rule rather than an edit?
+- **J3.** Carried: should a clarity receipt carry the reading's scope?
+- **J4.** Does `INCOMPLETE_PROPOSAL` ("a request or declaration omits a field the contract
+  requires") cover a run that is terminal but reported nothing durable, because the request
+  schema cannot carry it, or does that run need its own reason code? The code and the schema
+  agree today; the manifest's owner has not said so.
+
+### Uncovered
+
+- `docs/documentation.html` was accepted on `verify.py`'s regeneration check; the 107 changed
+  lines were not read.
+- The builder's report was read only as the diff `540bc01..3087714` shows it, after the probe.
+- `list-pending-observations`, `counter-observation`, and `attest-observation` remain
+  `PROPOSED` and were not examined.
+- The clarity rewrites of pass 2 were not re-reviewed; only the two receipts this commit
+  changed (`CLAUDE.md`, `KNOWN-GAPS.md`) were checked against their bytes.
+- No network, no `gh`, no ruleset query.
+
+### Landing residual
+
+With this record and its receipt present, `python scripts/verify.py` returned 1 on two checks
+with one cause: `documentation reader` (`docs/documentation.html is stale`;
+`scripts/sovdocs/facets.py` indexes `witness/*.md`) and `repository tooling tests`, whose
+`scripts/tests/test_sov_docs.py:204-206` `test_the_built_page_is_current` calls the same
+`sov_docs.cmd_check` and read `1 != 0`. Pass 2 predicted the first only; the second is the
+same staleness reaching `verify.py` through a second check. The witness may not rebuild the
+page; whoever lands this record runs `python scripts/sov_docs.py build`. Every check under
+`Verified` was run before either file was written, and `verify.py` read 0 then. After
+writing: `python scripts/sov_standing.py` 0 (`PASS: no status field claims WITNESSED or
+RATIFIED (1 record(s) on file)`), `python scripts/lint.py` 0 (`1170 text files`),
+`python scripts/sov_witness_layer.py records` 0 (this pass's receipt `CURRENT`, 27 digests
+recomputed; passes 1 and 2 `STALE_SUBJECT`, as expected of receipts naming an earlier
+commit). R9 remains after landing unless a reviewer records the receipt.
+
+### Probe
+
+Run from a scratch directory against `services/observation/src` at the commit above; not a
+file in this repository. Each case reaches the service only through `ObservationService` and
+`RunRecord.from_entries`.
+
+```python
+import hashlib, sys
+sys.path.insert(0, 'services/observation/src')  # relative to the repository root
+from soveraeign_observation_service import ObservationService, RunRecord, ObservationRefused
+RUN = "urn:soveraeign:run:probe"; OUT = b'{"standing": "RECORDED"}'
+OUTD = hashlib.sha256(OUT).hexdigest()
+def e(eid, kind, subject, actor, payload):
+    return {"entry_id": eid, "kind": kind, "subject": subject, "actor": actor,
+            "payload": payload, "entry_digest": hashlib.sha256(eid.encode()).hexdigest()}
+class Clock:
+    t = 0
+    def __call__(self):
+        Clock.t += 1; return f"2026-09-03T{Clock.t//60:02d}:{Clock.t%60:02d}:00+00:00"
+def base(lease_holder="worker-a", grant="grant-run", out_actor="worker-a", report_actor="worker-a"):
+    return [
+        e("g-root","EVENT","grant-root","seat:root",{"event":"GRANT","holder_id":"orch","parent_grant_id":None}),
+        e("g-run","EVENT","grant-run","orch",{"event":"GRANT","holder_id":"worker-a","parent_grant_id":"grant-root"}),
+        e("g-b","EVENT","grant-b","orch",{"event":"GRANT","holder_id":"worker-b","parent_grant_id":"grant-root"}),
+        e("g-c","EVENT","grant-c","orch",{"event":"GRANT","holder_id":"lessee-c","parent_grant_id":"grant-root"}),
+        e("g-z","EVENT","grant-z","orch",{"event":"GRANT","holder_id":"witness-z","parent_grant_id":"grant-root"}),
+        e("attempt","EVENT",RUN,"worker-a",{"event":"ATTEMPTED","lease":{"holder_id":lease_holder},"grant_id":grant}),
+        e("out1","EVENT","out/1",out_actor,{"event":"OUTPUT","digest":OUTD}),
+        e("report","EVENT",RUN,report_actor,{"event":"REPORTED","output_record_addresses":["out/1"]}),
+    ]
+def run(name, entries, candidate, kind="WORKER"):
+    svc = ObservationService(Clock()); rec = RunRecord.from_entries(RUN, entries)
+    try:
+        inf = svc.infer_relation(rec, candidate, kind)
+        print(name, inf["outcome"], [x["edge"]+"@"+x["evidence_address"] for x in inf["edges_found"]], "receipts=%d" % len(svc.receipts))
+    except ObservationRefused as r: print(name, "REFUSED", svc.receipts[-1]["reason_code"] if svc.receipts else "NO-RECEIPT", "|", r, "receipts=%d" % len(svc.receipts))
+    except Exception as r: print(name, "ESCAPED", type(r).__name__, r, "receipts=%d" % len(svc.receipts))
+    return svc, rec
+print("== F1/F2 (pass-2 conclusions) ==")
+run("P1  reporter-as-candidate", base(report_actor="worker-b"), "worker-b")
+ents = base(); ents.insert(6, e("attempt2","EVENT",RUN,"worker-b",{"event":"ATTEMPTED","lease":{"holder_id":"worker-b"},"grant_id":"grant-b"}))
+run("P2  second-attempt actor", ents, "worker-b")
+print("== R2 ==")
+ents = base(); ents.insert(6, e("attempt2","EVENT",RUN,"worker-b",{"event":"ATTEMPTED","lease":{"holder_id":"lessee-c"},"grant_id":"grant-c"}))
+run("P2b second-attempt lease holder", ents, "lessee-c")
+ents = base(); ents.insert(6, e("attempt2","EVENT",RUN,"worker-b",{"event":"ATTEMPTED","lease":{"holder_id":"worker-b"},"grant_id":"grant-b"}))
+ents.append(e("g-b2","EVENT","grant-b2","worker-b",{"event":"GRANT","holder_id":"helper-b","parent_grant_id":"grant-b"}))
+run("P2d second-attempt grant descendant", ents, "helper-b")
+ents = base(); ents.insert(6, e("attempt2","EVENT",RUN,"worker-b",{"event":"ATTEMPTED","lease":None}))  # no grant_id key
+run("P2e second attempt omits grant_id key", ents, "witness-z")
+print("== R1 ==")
+run("P1b anonymous REPORTED", base(report_actor=""), "witness-z")
+ents = base(); ents.insert(6, e("attempt2","EVENT",RUN,"",{"event":"ATTEMPTED","lease":None,"grant_id":None}))
+run("P2c anonymous second ATTEMPTED", ents, "witness-z")
+ents = base(); del ents[7]["actor"]; run("P1c REPORTED lacks actor key", ents, "witness-z")
+run("P1d anonymous OUTPUT (off-run entry)", base(out_actor=""), "witness-z")
+ents = base(); ents[4]["actor"] = ""; run("P1e anonymous GRANT entry", ents, "witness-z")
+ents = base(); ents[4]["payload"].pop("holder_id"); run("P1f GRANT without holder_id", ents, "witness-z")
+print("== F3 / R4 / R6 (malformed record) ==")
+ents = base(); [x.pop("entry_digest") for x in ents]; run("P3  no digests", ents, "witness-z")
+ents = base(); del ents[5]["entry_digest"]; run("P3b attempt no digest", ents, "witness-z")
+ents = base(); del ents[4]["subject"]; run("P4  GRANT no subject", ents, "witness-z")
+ents = base(); del ents[6]["subject"]; run("P4b OUTPUT no subject", ents, "witness-z")
+ents = base(); ents[6]["subject"] = ""; run("P4b' OUTPUT empty subject", ents, "witness-z")
+ents = base(); ents[5]["payload"] = None; run("P4c payload None", ents, "witness-z")
+ents = base(); ents[5]["payload"] = "junk"; run("P4d payload str", ents, "witness-z")
+ents = base(); ents[7]["entry_id"] = None; run("P4e REPORTED no entry_id", ents, "witness-z")
+ents = base(); ents[6]["kind"] = ""; run("P4f OUTPUT kind empty", ents, "witness-z")
+ents = base(); ents[6]["entry_digest"] = "sha256:zz"; run("P4g OUTPUT bad entry_digest", ents, "witness-z")
+print("== F6 ==")
+run("P5  run grant absent", base(grant="grant-unknown"), "witness-z")
+print("== F5 ==")
+ents = base(); ents[6]["payload"]["digest"] = "not-a-digest"
+svc, rec = run("P6a", ents, "witness-z", "MODEL")
+svc.declare_predicates(RUN, [{"predicate_id":"p","kind":"BYTES_PRESENT","address":"out/1"}])
+try: print("P6  malformed OUTPUT digest", svc.observe_run(rec, "witness-z", lambda a: b"anything")["predicate_results"])
+except ObservationRefused as r: print("P6  malformed OUTPUT digest REFUSED", svc.receipts[-1]["reason_code"], "|", r, "receipts=%d" % len(svc.receipts))
+print("== F7 / R6 ==")
+ents = base(); ents[7]["payload"]["output_record_addresses"] = ["out/1", "report"]
+ents.append(e("out-report","EVENT","report","worker-a",{"event":"OUTPUT","digest":hashlib.sha256(b'{"claim":"done"}').hexdigest()}))
+svc, rec = run("P7a", ents, "witness-z", "MODEL")
+svc.declare_predicates(RUN, [{"predicate_id":"reads-report","kind":"JSON_FIELD_EQUALS","address":"report","field":"claim","expected":"done"}])
+try: print("P7  report entry as address", svc.observe_run(rec, "witness-z", lambda a: b'{"claim":"done"}' if a == "report" else OUT)["predicate_results"])
+except ObservationRefused as r: print("P7  report entry as address REFUSED", svc.receipts[-1]["reason_code"], "|", r)
+ents = base(); ents[7]["payload"]["output_record_addresses"] = ["out/1", RUN]
+ents.append(e("out-run","EVENT",RUN,"worker-a",{"event":"OUTPUT","digest":hashlib.sha256(b'{"claim":"done"}').hexdigest()}))
+svc, rec = run("P7b run id as OUTPUT subject (ids intact)", ents, "witness-z", "MODEL")
+svc.declare_predicates(RUN, [{"predicate_id":"reads-run","kind":"JSON_FIELD_EQUALS","address":RUN,"field":"claim","expected":"done"}])
+try: print("P7b run id as predicate address", svc.observe_run(rec, "witness-z", lambda a: b'{"claim":"done"}' if a == RUN else OUT)["predicate_results"])
+except ObservationRefused as r: print("P7b run id as predicate address REFUSED", svc.receipts[-1]["reason_code"], "|", r)
+# P7d: infer over a well-formed record, then observe over one whose REPORTED entry lost its id (F8 reuse; observe.py has no malformed() call)
+svc = ObservationService(Clock()); good = base(); good[7]["payload"]["output_record_addresses"] = ["out/1", "report"]
+good.append(e("out-report","EVENT","report","worker-a",{"event":"OUTPUT","digest":hashlib.sha256(b'{"claim":"done"}').hexdigest()}))
+svc.infer_relation(RunRecord.from_entries(RUN, good), "witness-z", "MODEL")
+svc.declare_predicates(RUN, [{"predicate_id":"reads-report","kind":"JSON_FIELD_EQUALS","address":"report","field":"claim","expected":"done"}])
+bad = [dict(x) for x in good]; bad[7] = dict(bad[7]); bad[7]["entry_id"] = None
+try: print("P7d observe over record whose REPORTED lost entry_id (F8 reuse)", svc.observe_run(RunRecord.from_entries(RUN, bad), "witness-z", lambda a: b'{"claim":"done"}' if a == "report" else OUT)["predicate_results"], "receipts=%d" % len(svc.receipts))
+except ObservationRefused as r: print("P7d REFUSED", svc.receipts[-1]["reason_code"], "|", r)
+print("== F4 / R3 / R5 ==")
+svc = ObservationService(Clock()); rec = RunRecord.from_entries(RUN, base())
+print("P8  reported unsettled ->", svc.request_observation(rec, "requester-q", "HUMAN", RUN)["run_outcome"])
+refused = base()[:6] + [e("rcpt","RECEIPT",RUN,"kernel",{"outcome":"REFUSED","event":"begin_run"})]
+svc = ObservationService(Clock()); rec = RunRecord.from_entries(RUN, refused)
+print("P8b refused-before-report is_terminal/outcome:", rec.is_terminal(), rec.terminal_outcome())
+try: print("P8b", svc.request_observation(rec, "requester-q", "HUMAN", RUN)["run_outcome"])
+except ObservationRefused as r: print("P8b request on refused run REFUSED", svc.receipts[-1]["reason_code"], "|", r)
+refused2 = base() + [e("rcpt","RECEIPT",RUN,"kernel",{"outcome":"REFUSED","event":"report_run"})]
+svc = ObservationService(Clock()); rec = RunRecord.from_entries(RUN, refused2)
+print("P8c refused after report ->", svc.request_observation(rec, "requester-q", "HUMAN", RUN)["run_outcome"])
+settled = base() + [e("rcpt","RECEIPT",RUN,"kernel",{"outcome":"COMMITTED","event":"settle_run"})]
+svc = ObservationService(Clock()); rec = RunRecord.from_entries(RUN, settled)
+print("P8d settled ->", svc.request_observation(rec, "requester-q", "HUMAN", RUN)["run_outcome"], svc.infer_relation(rec, "witness-z", "MODEL")["outcome"])
+print("== F8 ==")
+svc = ObservationService(Clock()); full = RunRecord.from_entries(RUN, base())
+svc.infer_relation(full, "witness-z", "MODEL")
+svc.declare_predicates(RUN, [{"predicate_id":"p","kind":"BYTES_PRESENT","address":"out/1"}])
+thin = RunRecord.from_entries(RUN, [x for x in base() if x["entry_id"] != "out1"])
+try: print("P9 ", svc.observe_run(thin, "witness-z", lambda a: OUT)["observation_id"])
+except ObservationRefused as r: print("P9  thin record REFUSED", svc.receipts[-1]["reason_code"], "|", r)
+obs = svc.observe_run(full, "witness-z", lambda a: OUT)
+d2 = svc.declare_predicates(RUN, [{"predicate_id":"q","kind":"BYTES_PRESENT","address":"out/1"}])
+print("P10 read_observation returns judged declaration:", svc.read_observation(obs["observation_id"])["declaration"]["declaration_id"] != d2["declaration_id"])
+obs2 = svc.observe_run(full, "witness-z", lambda a: OUT)
+print("P10b same id for different predicates:", obs2["observation_id"] == obs["observation_id"])
+print("== happy path ==")
+svc = ObservationService(Clock()); rec = RunRecord.from_entries(RUN, base())
+print("PH", svc.request_observation(rec, "requester-q", "HUMAN", RUN)["run_outcome"], svc.infer_relation(rec, "witness-z", "MODEL")["outcome"])
+svc.declare_predicates(RUN, [{"predicate_id":"p","kind":"DIGEST_EQUALS","address":"out/1","expected":"sha256:"+OUTD}])
+o = svc.observe_run(rec, "witness-z", lambda a: OUT); print("PH", o["predicate_results"], "receipts=%d" % len(svc.receipts), [r["outcome"] for r in svc.receipts])
+```
+
+Targeted mutation round: copy `conformance/` to a scratch directory, replace the
+`defects.append(...)` statement at one line with `pass`, run
+`python -m unittest discover -s tests` from the copy, read `FAILED (failures=N, errors=2)`
+against the copy's baseline of `FAILED (errors=2)`, restore. Join-grader defeat: in a copy,
+add `TRANS-observe_run` to `CONF-RUN-SETTLE-DEF`'s `predicates` in `oracle-controls.json`,
+run `python -m unittest tests.test_kernel_predicates`. R13: in a copy of
+`services/observation`, revert `observe.py:116` to `own_entries = record.run_entry_ids()`,
+point the test bootstrap's `ROOT` at the repository, run `WitnessResidualsOn540bc01`.
 
 ## Pass 2: commit 540bc01 (2026-09-03)
 

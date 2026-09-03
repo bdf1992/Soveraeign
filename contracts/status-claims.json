@@ -158,11 +158,11 @@
     },
     {
       "field": "observation_service_status",
-      "value": "BUILT_THIN_SLICE_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED",
+      "value": "BUILT_THIN_SLICE_WITNESSED_REMAINDER_DECLARED",
       "subject": "observation-service",
       "claim_kind": "STATUS",
-      "detail": "five operations built and self-tested behind the chartered boundary; three remain declared only; no independent observation exists",
-      "reference": null
+      "detail": "five operations built, self-tested, and independently observed through the declared surface at 3087714 (witness/observation-service.md); three remain declared only; nothing is ratified and no binding routes any operation",
+      "reference": "witness/observation-service.md"
     },
     {
       "field": "service_manifest_contract_status",

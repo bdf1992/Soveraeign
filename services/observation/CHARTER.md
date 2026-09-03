@@ -1,6 +1,6 @@
 # Observation Service Charter
 
-Standing is read from `STATUS.yaml`. Five of the eight declared operations are built and self-tested under `src/soveraeign_observation_service`: `request-observation`, `declare-predicates`, `infer-relation`, `observe-run`, and `read-observation`. `list-pending-observations`, `counter-observation`, and `attest-observation` are declared only. Nothing here is witnessed.
+Standing is read from `STATUS.yaml`. Five of the eight declared operations are built and self-tested under `src/soveraeign_observation_service`: `request-observation`, `declare-predicates`, `infer-relation`, `observe-run`, and `read-observation`. `list-pending-observations`, `counter-observation`, and `attest-observation` are declared only. Three independent witness passes observed the built five through this surface (`witness/observation-service.md`); nothing is ratified.
 
 ## Role in Soveraeign
 

@@ -15,7 +15,7 @@ and retraction semantics; no service creates a private authority system.
 | `gateway/` | proposed boundary; first IN_PROCESS route pattern built and self-tested | the node's door: requests admitted, capabilities resolved, authority checked, routes recorded, receipts returned, transports bound |
 | `host/` | built read-health slice; mutating operations declared and unreachable | normalized host readings and the lifecycle of requested scans, restart/power, driver, and utility operations behind a Host Port |
 | `registry/` | built read-only resolve slice; broader registry charter remains | versioned name resolution, source-owned registry entries and relations, owner records, rebuildable indexes, and drift findings |
-| `observation/` | thin slice built and self-tested, not witnessed | independent observation: observer registrations, declared predicates, observation requests, independence checks, observations, and attestations. Not the log - the journal is the Record Service's |
+| `observation/` | thin slice built, self-tested, and witnessed; remainder declared | independent observation: observer registrations, declared predicates, observation requests, independence checks, observations, and attestations. Not the log - the journal is the Record Service's |
 | `proofing/` | chartered, not implemented | version-pinned review sessions, annotations, rounds, and decision history |
 | `projection/` | chartered, not implemented | projection collections, text, graph, and vector configurations, builds, retrieval receipts, context packages, and fidelity observations over asset records; parity target in `PARITY.md` |
 

@@ -21,7 +21,7 @@ review of the branch is.
 | The phase-progress floor is the ceiling | `python scripts/sov_phase_progress.py check` | floor 44, `uncovered_on_purpose` empty, PASS |
 | Twelve kernel controls judged through one table | `python conformance/run.py` | 33 controls, `SUITE PASS`, every defeating control fails for its predicate's own reason |
 | Every oracle rule guarded one at a time | `python -m unittest discover -s conformance/tests` | `test_kernel_predicates.py` pins each rule to the exact defect it names |
-| Observation Service thin slice | `cd services/observation && python -m unittest discover -s tests` | 43 tests: five operations, every declared refusal, schema-valid inference and observation, kernel `settle_run` parity |
+| Observation Service thin slice | `cd services/observation && python -m unittest discover -s tests` | 49 tests: five operations, every declared refusal, schema-valid inference and observation, kernel `settle_run` parity |
 | The Asset participant rereads its source for `PRED-I-2.1` | `python scripts/sov_baseline.py` | matches its recorded baseline |
 | Repository gate | `python scripts/verify.py`; `python scripts/lint.py` | 50 checks PASS; hygiene PASS |
 
@@ -100,8 +100,15 @@ The witness's judgement items, carried to Bdo without an answer from this sessio
 `ACTIVE` in-process declaration with no routed address is admissible under
 `REMAINDER_DECLARED`; and whether clarity receipts should carry reading scope.
 
-A third pass, scoped to the residual repairs, decides whether the standing field moves to
-`WITNESSED`; it does not move on the builder's word.
+A third pass, scoped to the residual repairs, observed commit `3087714`: R1, R2, R4, R6, R7,
+and R8 repaired through the surface, R3 and R5 as documented, pass-two conclusions holding on
+the new bytes, and four new residuals (R10 to R13) recorded in `KNOWN-GAPS.md` rather than
+repaired, so the witnessed bytes stay the witnessed bytes. Its verdict:
+`RATIFIABLE-WITH-CONDITIONS`, and the record supports `BUILT -> WITNESSED` for
+`observation_service_status` at `3087714`. The field moves to
+`BUILT_THIN_SLICE_WITNESSED_REMAINDER_DECLARED` in the fifth commit, the first `WITNESSED`
+standing on file. It asserts the thin slice as code, observed by a participant that did not
+build it; it asserts no reachability, no ratification, and no observed run.
 
 ## Problems discovered and carried
 
@@ -118,17 +125,25 @@ A third pass, scoped to the residual repairs, decides whether the standing field
   owner-held product intent among what waits on Bdo, and the policy has no word for it. A
   policy seam; `python scripts/sov_docket.py holds` lists the questions.
 - `python scripts/sov_clarity.py --help` crashed on an unescaped percent sign. Fixed.
+- `witness/observations/README.md` and `witness/probes/README.md` both say their directory
+  is empty on `main`; six receipts and three probes were already tracked before this
+  session. Pre-existing drift, reported not edited.
+- Moving one `STATUS.yaml` field re-opens the clarity receipt of every artifact that names
+  `STATUS.yaml` as a basis, sixty-odd files, and the skill records only a full read. This
+  session paid that twice with helper readings. Whether the receipt should carry a basis
+  delta is the skill owner's question (witness item J3).
 - `python scripts/sov_phase_progress.py raise-floor` prints that exclusions still need
   removing but cannot remove them; the edit was made by hand.
 
 ## Standing changes
 
 - `observation_service_status`: `CHARTERED_BOUNDARY_NOT_IMPLEMENTED` to
-  `BUILT_THIN_SLICE_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED`, with the matching row in
+  `BUILT_THIN_SLICE_WITNESSED_REMAINDER_DECLARED`, with the matching row in
   `contracts/status-claims.json`, the service manifest, `services/README.md`, the charter,
   the orientation page, and the status remarks in `PRD.md` and `.claude/agents/sov.md`.
 - `contracts/phase-progress.json` floor: 36 to 44, exclusions cleared.
-- Nothing is `WITNESSED`. Nothing is `RATIFIED`. No phase is open.
+- One field is `WITNESSED`, on a record by a separate participant. Nothing is `RATIFIED`. No
+  phase is open.
 
 ## Defaults taken
 

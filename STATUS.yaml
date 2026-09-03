@@ -41,9 +41,12 @@ host_service_status: BUILT_READ_HEALTH_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNES
 # eight declared operations are built and self-tested (request-observation,
 # declare-predicates, infer-relation, observe-run, read-observation): the walk
 # over the run's record finds the five direct edges or refuses UNDETERMINED, and
-# the observation it emits is the one the kernel's settle_run accepts. Nothing
-# has observed this service; AI-NATIVE.md check 3 still reads UNATTESTABLE.
-observation_service_status: BUILT_THIN_SLICE_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED
+# the observation it emits is the one the kernel's settle_run accepts. Three
+# independent witness passes (witness/observation-service.md) observed the thin
+# slice through its declared surface at commit 3087714 and support WITNESSED for
+# it; nothing is ratified, no binding routes any operation, and AI-NATIVE.md
+# check 3 still reads UNATTESTABLE because no service's runs are observed yet.
+observation_service_status: BUILT_THIN_SLICE_WITNESSED_REMAINDER_DECLARED
 # Every service operation now declares its subject, CRUD verb, logical endpoint,
 # preconditions, commit, and refusals (decisions/0040). Self-tested against one
 # admissible manifest and twenty-one defeats; not independently witnessed.

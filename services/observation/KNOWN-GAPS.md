@@ -19,7 +19,7 @@ Standing under `decisions/0041-the-observation-service.md`.
 | Settlement | Nothing settles a run anywhere. `tests/test_kernel_parity.py` proves the kernel would accept this service's observation for `settle_run`; no participant performs the transition | `settle_run` consuming a satisfactory observation and refusing `OBSERVATION_MISSING` without one | `SPEC.md` Transition contract |
 | Capability map says ACTIVE | `contracts/fixtures/capability-map.reference.json` marks the five built operations `ACTIVE` at `observation:in-process`, and `scripts/sovnode/composition.py` routes no such address. The Record Service shares the pattern | A declaration something measures: either a composed route or a map that says `DECLARED` until one exists | `contracts/capability-offices.json` |
 | Two-binding proof | No binding drives this service; the tests call it in-process | A human binding and a model binding passing the same fixtures | PROD-I-3; `AI-NATIVE.md` check 7 |
-| Independent observation of itself | None. The service that owns observation has been observed by nothing but its own tests | An observer independent of this service's builder | C7; the recursion is real and unresolved |
+| Independent observation of itself | Three witness passes by a participant that did not build it observed the thin slice through its declared surface (`witness/observation-service.md`, commit 3087714). No run of this service, or of any service, has been observed by the operations it declares | An observation of a run, made through `observe-run`, by an observer this service inferred independent | C7; the recursion is real and unresolved at the run level |
 
 ## Defaults taken while building the thin slice
 
@@ -54,12 +54,28 @@ Reversible choices. Each names where it lives so it can be overturned in one pla
   `observed_at`; the clock is injected and never read from the host.
 - **Every attempt leaves exactly one receipt**, admitted or refused, naming the manifest's reason
   code. This is the invariant issue #173 lists first among its defeating cases.
+- **A terminal run that reported nothing durable refuses `INCOMPLETE_PROPOSAL`.** The request
+  schema requires at least one durable output address, so the proposal is incomplete; the
+  manifest declares no better word. Whether it should (witness judgement item J4) is the
+  contract owner's.
+
+## Residuals the third witness pass left open
+
+Recorded rather than repaired, so the witnessed bytes at 3087714 stay the witnessed bytes.
+
+- R10: an `OUTPUT` entry with no actor is not on the run subject, so `malformed()` does not
+  refuse it and its producer edge cannot be answered; it should read `UNREADABLE`.
+- R11: `observe_run` does not call `malformed()` itself; it relies on the inference having done
+  so, which a substituted record could bypass.
+- R12: three oracle rules (`kernel_predicates.py` report standing, discovery id/inputs shape,
+  and settlement receipt) are not yet pinned one at a time in `test_kernel_predicates.py`.
+- R13: the own-entry regression test passes with the repair reverted; it needs a case that
+  fails without the guard.
 
 ## Where this sits against the AI-native bar
 
 Not yet scored. The assessment record is owed now that `request-observation` and `observe-run`
 execute; it was not written in the same change that built them, because the assessment is a
 reading someone other than the builder should take. Worth stating: this is the service that
-would move check 3 off `UNATTESTABLE` for every other service in the repository, and the honest
-position is unchanged: the first observation of this service is Red work by a different agent,
-not a self-test.
+would move check 3 off `UNATTESTABLE` for every other service in the repository, and it has
+not done so yet, because being witnessed as code is not the same as observing a run.

@@ -82,11 +82,18 @@ class UnknownAndUndeclared(unittest.TestCase):
         self.assertIn("UNKNOWN_PREDICATE", codes(progress.grade(report, contract())))
 
     def test_an_uncovered_predicate_nobody_excused_refuses(self):
+        """Built synthetically: the live corpus covers PARITY-1, so the gap is planted."""
         report, declared = copy.deepcopy(reading()), contract()
+        report["open"] = [row for row in report["open"] if row["id"] != "PARITY-1"]
+        report["open"].append({"id": "PARITY-1", "family": "parity",
+                               "missing": ["defeating", "positive"], "text": "discovery"})
+        report["predicates_covered"] = report["predicates_total"] - len(report["open"])
         declared["uncovered_on_purpose"] = [
             entry for entry in declared["uncovered_on_purpose"]
             if entry["predicate"] != "PARITY-1"
         ]
+        declared["floor"]["total"] = 0
+        declared["floor"]["by_family"] = {}
         defects = progress.grade(report, declared)
         self.assertIn("UNDECLARED_UNCOVERED", codes(defects))
         self.assertTrue(any("PARITY-1" in defect["detail"] for defect in defects))
@@ -104,9 +111,14 @@ class StaleExclusion(unittest.TestCase):
     """An exclusion that stopped being true keeps a closed gap looking open."""
 
     def test_excusing_a_predicate_that_is_now_covered_refuses(self):
+        """Built synthetically: PARITY-1 is covered, so excusing it must read as stale."""
         report, declared = copy.deepcopy(reading()), contract()
         report["open"] = [row for row in report["open"] if row["id"] != "PARITY-1"]
-        report["predicates_covered"] += 1
+        report["predicates_covered"] = report["predicates_total"] - len(report["open"])
+        declared["uncovered_on_purpose"] = [
+            entry for entry in declared["uncovered_on_purpose"]
+            if entry["predicate"] != "PARITY-1"
+        ] + [{"predicate": "PARITY-1", "why": "planted"}]
         defects = progress.grade(report, declared)
         self.assertIn("STALE_EXCLUSION", codes(defects))
         self.assertTrue(any("now covered" in defect["detail"] for defect in defects))

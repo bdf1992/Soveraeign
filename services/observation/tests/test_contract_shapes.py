@@ -1,7 +1,8 @@
 """Drive the Observation Service fixture corpora against the schemas it declares.
 
-The schemas here were written before there is an implementation, so nothing in this module
-exercises a service. It proves the contracts themselves: that each declared positive record is
+The schemas here were written before the implementation existed and are not edited to fit it;
+nothing in this module exercises the service (`test_thin_slice.py` does). It proves the
+contracts themselves: that each declared positive record is
 admitted, that each declared defeat is refused, and that a record labelled schema-valid but
 semantically wrong really is schema-valid, so the gap is recorded rather than mistaken for
 coverage.
@@ -12,7 +13,7 @@ of the service (`decisions/0041-the-observation-service.md`, Ruling 2); a charte
 that disagree about it would leave two descriptions of what "direct" means.
 
 A passing run establishes `BUILT` for the contracts and their fixture pairs. It witnesses
-nothing: no operation this service declares is implemented, and no observation has been made.
+nothing: the service's own tests are self-tests, and nothing independent has observed it.
 """
 
 from __future__ import annotations

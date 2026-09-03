@@ -1,6 +1,6 @@
 # Observation Service Charter
 
-Standing is read from `STATUS.yaml`; this boundary is chartered and contracted, and no Observation Service operation is implemented.
+Standing is read from `STATUS.yaml`. Five of the eight declared operations are built and self-tested under `src/soveraeign_observation_service`: `request-observation`, `declare-predicates`, `infer-relation`, `observe-run`, and `read-observation`. `list-pending-observations`, `counter-observation`, and `attest-observation` are declared only. Nothing here is witnessed.
 
 ## Role in Soveraeign
 
@@ -10,7 +10,10 @@ something that did not perform it.
 `SPEC.md` already defines an `Observation` as a record carrying an observer, the addresses and
 digests that observer looked at itself, the predicates that held, and an `observer_relation`
 stating how it avoided relying solely on the executor's report. `settle_run` refuses with
-`OBSERVATION_MISSING` when that record is absent. This boundary exists because `observe_run` needs a service-owned path for independent observation. The charter defines that path; current standing remains unimplemented.
+`OBSERVATION_MISSING` when that record is absent. This boundary exists because `observe_run`
+needs a service-owned path for independent observation. The charter defines that path;
+`relation.py` and `observe.py` walk it, and `tests/test_kernel_parity.py` proves the
+observation they emit is the one `scripts/sovkernel/transitions.py` accepts for `settle_run`.
 
 ## Independence is inferred, never declared
 

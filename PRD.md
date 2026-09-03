@@ -176,7 +176,7 @@ node changes.
 | **Identity** | Who is acting, and how identity stays attributable across a crossing. | — | contract built, registry read only |
 | **Authority and policy** | What an actor may do, scoped independently of which model or intelligence it is running. | — | typed grants built, one ratified |
 | **Record** | The durable account of consequential actions, receipts, observations and counter-records. | 07, 08 | built, self-tested, not the kernel's |
-| **Evidence** | What supports a claim, and how independent witnessing works. | 11 | witness tooling exists, no observation service |
+| **Evidence** | What supports a claim, and how independent witnessing works. | 11 | witness tooling exists; observation service thin slice built, not witnessed |
 | **Grounding** | Whether an asset, file, service or claim can explain its place in the system. | — | **new; no contract, no implementation** |
 | **Models and BYOM** | Replaceable model compute without provider ownership of authoritative state. | 01, 06 | contract accepted, `invoke_model` unimplemented |
 | **Workflow and automation** | Durable compositions that execute work repeatedly. | — | pattern accepted, every schedule disabled |
@@ -497,9 +497,10 @@ operator surface and only its continuity path is built.
 - Every model requirement depends on `invoke_model`, declared in
   `contracts/kernel-transitions.json` and implemented by no kernel. It blocks
   `PROMISE-01` and `PROMISE-06` at the same point.
-- Evidence depends on an observation service that does not exist: `observe_run`
-  has no service behind it, and `AI-NATIVE.md` check 3 reads `UNATTESTABLE` on
-  every service assessment.
+- Evidence depends on an observation service that is built only as a self-tested
+  thin slice: `observe_run` now has a service path under `services/observation`,
+  nothing independent has observed it, and `AI-NATIVE.md` check 3 still reads
+  `UNATTESTABLE` on every service assessment.
 - Composition depends on Gateway, Identity and Authority crossings; four of the
   eleven service boundaries are declared with no implementation.
 - Skills depend on a skill contract that does not exist. The `.claude/` harness

@@ -158,10 +158,10 @@
     },
     {
       "field": "observation_service_status",
-      "value": "CHARTERED_BOUNDARY_NOT_IMPLEMENTED",
+      "value": "BUILT_THIN_SLICE_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED",
       "subject": "observation-service",
       "claim_kind": "STATUS",
-      "detail": "chartered as a boundary; nothing behind it is built",
+      "detail": "five operations built and self-tested behind the chartered boundary; three remain declared only; no independent observation exists",
       "reference": null
     },
     {

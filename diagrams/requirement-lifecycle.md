@@ -2,7 +2,7 @@
 
 ```text
 source          PRD.md · SPEC.md · CONTRACT.md · STATUS.yaml
-source_digest   90545536ce63d46d · ea07f0ec39b9a551 · f95acd076c4977d7 · 96d9e073a61bfdcc
+source_digest   8655297f3ceb0490 · ea07f0ec39b9a551 · f95acd076c4977d7 · dae8e4f439524b1b
 reader          hand-authored · v2
 fidelity        LOSSY
 omissions       campaign-specific qualification texts and defeating cases;

@@ -7,6 +7,7 @@ not repair, simulate, or claim completion for missing Phase-I behavior.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -80,9 +81,17 @@ def main() -> int:
             after = service.db.execute(
                 "SELECT digest FROM sources WHERE id=?", (original["source_id"],)
             ).fetchone()[0]
+            # PRED-I-2.1: reread the bytes themselves, twice, through the addressed store;
+            # the digest reported is of what came back, not of what the table says.
+            addressed = after if after.startswith("sha256:") else f"sha256:{after}"
+            reread = [service.store.verified_address(f"cas:{addressed}", addressed)
+                      for _ in range(2)]
+            reread_hex = hashlib.sha256(reread[-1]).hexdigest()
             i2 = item("RUN-I2-REMEMBER", {
                 "source_before_digest": before,
                 "source_after_digest": after,
+                "reread": {"digest": f"sha256:{reread_hex}" if addressed == after else reread_hex,
+                           "reread_count": len(reread)},
                 "recording": recording,
             })
 

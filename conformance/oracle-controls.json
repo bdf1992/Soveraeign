@@ -165,6 +165,7 @@
   {
     "id": "CONF-I2-POS",
     "predicates": [
+      "PRED-I-2.1",
       "PRED-I-2.2",
       "PRED-I-2.3",
       "TRANS-read_source"
@@ -186,12 +187,17 @@
         "omissions": [
           "color-profile"
         ]
+      },
+      "reread": {
+        "digest": "sha256:source",
+        "reread_count": 2
       }
     }
   },
   {
     "id": "CONF-I2-DEF",
     "predicates": [
+      "PRED-I-2.1",
       "PRED-I-2.2",
       "PRED-I-2.3",
       "TRANS-read_source"
@@ -211,6 +217,10 @@
         "payload_digest": "sha256:output",
         "fidelity": "LOSSY",
         "omissions": []
+      },
+      "reread": {
+        "digest": "sha256:reread-differs",
+        "reread_count": 1
       }
     }
   },
@@ -798,6 +808,593 @@
         "silent_fallback": true
       },
       "local_record_operable": false
+    }
+  },
+  {
+    "id": "CONF-CAPTURE-POS",
+    "predicates": [
+      "TRANS-capture_source"
+    ],
+    "requirement": "SPEC-CAPTURE",
+    "polarity": "positive",
+    "expected_oracle": "PASS",
+    "observed": {
+      "capture": {
+        "source_address": "cas/sha256:5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+        "declared_digest": "sha256:5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+        "computed_digest": "sha256:5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+        "readable": true,
+        "source_id": "src-9",
+        "outcome": "COMMITTED",
+        "receipt_id": "rcpt-cap-1"
+      }
+    }
+  },
+  {
+    "id": "CONF-CAPTURE-DEF",
+    "predicates": [
+      "TRANS-capture_source"
+    ],
+    "requirement": "SPEC-CAPTURE",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "capture": {
+        "source_address": "cas/sha256:5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+        "declared_digest": "sha256:5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+        "computed_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+        "readable": true,
+        "source_id": "src-9",
+        "outcome": "COMMITTED",
+        "receipt_id": "rcpt-cap-1"
+      }
+    }
+  },
+  {
+    "id": "CONF-EFFECTIVE-POS",
+    "predicates": [
+      "TRANS-make_effective"
+    ],
+    "requirement": "SPEC-EFFECTIVE",
+    "polarity": "positive",
+    "expected_oracle": "PASS",
+    "observed": {
+      "claim": {
+        "claim_id": "c1",
+        "standing": "RATIFIED",
+        "ratification_receipt_id": "rcpt-r1"
+      },
+      "attestation_policy": {
+        "requires_attestation": true
+      },
+      "attestations": [
+        {
+          "attestation_id": "att-1",
+          "claim_id": "c1",
+          "outcome": "REPRODUCED",
+          "validator_id": "validator-1@1.0",
+          "inputs_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c"
+        }
+      ],
+      "current_counter_present": false,
+      "transition": {
+        "outcome": "EFFECTIVE",
+        "event_id": "evt-eff-1",
+        "receipt_id": "rcpt-eff-1"
+      }
+    }
+  },
+  {
+    "id": "CONF-EFFECTIVE-DEF",
+    "predicates": [
+      "TRANS-make_effective"
+    ],
+    "requirement": "SPEC-EFFECTIVE",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "claim": {
+        "claim_id": "c1",
+        "standing": "RATIFIED",
+        "ratification_receipt_id": "rcpt-r1"
+      },
+      "attestation_policy": {
+        "requires_attestation": true
+      },
+      "attestations": [
+        {
+          "attestation_id": "att-1",
+          "claim_id": "c1",
+          "outcome": "DISSENTED",
+          "validator_id": "validator-1@1.0",
+          "inputs_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c"
+        }
+      ],
+      "current_counter_present": false,
+      "transition": {
+        "outcome": "EFFECTIVE",
+        "event_id": "evt-eff-1",
+        "receipt_id": "rcpt-eff-1"
+      }
+    }
+  },
+  {
+    "id": "CONF-RUN-POS",
+    "predicates": [
+      "TRANS-begin_run",
+      "TRANS-report_run",
+      "TRANS-observe_run",
+      "TRANS-settle_run"
+    ],
+    "requirement": "SPEC-RUN",
+    "polarity": "positive",
+    "expected_oracle": "PASS",
+    "observed": {
+      "run_id": "run-1",
+      "begin": {
+        "operation_plan_id": "plan-1",
+        "actor_id": "worker-a",
+        "delegated": true,
+        "gates": {
+          "capability": "PASS",
+          "budget": "PASS",
+          "input": "PASS",
+          "effect": "PASS"
+        },
+        "input_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "event": "ATTEMPTED",
+        "lease": {
+          "holder_id": "worker-a",
+          "fence": 1,
+          "expires_at": 2000
+        },
+        "receipt_id": "rcpt-begin-1"
+      },
+      "report": {
+        "worker_id": "worker-a",
+        "lease_fence": 1,
+        "reported_at": 1500,
+        "output_record_addresses": [
+          "out/1"
+        ],
+        "standing": "REPORT",
+        "settled": false
+      },
+      "observation": {
+        "observation_id": "obs-1",
+        "observer_id": "witness-z",
+        "relation_inference": {
+          "inference_id": "inf-1",
+          "outcome": "INDEPENDENT",
+          "edges_found": [],
+          "record_completeness": "COMPLETE"
+        },
+        "observed_state_addresses": [
+          "out/1"
+        ],
+        "observed_state_digests": [
+          "sha256:5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a"
+        ],
+        "predicate_results": {
+          "output-digest-declared": true
+        },
+        "predicates_declared_at": 1600,
+        "observed_at": 1700,
+        "standing": "OBSERVATION"
+      },
+      "settlement": {
+        "input_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "current_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "observation_id": "obs-1",
+        "outcome": "COMMITTED",
+        "receipt_id": "rcpt-settle-1",
+        "settled_by": "kernel"
+      }
+    }
+  },
+  {
+    "id": "CONF-RUN-DEF",
+    "predicates": [
+      "TRANS-begin_run",
+      "TRANS-report_run",
+      "TRANS-observe_run",
+      "TRANS-settle_run"
+    ],
+    "requirement": "SPEC-RUN",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "run_id": "run-1",
+      "begin": {
+        "operation_plan_id": "plan-1",
+        "actor_id": "worker-a",
+        "delegated": true,
+        "gates": {
+          "capability": "PASS",
+          "budget": "PASS",
+          "input": "PASS",
+          "effect": "PASS"
+        },
+        "input_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "event": "ATTEMPTED",
+        "lease": {
+          "holder_id": "worker-a",
+          "fence": 1,
+          "expires_at": 2000
+        },
+        "receipt_id": "rcpt-begin-1"
+      },
+      "report": {
+        "worker_id": "worker-a",
+        "lease_fence": 1,
+        "reported_at": 1500,
+        "output_record_addresses": [
+          "out/1"
+        ],
+        "standing": "REPORT",
+        "settled": false
+      },
+      "observation": {
+        "observation_id": "obs-1",
+        "observer_id": "worker-a",
+        "relation_inference": {
+          "inference_id": "inf-1",
+          "outcome": "DIRECT",
+          "edges_found": [
+            {
+              "edge": "SAME_ACTOR",
+              "evidence_address": "journal/1"
+            }
+          ],
+          "record_completeness": "COMPLETE"
+        },
+        "observed_state_addresses": [
+          "out/1"
+        ],
+        "observed_state_digests": [
+          "sha256:5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a"
+        ],
+        "predicate_results": {
+          "output-digest-declared": true
+        },
+        "predicates_declared_at": 1600,
+        "observed_at": 1700,
+        "standing": "OBSERVATION"
+      },
+      "settlement": {
+        "input_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "current_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "observation_id": "obs-1",
+        "outcome": "COMMITTED",
+        "receipt_id": "rcpt-settle-1",
+        "settled_by": "worker-a"
+      }
+    }
+  },
+  {
+    "id": "CONF-RUN-BEGIN-DEF",
+    "predicates": [
+      "TRANS-begin_run"
+    ],
+    "requirement": "SPEC-RUN",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "run_id": "run-1",
+      "begin": {
+        "operation_plan_id": "plan-1",
+        "actor_id": "worker-a",
+        "delegated": true,
+        "gates": {
+          "capability": "PASS",
+          "budget": "FAIL",
+          "input": "PASS",
+          "effect": "PASS"
+        },
+        "input_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "event": "ATTEMPTED",
+        "lease": {
+          "holder_id": "worker-a",
+          "fence": 1,
+          "expires_at": 2000
+        },
+        "receipt_id": "rcpt-begin-1"
+      },
+      "report": {
+        "worker_id": "worker-a",
+        "lease_fence": 1,
+        "reported_at": 1500,
+        "output_record_addresses": [
+          "out/1"
+        ],
+        "standing": "REPORT",
+        "settled": false
+      },
+      "observation": {
+        "observation_id": "obs-1",
+        "observer_id": "witness-z",
+        "relation_inference": {
+          "inference_id": "inf-1",
+          "outcome": "INDEPENDENT",
+          "edges_found": [],
+          "record_completeness": "COMPLETE"
+        },
+        "observed_state_addresses": [
+          "out/1"
+        ],
+        "observed_state_digests": [
+          "sha256:5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a"
+        ],
+        "predicate_results": {
+          "output-digest-declared": true
+        },
+        "predicates_declared_at": 1600,
+        "observed_at": 1700,
+        "standing": "OBSERVATION"
+      },
+      "settlement": {
+        "input_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "current_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "observation_id": "obs-1",
+        "outcome": "COMMITTED",
+        "receipt_id": "rcpt-settle-1",
+        "settled_by": "kernel"
+      }
+    }
+  },
+  {
+    "id": "CONF-RUN-REPORT-DEF",
+    "predicates": [
+      "TRANS-report_run"
+    ],
+    "requirement": "SPEC-RUN",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "run_id": "run-1",
+      "begin": {
+        "operation_plan_id": "plan-1",
+        "actor_id": "worker-a",
+        "delegated": true,
+        "gates": {
+          "capability": "PASS",
+          "budget": "PASS",
+          "input": "PASS",
+          "effect": "PASS"
+        },
+        "input_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "event": "ATTEMPTED",
+        "lease": {
+          "holder_id": "worker-a",
+          "fence": 1,
+          "expires_at": 2000
+        },
+        "receipt_id": "rcpt-begin-1"
+      },
+      "report": {
+        "worker_id": "worker-a",
+        "lease_fence": 0,
+        "reported_at": 1500,
+        "output_record_addresses": [
+          "out/1"
+        ],
+        "standing": "REPORT",
+        "settled": true
+      },
+      "observation": {
+        "observation_id": "obs-1",
+        "observer_id": "witness-z",
+        "relation_inference": {
+          "inference_id": "inf-1",
+          "outcome": "INDEPENDENT",
+          "edges_found": [],
+          "record_completeness": "COMPLETE"
+        },
+        "observed_state_addresses": [
+          "out/1"
+        ],
+        "observed_state_digests": [
+          "sha256:5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a"
+        ],
+        "predicate_results": {
+          "output-digest-declared": true
+        },
+        "predicates_declared_at": 1600,
+        "observed_at": 1700,
+        "standing": "OBSERVATION"
+      },
+      "settlement": {
+        "input_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "current_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "observation_id": "obs-1",
+        "outcome": "COMMITTED",
+        "receipt_id": "rcpt-settle-1",
+        "settled_by": "kernel"
+      }
+    }
+  },
+  {
+    "id": "CONF-RUN-SETTLE-DEF",
+    "predicates": [
+      "TRANS-settle_run"
+    ],
+    "requirement": "SPEC-RUN",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "run_id": "run-1",
+      "begin": {
+        "operation_plan_id": "plan-1",
+        "actor_id": "worker-a",
+        "delegated": true,
+        "gates": {
+          "capability": "PASS",
+          "budget": "PASS",
+          "input": "PASS",
+          "effect": "PASS"
+        },
+        "input_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "event": "ATTEMPTED",
+        "lease": {
+          "holder_id": "worker-a",
+          "fence": 1,
+          "expires_at": 2000
+        },
+        "receipt_id": "rcpt-begin-1"
+      },
+      "report": {
+        "worker_id": "worker-a",
+        "lease_fence": 1,
+        "reported_at": 1500,
+        "output_record_addresses": [
+          "out/1"
+        ],
+        "standing": "REPORT",
+        "settled": false
+      },
+      "observation": {
+        "observation_id": "obs-1",
+        "observer_id": "witness-z",
+        "relation_inference": {
+          "inference_id": "inf-1",
+          "outcome": "INDEPENDENT",
+          "edges_found": [],
+          "record_completeness": "COMPLETE"
+        },
+        "observed_state_addresses": [
+          "out/1"
+        ],
+        "observed_state_digests": [
+          "sha256:5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a"
+        ],
+        "predicate_results": {
+          "output-digest-declared": true
+        },
+        "predicates_declared_at": 1600,
+        "observed_at": 1700,
+        "standing": "OBSERVATION"
+      },
+      "settlement": {
+        "input_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "current_state_digest": "sha256:5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+        "observation_id": "obs-none",
+        "outcome": "COMMITTED",
+        "receipt_id": "rcpt-settle-1",
+        "settled_by": "kernel"
+      }
+    }
+  },
+  {
+    "id": "CONF-DISCOVERY-POS",
+    "predicates": [
+      "PARITY-1"
+    ],
+    "requirement": "SPEC-DISCOVERY",
+    "polarity": "positive",
+    "expected_oracle": "PASS",
+    "observed": {
+      "interface_id": "soveraeign-node-interface/v1",
+      "human": {
+        "binding_id": "human-console",
+        "interface_id": "soveraeign-node-interface/v1",
+        "operations": [
+          {
+            "operation_id": "asset.capture-source",
+            "required_inputs": [
+              "source_address",
+              "source_digest"
+            ]
+          },
+          {
+            "operation_id": "record.read-entry",
+            "required_inputs": [
+              "entry_id"
+            ]
+          }
+        ],
+        "discovery_receipt_id": "rcpt-disc-h",
+        "direct_write": false
+      },
+      "model": {
+        "binding_id": "model-local",
+        "interface_id": "soveraeign-node-interface/v1",
+        "operations": [
+          {
+            "operation_id": "asset.capture-source",
+            "required_inputs": [
+              "source_address",
+              "source_digest"
+            ]
+          },
+          {
+            "operation_id": "record.read-entry",
+            "required_inputs": [
+              "entry_id"
+            ]
+          }
+        ],
+        "discovery_receipt_id": "rcpt-disc-m",
+        "direct_write": false
+      }
+    }
+  },
+  {
+    "id": "CONF-DISCOVERY-DEF",
+    "predicates": [
+      "PARITY-1"
+    ],
+    "requirement": "SPEC-DISCOVERY",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "interface_id": "soveraeign-node-interface/v1",
+      "human": {
+        "binding_id": "human-console",
+        "interface_id": "soveraeign-node-interface/v1",
+        "operations": [
+          {
+            "operation_id": "asset.capture-source",
+            "required_inputs": [
+              "source_address",
+              "source_digest"
+            ]
+          },
+          {
+            "operation_id": "record.read-entry",
+            "required_inputs": [
+              "entry_id"
+            ]
+          }
+        ],
+        "discovery_receipt_id": "rcpt-disc-h",
+        "direct_write": false
+      },
+      "model": {
+        "binding_id": "model-local",
+        "interface_id": "soveraeign-node-interface/v1",
+        "operations": [
+          {
+            "operation_id": "asset.capture-source",
+            "required_inputs": [
+              "source_address"
+            ]
+          },
+          {
+            "operation_id": "record.read-entry",
+            "required_inputs": [
+              "entry_id"
+            ]
+          },
+          {
+            "operation_id": "record.append-entry",
+            "required_inputs": [
+              "payload"
+            ]
+          }
+        ],
+        "discovery_receipt_id": "rcpt-disc-m",
+        "direct_write": false
+      }
     }
   }
 ]

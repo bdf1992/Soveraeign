@@ -34,13 +34,16 @@ gateway_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED
 # and an injected standard-library Host Port. The adapter reports its process execution
 # boundary and no mutating operation is active. Tests are participant evidence only.
 host_service_status: BUILT_READ_HEALTH_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED
-# Owns independent observation under decisions/0041: the kernel observe_run
-# transition had no service behind it, and AI-NATIVE.md check 3 reads
-# UNATTESTABLE on every service assessment. Logging is not its job; the
+# Owns independent observation under decisions/0041. Logging is not its job; the
 # Record Service owns the journal and the Console Service owns the view.
 # Bdo ruled 2026-08-23 that independence is inferred from the run's record
-# when no direct relation is found, never declared by the observer.
-observation_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED
+# when no direct relation is found, never declared by the observer. Five of the
+# eight declared operations are built and self-tested (request-observation,
+# declare-predicates, infer-relation, observe-run, read-observation): the walk
+# over the run's record finds the five direct edges or refuses UNDETERMINED, and
+# the observation it emits is the one the kernel's settle_run accepts. Nothing
+# has observed this service; AI-NATIVE.md check 3 still reads UNATTESTABLE.
+observation_service_status: BUILT_THIN_SLICE_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED
 # Every service operation now declares its subject, CRUD verb, logical endpoint,
 # preconditions, commit, and refusals (decisions/0040). Self-tested against one
 # admissible manifest and twenty-one defeats; not independently witnessed.

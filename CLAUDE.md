@@ -83,11 +83,15 @@ whenever they disagree.
 - 10 service boundaries under `services/`, 135 declared operations
   across 10 manifests. Asset and Record are built and self-tested; Console's
   continuity path is built; Gateway has one in-process Asset route; Registry has
-  a built resolve slice; Observation, Proofing, Projection, and the remainder of
+  a built resolve slice; Observation has a built thin slice (relation inference
+  and observe-run, self-tested); Proofing, Projection, and the remainder of
   those services are incomplete. `services/README.md` and the live issue graph
   carry the detailed standing; declarations are not reachability.
-- Conformance oracle (`conformance/`): executable, 20 controlled cases, every
-  defeating fixture fails as declared. Participant binding still open.
+- Conformance oracle (`conformance/`): executable, 33 controlled cases, every
+  defeating fixture fails as declared. Every normative predicate `SPEC.md`
+  states carries both polarities (`python scripts/sov_f2_gate.py` reads none
+  open); the F2 gate waits only on its second bound participant. Participant
+  binding still open.
 - Harness (`.claude/`): 5 agent definitions (four roles and the Sov binding),
   29 skills, 23 workflows, the epic-tree walk, and scheduled-run gates with a
   kernel-envelope ledger.
@@ -111,8 +115,10 @@ whenever they disagree.
   third party. `services/asset/KNOWN-GAPS.md` still reads "No Model Binding or
   Model Adapter participant exists", which is stale as repository-wide phrasing
   and unrepaired.
-- Proofing, Asset Projection, Gateway, Observation, and Registry are boundaries
-  with no implementation.
+- Proofing, Asset Projection, and Gateway are boundaries with no implementation.
+  Observation has five of eight operations built and self-tested; nothing has
+  observed the observer, so the independent-observation check in `AI-NATIVE.md`
+  still reads `UNATTESTABLE` everywhere.
 - The SDLC loop is a skeleton, and Sov has no live activation.
 - Phase I is closed. Current external-world effects are neither ambient nor
   phase-refused: they require an explicit live grant, admitted scope, and receipt

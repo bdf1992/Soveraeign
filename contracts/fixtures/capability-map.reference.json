@@ -15,7 +15,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "8a8166d406424e33b74bb1a54b1167774cf28d24b6edc1aa071bdae9b86fb837",
+  "input_state_digest": "b0ae913f108fbc8e0460a8567408dcfb229825f94fbce11638d375fa8182399b",
   "capabilities": [
     {
       "capability_id": "asset.add-member",
@@ -3819,7 +3819,7 @@
       "operation": "declare-predicates",
       "office": "BACK",
       "counter": "inspectorate",
-      "service_standing": "PROPOSED",
+      "service_standing": "BUILT",
       "effect_class": "RECORD_LOCAL",
       "required_authority": "declare:predicates",
       "actor_kinds": [
@@ -3829,7 +3829,8 @@
       "endpoints": [
         {
           "transport": "IN_PROCESS",
-          "activation": "DECLARED_NOT_ACTIVATED"
+          "activation": "ACTIVE",
+          "address": "observation:in-process"
         },
         {
           "transport": "CLI",
@@ -3868,7 +3869,7 @@
       "operation": "infer-relation",
       "office": "BACK",
       "counter": "inspectorate",
-      "service_standing": "PROPOSED",
+      "service_standing": "BUILT",
       "effect_class": "RECORD_LOCAL",
       "required_authority": "observe:run",
       "actor_kinds": [
@@ -3877,7 +3878,8 @@
       "endpoints": [
         {
           "transport": "IN_PROCESS",
-          "activation": "DECLARED_NOT_ACTIVATED"
+          "activation": "ACTIVE",
+          "address": "observation:in-process"
         },
         {
           "transport": "CLI",
@@ -3963,7 +3965,7 @@
       "operation": "observe-run",
       "office": "BACK",
       "counter": "inspectorate",
-      "service_standing": "PROPOSED",
+      "service_standing": "BUILT",
       "effect_class": "RECORD_LOCAL",
       "required_authority": "observe:run",
       "actor_kinds": [
@@ -3973,7 +3975,8 @@
       "endpoints": [
         {
           "transport": "IN_PROCESS",
-          "activation": "DECLARED_NOT_ACTIVATED"
+          "activation": "ACTIVE",
+          "address": "observation:in-process"
         },
         {
           "transport": "CLI",
@@ -4016,7 +4019,7 @@
       "operation": "read-observation",
       "office": "BACK",
       "counter": "inspectorate",
-      "service_standing": "PROPOSED",
+      "service_standing": "BUILT",
       "effect_class": "RECORD_LOCAL",
       "required_authority": "read:observation",
       "actor_kinds": [
@@ -4026,7 +4029,8 @@
       "endpoints": [
         {
           "transport": "IN_PROCESS",
-          "activation": "DECLARED_NOT_ACTIVATED"
+          "activation": "ACTIVE",
+          "address": "observation:in-process"
         },
         {
           "transport": "CLI",
@@ -4062,7 +4066,7 @@
       "operation": "request-observation",
       "office": "BACK",
       "counter": "inspectorate",
-      "service_standing": "PROPOSED",
+      "service_standing": "BUILT",
       "effect_class": "RECORD_LOCAL",
       "required_authority": "request:observation",
       "actor_kinds": [
@@ -4073,7 +4077,8 @@
       "endpoints": [
         {
           "transport": "IN_PROCESS",
-          "activation": "DECLARED_NOT_ACTIVATED"
+          "activation": "ACTIVE",
+          "address": "observation:in-process"
         },
         {
           "transport": "CLI",

@@ -41,7 +41,7 @@ expires 2026-11-23, and its preconditions are `verify` PASS, `lint` PASS, and
 That last precondition is the live constraint on everything you do. Nothing in
 this repository has ever been independently observed — `python
 scripts/sov_standing.py` reports zero records — and the Observation Service that
-would produce one has eight operations declared and none built. So a landing
+would produce one has five of eight operations built and none witnessed. So a landing
 needs a second participant that did not build the change, arranged by you, every
 time. This is not a blocker; it is the shape of the work. Recruiting the
 observer is part of carrying the concern.

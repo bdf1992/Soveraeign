@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/ai-native-assessment.schema.json",
-  "title": "Soveraeign AI-Native Assessment (PROPOSED, decisions/0070)",
+  "title": "Soveraeign AI-Native Assessment (decisions/0070)",
   "description": "One surface performing one named operation, scored against AI-NATIVE.md. The record carries scores, evidence and one human judgement; it carries no verdict, because the verdict is derived from the scores and is never selected directly. A record that states its own result fails this shape rather than being argued with.",
   "type": "object",
   "additionalProperties": false,

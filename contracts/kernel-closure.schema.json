@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/kernel-closure.schema.json",
-  "title": "Soveraeign Kernel Closure (PROPOSED)",
+  "title": "Soveraeign Kernel Closure",
   "description": "A rebuildable projection over service manifests, the Kernel paradigm registry, and the authored Kernel transition table. It shows how every service binds the shared Kernel grammar without becoming a new authority source. The closure is for discovery, conformance, and AI reading; it grants nothing, settles nothing, and is never a substitute for the manifests or governing Kernel sources.",
   "type": "object",
   "additionalProperties": false,

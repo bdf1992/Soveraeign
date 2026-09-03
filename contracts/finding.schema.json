@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/finding.schema.json",
-  "title": "Soveraeign Finding (PROPOSED)",
+  "title": "Soveraeign Finding",
   "description": "An attributable interpretation of a named subject against cited evidence. A Finding is not Observation, authority, or settlement.",
   "type": "object",
   "additionalProperties": false,

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/node-interface.schema.json",
-  "title": "Soveraeign Node Interface (PROPOSED)",
+  "title": "Soveraeign Node Interface",
   "description": "A discardable read projection joining Node identity and local Root, Kernel closure, capability policy, exact route census, and admitted observations. Declared, bound, policy-active, reachable, and observed are independent facts. route_affordance is actor-neutral route topology, never situated operator capability, standing, or authority. Bindings project actor-kind admission separately and the Gateway checks live authority. This interface grants no authority, opens no route, settles nothing, and cannot promote its own standing.",
   "type": "object",
   "additionalProperties": false,

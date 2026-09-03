@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/authority-grant.schema.json",
-  "title": "Soveraeign Authority Grant (PROPOSED, decisions/0061)",
+  "title": "Soveraeign Authority Grant (decisions/0061)",
   "description": "The AuthorityGrant object SPEC.md declares at its Authority section, compiled into a machine contract. A grant is typed, scoped, budgeted, time-bounded, and revocable; an authority check evaluates type, capability, scope, budget, time, and revocation at the attempted transition (SPEC.md, PROD-I-5). A grant is the only thing that carries authority: a lease says who is on the hook, a receipt says what happened, and neither confers anything. Semantic constraints a schema cannot express - a path outside scope, an exhausted budget, a witness that was inside the build - are checked by scripts/sovkernel/authority.py and named in the fixtures that defeat them.",
   "type": "object",
   "additionalProperties": false,

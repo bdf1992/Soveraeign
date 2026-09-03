@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/work-lease.schema.json",
-  "title": "Soveraeign Work Lease (PROPOSED, decisions/0056)",
+  "title": "Soveraeign Work Lease (decisions/0056)",
   "description": "One concern, actively possessed by one attributable machine principal, under a grant, inside a budget, against a stated closure condition. A lease is the difference between a ticket that has an assignee and work somebody is holding right now. It confers nothing: the grant carries authority, the lease only says who is on the hook and what envelope they operate inside. Helper and witness invocations are leases too, subordinate to the parent that recruited them, and the parent stays responsible for closure. Semantic constraints a schema cannot express - a child exceeding its parent's grant, a budget overdrawn, a parent completing while a helper is still held - are checked by scripts/sovkernel/work_lease.py and named in the fixtures that defeat them.",
   "type": "object",
   "additionalProperties": false,

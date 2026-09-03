@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/seat-registry.schema.json",
-  "title": "Soveraeign Seat Registry (PROPOSED, decisions/0020)",
+  "title": "Soveraeign Seat Registry (decisions/0020)",
   "description": "The current view of the ownership topology: seats, their type, the owner edge, what each settles, and the attributable occupancy claim. A rebuildable projection, never a second System of Record. Rooted-tree constraints are semantic and checked by fixtures, not by this schema.",
   "type": "object",
   "additionalProperties": false,

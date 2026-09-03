@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/product-ground.schema.json",
-  "title": "Soveraeign Product Ground (PROPOSED, decisions/0047)",
+  "title": "Soveraeign Product Ground (decisions/0047)",
   "description": "The small set of stable claims that say what product Soveraeign is. A ground claim earns its place by the test: if this statement became false, would we merely implement Soveraeign differently, or would we be building a materially different product? Only the second belongs here. Ground supplies the meaning of a state fact; it never asserts that the fact is currently true. It sits above the product canon and below CONTRACT.md, and it is deliberately smaller and more stable than either. GROUND.md owns the wording; this record owns the identifiers.",
   "type": "object",
   "additionalProperties": false,

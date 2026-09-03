@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/record-projection.schema.json",
-  "title": "Soveraeign RecordProjection (PROPOSED)",
+  "title": "Soveraeign RecordProjection",
   "description": "A bounded, reconstructable, non-authoritative reading of the common Record for one subject, recipient relation, purpose, and cutoff.",
   "type": "object",
   "additionalProperties": false,

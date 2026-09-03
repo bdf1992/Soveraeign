@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/phase.schema.json",
-  "title": "Soveraeign Phase (PROPOSED)",
+  "title": "Soveraeign Phase",
   "description": "A time-bounded product campaign with an immutable exit definition. Ending a phase is two readings, not one: whether the operating window is over, and whether the exit was earned. Collapsing them is what lets a phase end by redefinition - the definition quietly narrows until the evidence on hand satisfies it, and the record then says the phase was earned. This contract refuses that by pinning the definition to a digest at the moment the phase opened and by requiring an unmet clause to name the custody that inherits it. Semantic constraints a schema cannot express - an exit clause claimed earned with no evidence, an unmet clause carried forward to nobody, a definition digest that no longer matches the document - are checked by scripts/sovcustody/phase.py and each has a fixture that defeats it.",
   "type": "object",
   "additionalProperties": false,

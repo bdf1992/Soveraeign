@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/node-object-record.schema.json",
-  "title": "Soveraeign Node Object Record (PROPOSED)",
+  "title": "Soveraeign Node Object Record",
   "description": "A read-only, source-addressed object projection returned by a governed Node read. It names the service-owned identity, exact journal sources, current revision, known relations, and receipts without granting authority or claiming the projection is authoritative.",
   "type": "object",
   "additionalProperties": false,

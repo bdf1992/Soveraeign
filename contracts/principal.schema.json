@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/principal.schema.json",
-  "title": "Soveraeign Principal Registry (PROPOSED, decisions/0048)",
+  "title": "Soveraeign Principal Registry (decisions/0048)",
   "description": "Registered identities that can be named as actors. The identity grade is derived, never stored: hop distance has no field here on purpose (ID-3) and is computed by walking controller edges. A rebuildable projection; being registered grants nothing (C3, ID-8).",
   "type": "object",
   "additionalProperties": false,

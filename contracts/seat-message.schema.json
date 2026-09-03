@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/seat-message.schema.json",
-  "title": "Soveraeign Seat Message (PROPOSED, decisions/0035)",
+  "title": "Soveraeign Seat Message (decisions/0035)",
   "description": "One statement made by one seat to another seat about one operation. The schema owns the envelope only: who is speaking, from which seat, to which seat, what kind of statement this is, the highest standing it proposes, and what it carries onward. The body is deliberately unconstrained: a seat says what it needs to say in whatever shape fits the work. Which acts a seat may speak, in which direction, and what it must carry are semantic rules held in contracts/seat-etiquette.json and checked by fixtures, not by this schema. A schema-valid message can still be an inadmissible thing for that seat to say.",
   "type": "object",
   "additionalProperties": false,

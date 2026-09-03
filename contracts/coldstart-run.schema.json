@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/coldstart-run.schema.json",
-  "title": "Soveraeign Cold-Start Run Record (PROPOSED, decisions/0078)",
+  "title": "Soveraeign Cold-Start Run Record (decisions/0078)",
   "description": "One execution of the cold-start benchmark: which corpus, against which revision, by which participant, and what each tier scored. The record carries a verdict field, but the verdict is derived from the tier table and a record that states a different one is refused rather than argued with. A run establishes BUILT and never more: a benchmark cannot witness the participant that ran it.",
   "type": "object",
   "additionalProperties": false,

@@ -64,6 +64,7 @@ REPOSITORY_CHECKS = (
           "right and settles none of them",
           ("contracts/decision-standing.json", "contracts/acceptance-routing.json",
            "decisions", "STATUS.yaml")),
+    Check("schema titles carry no standing", [sys.executable, "scripts/sov_schema_titles.py", "check"], ROOT, "reads every title, cited decision, and the crosswalk from disk", ("contracts", "decisions")),
     Check("charting derivation tests",
           [sys.executable, "-m", "unittest", "discover", "-s", "charting/tests", "-v"], ROOT,
           "re-derives the whole chart from SDLC.md and the checked-in skill bindings at the "
@@ -290,8 +291,7 @@ _DEV_GATE = frozenset({
     "semantic cold-start task", "participant against its baseline", "ticket contract corpora",
     "closure ownership", "standing authority grants", "node registry", "Sov context profile",
     "local model adapter", "Record Service independent witness", "Kernel binding closure",
-    "repository tooling tests",
-})
+    "repository tooling tests"})
 REPOSITORY_CHECKS = tuple(c._replace(gate=DEV_GATE) if c.name in _DEV_GATE else c
                           for c in REPOSITORY_CHECKS)
 

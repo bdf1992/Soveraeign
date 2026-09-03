@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/capability-map.schema.json",
-  "title": "Soveraeign Capability Map (PROPOSED, decisions/0036)",
+  "title": "Soveraeign Capability Map (decisions/0036)",
   "description": "One row per declared service operation: which office an actor meets it at, what authority it costs, which actor kinds may ask, and the activation state of every transport that could carry it. A rebuildable projection over the service manifests and contracts/capability-offices.json; never a second System of Record and never a grant. An endpoint object admits no authority field at all, so a transport cannot become a second authority path by construction rather than by rule.",
   "type": "object",
   "additionalProperties": false,

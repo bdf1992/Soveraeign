@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/estimate.schema.json",
-  "title": "Soveraeign Estimate (PROPOSED)",
+  "title": "Soveraeign Estimate",
   "description": "A cost claim over the dimensions contracts/estimation.json declares, and the measured actuals against it. Every dimension is a low-high range on the registry unit, because a single number hides whether the estimator knew the shape of the work. The actual half is optional and is filled in from the sources the registry names, never typed in by the participant that produced the estimate. Semantic constraints a schema cannot express - a dimension id the registry does not declare, an estimate missing a dimension its circuit stage requires, a variance settled by the estimator - are checked by scripts/sovcustody/estimate.py and each has a fixture that defeats it.",
   "type": "object",
   "additionalProperties": false,

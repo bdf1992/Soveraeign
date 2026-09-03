@@ -1,0 +1,78 @@
+{
+  "SoveraeignAuthority": {
+    "entityTypes": {
+      "Actor": {
+        "shape": { "type": "Record", "attributes": {} }
+      },
+      "Branch": {
+        "shape": { "type": "Record", "attributes": {} }
+      },
+      "Path": {
+        "memberOfTypes": ["Path"],
+        "shape": { "type": "Record", "attributes": {} }
+      },
+      "Grant": {
+        "shape": {
+          "type": "Record",
+          "attributes": {
+            "status": { "type": "String" },
+            "actor": { "type": "Entity", "name": "Actor" },
+            "authorityType": { "type": "String" },
+            "issuerId": { "type": "String" },
+            "capabilities": { "type": "Set", "element": { "type": "Entity", "name": "Action" } },
+            "includedPaths": { "type": "Set", "element": { "type": "Entity", "name": "Path" } },
+            "excludedPaths": { "type": "Set", "element": { "type": "Entity", "name": "Path" } },
+            "branches": { "type": "Set", "element": { "type": "Entity", "name": "Branch" }, "required": false },
+            "budgetUnit": { "type": "String", "required": false },
+            "budgetCeiling": { "type": "Long", "required": false },
+            "effectCeilingOrdinal": { "type": "Long" },
+            "validFrom": { "type": "Extension", "name": "datetime" },
+            "validUntil": { "type": "Extension", "name": "datetime" },
+            "revokedAt": { "type": "Extension", "name": "datetime", "required": false }
+          }
+        }
+      }
+    },
+    "actions": {
+      "repository.land": {
+        "appliesTo": {
+          "principalTypes": ["Actor"], "resourceTypes": ["Path"],
+          "context": { "type": "Record", "attributes": {
+            "grant": { "type": "Entity", "name": "Grant" },
+            "now": { "type": "Extension", "name": "datetime" },
+            "branch": { "type": "Entity", "name": "Branch" },
+            "effectClassOrdinal": { "type": "Long" },
+            "spendUnit": { "type": "String", "required": false },
+            "spendAmount": { "type": "Long", "required": false }
+          } }
+        }
+      },
+      "repository.commit": {
+        "appliesTo": {
+          "principalTypes": ["Actor"], "resourceTypes": ["Path"],
+          "context": { "type": "Record", "attributes": {
+            "grant": { "type": "Entity", "name": "Grant" },
+            "now": { "type": "Extension", "name": "datetime" },
+            "branch": { "type": "Entity", "name": "Branch" },
+            "effectClassOrdinal": { "type": "Long" },
+            "spendUnit": { "type": "String", "required": false },
+            "spendAmount": { "type": "Long", "required": false }
+          } }
+        }
+      },
+      "standing.ratify": {
+        "appliesTo": {
+          "principalTypes": ["Actor"], "resourceTypes": ["Path"],
+          "context": { "type": "Record", "attributes": {
+            "grant": { "type": "Entity", "name": "Grant" },
+            "now": { "type": "Extension", "name": "datetime" },
+            "branch": { "type": "Entity", "name": "Branch" },
+            "effectClassOrdinal": { "type": "Long" },
+            "spendUnit": { "type": "String", "required": false },
+            "spendAmount": { "type": "Long", "required": false }
+          } }
+        }
+      }
+    }
+  }
+}

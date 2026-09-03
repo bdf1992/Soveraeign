@@ -1,0 +1,3218 @@
+{
+  "case_count": 37,
+  "cases": [
+    {
+      "case_id": "P-001-witnessed-green-in-scope-landing",
+      "expected": "PERMITTED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": null,
+      "kernel_considered": [],
+      "kernel_detail": "covered by grant:corpus-landing",
+      "kernel_grant_id": "grant:corpus-landing",
+      "kernel_verdict": "PERMITTED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "CEDAR"
+    },
+    {
+      "case_id": "P-002-record-local-commit-under-a-heavier-ceiling",
+      "expected": "PERMITTED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": null,
+      "kernel_considered": [],
+      "kernel_detail": "covered by grant:corpus-landing",
+      "kernel_grant_id": "grant:corpus-landing",
+      "kernel_verdict": "PERMITTED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.commit",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "CEDAR"
+    },
+    {
+      "case_id": "D-001-grant-not-yet-ratified",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "PROPOSED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "grant is at PROPOSED standing and has not been ratified"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: grant is at PROPOSED standing and has not been ratified",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "CEDAR"
+    },
+    {
+      "case_id": "D-002-grant-names-another-actor",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "some-other-profile",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "grant names actor 'some-other-profile'"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: grant names actor 'some-other-profile'",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "CEDAR"
+    },
+    {
+      "case_id": "D-003-capability-not-carried",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "grant does not carry the capability 'standing.ratify'"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: grant does not carry the capability 'standing.ratify'",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "standing.ratify",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "CEDAR"
+    },
+    {
+      "case_id": "D-004-grant-revoked",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": "2026-08-30T00:00:00Z",
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "grant was revoked at 2026-08-30T00:00:00Z"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: grant was revoked at 2026-08-30T00:00:00Z",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "CEDAR"
+    },
+    {
+      "case_id": "D-005-request-before-valid-from",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "grant is not valid until 2026-08-25T00:00:00Z"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: grant is not valid until 2026-08-25T00:00:00Z",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-08-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "CEDAR"
+    },
+    {
+      "case_id": "D-006-grant-expired",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "grant expired at 2026-11-23T00:00:00Z"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: grant expired at 2026-11-23T00:00:00Z",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2027-01-04T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "CEDAR"
+    },
+    {
+      "case_id": "D-007-path-inside-an-excluded-prefix",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "decisions/0061-x.md is inside the excluded prefix decisions/"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: decisions/0061-x.md is inside the excluded prefix decisions/",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/core.py",
+          "decisions/0061-x.md"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-008a-grant-cannot-widen-itself",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "contracts/standing-grants.json is inside the excluded prefix contracts/standing-grants.json"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: contracts/standing-grants.json is inside the excluded prefix contracts/standing-grants.json",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "contracts/standing-grants.json"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-008b-dot-dot-walks-out-of-an-admitted-prefix",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "scripts/../STATUS.yaml carries `..` segment, so the string it is compared as is not the path it names"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: scripts/../STATUS.yaml carries `..` segment, so the string it is compared as is not the path it names",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": true,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "scripts/../STATUS.yaml"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-008c-dot-dot-reaches-the-grant-registry-itself",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "scripts/../contracts/standing-grants.json carries `..` segment, so the string it is compared as is not the path it names"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: scripts/../contracts/standing-grants.json carries `..` segment, so the string it is compared as is not the path it names",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": true,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "scripts/../contracts/standing-grants.json"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-008d-dot-dot-leaves-the-repository-altogether",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "scripts/../../etc/passwd carries `..` segment, so the string it is compared as is not the path it names"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: scripts/../../etc/passwd carries `..` segment, so the string it is compared as is not the path it names",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": true,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "scripts/../../etc/passwd"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-008f-a-dot-segment-reaches-the-grant-registry",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "contracts/./standing-grants.json carries `.` segment, so the string it is compared as is not the path it names"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: contracts/./standing-grants.json carries `.` segment, so the string it is compared as is not the path it names",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": true,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "contracts/./standing-grants.json"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-008g-a-doubled-separator-reaches-the-grant-registry",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "contracts//standing-grants.json carries an empty segment, so the string it is compared as is not the path it names"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: contracts//standing-grants.json carries an empty segment, so the string it is compared as is not the path it names",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": true,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "contracts//standing-grants.json"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-008h-a-trailing-separator-does-not-name-a-file",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "scripts/sov_land.py/ carries an empty segment, so the string it is compared as is not the path it names"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: scripts/sov_land.py/ carries an empty segment, so the string it is compared as is not the path it names",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": true,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "scripts/sov_land.py/"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-008i-a-wildcard-selects-the-grant-registry-after-the-check",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "contracts/* carries the pattern character `*`, so it names a set that is chosen after this check has compared it"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: contracts/* carries the pattern character `*`, so it names a set that is chosen after this check has compared it",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": true,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "contracts/*"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-008j-a-single-character-wildcard-is-the-same-escape",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "contracts/standing-grants.jso? carries the pattern character `?`, so it names a set that is chosen after this check has compared it"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: contracts/standing-grants.jso? carries the pattern character `?`, so it names a set that is chosen after this check has compared it",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": true,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "contracts/standing-grants.jso?"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-008k-a-character-class-is-the-same-escape-again",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "contracts/[s]tanding-grants.json carries the pattern character `[`, so it names a set that is chosen after this check has compared it"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: contracts/[s]tanding-grants.json carries the pattern character `[`, so it names a set that is chosen after this check has compared it",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": true,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "contracts/[s]tanding-grants.json"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-008l-pathspec-magic-rewrites-what-a-string-selects",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": ":!contracts/standing-grants.json opens git's pathspec magic, which changes what the string selects after this check has read it"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: :!contracts/standing-grants.json opens git's pathspec magic, which changes what the string selects after this check has read it",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": true,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          ":!contracts/standing-grants.json"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-008m-a-bare-directory-selects-what-it-contains",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "contracts is a directory containing the excluded contracts/standing-grants.json"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: contracts is a directory containing the excluded contracts/standing-grants.json",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "contracts"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "P-003-a-directory-containing-nothing-excluded-still-lands",
+      "expected": "PERMITTED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": null,
+      "kernel_considered": [],
+      "kernel_detail": "covered by grant:corpus-landing",
+      "kernel_grant_id": "grant:corpus-landing",
+      "kernel_verdict": "PERMITTED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "contracts/sub"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-008e-an-absolute-path-cannot-be-graded-here",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "C:/checkouts/Soveraeign/scripts/sov_land.py is not repository-relative; a grant's scope is declared in repository-relative prefixes"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: C:/checkouts/Soveraeign/scripts/sov_land.py is not repository-relative; a grant's scope is declared in repository-relative prefixes",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": true,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "C:/checkouts/Soveraeign/scripts/sov_land.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-008-path-outside-every-included-prefix",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "README.md is outside every path prefix the grant admits"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: README.md is outside every path prefix the grant admits",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "README.md"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-009-branch-not-admitted",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "branch release/1.0 is not among the branches the grant admits"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: branch release/1.0 is not among the branches the grant admits",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "release/1.0",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "CEDAR"
+    },
+    {
+      "case_id": "D-010-budget-exceeded",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "61 agent_invocations against a ceiling of 60"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: 61 agent_invocations against a ceiling of 60",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 61,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "CEDAR"
+    },
+    {
+      "case_id": "D-011-effect-class-above-the-ceiling",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RECORD_LOCAL",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "request declares RESOURCE_CONSUMPTION against an effect ceiling of RECORD_LOCAL"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: request declares RESOURCE_CONSUMPTION against an effect ceiling of RECORD_LOCAL",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "CEDAR"
+    },
+    {
+      "case_id": "D-012-judgement-authority-issued-by-a-non-owner",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "JUDGEMENT",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "standing.ratify"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "sov",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "JUDGEMENT authority issued by 'sov'; only bdo may issue it"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: JUDGEMENT authority issued by 'sov'; only bdo may issue it",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "standing.ratify",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "CEDAR"
+    },
+    {
+      "case_id": "P-004-scoped-external-world-effect-covered",
+      "expected": "PERMITTED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "EXTERNAL_WORLD",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": null,
+      "kernel_considered": [],
+      "kernel_detail": "covered by grant:corpus-landing",
+      "kernel_grant_id": "grant:corpus-landing",
+      "kernel_verdict": "PERMITTED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "EXTERNAL_WORLD",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "CEDAR"
+    },
+    {
+      "case_id": "D-013b-external-world-effect-above-grant-ceiling",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "request declares EXTERNAL_WORLD against an effect ceiling of RESOURCE_CONSUMPTION"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: request declares EXTERNAL_WORLD against an effect ceiling of RESOURCE_CONSUMPTION",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "EXTERNAL_WORLD",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "CEDAR"
+    },
+    {
+      "case_id": "D-014-no-independent-observation-offered",
+      "expected": "OBSERVATION_MISSING",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "OBSERVATION_MISSING",
+      "kernel_considered": [],
+      "kernel_detail": "the grant requires an independent observation and the request carries none",
+      "kernel_grant_id": null,
+      "kernel_verdict": "OBSERVATION_MISSING",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": null
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "OUTSIDE"
+    },
+    {
+      "case_id": "D-015-observation-did-not-confirm",
+      "expected": "OBSERVATION_MISSING",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "OBSERVATION_MISSING",
+      "kernel_considered": [],
+      "kernel_detail": "the observation reads 'DISSENTED', not CONFIRMED",
+      "kernel_grant_id": null,
+      "kernel_verdict": "OBSERVATION_MISSING",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "DISSENTED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "OUTSIDE"
+    },
+    {
+      "case_id": "D-016-observer-was-inside-the-build",
+      "expected": "OBSERVER_NOT_INDEPENDENT",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "OBSERVER_NOT_INDEPENDENT",
+      "kernel_considered": [],
+      "kernel_detail": "observer 'sov-worker-03' contributed to the build it is offered as the observation of",
+      "kernel_grant_id": null,
+      "kernel_verdict": "OBSERVER_NOT_INDEPENDENT",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": true,
+            "observer_id": "sov-worker-03",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "OUTSIDE"
+    },
+    {
+      "case_id": "D-017-required-check-absent-from-the-evidence",
+      "expected": "MISSING_PRECONDITION",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "MISSING_PRECONDITION",
+      "kernel_considered": [],
+      "kernel_detail": "required check 'verify' is not present in the request's evidence",
+      "kernel_grant_id": null,
+      "kernel_verdict": "MISSING_PRECONDITION",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "OUTSIDE"
+    },
+    {
+      "case_id": "D-018-required-check-failed",
+      "expected": "MISSING_PRECONDITION",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "MISSING_PRECONDITION",
+      "kernel_considered": [],
+      "kernel_detail": "required check 'lint' reads 'FAIL'",
+      "kernel_grant_id": null,
+      "kernel_verdict": "MISSING_PRECONDITION",
+      "precomputed": false,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "FAIL",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "services/asset/src/soveraeign_asset_service/core.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "OUTSIDE"
+    },
+    {
+      "case_id": "D-008c-a-backslash-names-two-different-files",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "scripts\\tests\\x.py carries a backslash, which is a separator on one host and a filename character on another, so what it names depends on where this check runs"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: scripts\\tests\\x.py carries a backslash, which is a separator on one host and a filename character on another, so what it names depends on where this check runs",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": true,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "scripts\\tests\\x.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    },
+    {
+      "case_id": "D-008d-a-backslash-inside-an-admitted-prefix-is-still-refused",
+      "expected": "AUTHORITY_REFUSED",
+      "grant": {
+        "actor_id": "sov",
+        "authority_type": "VERIFICATION",
+        "budget": {
+          "ceiling": 60,
+          "unit": "agent_invocations"
+        },
+        "capabilities": [
+          "repository.commit",
+          "repository.land"
+        ],
+        "effect_ceiling": "RESOURCE_CONSUMPTION",
+        "grant_id": "grant:corpus-landing",
+        "grant_schema": "soveraeign-authority-grant/v1",
+        "issuer_id": "bdo",
+        "preconditions": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        },
+        "revoked_at": null,
+        "scope": {
+          "branches": [
+            "main"
+          ],
+          "excluded_paths": [
+            "contracts/standing-grants.json",
+            "decisions/",
+            "STATUS.yaml",
+            "SPEC.md",
+            "AGENTS.md"
+          ],
+          "paths": [
+            "services/",
+            "contracts/",
+            "conformance/",
+            "scripts/",
+            ".claude/"
+          ]
+        },
+        "status": "RATIFIED",
+        "valid_from": "2026-08-25T00:00:00Z",
+        "valid_until": "2026-11-23T00:00:00Z"
+      },
+      "kernel_code": "AUTHORITY_REFUSED",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "scripts/tests\\x.py carries a backslash, which is a separator on one host and a filename character on another, so what it names depends on where this check runs"
+        }
+      ],
+      "kernel_detail": "grant:corpus-landing: scripts/tests\\x.py carries a backslash, which is a separator on one host and a filename character on another, so what it names depends on where this check runs",
+      "kernel_grant_id": null,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "precomputed": true,
+      "request": {
+        "actor_id": "sov",
+        "at": "2026-09-01T12:00:00Z",
+        "branch": "main",
+        "capability": "repository.land",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "evidence": {
+          "checks": {
+            "lint": "PASS",
+            "verify": "PASS"
+          },
+          "observation": {
+            "contributed_to_build": false,
+            "observer_id": "sov-witness-01",
+            "verdict": "CONFIRMED"
+          }
+        },
+        "paths": [
+          "scripts/tests\\x.py"
+        ],
+        "request_schema": "soveraeign-authority-request/v1",
+        "spend": {
+          "amount": 12,
+          "unit": "agent_invocations"
+        }
+      },
+      "tier": "SCOPE"
+    }
+  ],
+  "corpus_id": "soveraeign-authority-grant-cases/v1",
+  "scope_precomputed_count": 13,
+  "tier_counts": {
+    "CEDAR": 14,
+    "OUTSIDE": 5,
+    "SCOPE": 18
+  }
+}

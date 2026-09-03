@@ -1,0 +1,862 @@
+{
+  "validation": {
+    "type": "success",
+    "validationErrors": [],
+    "validationWarnings": [],
+    "otherWarnings": []
+  },
+  "results": [
+    {
+      "case_id": "P-001-witnessed-green-in-scope-landing",
+      "tier": "CEDAR",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "PERMITTED",
+      "cedar_decision": "allow",
+      "cedar_verdict": "PERMITTED",
+      "match": true,
+      "kernel_detail": "covered by grant:corpus-landing",
+      "kernel_considered": [],
+      "calls": [
+        {
+          "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+          "decision": "allow",
+          "determining_policies": [
+            "policy0"
+          ],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "P-002-record-local-commit-under-a-heavier-ceiling",
+      "tier": "CEDAR",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "PERMITTED",
+      "cedar_decision": "allow",
+      "cedar_verdict": "PERMITTED",
+      "match": true,
+      "kernel_detail": "covered by grant:corpus-landing",
+      "kernel_considered": [],
+      "calls": [
+        {
+          "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+          "decision": "allow",
+          "determining_policies": [
+            "policy0"
+          ],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-001-grant-not-yet-ratified",
+      "tier": "CEDAR",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: grant is at PROPOSED standing and has not been ratified",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "grant is at PROPOSED standing and has not been ratified"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-002-grant-names-another-actor",
+      "tier": "CEDAR",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: grant names actor 'some-other-profile'",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "grant names actor 'some-other-profile'"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-003-capability-not-carried",
+      "tier": "CEDAR",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: grant does not carry the capability 'standing.ratify'",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "grant does not carry the capability 'standing.ratify'"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-004-grant-revoked",
+      "tier": "CEDAR",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: grant was revoked at 2026-08-30T00:00:00Z",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "grant was revoked at 2026-08-30T00:00:00Z"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+          "decision": "deny",
+          "determining_policies": [
+            "policy1"
+          ],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-005-request-before-valid-from",
+      "tier": "CEDAR",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: grant is not valid until 2026-08-25T00:00:00Z",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "grant is not valid until 2026-08-25T00:00:00Z"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-006-grant-expired",
+      "tier": "CEDAR",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: grant expired at 2026-11-23T00:00:00Z",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "grant expired at 2026-11-23T00:00:00Z"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-007-path-inside-an-excluded-prefix",
+      "tier": "SCOPE",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: decisions/0061-x.md is inside the excluded prefix decisions/",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "decisions/0061-x.md is inside the excluded prefix decisions/"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "services/asset/src/core.py",
+          "decision": "allow",
+          "determining_policies": [
+            "policy0"
+          ],
+          "errors": []
+        },
+        {
+          "raw_path": "decisions/0061-x.md",
+          "decision": "deny",
+          "determining_policies": [
+            "policy3"
+          ],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-008a-grant-cannot-widen-itself",
+      "tier": "SCOPE",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: contracts/standing-grants.json is inside the excluded prefix contracts/standing-grants.json",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "contracts/standing-grants.json is inside the excluded prefix contracts/standing-grants.json"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "contracts/standing-grants.json",
+          "decision": "deny",
+          "determining_policies": [
+            "policy3",
+            "policy4"
+          ],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-008b-dot-dot-walks-out-of-an-admitted-prefix",
+      "tier": "SCOPE",
+      "precomputed": true,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: scripts/../STATUS.yaml carries `..` segment, so the string it is compared as is not the path it names",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "scripts/../STATUS.yaml carries `..` segment, so the string it is compared as is not the path it names"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "scripts/../STATUS.yaml",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-008c-dot-dot-reaches-the-grant-registry-itself",
+      "tier": "SCOPE",
+      "precomputed": true,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: scripts/../contracts/standing-grants.json carries `..` segment, so the string it is compared as is not the path it names",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "scripts/../contracts/standing-grants.json carries `..` segment, so the string it is compared as is not the path it names"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "scripts/../contracts/standing-grants.json",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-008d-dot-dot-leaves-the-repository-altogether",
+      "tier": "SCOPE",
+      "precomputed": true,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: scripts/../../etc/passwd carries `..` segment, so the string it is compared as is not the path it names",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "scripts/../../etc/passwd carries `..` segment, so the string it is compared as is not the path it names"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "scripts/../../etc/passwd",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-008f-a-dot-segment-reaches-the-grant-registry",
+      "tier": "SCOPE",
+      "precomputed": true,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: contracts/./standing-grants.json carries `.` segment, so the string it is compared as is not the path it names",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "contracts/./standing-grants.json carries `.` segment, so the string it is compared as is not the path it names"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "contracts/./standing-grants.json",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-008g-a-doubled-separator-reaches-the-grant-registry",
+      "tier": "SCOPE",
+      "precomputed": true,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: contracts//standing-grants.json carries an empty segment, so the string it is compared as is not the path it names",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "contracts//standing-grants.json carries an empty segment, so the string it is compared as is not the path it names"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "contracts//standing-grants.json",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-008h-a-trailing-separator-does-not-name-a-file",
+      "tier": "SCOPE",
+      "precomputed": true,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: scripts/sov_land.py/ carries an empty segment, so the string it is compared as is not the path it names",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "scripts/sov_land.py/ carries an empty segment, so the string it is compared as is not the path it names"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "scripts/sov_land.py/",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-008i-a-wildcard-selects-the-grant-registry-after-the-check",
+      "tier": "SCOPE",
+      "precomputed": true,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: contracts/* carries the pattern character `*`, so it names a set that is chosen after this check has compared it",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "contracts/* carries the pattern character `*`, so it names a set that is chosen after this check has compared it"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "contracts/*",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-008j-a-single-character-wildcard-is-the-same-escape",
+      "tier": "SCOPE",
+      "precomputed": true,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: contracts/standing-grants.jso? carries the pattern character `?`, so it names a set that is chosen after this check has compared it",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "contracts/standing-grants.jso? carries the pattern character `?`, so it names a set that is chosen after this check has compared it"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "contracts/standing-grants.jso?",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-008k-a-character-class-is-the-same-escape-again",
+      "tier": "SCOPE",
+      "precomputed": true,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: contracts/[s]tanding-grants.json carries the pattern character `[`, so it names a set that is chosen after this check has compared it",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "contracts/[s]tanding-grants.json carries the pattern character `[`, so it names a set that is chosen after this check has compared it"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "contracts/[s]tanding-grants.json",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-008l-pathspec-magic-rewrites-what-a-string-selects",
+      "tier": "SCOPE",
+      "precomputed": true,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: :!contracts/standing-grants.json opens git's pathspec magic, which changes what the string selects after this check has read it",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": ":!contracts/standing-grants.json opens git's pathspec magic, which changes what the string selects after this check has read it"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": ":!contracts/standing-grants.json",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-008m-a-bare-directory-selects-what-it-contains",
+      "tier": "SCOPE",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: contracts is a directory containing the excluded contracts/standing-grants.json",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "contracts is a directory containing the excluded contracts/standing-grants.json"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "contracts",
+          "decision": "deny",
+          "determining_policies": [
+            "policy4"
+          ],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "P-003-a-directory-containing-nothing-excluded-still-lands",
+      "tier": "SCOPE",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "PERMITTED",
+      "cedar_decision": "allow",
+      "cedar_verdict": "PERMITTED",
+      "match": true,
+      "kernel_detail": "covered by grant:corpus-landing",
+      "kernel_considered": [],
+      "calls": [
+        {
+          "raw_path": "contracts/sub",
+          "decision": "allow",
+          "determining_policies": [
+            "policy0"
+          ],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-008e-an-absolute-path-cannot-be-graded-here",
+      "tier": "SCOPE",
+      "precomputed": true,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: C:/checkouts/Soveraeign/scripts/sov_land.py is not repository-relative; a grant's scope is declared in repository-relative prefixes",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "C:/checkouts/Soveraeign/scripts/sov_land.py is not repository-relative; a grant's scope is declared in repository-relative prefixes"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "C:/checkouts/Soveraeign/scripts/sov_land.py",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-008-path-outside-every-included-prefix",
+      "tier": "SCOPE",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: README.md is outside every path prefix the grant admits",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "README.md is outside every path prefix the grant admits"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "README.md",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-009-branch-not-admitted",
+      "tier": "CEDAR",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: branch release/1.0 is not among the branches the grant admits",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "branch release/1.0 is not among the branches the grant admits"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-010-budget-exceeded",
+      "tier": "CEDAR",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: 61 agent_invocations against a ceiling of 60",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "61 agent_invocations against a ceiling of 60"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-011-effect-class-above-the-ceiling",
+      "tier": "CEDAR",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: request declares RESOURCE_CONSUMPTION against an effect ceiling of RECORD_LOCAL",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "request declares RESOURCE_CONSUMPTION against an effect ceiling of RECORD_LOCAL"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-012-judgement-authority-issued-by-a-non-owner",
+      "tier": "CEDAR",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: JUDGEMENT authority issued by 'sov'; only bdo may issue it",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "JUDGEMENT authority issued by 'sov'; only bdo may issue it"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+          "decision": "deny",
+          "determining_policies": [
+            "policy2"
+          ],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "P-004-scoped-external-world-effect-covered",
+      "tier": "CEDAR",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "PERMITTED",
+      "cedar_decision": "allow",
+      "cedar_verdict": "PERMITTED",
+      "match": true,
+      "kernel_detail": "covered by grant:corpus-landing",
+      "kernel_considered": [],
+      "calls": [
+        {
+          "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+          "decision": "allow",
+          "determining_policies": [
+            "policy0"
+          ],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-013b-external-world-effect-above-grant-ceiling",
+      "tier": "CEDAR",
+      "precomputed": false,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: request declares EXTERNAL_WORLD against an effect ceiling of RESOURCE_CONSUMPTION",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "request declares EXTERNAL_WORLD against an effect ceiling of RESOURCE_CONSUMPTION"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-014-no-independent-observation-offered",
+      "tier": "OUTSIDE",
+      "precomputed": false,
+      "sent_to_cedar": false,
+      "kernel_verdict": "OBSERVATION_MISSING",
+      "cedar_decision": null,
+      "calls": []
+    },
+    {
+      "case_id": "D-015-observation-did-not-confirm",
+      "tier": "OUTSIDE",
+      "precomputed": false,
+      "sent_to_cedar": false,
+      "kernel_verdict": "OBSERVATION_MISSING",
+      "cedar_decision": null,
+      "calls": []
+    },
+    {
+      "case_id": "D-016-observer-was-inside-the-build",
+      "tier": "OUTSIDE",
+      "precomputed": false,
+      "sent_to_cedar": false,
+      "kernel_verdict": "OBSERVER_NOT_INDEPENDENT",
+      "cedar_decision": null,
+      "calls": []
+    },
+    {
+      "case_id": "D-017-required-check-absent-from-the-evidence",
+      "tier": "OUTSIDE",
+      "precomputed": false,
+      "sent_to_cedar": false,
+      "kernel_verdict": "MISSING_PRECONDITION",
+      "cedar_decision": null,
+      "calls": []
+    },
+    {
+      "case_id": "D-018-required-check-failed",
+      "tier": "OUTSIDE",
+      "precomputed": false,
+      "sent_to_cedar": false,
+      "kernel_verdict": "MISSING_PRECONDITION",
+      "cedar_decision": null,
+      "calls": []
+    },
+    {
+      "case_id": "D-008c-a-backslash-names-two-different-files",
+      "tier": "SCOPE",
+      "precomputed": true,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: scripts\\tests\\x.py carries a backslash, which is a separator on one host and a filename character on another, so what it names depends on where this check runs",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "scripts\\tests\\x.py carries a backslash, which is a separator on one host and a filename character on another, so what it names depends on where this check runs"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "scripts\\tests\\x.py",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    },
+    {
+      "case_id": "D-008d-a-backslash-inside-an-admitted-prefix-is-still-refused",
+      "tier": "SCOPE",
+      "precomputed": true,
+      "sent_to_cedar": true,
+      "kernel_verdict": "AUTHORITY_REFUSED",
+      "cedar_decision": "deny",
+      "cedar_verdict": "AUTHORITY_REFUSED",
+      "match": true,
+      "kernel_detail": "grant:corpus-landing: scripts/tests\\x.py carries a backslash, which is a separator on one host and a filename character on another, so what it names depends on where this check runs",
+      "kernel_considered": [
+        {
+          "grant_id": "grant:corpus-landing",
+          "reason": "scripts/tests\\x.py carries a backslash, which is a separator on one host and a filename character on another, so what it names depends on where this check runs"
+        }
+      ],
+      "calls": [
+        {
+          "raw_path": "scripts/tests\\x.py",
+          "decision": "deny",
+          "determining_policies": [],
+          "errors": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "note": "Adversarial next-load scenarios not in conformance/fixtures/authority/grant-cases.json and never added to it (per contract, step 7). These record facts about what evaluate() and Cedar each do with a shape our declared corpus does not exercise: they are not a ruling on how Soveraeign should resolve conflicting grants.",
+  "scenarios": [
+    {
+      "id": "NL-A-later-grant-excludes-what-earlier-admits",
+      "describes": "Two RATIFIED grants cover the same actor and capability. The older grant admits services/ with no exclusion. The newer grant also admits services/ but excludes services/legacy/. A request targets services/legacy/thing.py.",
+      "grants": [
+        {
+          "grant_id": "grant:older-unrestricted",
+          "issued_at": "2026-08-01T00:00:00Z",
+          "scope": {"paths": ["services/"], "excluded_paths": []}
+        },
+        {
+          "grant_id": "grant:newer-carves-out-legacy",
+          "issued_at": "2026-08-20T00:00:00Z",
+          "scope": {"paths": ["services/"], "excluded_paths": ["services/legacy/"]}
+        }
+      ],
+      "request_path": "services/legacy/thing.py",
+      "evaluate_reading": "sovkernel.authority.evaluate() iterates the grant list in registry order and returns the verdict of the FIRST grant that covers the request (authority.py lines 187-192, `break` on the first `reason is None`). The older, unrestricted grant is checked first, covers the path, and evaluate() returns PERMITTED under grant:older-unrestricted without ever consulting the newer grant's exclusion.",
+      "cedar_reading": "Cedar authorizes against the whole policy set at once: a `forbid` fires the moment ANY policy's condition matches, independent of which entity or grant it names or how many other policies would separately permit. Modeled as one Path-scope forbid policy per grant's excluded_paths (see next-load.mjs), Cedar denies this request because the newer grant's exclusion fires, with no notion of grant order to resolve first.",
+      "executed": true,
+      "outcome_field": "see next-load-results.json for the recorded Cedar decision"
+    },
+    {
+      "id": "NL-B-delegation-chain",
+      "describes": "Issuer A grants actor B a capability; B in turn grants actor C the same capability (a delegation chain A -> B -> C); C makes the request.",
+      "chain": ["A", "B", "C"],
+      "evaluate_reading": "authority.py has no delegation concept at all: `_grant_unavailable` compares `grant.actor_id` to `request.actor_id` by string equality (line 95-96) and stops. Modeling a chain would need evaluate() to walk from the requesting actor back through however many `grant.issuer_id -> grant.actor_id` links exist, re-running every other check (status, revocation, time window, effect ceiling) at each link - a second loop nested inside the existing one, on the order of 15-20 new lines plus a cycle guard, none of which the corpus's single-hop grants exercise today.",
+      "cedar_reading": "A delegation chain is exactly what Cedar's entity hierarchy already expresses without new policy logic: give Actor C `parents: [Actor::B]` and Actor B `parents: [Actor::A]`, and a permit policy written as `principal in context.grant.actor` (rather than `principal == context.grant.actor`) authorizes any principal for whom the granted actor is an ancestor. The existing schema.Grant.actor attribute and the existing `in` operator already cover this; no new entity type or policy is needed, only changing one `==` to `in` in the one permit rule and adding `parents` edges when the entities are built.",
+      "executed": false,
+      "outcome_field": "not executed - the point is expressible with the existing schema and a one-operator policy change, not a new run"
+    },
+    {
+      "id": "NL-C-excluded-subtree-three-levels-deep",
+      "describes": "A grant's scope admits services/ and excludes services/asset/src/legacy/quarantine/, three path segments below the admitted prefix.",
+      "evaluate_reading": "sovkernel.scope.out_of_scope() and _selects_excluded() (scope.py lines 117-159) already compare full normalised strings with `startswith`, so depth is free: `_selects_excluded` needs zero new lines for a deeper exclusion, and neither does out_of_scope's loop over `request.get('paths', ())`. Depth was never the axis that cost lines in this module; escape spelling was (D-008a through D-008l, each its own case).",
+      "cedar_reading": "Depth is likewise free once the Path entity hierarchy exists: the excluded entity `services/asset/src/legacy/quarantine` just needs `parents: [Path::\"services/asset/src/legacy\"]` (or directly `[Path::\"services\"]`, since `in` walks the full transitive closure regardless of how many entities sit between) and the existing `resource in context.grant.excludedPaths` forbid policy already reaches it. No new policy line either.",
+      "executed": false,
+      "outcome_field": "not executed - both readings agree the fact is free in whichever direction the corpus's own D-007/D-008 pairs already cover; nothing here would be a new observation"
+    }
+  ]
+}

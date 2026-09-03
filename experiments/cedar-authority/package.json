@@ -1,0 +1,9 @@
+{
+  "name": "cedar-authority-spike",
+  "private": true,
+  "type": "module",
+  "description": "Experiment: does Cedar 4.12.0 reproduce sovkernel.authority's verdicts over the grant-cases.json corpus, and what facts does Soveraeign compute before Cedar could read them.",
+  "dependencies": {
+    "@cedar-policy/cedar-wasm": "4.12.0"
+  }
+}

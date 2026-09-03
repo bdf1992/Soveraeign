@@ -25,10 +25,16 @@ Standing under `decisions/0041-the-observation-service.md`.
 
 Reversible choices. Each names where it lives so it can be overturned in one place.
 
-- **Terminal means reported or refused, not settled.** `record.py` reads a run as terminal once
-  the executor has written `REPORTED` or a terminal receipt refused the run. `settle_run` needs
-  the observation this service produces, so a run could never be observed if terminal meant
-  settled. The manifest's `run_terminal` precondition is read this way.
+- **Terminal means no longer in flight, and settlement is not required.** `record.py` reads
+  a run as terminal once the executor has written `REPORTED` or a terminal receipt refused or
+  settled it. `settle_run` needs the observation this service produces, so settlement cannot
+  be a precondition; a settled run may still be observed later, which is what
+  `counter-observation` exists for. The manifest's `run_terminal` precondition is read this way.
+- **A reported, unsettled run is requested as `UNRESOLVED`.** `request-observation` records
+  the run's terminal receipt outcome when one exists. When only a report exists, it writes
+  `UNRESOLVED`, the one terminal word in the request schema that claims nothing was decided,
+  rather than reading the executor's report as `COMMITTED`. Whether the schema should instead
+  carry a word for "reported, not settled" is a question for the contract's owner.
 - **The record is four payload events.** `ATTEMPTED`, `REPORTED`, `OUTPUT`, and `GRANT` on
   Record Service journal entries are the whole input. A key absent from the attempt payload
   (`lease`, `grant_id`) is unanswerable; a null value is an answer. That is the line between

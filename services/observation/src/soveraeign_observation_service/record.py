@@ -18,10 +18,11 @@ kernel transitions `SPEC.md` names, and the inference in `relation.py` trusts no
 - `GRANT` on a grant id: `holder_id` and `parent_grant_id` (null at the root), so a grant chain
   can be walked from the record rather than from anyone's say-so.
 
-Terminal, for observation, means the executor has reported or the run refused. Settlement comes
-after observation (`settle_run` refuses `OBSERVATION_MISSING`), so a run that had already
-settled could never be observed. That reading is a default taken and is recorded in
-`KNOWN-GAPS.md`.
+Terminal, for observation, means the run is no longer in flight: the executor has reported,
+or a terminal receipt refused or settled it. Settlement is not required, because `settle_run`
+refuses `OBSERVATION_MISSING` until an observation exists; a settled run may still be observed
+later, which is what `counter-observation` is for. That reading is a default taken and is
+recorded in `KNOWN-GAPS.md`.
 """
 
 from __future__ import annotations
@@ -73,6 +74,25 @@ class RunRecord:
         return [entry for entry in self.entries
                 if entry.get("subject") == self.run_id and entry.get("kind") == "EVENT"
                 and _event(entry) == event]
+
+    def malformed(self) -> str | None:
+        """The first entry this service cannot read as a journal entry, or None.
+
+        Every entry needs a kind, a subject, an address, and a sha256 digest; every entry on
+        the run needs an actor, because an anonymous attempt or report would hide an executor.
+        """
+        for entry in self.entries:
+            address = self.address_of(entry)
+            if not isinstance(entry.get("payload"), dict):
+                return f"entry {address} carries no payload object"
+            for field in ("kind", "subject", "entry_id"):
+                if not entry.get(field):
+                    return f"entry {address} has no {field}"
+            if digest_address(entry.get("entry_digest")) is None:
+                return f"entry {address} carries no sha256 digest"
+            if entry.get("subject") == self.run_id and not entry.get("actor"):
+                return f"entry {address} on the run names no actor"
+        return None
 
     def attempts(self) -> list[dict[str, Any]]:
         """Every `ATTEMPTED` entry on the run. A second attempt has an executor too."""

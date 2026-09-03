@@ -348,6 +348,68 @@ class WitnessFindingsOn169182f(unittest.TestCase):
         self.assertTrue(record.is_terminal())
 
 
+class WitnessResidualsOn540bc01(unittest.TestCase):
+    """The second pass's residuals, each now a refusal or a direct edge through the surface."""
+
+    def setUp(self) -> None:
+        self.service = ObservationService(Clock())
+
+    def test_an_anonymous_report_is_unreadable_not_ignored(self) -> None:
+        entries = journal()
+        entries[-1]["actor"] = ""
+        record = RunRecord.from_entries(RUN, entries)
+        with self.assertRaises(Unreadable):
+            self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertEqual("UNREADABLE", self.service.receipts[-1]["reason_code"])
+
+    def test_a_second_attempts_lessee_is_direct(self) -> None:
+        entries = journal()
+        entries.insert(-1, _entry("e-attempt-2", "EVENT", RUN, "worker-a", {
+            "event": "ATTEMPTED", "operation_plan_id": "plan-1",
+            "lease": {"holder_id": "lessee-two", "fence": 2, "expires_at": "2026-09-03T02:00:00Z"},
+            "grant_id": "grant-run"}))
+        record = RunRecord.from_entries(RUN, entries)
+        inference = self.service.infer_relation(record, "lessee-two", "WORKER")
+        self.assertEqual([{"edge": "HOLDS_RUN_LEASE", "evidence_address": "e-attempt-2"}],
+                         inference["edges_found"])
+
+    def test_an_output_entry_without_a_subject_is_unreadable(self) -> None:
+        entries = journal()
+        entries[-2]["subject"] = ""
+        record = RunRecord.from_entries(RUN, entries + [entries[-2]])
+        with self.assertRaises(Unreadable):
+            self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertEqual("UNREADABLE", self.service.receipts[-1]["reason_code"])
+
+    def test_a_refused_run_with_nothing_to_read_is_refused_through_the_surface(self) -> None:
+        refused = journal(with_report=False, with_outputs=False)
+        refused.append(_entry("e-refusal", "RECEIPT", RUN, "kernel",
+                              {"outcome": "REFUSED", "event": "begin_run"}))
+        record = RunRecord.from_entries(RUN, refused)
+        self.assertTrue(record.is_terminal())
+        with self.assertRaises(IncompleteProposal) as caught:
+            self.service.request_observation(record, "worker-a", "WORKER", RUN)
+        self.assertIn("no durable output", str(caught.exception))
+
+    def test_a_settled_run_may_still_be_observed(self) -> None:
+        entries = journal()
+        entries.append(_entry("e-settle", "RECEIPT", RUN, "kernel",
+                              {"outcome": "COMMITTED", "event": "settle_run"}))
+        record = RunRecord.from_entries(RUN, entries)
+        request = self.service.request_observation(record, "worker-a", "WORKER", RUN)
+        self.assertEqual("COMMITTED", request["run_outcome"])
+        inference = self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertEqual("INDEPENDENT", inference["outcome"])
+
+    def test_the_run_id_itself_is_not_a_predicate_address(self) -> None:
+        record = RunRecord.from_entries(RUN, journal())
+        self.service.infer_relation(record, "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, [
+            {"predicate_id": "reads-run", "kind": "BYTES_PRESENT", "address": RUN}])
+        with self.assertRaises(PredicatesUndeclared):
+            self.service.observe_run(record, "witness-z", reader)
+
+
 class RealJournalFeedsTheWalk(unittest.TestCase):
     """The Record Service's own entries are the input, unchanged, so a projection can feed it."""
 

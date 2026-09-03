@@ -1,0 +1,216 @@
+{
+  "case_id": "WITNESS-2026-09-03-OBSERVATION-SERVICE-THIN-SLICE-2",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-03",
+  "artifact_revision": "540bc01f094320588749d2ba3c123aec53b71396",
+  "observed": {
+    "subject": "observation_service_status = BUILT_THIN_SLICE_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED, with the conformance closure and derived standing on the same branch; second pass after the builder's repair commits 162ffaf and 540bc01",
+    "record": "witness/observation-service.md",
+    "record_section": "Pass 2: commit 540bc01 (2026-09-03)",
+    "prior_receipt": "witness/observations/2026-09-03-observation-service-observation.json",
+    "verdict": "RATIFIABLE-WITH-CONDITIONS",
+    "standing_supported": "WITNESSED",
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-03",
+    "observer_independence_basis": "This participant did not build, edit, stage or commit any file under the subject. It read the tree at the named commit, ran the repository's own gates, and drove the service only through ObservationService and RunRecord.from_entries from a scratch directory outside the repository. The builder's session report and commit messages were read only after every probe had run and are not evidence here. The invocation permitted no file under witness/probes/, so the probe is quoted in full in the record and telemetry.probe is deliberately absent.",
+    "observer_relation": "INDEPENDENT_OF_BUILDER_DECLARED_SURFACE_ONLY",
+    "observed_at": "2026-09-03T21:30:00Z",
+    "observed_state_addresses": [
+      "services/observation/src/soveraeign_observation_service/record.py",
+      "services/observation/src/soveraeign_observation_service/relation.py",
+      "services/observation/src/soveraeign_observation_service/observe.py",
+      "services/observation/src/soveraeign_observation_service/service.py",
+      "services/observation/src/soveraeign_observation_service/errors.py",
+      "services/observation/contracts/service.json",
+      "services/observation/contracts/observation-request.schema.json",
+      "services/observation/tests/test_thin_slice.py",
+      "services/observation/KNOWN-GAPS.md",
+      "conformance/kernel_predicates.py",
+      "conformance/requirements.py",
+      "conformance/run.py",
+      "conformance/oracle-controls.json",
+      "conformance/tests/test_kernel_predicates.py",
+      "conformance/README.md",
+      "scripts/sovverify/checks.py",
+      "scripts/sovkernel/transitions.py",
+      "scripts/sovnode/composition.py",
+      "contracts/fixtures/capability-map.reference.json",
+      "contracts/fixtures/node-interface.reference.json",
+      "STATUS.yaml",
+      ".clarity/coverage.json",
+      "services/host/SERVICE-SPEC.md",
+      ".claude/epic/NARRATIVE.md",
+      ".claude/skills/sov-conformance/SKILL.md",
+      "ROADMAP.md",
+      "CLAUDE.md"
+    ],
+    "observed_state_digests": [
+      "sha256:ceda4182ed9d2f38b9ad6e98e87ff535ae89463ea626c61b12f7cc862c39b5c4",
+      "sha256:feb70f0401b746de3e6fc70a49d1451be90f69e3bc673d6b54839c8f7f85ccd7",
+      "sha256:c5e9705db5f0c8f205f868ff8eef507a8ebedfe3ef74443de4cc8aa3a3a237ab",
+      "sha256:e20b03b9a2b2216a7a0aa3ac2798f3e3cfa353facada6d07d62a0f9b7504762f",
+      "sha256:8ce373e72815d7330ce365263acd88431262ffc92b84e43e922e358700cb6539",
+      "sha256:621397d46407709671cbfc841041981d5524743de9b6d253ea1bab30deaede62",
+      "sha256:fd5cb97db1eec5c1f1a997abf86787a7bf2fa8d5d715716d387928f033f79ff9",
+      "sha256:92489c48851a770e0e957a563cea45268fab25f3c6c2b0a5b2559fd1a2e6c1fa",
+      "sha256:cd9a8fa35a62e562743b6b458476c06560144ba698e95561c5cae32acfb52723",
+      "sha256:f1d81c804e9270bbe01f37c52f3bf4e38caa054affdfd9b9d8479d50fdd08fd2",
+      "sha256:4b2fe7b337e416aee4aab1e3a2681a485aa5f897f999a80ba6504b7326cb203a",
+      "sha256:c049f9e661e94a1ed5a3df039662d6529c2cb1430e23080a2aa8b0d9451472cc",
+      "sha256:75b4cf02cfeec7acc0a627c7f6df396211be0ae60349b0c90c9162a8e63cc803",
+      "sha256:e1e6c8611d06f060f6d3737d7bb1c955a2ec4239fba0d8750bbfb0914a4117f8",
+      "sha256:ec64c2c460fd73d8f9584f84436bea17e95fb085e8458d54585b7ec5ea77ed64",
+      "sha256:a5316c2666007faa039a161269df3b4eb142f7859cb81d08d76c509be7f6527a",
+      "sha256:478fe0a065c8da6d0b5fc8e4b61e3260d67f6baff9ba00fadbb087433374343b",
+      "sha256:e7320557b3d5239e576317668bd299c4a5c63bbc3f3a0fdc90d13100d8bd60ce",
+      "sha256:84e296ce7d76c5b100c7b922320018681d3b47e37c229756d685cb009aec7eae",
+      "sha256:0462d2188de06e2f41390dcb6b13fea0f1d6807ec41df4bad71338bc4c749d49",
+      "sha256:dae8e4f439524b1bf93426df9bb0bbbc52d1f9fd2e0f9896aed5e9b66d45c5e3",
+      "sha256:ecdfb5f9a21ae05639378d5255bcbaba8c1fb74ae40f39487d31b0a3a7715249",
+      "sha256:e7d62e0a4735bda88444fcbf8380dd4ddc8c0bce14846004fd9fd928830aee8d",
+      "sha256:dcc58adae41744c822cb9a1fbd2361ffe1b4ea7f85e8e58e1f7924edf78ca636",
+      "sha256:ee9d0799790c9ef0fd535dcc7a84905d6ab5366fc824f8a47692f9c166237286",
+      "sha256:14912bd269ca5e37b16ffaf35dc63632adcb546882fe8b6e14af6c1680668a0f",
+      "sha256:6ecf2b831000f61c10dff0e092c0f9849f93e3a91df2a0f264cf0760f8e6401d"
+    ],
+    "commands": {
+      "verify": {
+        "command": "python scripts/verify.py",
+        "exit": 0,
+        "excerpt": "PASS: 50 checks in 14.764s wall; GRADE: SILVER; BUDGET DEBT: 9 check(s) over ceiling"
+      },
+      "lint": {
+        "command": "python scripts/lint.py",
+        "exit": 0,
+        "excerpt": "PASS: repository hygiene (1168 text files, 546 Python modules, 10 named debt)"
+      },
+      "observation_tests": {
+        "command": "python -m unittest discover -s tests (cwd services/observation)",
+        "exit": 0,
+        "excerpt": "Ran 43 tests OK"
+      },
+      "oracle": {
+        "command": "python conformance/run.py",
+        "exit": 0,
+        "excerpt": "SUITE PASS cases=33 coverage_gaps=0"
+      },
+      "oracle_tests": {
+        "command": "python -m unittest discover -s conformance/tests",
+        "exit": 0,
+        "excerpt": "Ran 79 tests OK"
+      },
+      "f2_gate": {
+        "command": "python scripts/sov_f2_gate.py",
+        "exit": 1,
+        "excerpt": "requirement 25/25, transition 14/14, parity 5/5; participants 1/2 bound; OPEN"
+      },
+      "phase_progress": {
+        "command": "python scripts/sov_phase_progress.py check",
+        "exit": 0,
+        "excerpt": "PASS: the gate reading meets its floor and every gap below it is declared"
+      },
+      "baseline": {
+        "command": "python scripts/sov_baseline.py",
+        "exit": 0,
+        "excerpt": "PASS: participant matches its recorded baseline (9 requirements, 8 failing as recorded)"
+      },
+      "clarity": {
+        "command": "python scripts/sov_clarity.py status; check",
+        "exit": 0,
+        "excerpt": "CURRENT 142, STALE 0, UNCHECKED 1 (witness/observation-service.md), EXEMPT 88; PASS"
+      },
+      "participant_mode": {
+        "command": "python services/asset/scripts/conformance_observations.py > obs.json; python conformance/run.py --cases conformance/scenarios.json --observations obs.json --json",
+        "exit": 1,
+        "excerpt": "suite FAIL cases=9 coverage_gaps=[]; PROD-I-2 PASS; eight FAIL on requirement defects"
+      },
+      "mutation_probe": {
+        "command": "scratch copy of conformance/; one rule deleted at a time; run.py --cases oracle-controls.json; unittest discover -s tests",
+        "exit": "n/a",
+        "excerpt": "13/13 deletions fail conformance/tests; run.py alone still PASS for 11/13; verify.py runs conformance/tests at scripts/sovverify/checks.py:116 graded on exit code"
+      }
+    },
+    "predicate_results": {
+      "f1_reporter_is_an_executor_edge": {
+        "held": true,
+        "detail": "P1: REPORTED actor worker-b reads DIRECT with SAME_ACTOR cited at the REPORTED entry"
+      },
+      "f2_second_attempt_actor_is_an_executor_edge": {
+        "held": true,
+        "detail": "P2: DIRECT, SAME_ACTOR@attempt2"
+      },
+      "f2_second_attempt_lease_and_grant_are_read": {
+        "held": false,
+        "detail": "P2b: lease holder of a second attempt reads INDEPENDENT []; relation.py:139-149 reads the first attempt only (R2)"
+      },
+      "f3_malformed_record_refuses_unreadable_with_one_receipt": {
+        "held": true,
+        "detail": "P3, P3b, P4c, P4d: UNREADABLE, receipts=1; P4, P4b: refuse with one receipt under another reason"
+      },
+      "f4_reported_unsettled_run_not_named_committed": {
+        "held": true,
+        "detail": "P8: UNRESOLVED; P8c refused-after-report: REFUSED; word admitted by schema enum and SPEC.md:393,446; whether a settle_run word may describe an unsettled run is J1"
+      },
+      "f5_malformed_declared_digest_refuses": {
+        "held": true,
+        "detail": "P6: UNREADABLE"
+      },
+      "f6_run_grant_absent_from_record_refuses": {
+        "held": false,
+        "detail": "P5: INDEPENDENT []; note, not a condition"
+      },
+      "f7_report_entry_is_not_a_predicate_address": {
+        "held": true,
+        "detail": "P7: PREDICATES_UNDECLARED, run's own entry; guard keys on entry_id (R6)"
+      },
+      "f8_inference_bound_to_the_record_it_was_inferred_over": {
+        "held": false,
+        "detail": "P9's specific defeat now refuses via the OUTPUT-entry requirement; the reuse at service.py:143-145 remains; P10 False; P10b shared observation id"
+      },
+      "c2_conf_run_def_declares_only_what_it_defeats": {
+        "held": true,
+        "detail": "declares TRANS-observe_run, TRANS-settle_run; all four defects name those transitions"
+      },
+      "c3_every_sampled_rule_deletion_is_noticed": {
+        "held": true,
+        "detail": "13/13 fail conformance/tests; inside verify.py"
+      },
+      "c4_participant_mode_scoped_to_declared_requirements": {
+        "held": true,
+        "detail": "coverage_gaps=[] against scenarios.json; run.py:96-101, requirements.py:28"
+      },
+      "s1_capability_map_activation_is_measured": {
+        "held": false,
+        "detail": "five ACTIVE at observation:in-process; composition.py:187-190 routes none; node-interface shows reachability [] beside ACTIVE; documented in KNOWN-GAPS.md:20, not repaired (C1)"
+      },
+      "s2_clarity_rewrites_accurate_and_no_stale_present_tense_claim_in_scope": {
+        "held": true,
+        "detail": "four rewrites checked against run.py, the manifest, sov_interface.py show, len(CHECKS); grep of scope finds no old standing or old counts as present-tense fact; whether 65 artifacts were read is not derivable from receipts (schema carries no reader, time, or method)"
+      },
+      "s3_no_current_document_quotes_the_retired_status_value": {
+        "held": true,
+        "detail": "services/host/SERVICE-SPEC.md:121-123 corrected"
+      },
+      "anonymous_entries_refuse_rather_than_drop": {
+        "held": false,
+        "detail": "P1b, P2c: INDEPENDENT [] (R1)"
+      },
+      "refused_run_requestable_through_declared_surface": {
+        "held": false,
+        "detail": "P8b: INCOMPLETE_PROPOSAL; regression test asserts terminal_outcome() directly (R3)"
+      },
+      "kernel_parity_reading_carries": {
+        "held": true,
+        "detail": "scripts/sovkernel/transitions.py byte-identical to pass 1 (sha256 478fe0a0...); test_kernel_parity.py passes"
+      },
+      "status_and_derived_artifacts_consistent": {
+        "held": true,
+        "detail": "verify.py regeneration checks pass; STATUS.yaml, status-claims.json, manifest, services/README.md agree"
+      }
+    },
+    "standing_note": "This is an observation. It supports BUILT -> WITNESSED for observation_service_status and ratifies nothing; conditions C1-C2 and judgement items J1-J3 are in the record."
+  },
+  "telemetry": {
+    "probe_location": "quoted in witness/observation-service.md under Pass 2 / Probe; run from a scratch directory outside the repository because the invocation permitted no file under witness/probes/",
+    "tree_state": "git status --short empty before and after every command; HEAD 540bc01f094320588749d2ba3c123aec53b71396 throughout; both witness files written after every recorded command",
+    "predecessor": "pass 1 receipt witness/observations/2026-09-03-observation-service-observation.json (commit 169182f) left intact"
+  }
+}

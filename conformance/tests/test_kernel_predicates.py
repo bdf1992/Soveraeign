@@ -221,15 +221,29 @@ class EveryDeclaredPredicateIsExercised(unittest.TestCase):
     """The defeat `custody:oracle-predicate-join` names: a control claiming a predicate its
     defects never touch. Each defeating control's defects must name the transition it claims."""
 
+    #: Defect prefixes each rule family emits, so a control is credited for a predicate only
+    #: when one of that predicate's own rules fired: "cites no observation" is a settlement
+    #: defect and must not credit observe_run.
     WORDS = {
-        "TRANS-capture_source": ("captured", "capture"),
-        "TRANS-make_effective": ("effective",),
-        "TRANS-begin_run": ("began",),
-        "TRANS-report_run": ("report",),
-        "TRANS-observe_run": ("observ",),
-        "TRANS-settle_run": ("settle",),
-        "PARITY-1": ("discover",),
-        "PRED-I-2.1": ("reread",),
+        "TRANS-capture_source": ("unreadable bytes were captured", "source captured under",
+                                 "committed capture created", "capture refused",
+                                 "refused capture still", "capture outcome"),
+        "TRANS-make_effective": ("claim made effective", "attestation policy unmet",
+                                 "effective transition left", "effectiveness refused",
+                                 "refused claim reads", "make_effective outcome"),
+        "TRANS-begin_run": ("run began past", "delegated run began", "begin refused",
+                            "begin event is"),
+        "TRANS-report_run": ("report accepted", "executor output entered",
+                             "executor report settled"),
+        "TRANS-observe_run": ("executor observed", "observation admitted",
+                              "independence read over", "predicates declared after",
+                              "observer read none", "observed digests do not align",
+                              "observation entered"),
+        "TRANS-settle_run": ("settlement cites", "run settled against", "settlement input state",
+                             "settlement outcome", "run committed against",
+                             "a participant in the run settled"),
+        "PARITY-1": ("bindings do not discover", "binding discovered from"),
+        "PRED-I-2.1": ("source was never reread", "source did not reread"),
     }
 
     def test_defeating_controls_defeat_what_they_claim(self) -> None:

@@ -113,7 +113,7 @@ def observe_run(
         raise PredicatesUndeclared("the declaration names no predicate")
     reported = record.reported_addresses()
     outputs = record.outputs()
-    own_entries = record.run_entry_ids()
+    own_entries = record.run_entry_ids() | {record.run_id}
     for predicate in predicates:
         address = predicate["address"]
         if address in own_entries:

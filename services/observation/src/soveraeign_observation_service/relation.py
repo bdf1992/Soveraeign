@@ -120,33 +120,36 @@ def infer_relation(
     are returned; `UNDETERMINED` is returned as well, because the manifest promises the
     inference is recorded, and the caller refuses `RELATION_UNDETERMINED` on it.
     """
+    unreadable = record.malformed()
+    if unreadable is not None:
+        raise Unreadable(unreadable)
     if not record.is_terminal():
         raise RunNotTerminal(f"{record.run_id} has neither reported nor refused")
-    attempt = record.attempt()
-    if attempt is None:
+    attempts = record.attempts()
+    if not attempts:
         raise Unreadable(f"{record.run_id} has no ATTEMPTED entry, so its executor is unknown")
-    executor = str(attempt.get("actor") or "")
-    if not executor:
-        raise Unreadable(f"{record.run_id} attributes its attempt to nobody")
+    executor = str(attempts[0].get("actor"))
     walk = _Walk()
     executors = record.executors()
-    walk.cite(attempt, *executors.values())
-    payload = attempt.get("payload") or {}
+    walk.cite(*attempts, *executors.values())
 
     if candidate_observer_id in executors:
         walk.edge("SAME_ACTOR", executors[candidate_observer_id])
 
-    if "lease" not in payload:
-        walk.cannot_answer("HOLDS_RUN_LEASE")
-    else:
-        lease = payload["lease"]
-        if isinstance(lease, dict) and lease.get("holder_id") == candidate_observer_id:
-            walk.edge("HOLDS_RUN_LEASE", attempt)
-
-    if "grant_id" not in payload:
-        walk.cannot_answer("GRANT_DESCENDS_FROM_RUN")
-    elif payload["grant_id"]:
-        _walk_grants(record, candidate_observer_id, str(payload["grant_id"]), walk)
+    # Every attempt ran under its own lease and grant; a retry's lessee is as direct as the
+    # first attempt's, so each attempt is read, not only the earliest.
+    for attempt in attempts:
+        payload = attempt.get("payload") or {}
+        if "lease" not in payload:
+            walk.cannot_answer("HOLDS_RUN_LEASE")
+        else:
+            lease = payload["lease"]
+            if isinstance(lease, dict) and lease.get("holder_id") == candidate_observer_id:
+                walk.edge("HOLDS_RUN_LEASE", attempt)
+        if "grant_id" not in payload:
+            walk.cannot_answer("GRANT_DESCENDS_FROM_RUN")
+        elif payload["grant_id"]:
+            _walk_grants(record, candidate_observer_id, str(payload["grant_id"]), walk)
 
     _walk_outputs(record, candidate_observer_id, walk)
 

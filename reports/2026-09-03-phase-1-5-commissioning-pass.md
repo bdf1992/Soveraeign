@@ -76,8 +76,32 @@ gate reading and dissented on these points, each repaired in the second commit:
   question for the skill's owner; today's receipts assert a full read, and this time that is
   what happened.
 
-A second witness pass over the repaired commit is recorded in the same witness file when it
-completes; the standing field does not move until a record supports it.
+A second witness pass observed commit `540bc01` through the same surfaces and found every
+pass-one route closed. Its verdict: `RATIFIABLE-WITH-CONDITIONS`, `standing_supported
+WITNESSED` for `observation_service_status`, with one condition carried for ratification (the
+capability map reads the five built operations `ACTIVE` at an in-process address the Node
+Interface does not route; by the map's own rule in `scripts/sovkernel/capability_map.py`
+in-process means importable, and the Record Service reads the same way) and nine residuals
+for the builder. Six of them are absorbed in the fourth commit, each with a case through the
+declared surface: an anonymous attempt or report refuses `UNREADABLE`; every attempt's lease
+and grant are read, not only the first; an entry without a subject refuses `UNREADABLE`; the
+run id itself is never a predicate address; the join grader in
+`test_kernel_predicates.py` matches each rule's own defect prefix rather than a substring that
+crosses rows; and the orientation page no longer lists Gateway among boundaries with no
+implementation while naming its built route one paragraph earlier. Two are recorded rather
+than changed: a refused run with no durable output refuses `INCOMPLETE_PROPOSAL`, the
+manifest's word for a request the schema cannot carry, and `UNRESOLVED` for a reported,
+unsettled run is documented in `KNOWN-GAPS.md` as the default it is. The witness's own record
+is the one artifact in the clarity scope without a receipt; it is the witness's file and this
+builder does not review it.
+
+The witness's judgement items, carried to Bdo without an answer from this session: whether
+`run_outcome` may carry a `settle_run` word for an unsettled run or should refuse; whether an
+`ACTIVE` in-process declaration with no routed address is admissible under
+`REMAINDER_DECLARED`; and whether clarity receipts should carry reading scope.
+
+A third pass, scoped to the residual repairs, decides whether the standing field moves to
+`WITNESSED`; it does not move on the builder's word.
 
 ## Problems discovered and carried
 
@@ -119,9 +143,17 @@ run.
 Acceptance of this branch. Nothing else here asks for judgement: the discovered problems are
 listed so they are visible, and each names the seat that owns it.
 
-## Next bounded operation
+## Next bounded operations
 
-The F2 gate's last open condition is a second bound participant: a materially different
-binding running the same fixtures and supplying an observation set under
-`conformance/observations/`. That is Phase I clause X2 territory and the smallest parity
-slice issue #173 asks for.
+- A declared relation selector. Read against the owner's `can-it-run-doom` question, the
+  five direct edges are five hand-written walks, and the charter's own "lease, fence, or
+  session" cannot be expressed without a sixth. A selector held as data in the contract, a
+  pair of address paths over journal entries with an optional ancestry closure, makes
+  `SAME_ACTOR`, `HOLDS_RUN_LEASE`, `GRANT_DESCENDS_FROM_RUN`, and `PRODUCED_THE_OUTPUT` four
+  rows of one composition and the session edge a fifth row rather than more code.
+  `ONLY_EXECUTOR_REPORT` does not collapse, which marks it as a record-completeness
+  predicate rather than an edge. Nothing is removed by this.
+- The F2 gate's last open condition: a second bound participant, a materially different
+  binding running the same fixtures and supplying an observation set under
+  `conformance/observations/`. Phase I clause X2 territory and the smallest parity slice
+  issue #173 asks for.

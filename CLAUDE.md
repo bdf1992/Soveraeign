@@ -115,7 +115,8 @@ whenever they disagree.
   third party. `services/asset/KNOWN-GAPS.md` still reads "No Model Binding or
   Model Adapter participant exists", which is stale as repository-wide phrasing
   and unrepaired.
-- Proofing, Asset Projection, and Gateway are boundaries with no implementation.
+- Proofing and Asset Projection are boundaries with no implementation; Gateway has
+  the one in-process route named above and nothing more.
   Observation has five of eight operations built and self-tested; nothing has
   observed the observer, so the independent-observation check in `AI-NATIVE.md`
   still reads `UNATTESTABLE` everywhere.

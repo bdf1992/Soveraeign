@@ -272,16 +272,18 @@ class ShippedCustodies(unittest.TestCase):
     def test_every_declared_closure_command_reports_when_run(self) -> None:
         """The static screen grades a declaration; only running measures a reading.
 
-        Scoped to the active phase, which is the set somebody is asked to close
-        today. Closed-phase history carries four declared commands whose
-        arguments no longer exist; they are the holders' to repair, and running
-        them here would refuse this repository for work nobody is carrying.
+        Scoped to custodies without a terminal, because a terminal is the record
+        of an assignment that ended. Not to the active phase: two live custodies
+        carry no phase at all, and phase equality would drop them while reading
+        as though it had only skipped history.
+
+        Seven declared commands across the collection reject their own
+        arguments, six of them on terminal Phase-I custodies. That is admitted
+        rather than refused - a command whose arguments no longer resolve is a
+        capability its holder has not built, not a silence read as a pass.
         """
-        phase = closuresmod._active_phase(closuresmod.ROOT)
-        if not phase or phase == "NONE_ACTIVE":
-            self.skipTest("no active phase")
-        records = modelmod.custodies(phase)
-        self.assertTrue(records, f"{phase} has no custody collection")
+        records = closuresmod.live(modelmod.custodies())
+        self.assertTrue(records, "no custody is carrying work")
         self.assertEqual(closuresmod.grade_live(records)[1], [])
 
     def test_every_custody_can_close(self) -> None:

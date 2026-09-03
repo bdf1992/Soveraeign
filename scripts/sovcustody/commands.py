@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from sovcustody import board as boardmod  # noqa: E402
 from sovcustody import circuit as circuitmod  # noqa: E402
+from sovcustody import closures as closuresmod  # noqa: E402
 from sovcustody import estimate as estimatemod  # noqa: E402
 from sovcustody import model as modelmod  # noqa: E402
 from sovcustody import phase as phasemod  # noqa: E402
@@ -246,3 +247,38 @@ def command_orphans(args: argparse.Namespace) -> int:
     for address in missing:
         print(f"  {address}")
     return 1 if missing else 0
+
+
+def command_closures(args: argparse.Namespace) -> int:
+    """Read every declared closure check, statically and optionally by running it."""
+    phase = getattr(args, "phase", None)
+    records = modelmod.custodies(phase)
+    if getattr(args, "live", False):
+        records = closuresmod.live(records)
+    defects = closuresmod.grade_collection(records)
+    rows: list[dict[str, Any]] = []
+    if getattr(args, "run", False):
+        rows, live_defects = closuresmod.grade_live(records)
+        defects += live_defects
+    else:
+        rows = [{"custody_id": str(custody.get("custody_id") or ""),
+                 "expression": str(_check_of(custody).get("expression") or "")}
+                for custody in records if closuresmod._check_of(custody)]
+
+    if getattr(args, "as_json", False):
+        print(json.dumps({"phase": phase, "checks": rows,
+                          "defects": [{"code": code, "detail": detail}
+                                      for code, detail in defects]}, indent=2))
+    else:
+        scope = " still carrying work" if getattr(args, "live", False) else ""
+        print(f"{len(rows)} declared COMMAND closure check(s)"
+              + (f" in {phase}" if phase else "") + scope)
+        for row in rows:
+            print(f"  {row['custody_id']}\n           {row['expression']}")
+            if getattr(args, "run", False):
+                state = "no reading" if not row["reported"] else f"{row['lines']} line(s)"
+                note = ", traceback" if row.get("crashed") else ""
+                print(f"           exit {row['exit_code']}, {state}{note}")
+        for code, detail in defects:
+            print(f"  DEFECT {code}: {detail}")
+    return 1 if defects else 0

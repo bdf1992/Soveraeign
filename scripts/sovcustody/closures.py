@@ -31,9 +31,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
-import argparse
 import ast
-import json
 import re
 import shlex
 import subprocess
@@ -49,9 +47,17 @@ REFUSALS = {
         "The closure check names a Python module with no entry point, so running it as "
         "declared produces no reading and its silence reads as a pass.",
     "UNREPORTING_CLOSURE_CHECK":
-        "The closure check ran and printed nothing, so the custody's declared closure "
-        "reports no reading a participant could act on.",
+        "The closure check exited 0 and printed nothing, so its silence is the whole "
+        "reading and a participant would take it for a pass.",
+    "CRASHED_CLOSURE_CHECK":
+        "The closure check died with a traceback rather than refusing, so its non-zero "
+        "exit is a broken reader and not a judgement about the custody.",
 }
+
+#: The first line of a Python traceback, which separates a check that broke from one
+#: that refused. A closure check is supposed to exit non-zero when its subject is
+#: defective, so the exit code alone cannot tell the two apart.
+TRACEBACK = "Traceback (most recent call last):"
 
 #: `python`, `python3`, `python3.12`, `pythonw`, and the Windows launcher `py`.
 INTERPRETER = re.compile(r"^(?:python|py)[0-9.]*w?(?:\.exe)?$", re.IGNORECASE)
@@ -100,8 +106,13 @@ def _names_main(test: ast.expr) -> bool:
     """True for `__name__ == "__main__"` and its `in (...)` spelling, only."""
     if not isinstance(test, ast.Compare) or len(test.ops) != 1:
         return False
-    operator, right = test.ops[0], test.comparators[0]
-    if not isinstance(test.left, ast.Name) or test.left.id != "__name__":
+    operator = test.ops[0]
+    left, right = test.left, test.comparators[0]
+    if isinstance(right, ast.Name) and right.id == "__name__":
+        # `if "__main__" == __name__:` is the same guard written backwards.
+        left, right = right, left
+        test = ast.Compare(left=left, ops=test.ops, comparators=[right])
+    if not isinstance(left, ast.Name) or left.id != "__name__":
         return False
     if isinstance(operator, ast.Eq):
         return isinstance(right, ast.Constant) and right.value == "__main__"
@@ -122,13 +133,33 @@ def _does_something(body: list[ast.stmt]) -> bool:
     return False
 
 
+def _is_entry_call(node: ast.stmt) -> bool:
+    """True for an unguarded top-level call that runs the module, not one that sets it up."""
+    if isinstance(node, ast.Raise):
+        exception = node.exc
+        return (isinstance(exception, ast.Call) and isinstance(exception.func, ast.Name)
+                and exception.func.id == "SystemExit")
+    if not isinstance(node, ast.Expr) or not isinstance(node.value, ast.Call):
+        return False
+    function = node.value.func
+    if isinstance(function, ast.Name):
+        return True
+    return (isinstance(function, ast.Attribute) and function.attr == "exit"
+            and isinstance(function.value, ast.Name) and function.value.id == "sys")
+
+
 def has_entry_point(source: str) -> bool:
     """True when running the module as a command would execute something.
 
-    A `__main__` guard is the ordinary spelling, and a bare top-level call is
-    the other one: a module ending in `main()` or `sys.exit(main())` runs when
-    invoked. Both are accepted; a guard whose body is `pass` is not, because it
-    declares an entry point and executes nothing.
+    A `__main__` guard is the ordinary spelling and decides on its own: a guard
+    whose body is `pass` reports False, because it declares an entry point and
+    executes nothing. A guard anywhere in the module settles the answer, so a
+    top-level call earlier in the file cannot vote first.
+
+    Only when no guard exists does a bare top-level call count, and only the
+    shapes that are an entry point rather than import-time setup: a plain
+    `main()`, or exiting on one. `logging.getLogger(__name__)` at module level
+    is setup, and an attribute call is how it is spelled.
     """
     try:
         tree = ast.parse(source)
@@ -137,11 +168,7 @@ def has_entry_point(source: str) -> bool:
     for node in tree.body:
         if isinstance(node, ast.If) and _names_main(node.test):
             return _does_something(node.body)
-        if isinstance(node, (ast.Expr, ast.Raise)):
-            value = node.value if isinstance(node, ast.Expr) else node.exc
-            if isinstance(value, ast.Call):
-                return True
-    return False
+    return any(_is_entry_call(node) for node in tree.body)
 
 
 def _check_of(custody: dict[str, Any]) -> dict[str, Any]:
@@ -189,15 +216,26 @@ def run(custody: dict[str, Any], root: Path = ROOT, timeout: int = 120) -> dict[
                 "exit_code": None, "lines": 0, "detail": str(error)}
     reading = (result.stdout or "").strip()
     return {"expression": expression, "ran": True, "exit_code": result.returncode,
-            "reported": bool(reading), "lines": len(reading.splitlines())}
+            "reported": bool(reading), "lines": len(reading.splitlines()),
+            "crashed": TRACEBACK in (result.stderr or "")}
 
 
 def grade_live(custodies: list[dict[str, Any]], root: Path = ROOT) -> tuple[list[dict], list[Defect]]:
-    """Run each declared closure command and refuse one that reports nothing.
+    """Run each declared closure command and refuse the two shapes that lie.
 
-    This is what the static screen only approximates. A non-zero exit is not a
-    defect here: a closure check is meant to refuse when its subject is
-    defective, and refusing loudly is the check working.
+    This is what the static screen only approximates. Exactly two readings are
+    defects, and they are narrow on purpose:
+
+    - exit 0 with nothing on stdout, which is the Phase 1.5 shape: silence is
+      the whole reading and a participant takes it for a pass;
+    - a traceback on stderr, which is a reader that broke rather than one that
+      judged.
+
+    Everything else is admitted, including a non-zero exit with a clean message.
+    A closure check is meant to refuse when its subject is defective, so
+    refusing loudly is the check working; and a check whose command rejects its
+    own arguments is naming a capability its custody has not built yet, which
+    is that holder's work and not a defect in the declaration.
     """
     rows: list[dict[str, Any]] = []
     defects: list[Defect] = []
@@ -207,55 +245,27 @@ def grade_live(custodies: list[dict[str, Any]], root: Path = ROOT) -> tuple[list
         custody_id = str(custody.get("custody_id") or "unnamed custody")
         row = {"custody_id": custody_id, **run(custody, root)}
         rows.append(row)
-        if not row["reported"]:
-            defects.append((
-                "UNREPORTING_CLOSURE_CHECK",
-                f"{custody_id} declares `{row['expression']}`, which "
-                + (f"exited {row['exit_code']} and printed nothing"
-                   if row["ran"] else f"could not be run: {row.get('detail')}")))
+        if not row["ran"]:
+            defects.append(("UNREPORTING_CLOSURE_CHECK",
+                            f"{custody_id} declares `{row['expression']}`, which could not "
+                            f"be run: {row.get('detail')}"))
+        elif row["exit_code"] == 0 and not row["reported"]:
+            defects.append(("UNREPORTING_CLOSURE_CHECK",
+                            f"{custody_id} declares `{row['expression']}`, which exited 0 "
+                            "and printed nothing"))
+        elif row["crashed"]:
+            defects.append(("CRASHED_CLOSURE_CHECK",
+                            f"{custody_id} declares `{row['expression']}`, which died with "
+                            "a traceback instead of reporting"))
     return rows, defects
 
 
-def _active_phase(root: Path) -> str:
-    """The phase STATUS projects, so no check table hardcodes an assumed phase."""
-    text = (root / "STATUS.yaml").read_text(encoding="utf-8")
-    match = re.search(r"(?m)^phase:\s*(\S+)\s*$", text)
-    return match.group(1) if match else ""
+def live(custodies: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """The custodies still carrying work: everything without a terminal.
 
-
-def command_closures(args: argparse.Namespace) -> int:
-    """Read every declared closure check, statically and optionally by running it."""
-    from sovcustody import model as modelmod  # noqa: PLC0415
-
-    phase = getattr(args, "phase", None)
-    if phase == "active":
-        phase = _active_phase(ROOT)
-        if not phase or phase == "NONE_ACTIVE":
-            print("no active phase; no exit custody carries a live closure check")
-            return 0
-    records = modelmod.custodies(phase)
-    defects = grade_collection(records)
-    rows: list[dict[str, Any]] = []
-    if getattr(args, "run", False):
-        rows, live = grade_live(records)
-        defects += live
-    else:
-        rows = [{"custody_id": str(custody.get("custody_id") or ""),
-                 "expression": str(_check_of(custody).get("expression") or "")}
-                for custody in records if _check_of(custody)]
-
-    if getattr(args, "as_json", False):
-        print(json.dumps({"phase": phase, "checks": rows,
-                          "defects": [{"code": code, "detail": detail}
-                                      for code, detail in defects]}, indent=2))
-    else:
-        print(f"{len(rows)} declared COMMAND closure check(s)"
-              + (f" in {phase}" if phase else ""))
-        for row in rows:
-            print(f"  {row['custody_id']}\n           {row['expression']}")
-            if getattr(args, "run", False):
-                state = "no reading" if not row["reported"] else f"{row['lines']} line(s)"
-                print(f"           exit {row['exit_code']}, {state}")
-        for code, detail in defects:
-            print(f"  DEFECT {code}: {detail}")
-    return 1 if defects else 0
+    Not "belongs to the active phase". That filter reads as history-versus-now
+    and is not: two live custodies carry no phase at all, and scoping by phase
+    equality drops them silently. A terminal is the record of an assignment
+    that ended, which is the thing the gate should skip.
+    """
+    return [custody for custody in custodies if not custody.get("terminal")]

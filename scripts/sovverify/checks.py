@@ -133,20 +133,23 @@ REPOSITORY_CHECKS = (
            "conformance/oracle-controls.json", "contracts/phase-progress.json",
            "contracts/custodies.json", "scripts/sov_f2_gate.py",
            "scripts/sov_phase_progress.py", "scripts/sovcustody")),
-    Check("active phase closure checks",
-          [sys.executable, "scripts/sov_custody.py", "closures", "--phase", "active", "--run"],
+    Check("live closure checks",
+          [sys.executable, "scripts/sov_custody.py", "closures", "--live", "--run"],
           ROOT,
-          "runs the closure check every exit custody of the active phase declares and refuses "
-          "one that prints nothing. Two Phase 1.5 exit custodies opened naming Python modules "
-          "with no entry point, so the declared check exited 0 in silence and a participant "
-          "reading it would call the custody closed. The static screen in sovcustody/closures.py "
-          "grades every declared command in the repository including closed-phase history, but "
-          "it grades a declaration and `if __name__ == \"__main__\": pass` satisfies it; only "
-          "running the command measures whether it reports. The scope is the active phase "
-          "because that is the set somebody is asked to close today, and running every declared "
-          "command reaches history nobody is carrying. A non-zero exit from a closure check is "
-          "not a defect here: refusing loudly is the check working",
-          ("contracts/custodies", "contracts/custody.schema.json", "STATUS.yaml",
+          "runs the closure check every custody still carrying work declares, and refuses the "
+          "two shapes that lie: exit 0 with nothing printed, and a traceback on stderr. Two "
+          "Phase 1.5 exit custodies opened naming Python modules with no entry point, so the "
+          "declared check exited 0 in silence and a participant reading it would call the "
+          "custody closed. The static screen in sovcustody/closures.py grades every declared "
+          "command in the repository, but it grades a declaration and "
+          "`if __name__ == \"__main__\": pass` satisfies it; only running the command measures "
+          "whether it reports. The scope is every custody without a terminal, which is the "
+          "record of an assignment that ended - not the active phase, because two live "
+          "custodies carry no phase and scoping by phase equality drops them silently. A "
+          "non-zero exit with a clean message is admitted: a closure check refusing loudly is "
+          "the check working, and one whose command rejects its own arguments is naming a "
+          "capability its holder has not built, which is that holder's work",
+          ("contracts/custodies.json", "contracts/custodies", "contracts/custody.schema.json",
            "scripts/sovcustody/closures.py", "scripts/sov_custody.py")),
     Check("semantic cold-start task", [sys.executable, "scripts/sov_witness.py", "semantic"],
           ROOT,

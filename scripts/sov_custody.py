@@ -31,7 +31,6 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from sovcustody import closures  # noqa: E402
 from sovcustody import commands  # noqa: E402
 from sovcustody import lifecycle  # noqa: E402
 from sovcustody import selfcheck  # noqa: E402
@@ -78,7 +77,10 @@ def main() -> int:
     closure_checks = subparsers.add_parser(
         "closures", help="every declared closure check, and whether it can report")
     closure_checks.add_argument(
-        "--phase", help="read one phase collection only; 'active' resolves from STATUS")
+        "--phase", help="read one phase collection only")
+    closure_checks.add_argument(
+        "--live", action="store_true",
+        help="skip custodies whose assignment ended, keeping only those still carrying work")
     closure_checks.add_argument(
         "--run", action="store_true",
         help="run each declared command; consumes resources, so it is opt-in")
@@ -94,7 +96,7 @@ def main() -> int:
         "reconcile": commands.command_reconcile,
         "phase": commands.command_phase,
         "orphans": commands.command_orphans,
-        "closures": closures.command_closures,
+        "closures": commands.command_closures,
         "selfcheck": selfcheck.command_selfcheck,
     }
     return handlers[args.command](args)

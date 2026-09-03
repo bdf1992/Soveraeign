@@ -13,15 +13,21 @@ detail sentence rather than by a second vocabulary.
 
 Whether a request path is one the grant's scope reaches is `sovkernel.scope`,
 split out on 2026-08-25 when five rounds of witness dissent had grown that
-reasoning past the point where it was a detail of grant evaluation.
+reasoning past the point where it was a detail of grant evaluation. Whether one
+grant's own attributes admit a request at all is `sovkernel.admission`, and
+whether the evidence attached to the request satisfies what a covering grant
+requires is `sovkernel.gate`, both split out on 2026-09-02 along the line the
+Cedar spike drew: `admission` is every clause an off-the-shelf policy engine
+already expressed, `gate` is the two clauses that are not an authority decision
+over the grant at all (`reports/2026-09-03-cedar-authority-equivalence.md`).
+`evaluate` still reads as one function, calling each module in the same order
+it always checked these clauses in.
 """
 
 from __future__ import annotations
 
 from datetime import datetime, timezone
 from typing import Any
-
-from sovkernel.scope import out_of_scope
 
 PERMITTED = "PERMITTED"
 REFUSED = "REFUSED"
@@ -57,114 +63,23 @@ def _instant(value: str, field: str) -> datetime:
     return parsed.astimezone(timezone.utc)
 
 
-def _branch_refused(grant: dict, request: dict) -> str | None:
-    """A grant that names branches reaches no others."""
-    branches = grant["scope"].get("branches")
-    branch = request.get("branch")
-    if branches is None or branch is None:
-        return None
-    if branch not in branches:
-        return f"branch {branch} is not among the branches the grant admits"
-    return None
-
-
-def _budget_exceeded(grant: dict, request: dict) -> str | None:
-    """Compare declared spend against the grant's ceiling in its own unit."""
-    budget = grant["budget"]
-    ceiling = budget.get("ceiling")
-    if ceiling is None:
-        return None
-    spend = request.get("spend")
-    if not spend:
-        return None
-    if spend.get("unit") != budget.get("unit"):
-        return (f"spend is measured in {spend.get('unit')!r} and the grant's budget in "
-                f"{budget.get('unit')!r}; the two cannot be compared")
-    amount = spend.get("amount")
-    if not isinstance(amount, int):
-        raise GrantError("spend.amount must be an integer")
-    if amount > ceiling:
-        return f"{amount} {budget['unit']} against a ceiling of {ceiling}"
-    return None
+# Imported here, after the constants and `_instant` both modules read, rather
+# than at module top: `admission` and `gate` each import this module back for
+# those symbols, and the constants must already exist on it when they do.
+from sovkernel import admission  # noqa: E402
+from sovkernel import gate  # noqa: E402
 
 
 def _grant_unavailable(grant: dict, request: dict, now: datetime) -> str | None:
-    """Every reason this one grant cannot cover this one request, or None."""
-    if grant.get("status") != "RATIFIED":
-        return f"grant is at {grant.get('status')} standing and has not been ratified"
-    if grant.get("actor_id") != request.get("actor_id"):
-        return f"grant names actor {grant.get('actor_id')!r}"
-    if request.get("capability") not in grant.get("capabilities", ()):
-        return f"grant does not carry the capability {request.get('capability')!r}"
-    if grant.get("authority_type") == "JUDGEMENT" and grant.get("issuer_id") != JUDGEMENT_ISSUER:
-        return (f"JUDGEMENT authority issued by {grant.get('issuer_id')!r}; only "
-                f"{JUDGEMENT_ISSUER} may issue it")
-    if grant.get("revoked_at"):
-        return f"grant was revoked at {grant['revoked_at']}"
-    if now < _instant(grant["valid_from"], "valid_from"):
-        return f"grant is not valid until {grant['valid_from']}"
-    if now >= _instant(grant["valid_until"], "valid_until"):
-        return f"grant expired at {grant['valid_until']}"
-    ceiling = grant.get("effect_ceiling")
-    declared = request.get("effect_class")
-    if declared not in EFFECT_ORDER:
-        raise GrantError(f"request declares an unknown effect class: {declared!r}")
-    if EFFECT_ORDER.index(declared) > EFFECT_ORDER.index(ceiling):
-        return f"request declares {declared} against an effect ceiling of {ceiling}"
-    return (out_of_scope(grant, request)
-            or _branch_refused(grant, request)
-            or _budget_exceeded(grant, request))
+    """`scripts/sov_grant.py` reads this name directly (`cmd_list`'s liveness probe).
 
-
-def _preconditions(grant: dict, request: dict) -> dict:
-    """Compose grant-wide and capability-specific preconditions for this request."""
-    common = grant.get("preconditions") or {}
-    specific = (grant.get("preconditions_by_capability") or {}).get(
-        request.get("capability"), {}
-    )
-    checks = list(dict.fromkeys(
-        [*common.get("required_checks", ()), *specific.get("required_checks", ())]
-    ))
-    return {
-        "required_checks": checks,
-        "requires_independent_observation": bool(
-            common.get("requires_independent_observation")
-            or specific.get("requires_independent_observation")
-        ),
-    }
-
-
-def _observation_verdict(grant: dict, request: dict) -> tuple[str, str] | None:
-    """Check the independent-observation precondition, if this capability sets one."""
-    preconditions = _preconditions(grant, request)
-    if not preconditions["requires_independent_observation"]:
-        return None
-    evidence = request.get("evidence") or {}
-    observation = evidence.get("observation")
-    if not observation:
-        return (OBSERVATION_MISSING,
-                "the grant requires an independent observation and the request carries none")
-    if observation.get("contributed_to_build"):
-        return (OBSERVER_NOT_INDEPENDENT,
-                f"observer {observation.get('observer_id')!r} contributed to the build it "
-                "is offered as the observation of")
-    if observation.get("verdict") != "CONFIRMED":
-        return (OBSERVATION_MISSING,
-                f"the observation reads {observation.get('verdict')!r}, not CONFIRMED")
-    return None
-
-
-def _precondition_unmet(grant: dict, request: dict) -> str | None:
-    """A required check absent from the evidence is absent, never satisfied."""
-    preconditions = _preconditions(grant, request)
-    evidence = (request.get("evidence") or {}).get("checks") or {}
-    for name in preconditions["required_checks"]:
-        result = evidence.get(name)
-        if result is None:
-            return f"required check {name!r} is not present in the request's evidence"
-        if result != "PASS":
-            return f"required check {name!r} reads {result!r}"
-    return None
+    Kept as a thin forward to `admission.unavailable` rather than moved outright
+    so that caller does not have to import a second module for one call. A
+    function rather than a module-level alias, so it resolves `admission`'s
+    attribute at call time - after both modules have finished importing,
+    whichever one a caller happened to import first.
+    """
+    return admission.unavailable(grant, request, now)
 
 
 def _refused(code: str, detail: str, considered: list[dict]) -> dict[str, Any]:
@@ -185,7 +100,7 @@ def evaluate(grants: list[dict], request: dict) -> dict[str, Any]:
     considered: list[dict] = []
     covering: dict | None = None
     for grant in grants:
-        reason = _grant_unavailable(grant, request, now)
+        reason = admission.unavailable(grant, request, now)
         if reason is None:
             covering = grant
             break
@@ -196,11 +111,11 @@ def evaluate(grants: list[dict], request: dict) -> dict[str, Any]:
             or "no grant was offered"
         return _refused(AUTHORITY_REFUSED, detail, considered)
 
-    observation = _observation_verdict(covering, request)
+    observation = gate._observation_verdict(covering, request)
     if observation is not None:
         return _refused(observation[0], observation[1], considered)
 
-    unmet = _precondition_unmet(covering, request)
+    unmet = gate._precondition_unmet(covering, request)
     if unmet is not None:
         return _refused(MISSING_PRECONDITION, unmet, considered)
 

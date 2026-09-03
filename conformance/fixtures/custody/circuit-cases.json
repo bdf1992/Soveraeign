@@ -2175,18 +2175,15 @@
     ]
   },
   {
-    "id": "crashed-closure-check",
+    "id": "live-closure-check-reasons-on-stderr",
     "judge": "closure-live",
-    "polarity": "defeating",
-    "why": "A reader that prints one line and then dies is indistinguishable from one refusing loudly if only the exit code is read. The traceback on stderr is the discriminator, and a broken reader is not a judgement about the custody.",
-    "expect_refusals": [
-      "CRASHED_CLOSURE_CHECK"
-    ],
+    "polarity": "positive",
+    "why": "A closure check that writes its whole reading to stderr and exits non-zero is the check working, and it is the shape all seven real non-zero commands in this repository take. Reading only stdout, or refusing a Python traceback, would refuse a passing and a failing `-m unittest` suite alike.",
     "custodies": [
       {
         "custody_schema": "soveraeign-custody/v1",
         "status": "PROPOSED",
-        "custody_id": "custody:crashing-check",
+        "custody_id": "custody:stderr-reason-check",
         "initiative": "An initiative whose closure is declared as a runnable command.",
         "held_by": "seat:session-control",
         "roots": [
@@ -2201,7 +2198,45 @@
         "closure": {
           "check": {
             "kind": "COMMAND",
-            "expression": "python conformance/fixtures/custody/closure-scripts/crashing.py"
+            "expression": "python conformance/fixtures/custody/closure-scripts/reason_on_stderr.py"
+          },
+          "judgement_seat": "seat:root",
+          "defeated_by": "the declared command reports nothing and its silence reads as a pass"
+        },
+        "members": [],
+        "depends_on": [],
+        "cleanup_obligations": []
+      }
+    ]
+  },
+  {
+    "id": "silent-nonzero-closure-check",
+    "judge": "closure-live",
+    "polarity": "defeating",
+    "why": "The same silence as the Phase 1.5 shape at a different exit code. A rule reading only `exit 0 and empty stdout` admits it, and a participant running it is left with no reading at all.",
+    "expect_refusals": [
+      "UNREPORTING_CLOSURE_CHECK"
+    ],
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:silent-nonzero-check",
+        "initiative": "An initiative whose closure is declared as a runnable command.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": {
+            "kind": "COMMAND",
+            "expression": "python conformance/fixtures/custody/closure-scripts/silent_nonzero.py"
           },
           "judgement_seat": "seat:root",
           "defeated_by": "the declared command reports nothing and its silence reads as a pass"

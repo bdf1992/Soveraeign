@@ -47,17 +47,9 @@ REFUSALS = {
         "The closure check names a Python module with no entry point, so running it as "
         "declared produces no reading and its silence reads as a pass.",
     "UNREPORTING_CLOSURE_CHECK":
-        "The closure check exited 0 and printed nothing, so its silence is the whole "
-        "reading and a participant would take it for a pass.",
-    "CRASHED_CLOSURE_CHECK":
-        "The closure check died with a traceback rather than refusing, so its non-zero "
-        "exit is a broken reader and not a judgement about the custody.",
+        "The closure check said nothing on either stream, so whatever it exited with, "
+        "a participant running it is left with no reading at all.",
 }
-
-#: The first line of a Python traceback, which separates a check that broke from one
-#: that refused. A closure check is supposed to exit non-zero when its subject is
-#: defective, so the exit code alone cannot tell the two apart.
-TRACEBACK = "Traceback (most recent call last):"
 
 #: `python`, `python3`, `python3.12`, `pythonw`, and the Windows launcher `py`.
 INTERPRETER = re.compile(r"^(?:python|py)[0-9.]*w?(?:\.exe)?$", re.IGNORECASE)
@@ -111,7 +103,6 @@ def _names_main(test: ast.expr) -> bool:
     if isinstance(right, ast.Name) and right.id == "__name__":
         # `if "__main__" == __name__:` is the same guard written backwards.
         left, right = right, left
-        test = ast.Compare(left=left, ops=test.ops, comparators=[right])
     if not isinstance(left, ast.Name) or left.id != "__name__":
         return False
     if isinstance(operator, ast.Eq):
@@ -171,14 +162,14 @@ def has_entry_point(source: str) -> bool:
     return any(_is_entry_call(node) for node in tree.body)
 
 
-def _check_of(custody: dict[str, Any]) -> dict[str, Any]:
+def check_of(custody: dict[str, Any]) -> dict[str, Any]:
     check = (custody.get("closure") or {}).get("check") or {}
     return check if check.get("kind") == "COMMAND" else {}
 
 
 def grade(custody: dict[str, Any], root: Path = ROOT) -> list[Defect]:
     """Screen one custody's declared closure command without running it."""
-    check = _check_of(custody)
+    check = check_of(custody)
     if not check:
         return []
     custody_id = str(custody.get("custody_id") or "unnamed custody")
@@ -204,7 +195,7 @@ def grade_collection(custodies: list[dict[str, Any]], root: Path = ROOT) -> list
 
 def run(custody: dict[str, Any], root: Path = ROOT, timeout: int = 120) -> dict[str, Any]:
     """Execute one declared closure command and report what it actually said."""
-    check = _check_of(custody)
+    check = check_of(custody)
     expression = str(check.get("expression") or "")
     argv = shlex.split(expression)
     if argv and INTERPRETER.match(Path(argv[0]).name):
@@ -216,31 +207,37 @@ def run(custody: dict[str, Any], root: Path = ROOT, timeout: int = 120) -> dict[
                 "exit_code": None, "lines": 0, "detail": str(error)}
     reading = (result.stdout or "").strip()
     return {"expression": expression, "ran": True, "exit_code": result.returncode,
-            "reported": bool(reading), "lines": len(reading.splitlines()),
-            "crashed": TRACEBACK in (result.stderr or "")}
+            "reported": bool(reading) or bool((result.stderr or "").strip()),
+            "lines": len(reading.splitlines())}
 
 
 def grade_live(custodies: list[dict[str, Any]], root: Path = ROOT) -> tuple[list[dict], list[Defect]]:
-    """Run each declared closure command and refuse the two shapes that lie.
+    """Run each declared closure command and refuse the one that says nothing.
 
-    This is what the static screen only approximates. Exactly two readings are
-    defects, and they are narrow on purpose:
+    This is what the static screen only approximates, and it grades exactly one
+    thing: did the command produce a reading. Nothing on stdout and nothing on
+    stderr is the defect, whatever it exited with. That is the Phase 1.5 shape
+    at exit 0, where silence is the whole reading and a participant takes it for
+    a pass; and it is the same silence at exit 3, wearing a different code.
 
-    - exit 0 with nothing on stdout, which is the Phase 1.5 shape: silence is
-      the whole reading and a participant takes it for a pass;
-    - a traceback on stderr, which is a reader that broke rather than one that
-      judged.
+    The exit code decides nothing here, and neither does a traceback. A closure
+    check exists to refuse when its subject is defective, so exiting non-zero
+    with a written reason is the check working. All seven declared commands in
+    this repository that exit non-zero write 135 to 195 characters of reason,
+    which is why "wrote a reason anywhere" is the predicate and "printed a
+    Python traceback" is not: the latter refuses a failing `-m unittest` suite,
+    which is a check correctly refusing, and refuses a passing one for writing
+    its result to stderr.
 
-    Everything else is admitted, including a non-zero exit with a clean message.
-    A closure check is meant to refuse when its subject is defective, so
-    refusing loudly is the check working; and a check whose command rejects its
-    own arguments is naming a capability its custody has not built yet, which
-    is that holder's work and not a defect in the declaration.
+    Whether the reason is a good one is the holder's to answer. A command that
+    rejects its own arguments is naming a capability its custody has not built,
+    and a reader that crashes is a broken reader; both are that holder's work,
+    and neither is a declaration nobody can read.
     """
     rows: list[dict[str, Any]] = []
     defects: list[Defect] = []
     for custody in custodies:
-        if not _check_of(custody):
+        if not check_of(custody):
             continue
         custody_id = str(custody.get("custody_id") or "unnamed custody")
         row = {"custody_id": custody_id, **run(custody, root)}
@@ -249,14 +246,10 @@ def grade_live(custodies: list[dict[str, Any]], root: Path = ROOT) -> tuple[list
             defects.append(("UNREPORTING_CLOSURE_CHECK",
                             f"{custody_id} declares `{row['expression']}`, which could not "
                             f"be run: {row.get('detail')}"))
-        elif row["exit_code"] == 0 and not row["reported"]:
+        elif not row["reported"]:
             defects.append(("UNREPORTING_CLOSURE_CHECK",
-                            f"{custody_id} declares `{row['expression']}`, which exited 0 "
-                            "and printed nothing"))
-        elif row["crashed"]:
-            defects.append(("CRASHED_CLOSURE_CHECK",
-                            f"{custody_id} declares `{row['expression']}`, which died with "
-                            "a traceback instead of reporting"))
+                            f"{custody_id} declares `{row['expression']}`, which exited "
+                            f"{row['exit_code']} and said nothing on either stream"))
     return rows, defects
 
 

@@ -8,6 +8,7 @@ here settles anything; every command is a reading.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 import argparse
 import json
 import sys
@@ -262,8 +263,8 @@ def command_closures(args: argparse.Namespace) -> int:
         defects += live_defects
     else:
         rows = [{"custody_id": str(custody.get("custody_id") or ""),
-                 "expression": str(_check_of(custody).get("expression") or "")}
-                for custody in records if closuresmod._check_of(custody)]
+                 "expression": str(closuresmod.check_of(custody).get("expression") or "")}
+                for custody in records if closuresmod.check_of(custody)]
 
     if getattr(args, "as_json", False):
         print(json.dumps({"phase": phase, "checks": rows,
@@ -277,8 +278,7 @@ def command_closures(args: argparse.Namespace) -> int:
             print(f"  {row['custody_id']}\n           {row['expression']}")
             if getattr(args, "run", False):
                 state = "no reading" if not row["reported"] else f"{row['lines']} line(s)"
-                note = ", traceback" if row.get("crashed") else ""
-                print(f"           exit {row['exit_code']}, {state}{note}")
+                print(f"           exit {row['exit_code']}, {state}")
         for code, detail in defects:
             print(f"  DEFECT {code}: {detail}")
     return 1 if defects else 0

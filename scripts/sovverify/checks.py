@@ -137,7 +137,7 @@ REPOSITORY_CHECKS = (
           [sys.executable, "scripts/sov_custody.py", "closures", "--live", "--run"],
           ROOT,
           "runs the closure check every custody still carrying work declares, and refuses the "
-          "two shapes that lie: exit 0 with nothing printed, and a traceback on stderr. Two "
+          "one that says nothing on either stream, whatever it exited with. Two "
           "Phase 1.5 exit custodies opened naming Python modules with no entry point, so the "
           "declared check exited 0 in silence and a participant reading it would call the "
           "custody closed. The static screen in sovcustody/closures.py grades every declared "
@@ -146,9 +146,12 @@ REPOSITORY_CHECKS = (
           "whether it reports. The scope is every custody without a terminal, which is the "
           "record of an assignment that ended - not the active phase, because two live "
           "custodies carry no phase and scoping by phase equality drops them silently. A "
-          "non-zero exit with a clean message is admitted: a closure check refusing loudly is "
-          "the check working, and one whose command rejects its own arguments is naming a "
-          "capability its holder has not built, which is that holder's work",
+          "non-zero exit that wrote a reason anywhere is admitted: a closure check refusing "
+          "loudly is the check working, all seven such commands here write 135 to 195 "
+          "characters of it, and refusing a Python traceback instead would refuse a failing "
+          "`-m unittest` suite for being a failing suite. A command that rejects its own "
+          "arguments is naming a capability its holder has not built, which is that "
+          "holder's work",
           ("contracts/custodies.json", "contracts/custodies", "contracts/custody.schema.json",
            "scripts/sovcustody/closures.py", "scripts/sov_custody.py")),
     Check("semantic cold-start task", [sys.executable, "scripts/sov_witness.py", "semantic"],

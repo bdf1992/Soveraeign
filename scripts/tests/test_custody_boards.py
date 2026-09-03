@@ -13,7 +13,10 @@ nothing: no participant here carried a concern, and a custody grants nothing.
 from __future__ import annotations
 
 from pathlib import Path
+import argparse
+import contextlib
 import copy
+import io
 import json
 import sys
 import unittest
@@ -24,6 +27,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from sovcustody import board as boardmod  # noqa: E402
 from sovcustody import circuit as circuitmod  # noqa: E402
 from sovcustody import closures as closuresmod  # noqa: E402
+from sovcustody import commands as commandsmod  # noqa: E402
 from sovcustody import estimate as estimatemod  # noqa: E402
 from sovcustody import model as modelmod  # noqa: E402
 from sovcustody import phase as phasemod  # noqa: E402
@@ -575,6 +579,57 @@ class SelfcheckInProcess(unittest.TestCase):
                                     f"got {sorted(codes)}")
         self.assertEqual(declared - fired, set(),
                          "a declared refusal no case proves fires is a refusal nobody can rely on")
+
+
+class ClosureSubcommand(unittest.TestCase):
+    """Every path of `sov_custody.py closures`, because verify only walks one.
+
+    The module split that moved this command left a NameError on the branch
+    verify never takes: the repository gate runs `--live --run`, so the reading
+    path without `--run` crashed while every check stayed green. A check that
+    cannot see the code path it does not exercise is the defect this whole
+    concern is about, so the subcommand is exercised here rather than trusted.
+    """
+
+    @staticmethod
+    def _run(**kwargs: object) -> tuple[int, str]:
+        args = argparse.Namespace(phase=None, live=False, run=False, as_json=False)
+        for key, value in kwargs.items():
+            setattr(args, key, value)
+        buffer = io.StringIO()
+        with contextlib.redirect_stdout(buffer):
+            code = commandsmod.command_closures(args)
+        return code, buffer.getvalue()
+
+    def test_the_static_reading_lists_every_declared_command(self) -> None:
+        code, text = self._run()
+        self.assertEqual(code, 0)
+        self.assertIn("declared COMMAND closure check(s)", text)
+        self.assertIn("custody:phase-1-5/commissioning-circuit", text)
+
+    def test_one_phase_reads_only_that_phase(self) -> None:
+        code, text = self._run(phase="phase:1-5")
+        self.assertEqual(code, 0)
+        self.assertIn("in phase:1-5", text)
+        self.assertNotIn("custody:phase-i/", text)
+
+    def test_the_live_reading_skips_custodies_whose_assignment_ended(self) -> None:
+        code, text = self._run(live=True)
+        self.assertEqual(code, 0)
+        self.assertIn("still carrying work", text)
+        self.assertNotIn("custody:phase-i/binding-parity", text)
+
+    def test_running_the_commands_reports_and_refuses_none(self) -> None:
+        code, text = self._run(live=True, run=True)
+        self.assertNotIn("DEFECT", text)
+        self.assertEqual(code, 0)
+
+    def test_the_json_reading_is_machine_readable(self) -> None:
+        code, text = self._run(live=True, as_json=True)
+        self.assertEqual(code, 0)
+        payload = json.loads(text)
+        self.assertEqual(payload["defects"], [])
+        self.assertTrue(payload["checks"])
 
 
 class CorpusIntegrity(unittest.TestCase):

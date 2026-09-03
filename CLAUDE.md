@@ -96,7 +96,7 @@ whenever they disagree.
   open); the F2 gate waits only on its second bound participant. Participant
   binding still open.
 - Harness (`.claude/`): 5 agent definitions (four roles and the Sov binding),
-  29 skills, 23 workflows, the epic-tree walk, and scheduled-run gates with a
+  31 skills, 23 workflows, the epic-tree walk, and scheduled-run gates with a
   kernel-envelope ledger.
   Every shipped schedule is disabled. Executable harness workflows are
   admissible before their defeating fixtures exist, for host plumbing only
@@ -194,7 +194,7 @@ engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
 Sov, the federation harness, defeating fixtures for receipts and proofing,
 LF line-ending enforcement, and the stack certification. At the end of day two
 the record held 26 commits, 17 decision records and 8 reports; it now holds
-934 commits, 89 decision records and 30 reports. The
+942 commits, 90 decision records and 30 reports. The
 first independently witnessed work landed on 2026-08-25; owner-accepted packets
 now exist and are enumerated under `STATUS.yaml` `owner_accepted`.
 

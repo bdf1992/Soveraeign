@@ -32,6 +32,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 import ast
+import os
 import re
 import shlex
 import subprocess
@@ -193,6 +194,23 @@ def grade_collection(custodies: list[dict[str, Any]], root: Path = ROOT) -> list
     return [defect for custody in custodies for defect in grade(custody, root)]
 
 
+def _child_env() -> dict[str, str]:
+    """The environment a closure command runs under, with warnings pinned off.
+
+    A silent command reports nothing, which is the whole defect. But under an
+    inherited `PYTHONDEVMODE=1` or `PYTHONWARNINGS=always` the interpreter
+    writes a `ResourceWarning` the module never chose to emit, and the reading
+    becomes non-empty without the module having said anything. That laundered
+    the original Phase 1.5 shape into an admitted one. The predicate is about
+    what the command said, so what the interpreter says about it is turned off
+    rather than counted.
+    """
+    environment = {key: value for key, value in os.environ.items()
+                   if key not in ("PYTHONDEVMODE", "PYTHONWARNINGS")}
+    environment["PYTHONWARNINGS"] = "ignore"
+    return environment
+
+
 def run(custody: dict[str, Any], root: Path = ROOT, timeout: int = 120) -> dict[str, Any]:
     """Execute one declared closure command and report what it actually said."""
     check = check_of(custody)
@@ -201,7 +219,8 @@ def run(custody: dict[str, Any], root: Path = ROOT, timeout: int = 120) -> dict[
     if argv and INTERPRETER.match(Path(argv[0]).name):
         argv[0] = sys.executable
     try:
-        result = subprocess.run(argv, cwd=root, capture_output=True, text=True, timeout=timeout)
+        result = subprocess.run(argv, cwd=root, capture_output=True, text=True,
+                                timeout=timeout, env=_child_env())
     except (OSError, subprocess.SubprocessError) as error:
         return {"expression": expression, "ran": False, "reported": False,
                 "exit_code": None, "lines": 0, "detail": str(error)}

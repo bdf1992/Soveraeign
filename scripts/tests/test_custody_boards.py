@@ -18,8 +18,12 @@ import contextlib
 import copy
 import io
 import json
+import os
+import pathlib
 import sys
+import tempfile
 import unittest
+import unittest.mock
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -630,6 +634,36 @@ class ClosureSubcommand(unittest.TestCase):
         payload = json.loads(text)
         self.assertEqual(payload["defects"], [])
         self.assertTrue(payload["checks"])
+
+    def test_the_json_reading_survives_a_run(self) -> None:
+        """The sixth path: `run` puts its own keys in the rows the dump serialises."""
+        code, text = self._run(live=True, run=True, as_json=True)
+        self.assertEqual(code, 0)
+        rows = json.loads(text)["checks"]
+        self.assertTrue(rows)
+        for row in rows:
+            self.assertEqual(sorted(row), ["custody_id", "exit_code", "expression",
+                                           "lines", "ran", "reported"])
+
+    def test_the_interpreter_cannot_launder_a_silent_command(self) -> None:
+        """An inherited warning setting must not become a reading the module never gave.
+
+        Under `PYTHONDEVMODE=1` a leaked handle makes the interpreter write a
+        ResourceWarning the command did not choose to emit, and the exact Phase
+        1.5 shape - a main that runs, reports nothing, returns 0 - would be
+        admitted for output it never produced.
+        """
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            (root / "leaky.py").write_text(
+                "def main():\n    open(__file__)\n    return 0\n\n"
+                "if __name__ == '__main__':\n    raise SystemExit(main())\n",
+                encoding="utf-8")
+            custody = {"custody_id": "custody:leaky", "closure": {"check": {
+                "kind": "COMMAND", "expression": "python leaky.py"}}}
+            with unittest.mock.patch.dict(os.environ, {"PYTHONDEVMODE": "1"}):
+                codes = {code for code, _ in closuresmod.grade_live([custody], root)[1]}
+        self.assertIn("UNREPORTING_CLOSURE_CHECK", codes)
 
 
 class CorpusIntegrity(unittest.TestCase):

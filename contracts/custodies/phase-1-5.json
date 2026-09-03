@@ -175,9 +175,9 @@
           "member_kind": "OPERATION",
           "address": "conformance/commissioning.py",
           "stage": "VERTICAL_SLICE",
-          "standing": "BUILT",
+          "standing": "WITNESSED",
           "work_state": "PRESENTED",
-          "stage_observed_by": null,
+          "stage_observed_by": "witness/closure-check-reading.md",
           "note": "the closure check this custody declares now runs its own corpus and prints which of the twelve P15 predicates separate their claim from its defeating case. scripts/sov_opening_readiness.py reads that same run rather than keeping a second copy of the loop."
         }
       ],
@@ -220,18 +220,18 @@
           "member_kind": "OPERATION",
           "address": "scripts/sov_active_phase_progress.py",
           "stage": "VERTICAL_SLICE",
-          "standing": "BUILT",
+          "standing": "WITNESSED",
           "work_state": "PRESENTED",
-          "stage_observed_by": null,
+          "stage_observed_by": "witness/closure-check-reading.md",
           "note": "the closure check this custody declares now reports: one line per exit clause, its custody stage against its recorded floor, non-zero on a regression. It was a library with no __main__ guard, so the declared command printed nothing and exited 0."
         },
         {
           "member_kind": "OPERATION",
           "address": "scripts/sovcustody/closures.py",
           "stage": "VERTICAL_SLICE",
-          "standing": "BUILT",
+          "standing": "WITNESSED",
           "work_state": "PRESENTED",
-          "stage_observed_by": null,
+          "stage_observed_by": "witness/closure-check-reading.md",
           "note": "two readings of every declared COMMAND closure. The static screen (SILENT_CLOSURE_CHECK, UNRUNNABLE_CLOSURE_CHECK) covers the whole repository and consumes nothing, but it grades a declaration and a guard whose body is pass satisfies it. The live reading (UNREPORTING_CLOSURE_CHECK) runs the command and refuses silence; it is a verify check scoped to the active phase, because that is the set somebody is asked to close today. Both polarities of both readings are reached by fixtures."
         }
       ],

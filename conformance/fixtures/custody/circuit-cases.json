@@ -2246,5 +2246,43 @@
         "cleanup_obligations": []
       }
     ]
+  },
+  {
+    "id": "unrunnable-live-closure-check",
+    "judge": "closure-live",
+    "polarity": "defeating",
+    "why": "The live reading's other silent shape: the command never starts, so there is no exit code to read and nothing was said. Reached by no fixture until now, because every other case got as far as running.",
+    "expect_refusals": [
+      "UNREPORTING_CLOSURE_CHECK"
+    ],
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:unstartable-check",
+        "initiative": "An initiative whose closure names a command this host cannot start.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": {
+            "kind": "COMMAND",
+            "expression": "sov-no-such-binary-on-any-host --check"
+          },
+          "judgement_seat": "seat:root",
+          "defeated_by": "the declared command reports nothing and its silence reads as a pass"
+        },
+        "members": [],
+        "depends_on": [],
+        "cleanup_obligations": []
+      }
+    ]
   }
 ]

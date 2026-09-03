@@ -3,15 +3,15 @@
 ```witness
 standing_supported  WITNESSED
 subject  closure-check-reading
-revision  3f7f09c47c0f59be17bfb50f04ae8551667a664b
-pass  5
+revision  81b6193ea72b1f21a7f1680eff2b80b146c80cd0
+pass  6
 ```
 
-Five passes by the same witness participant, each against a different frozen commit on
-`claude/phase-1-5-exit-custody-x7fsi0`. Pass 5 (`3f7f09c`) owns the declaration above.
-Passes 1 through 4 (`e981d64`, `06efb59`, `99647c7`, `f296d2a`) follow as history.
+Six passes by the same witness participant, each against a different frozen commit on
+`claude/phase-1-5-exit-custody-x7fsi0`. Pass 6 (`81b6193`) owns the declaration above.
+Passes 1 through 5 (`e981d64`, `06efb59`, `99647c7`, `f296d2a`, `3f7f09c`) follow as history.
 
-Witness: `sov-witness`, five invocations. It did not build, edit, stage, or commit anything
+Witness: `sov-witness`, six invocations. It did not build, edit, stage, or commit anything
 under the subject. Every defeat attempt ran in a `git worktree` copy, removed afterwards;
 `git status --short` was empty and `git rev-parse HEAD` unchanged before and after each pass.
 
@@ -32,8 +32,8 @@ was one of the two and whose opening basis names this reader as its first piece 
 
 `OPEN -> BUILT` for `scripts/sovcustody/closures.py`, and `BUILT -> WITNESSED` for the closure-
 check reading, covering `scripts/sov_active_phase_progress.py`, `conformance/commissioning.py`,
-and `scripts/sovcustody/closures.py`. Supported at `f296d2a` by pass 4 and carried to `3f7f09c`
-by pass 5, which read the absorption below. Pass 4 verified through the declared surface:
+and `scripts/sovcustody/closures.py`. Supported at `f296d2a` by pass 4 and carried to
+`3f7f09c` and then `81b6193` by passes 5 and 6, which read the absorptions below. Pass 4 verified through the declared surface:
 `verify.py` PASS at 51 checks, `lint.py` PASS, `sov_custody.py selfcheck` 54 cases and 36 of 36
 declared refusals reached, `test_custody_boards` 70 tests; at pass 4 no member claimed standing
 above `BUILT`, and the three that now read `WITNESSED` were set on the strength of this record
@@ -73,17 +73,17 @@ non-zero exit that the previous rule caught, and refused a failing `-m unittest`
 a failing suite. It measured the predicate the evidence actually supports: all seven declared
 commands that exit non-zero write 135 to 195 characters of reason.
 
+It also settled a governance question against itself: both judgement items it had routed to the
+root seat in earlier passes are `routine_decisions` under `contracts/closure-ownership.json`,
+escalating them was the witness's own defect rather than caution, and nothing the builder had
+settled in those three passes belonged to the owner.
+
 **Pass 4 (`f296d2a`)** reconstructed the `NameError` in a scratch copy and watched four of the
 five new subcommand tests and `verify.py` go red, then confirmed the corrected predicate against
 its own battery: silent exit 0, silent exit 3, `os._exit(1)`, whitespace-only, a segfault, a
 shell `exit 4`, and a nonexistent binary all refused; stderr-only at exit 0, a stderr reason at
 exit 1, a traceback after a reading, a traceback alone, and a normal report all admitted, with
 the verdict on all seven real commands unchanged.
-
-It also settled a governance question against itself: both judgement items it had routed to the
-root seat in earlier passes are `routine_decisions` under `contracts/closure-ownership.json`,
-escalating them was the witness's own defect rather than caution, and nothing the builder settled
-in those four passes belonged to the owner.
 
 It found one laundering route that needed no code. Under an inherited `PYTHONDEVMODE=1` or
 `PYTHONWARNINGS=always`, a leaked file handle makes the interpreter write a `ResourceWarning`
@@ -105,10 +105,28 @@ environment is filtered rather than replaced so `PATH` and the resolution variab
 proved each new test goes red when its own subject is reverted. It found the denylist was two
 names against a class of at least six — `PYTHONVERBOSE`, `PYTHONPROFILEIMPORTTIME`,
 `PYTHONMALLOCSTATS` and `PYTHONINSPECT` each laundered the same silent subject — and that pinning
-warnings off would refuse a check whose whole reading is a deliberate `warnings.warn`. All six are
-now denied and both costs are stated in `_child_env`. It read this record against its own four
-passes and corrected four things in it, including the attribution above. Its `WITNESSED` support
-carries to `3f7f09c`.
+warnings off would refuse a check whose whole reading is a deliberate `warnings.warn`. It found
+that nothing graded `stage_observed_by` at all: a member could read `WITNESSED` citing a file
+never written, or one deleted afterwards, with every check green — the finding that produced
+`UNCITED_OBSERVATION`. And it read this record against its own four passes and corrected four
+things in it, including the attribution above. Its `WITNESSED` support carries to `3f7f09c`.
+
+**Pass 6 (`81b6193`)** confirmed those five repairs, the six-name denylist, and that the module
+split changed no behaviour across 24 expressions and 19 sources. It found a seventh diagnostic
+variable, and found it by correcting itself: `PYTHONFAULTHANDLER` writes
+`Fatal Python error: Segmentation fault` to stderr, so a wholly silent crashing command is
+laundered into an admitted one. Pass 5 had cleared that variable against a subject that never
+crashed, which is the witness's own weak test rather than the variable being safe, and it said
+so. `PYTHONFAULTHANDLER` is denied now; `PYTHONTRACEMALLOC`, `PYTHONASYNCIODEBUG` and
+`PYTHONCOERCECLOCALE` pass through as diagnostics it could not make emit.
+
+It also read `UNCITED_OBSERVATION` as half a fix, correctly built. The predicate was
+`(root / cited).is_file()`, and `root / "/etc/passwd"` is `/etc/passwd` — pathlib drops the left
+operand on an absolute right — so any file on the host satisfied a refusal whose text said
+"inside the repository". An escaping relative path and an empty citation passed the same way.
+All three are refused now, with a fixture each. Its `WITNESSED` support carries to `81b6193`,
+conditional on this section existing, which is what makes the revision above true rather than
+disclosed.
 
 ## What this record does not support
 
@@ -120,5 +138,16 @@ and cannot see an entry point that reports nothing; only the live reading measur
 is scoped to custodies still carrying work. Seven declared commands reject their own arguments
 and are admitted as unbuilt capabilities their holders own — six on terminal Phase-I custodies,
 one on `custody:session-as-node`.
+
+`UNCITED_OBSERVATION` grades that a citation opens inside the repository and no more. A record
+that exists, says nothing about the member citing it, and declares a revision that member does
+not live at satisfies it. Whether an observation covers its subject is a reading, and no path
+test is one.
+
+`scripts/sovcustody/invocation.py` reads what a declared command names without running it, which
+is an approximation twice over: `script_of` declines any expression that is not an interpreter
+plus a file, and `has_entry_point` grades whether running a module would execute anything, not
+whether it would say anything. `DIAGNOSTIC_ENV` is a denylist of seven, so an interpreter
+variable nobody has found yet could still write a reading a command did not give.
 
 This is an observation, not a settlement and not a ratification.

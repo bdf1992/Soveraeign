@@ -2213,7 +2213,7 @@
       "changed": false
     },
     "witness/closure-check-reading.md": {
-      "artifact_digest": "sha256:24dc18ae7c22e78e5a174da3da0441939d508a3f10c5b54fb2355d524f9280e5",
+      "artifact_digest": "sha256:a1637a5835d1359a8a04a80854b83bdce5b96e1c9fbf74e42bd2123799c9e26b",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
@@ -2232,7 +2232,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "witness/host-service.md": {
       "artifact_digest": "sha256:91801793f5c71686813b0a772001631e80e45ffe4e3d5b59a57c9714e3e7feb5",

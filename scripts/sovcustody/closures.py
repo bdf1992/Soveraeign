@@ -50,8 +50,8 @@ REFUSALS = {
         "The closure check names a Python module with no entry point, so running it as "
         "declared produces no reading and its silence reads as a pass.",
     "UNCITED_OBSERVATION":
-        "A member claims a stage was observed by a record that is not in the repository, so "
-        "the citation carrying its standing cannot be read.",
+        "A member claims a stage was observed by a citation that does not resolve to a file "
+        "inside the repository, so the record carrying its standing cannot be opened.",
     "UNREPORTING_CLOSURE_CHECK":
         "The closure check said nothing on either stream, so whatever it exited with, "
         "a participant running it is left with no reading at all.",
@@ -84,22 +84,35 @@ def grade(custody: dict[str, Any], root: Path = ROOT) -> list[Defect]:
 
 
 def grade_observation(custody: dict[str, Any], root: Path = ROOT) -> list[Defect]:
-    """Refuse a member whose observing record is not in the repository.
+    """Refuse a member whose observing citation does not open.
 
     `stage_observed_by` is what separates a stage a participant drew from one
     something else confirmed, and nothing graded it: a member could read
     `WITNESSED` citing a file that was never written, or one deleted afterwards,
     and every check stayed green. That is a citation nobody can follow, which is
     the same defect as a closure check nobody can read.
+
+    It grades that the citation opens, and no more. A record that exists, says
+    nothing about this member, and declares a revision the member does not live
+    at satisfies this and should not be read as covering anything: whether an
+    observation covers its subject is a reading, not a path test. The one thing
+    beyond existence that is checked is escape, because `root / "/etc/passwd"`
+    is `/etc/passwd` — pathlib drops the left operand on an absolute right — and
+    a refusal saying "inside the repository" has to mean it.
     """
     custody_id = str(custody.get("custody_id") or "unnamed custody")
     defects: list[Defect] = []
+    inside = root.resolve()
     for member in custody.get("members") or []:
         cited = member.get("stage_observed_by")
-        if cited and not (root / str(cited)).is_file():
+        if cited is None:
+            continue
+        target = (root / str(cited)).resolve()
+        opens = str(cited) != "" and target.is_file() and target.is_relative_to(inside)
+        if not opens:
             defects.append(("UNCITED_OBSERVATION",
                             f"{custody_id} member {member.get('address')} says its stage was "
-                            f"observed by {cited}, which is not in the repository"))
+                            f"observed by {cited!r}, which does not open inside the repository"))
     return defects
 
 
@@ -121,7 +134,7 @@ def grade_collection(custodies: list[dict[str, Any]], root: Path = ROOT) -> list
 #: through, which is why this is a denylist and not `-E` or `-I`.
 DIAGNOSTIC_ENV = (
     "PYTHONDEVMODE", "PYTHONWARNINGS", "PYTHONVERBOSE", "PYTHONPROFILEIMPORTTIME",
-    "PYTHONMALLOCSTATS", "PYTHONINSPECT",
+    "PYTHONMALLOCSTATS", "PYTHONINSPECT", "PYTHONFAULTHANDLER",
 )
 
 

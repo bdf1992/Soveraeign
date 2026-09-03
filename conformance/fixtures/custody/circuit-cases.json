@@ -2369,5 +2369,137 @@
         "cleanup_obligations": []
       }
     ]
+  },
+  {
+    "id": "observation-cited-outside-the-repository",
+    "judge": "closure",
+    "polarity": "defeating",
+    "why": "`root / \"/etc/passwd\"` is `/etc/passwd` - pathlib drops the left operand on an absolute right - so any file on the host would satisfy a refusal whose text says \"inside the repository\".",
+    "expect_refusals": [
+      "UNCITED_OBSERVATION"
+    ],
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:observation-cited-outside-the-repository",
+        "initiative": "An initiative one of whose members claims an observed stage.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": null,
+          "judgement_seat": "seat:root",
+          "defeated_by": "a stage nothing observed reading as one something confirmed"
+        },
+        "members": [
+          {
+            "member_kind": "OPERATION",
+            "address": "scripts/sov_custody.py",
+            "stage": "VERTICAL_SLICE",
+            "standing": "WITNESSED",
+            "work_state": "PRESENTED",
+            "stage_observed_by": "/etc/passwd"
+          }
+        ],
+        "depends_on": [],
+        "cleanup_obligations": []
+      }
+    ]
+  },
+  {
+    "id": "observation-cited-by-traversal",
+    "judge": "closure",
+    "polarity": "defeating",
+    "why": "A relative path that climbs out of the tree and lands on a real file is the same escape wearing a different spelling.",
+    "expect_refusals": [
+      "UNCITED_OBSERVATION"
+    ],
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:observation-cited-by-traversal",
+        "initiative": "An initiative one of whose members claims an observed stage.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": null,
+          "judgement_seat": "seat:root",
+          "defeated_by": "a stage nothing observed reading as one something confirmed"
+        },
+        "members": [
+          {
+            "member_kind": "OPERATION",
+            "address": "scripts/sov_custody.py",
+            "stage": "VERTICAL_SLICE",
+            "standing": "WITNESSED",
+            "work_state": "PRESENTED",
+            "stage_observed_by": "../../../../etc/passwd"
+          }
+        ],
+        "depends_on": [],
+        "cleanup_obligations": []
+      }
+    ]
+  },
+  {
+    "id": "observation-cited-by-nothing",
+    "judge": "closure",
+    "polarity": "defeating",
+    "why": "An empty citation is a member declaring an observation and naming none. Null is the honest way to say a stage is a build claim; the empty string reads as a citation and opens nothing.",
+    "expect_refusals": [
+      "UNCITED_OBSERVATION"
+    ],
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:observation-cited-by-nothing",
+        "initiative": "An initiative one of whose members claims an observed stage.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": null,
+          "judgement_seat": "seat:root",
+          "defeated_by": "a stage nothing observed reading as one something confirmed"
+        },
+        "members": [
+          {
+            "member_kind": "OPERATION",
+            "address": "scripts/sov_custody.py",
+            "stage": "VERTICAL_SLICE",
+            "standing": "WITNESSED",
+            "work_state": "PRESENTED",
+            "stage_observed_by": ""
+          }
+        ],
+        "depends_on": [],
+        "cleanup_obligations": []
+      }
+    ]
   }
 ]

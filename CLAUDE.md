@@ -75,7 +75,7 @@ been receiving merged pull requests. This section is orientation, not standing.
 `STATUS.yaml`, the working tree, and the newest relevant report override it
 whenever they disagree.
 
-- `python scripts/verify.py` runs 50 checks. Total wall time is graded by the
+- `python scripts/verify.py` runs 52 checks. Total wall time is graded by the
   bands in `contracts/verification-budget.json` but is advisory rather than a
   repository failure by itself. The landed budget policy reruns a pooled suspect
   alone and fails catastrophically only when that isolated read still exceeds the

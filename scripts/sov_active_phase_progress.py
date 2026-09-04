@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import argparse
 import json
 import re
 import sys
@@ -87,3 +88,55 @@ def grade_active_phase(
             "detail": f"progress floor names {custody_id}, which owns no unearned exit in {phase_id}",
         })
     return defects
+
+
+def _profile(phase_id: str) -> dict | None:
+    """The active-phase progress profile the phase-progress contract declares."""
+    contract = json.loads((ROOT / "contracts/phase-progress.json").read_text(encoding="utf-8"))
+    return (contract.get("active_phase_profiles") or {}).get(phase_id)
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Print the active phase's exit-custody floor grade.
+
+    This module is named as the closure check of
+    `custody:phase-1-5/commissioning-circuit`, and a closure check that prints
+    nothing cannot refuse anything. Reading it here re-derives the grade from
+    STATUS, the phase registry, and the custody collections rather than from any
+    stored board.
+    """
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--json", dest="as_json", action="store_true",
+                        help="emit machine-readable output")
+    args = parser.parse_args(argv)
+
+    from sovcustody import model as custody_model  # lazy: matches sov_phase_progress
+
+    phase_id = status_phase()
+    if not phase_id or phase_id == "NONE_ACTIVE":
+        if args.as_json:
+            print(json.dumps({"phase": phase_id or None, "defects": []}, indent=2))
+        else:
+            print("no active phase; nothing to grade")
+        return 0
+
+    defects = grade_active_phase(
+        phase_id, phase_record(phase_id), _profile(phase_id),
+        custody_model.custodies(phase_id),
+    )
+    if args.as_json:
+        print(json.dumps({"phase": phase_id, "defects": defects}, indent=2, sort_keys=True))
+        return 1 if defects else 0
+
+    print(f"active phase: {phase_id}")
+    for defect in defects:
+        print(f"  DEFECT {defect['code']} {defect['detail']}")
+    if defects:
+        print(f"FAIL: {len(defects)} exit-custody progress defect(s)")
+        return 1
+    print("PASS: every unearned exit custody carries an initialized floor and has not regressed")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

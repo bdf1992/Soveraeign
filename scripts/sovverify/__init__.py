@@ -11,4 +11,12 @@ from sovverify import checks as _checks
 from sovverify.integrity import INTEGRITY_CHECKS
 
 
-_checks.CHECKS = _checks.REPOSITORY_CHECKS + INTEGRITY_CHECKS + _checks.PARTICIPANT_CHECKS
+# Splice the guards in ahead of the participant tail rather than re-listing the
+# groups. Naming them here once meant a group added in `checks.py` was dropped
+# from every run while `checks.py` still read as though it composed the table:
+# the split into `projections.py` lost five checks that way, and the loss was
+# visible only as a count nobody expected. The tail is the only position this
+# assembly needs to know, so a new group now flows through untouched.
+_ordinary = _checks.CHECKS
+_tail = len(_checks.PARTICIPANT_CHECKS)
+_checks.CHECKS = _ordinary[:len(_ordinary) - _tail] + INTEGRITY_CHECKS + _ordinary[-_tail:]

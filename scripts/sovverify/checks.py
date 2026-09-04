@@ -5,11 +5,20 @@ checks. That sentence is the check's warrant; an entry without one is a command,
 not evidence.
 
 The table lives apart from the runner so it can grow without dragging the runner
-past its line budget, and it is now split again on the same pressure and along a
-real seam: a check whose working directory is a participant's own tree is running
-that participant's own tests, which is a different kind of evidence from a check
-the repository owns over its contracts. Those live in `participants.py`. `CHECKS`
-is both, and `scripts/verify.py` reads only `CHECKS`.
+past its line budget, and it has now split twice on that same pressure, each time
+along a real seam rather than an arithmetic one.
+
+A check whose working directory is a participant's own tree is running that
+participant's own tests, which is a different kind of evidence from a check the
+repository owns over its contracts. Those live in `participants.py`.
+
+A check that rebuilds a published projection and compares the bytes fails for a
+reason no contract edit can express - somebody changed a source and did not
+rebuild - so it hands a reader a different finding. Those live in
+`projections.py`.
+
+What is left here is the repository grading its own contracts and current state.
+`CHECKS` is all three, and `scripts/verify.py` reads only `CHECKS`.
 """
 
 from __future__ import annotations
@@ -17,6 +26,7 @@ from __future__ import annotations
 import sys
 
 from sovverify.participants import PARTICIPANT_CHECKS
+from sovverify.projections import PROJECTION_CHECKS
 from sovverify.shape import ROOT, Check
 
 REPOSITORY_CHECKS = (
@@ -85,10 +95,6 @@ REPOSITORY_CHECKS = (
           "re-reads STATUS.yaml, ROADMAP.md and the epic projection at the moment of the "
           "check; it does not consult any prior reconciliation",
           ("ROADMAP.md", "STATUS.yaml", ".claude/epic/tree.json")),
-    Check("diagram provenance", [sys.executable, "scripts/sov_diagrams.py"], ROOT,
-          "recomputes each declared source digest from the file's bytes at the moment of "
-          "the check; it never reads a diagram's own claim about being current",
-          ("diagrams",)),
     Check("witness receipts against the tree",
           [sys.executable, "scripts/sov_witness_layer.py", "records"], ROOT,
           "recomputes every digest a witness receipt declares from the subject's bytes at "
@@ -222,6 +228,24 @@ REPOSITORY_CHECKS = (
           ("contracts/closure-ownership.json",
            "conformance/fixtures/closure/handoff-cases.json",
            "conformance/fixtures/closure/reachable-operations-cases.json")),
+    Check("closure checks are runnable",
+          [sys.executable, "scripts/sov_closure_checks.py", "check"], ROOT,
+          "reads the closure expression each custody declares and resolves it against the "
+          "filesystem, rather than trusting the schema that only ever validated the string's "
+          "shape. A custody that names a module with no entry point passes every other check in "
+          "this table and exits 0 in silence when run, which is trap T2 aimed at a phase gate: "
+          "green because it is mute. It resolves rather than executes, because several declared "
+          "checks touch live inventory; a check that resolves here can still fail when run, and "
+          "that is the reading this one deliberately does not perform",
+          ("contracts/custody.schema.json", "contracts/custodies.json",
+           "contracts/custodies", "scripts/sov_closure_checks.py")),
+    Check("closure check refusals fire",
+          [sys.executable, "scripts/sov_closure_checks.py", "selfcheck"], ROOT,
+          "drives one fixture per declared refusal through the same grader the check above runs "
+          "and fails when a declared refusal admits its fixture, so a refusal cannot be declared "
+          "in the module docstring and left unwired; it also refuses a declared code that no "
+          "fixture exercises",
+          ("scripts/sov_closure_checks.py",)),
     Check("standing authority grants", [sys.executable, "scripts/sov_grant.py", "selfcheck"],
           ROOT,
           "grades a declared corpus of requests against grants the corpus itself carries, so "
@@ -261,33 +285,6 @@ REPOSITORY_CHECKS = (
           [sys.executable, "scripts/sov_kernel.py", "binding-check"], ROOT,
           "rebuilds cross-service binding facts from manifests, paradigms, and Kernel transitions; it does not ask service implementations whether their declarations are coherent",
           ("services", "contracts/kernel-paradigms.json", "contracts/kernel-transitions.json")),
-    Check("Node Interface projection",
-          [sys.executable, "scripts/sov_interface.py", "check"], ROOT,
-          "rebuilds from current source digests and compares the checked projection byte-for-byte; the projection cannot make itself reachable or observed",
-          ("contracts/fixtures/node-interface.reference.json", "contracts/node-interface.schema.json", "scripts/sovnode")),
-    Check("documentation reader",
-          [sys.executable, "scripts/sov_docs.py", "check"], ROOT,
-          "re-renders every published document from its bytes on disk and compares the page "
-          "byte for byte, so a document that changed without a rebuild fails here rather than "
-          "being shown under a receipt for an older version",
-          ("docs/documentation.html", "docs/ingest.json", "scripts/sovdocs")),
-    Check("operation surface page",
-          [sys.executable, "scripts/sov_surface.py", "check"], ROOT,
-          "rebuilds the page from the capability map, the service manifests and the gateway "
-          "manifest at the moment of the check and compares bytes, so a page edited by hand "
-          "or left behind by a manifest change fails rather than misinforming a reader",
-          ("docs/surface.html", "contracts/fixtures/capability-map.reference.json",
-           "bindings/mcp/manifest.json")),
-    Check("automation health",
-          [sys.executable, "scripts/sov_schedule.py", "health-check"], ROOT,
-          "reads the schedule declarations and the run ledger at the moment of the check "
-          "and re-derives every reading, rather than believing the rendered page; the page "
-          "is then compared byte for byte against that derivation so it cannot go stale "
-          "silently, and where this machine holds no ledger the check says the run-history "
-          "half is UNCHECKED and names the absent source instead of grading it green. An "
-          "UNHEALTHY reading refuses here, which is the only alert Phase I admits",
-          ("contracts/automation-health.json", ".claude/schedules", "docs/automation.html",
-           "conformance/fixtures/automation-health/cases.json", "scripts/sovschedule")),
     Check("repository tooling tests", [sys.executable, "scripts/run_tooling_tests.py"], ROOT,
           "the harness's own tests; independent of the repository content they check, but "
           "not of the harness itself; the runner partitions the complete discovered module "
@@ -295,6 +292,7 @@ REPOSITORY_CHECKS = (
           ("scripts/tests", "scripts/run_tooling_tests.py")),
 )
 
-#: Every check, in the order a run prints them: what the repository owns, then
-#: what each participant says about itself.
-CHECKS = REPOSITORY_CHECKS + PARTICIPANT_CHECKS
+#: Every check, in the order a run prints them: what the repository owns over its
+#: contracts, then the projections it must be able to rebuild, then what each
+#: participant says about itself.
+CHECKS = REPOSITORY_CHECKS + PROJECTION_CHECKS + PARTICIPANT_CHECKS

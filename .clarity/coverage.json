@@ -679,7 +679,7 @@
       "changed": false
     },
     "CLAUDE.md": {
-      "artifact_digest": "sha256:822d69711a793ff5a8e49f5fa38d306ec373002a866db61c0b67a1430f1d34e5",
+      "artifact_digest": "sha256:71f49b7e4d36590538a1872937ad87d895cf2874a89e33db25909031aa1ed352",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
@@ -694,7 +694,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": true
+      "changed": false
     },
     "CONTRACT.md": {
       "artifact_digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",

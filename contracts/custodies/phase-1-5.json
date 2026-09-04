@@ -158,7 +158,7 @@
       "entry_stage": "ROOT_POINT",
       "target_stage": "HORIZONTAL_SURFACE",
       "closure": {
-        "check": {"kind": "COMMAND", "expression": "python conformance/commissioning.py"},
+        "check": {"kind": "COMMAND", "expression": "python scripts/sov_opening_readiness.py --instrument"},
         "judgement_seat": "seat:root",
         "defeated_by": "a candidate Definition that acquires standing because it was generated or agreed, or a primitive that only works when the participant is named Controller, Orchestrator, Worker, or Witness"
       },

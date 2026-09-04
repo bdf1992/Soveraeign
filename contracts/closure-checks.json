@@ -1,0 +1,75 @@
+{
+  "contract_schema": "soveraeign-closure-checks/v1",
+  "status": "PROPOSED",
+  "title": "Closure checks that do not dispatch, named rather than tolerated",
+  "note": "contracts/custody.schema.json calls a closure check 'a closure condition somebody can run' and validates only that the expression is a non-empty string. scripts/sov_closure_checks.py reads the string and drives each declared command as far as its argument parser. The entries below fail that reading today and were already failing before it existed: each names a CLI that was redesigned after the custody was written, so the recorded expression describes a command shape that no longer exists. They are recorded as debt rather than a refusal on the reasoning scripts/sov_phase_progress.py uses for the phase floor - a fall is attributable to the edit that caused it and refuses, a stall is printed and carried - and on the reasoning decisions/0081 used to take wall clock out of the exit code. Widening this list is the tolerance CLAUDE.md refuses; deleting from it is the repair.",
+  "governed_by": [
+    "contracts/custody.schema.json",
+    "contracts/custodies.json",
+    "AGENTS.md",
+    "decisions/0102-open-phase-1-5.md"
+  ],
+  "refuses": {
+    "CLOSURE_CHECK_DEBT_REPAIRED": "an entry here now dispatches, so the entry is stale and must be deleted rather than left as cover for the next one",
+    "CLOSURE_CHECK_DEBT_UNKNOWN": "an entry here names a custody or expression that no collection declares",
+    "CLOSURE_CHECK_DEBT_UNATTRIBUTED": "an entry here carries no observed failure and no seat that can repair it"
+  },
+  "debt": [
+    {
+      "custody_id": "custody:phase-i/binding-parity",
+      "expression": "python conformance/run.py --scenario RUN-I9-BYOM",
+      "observed": "run.py: error: unrecognized arguments: --scenario RUN-I9-BYOM",
+      "reason": "conformance/run.py takes --cases and --observations; it has never had a --scenario flag in the form this expression assumes, and the oracle now grades the whole corpus in one reading rather than one scenario at a time.",
+      "repair_seat": "seat:root",
+      "repair": "decide whether binding parity closes on the whole-corpus reading (python conformance/run.py) or whether the oracle should regain per-scenario selection; both are reachable and the choice is the custody holder's, not this reader's."
+    },
+    {
+      "custody_id": "custody:two-binding-proof",
+      "expression": "python conformance/run.py --scenario RUN-I9-BYOM",
+      "observed": "run.py: error: unrecognized arguments: --scenario RUN-I9-BYOM",
+      "reason": "the same expression as custody:phase-i/binding-parity, carried by a second custody; one repair settles both.",
+      "repair_seat": "seat:root",
+      "repair": "as above."
+    },
+    {
+      "custody_id": "custody:phase-i/receipt-reconstruction",
+      "expression": "python scripts/sov_ainative.py --check 3",
+      "observed": "sov_ainative.py: error: argument command: invalid choice: '3' (choose from 'grade', 'scenarios', 'selfcheck')",
+      "reason": "sov_ainative.py moved from a numbered --check flag to named subcommands. Which subcommand carries AI-NATIVE check 3 is a reading of AI-NATIVE.md, not a rename.",
+      "repair_seat": "seat:root",
+      "repair": "name the subcommand and argument that grade AI-NATIVE check 3, then replace the expression."
+    },
+    {
+      "custody_id": "custody:independent-observation",
+      "expression": "python scripts/sov_ainative.py --check 3",
+      "observed": "sov_ainative.py: error: argument command: invalid choice: '3' (choose from 'grade', 'scenarios', 'selfcheck')",
+      "reason": "the same expression as custody:phase-i/receipt-reconstruction; one repair settles both.",
+      "repair_seat": "seat:root",
+      "repair": "as above."
+    },
+    {
+      "custody_id": "custody:authority-enforcement",
+      "expression": "python scripts/sov_capability.py enforcement",
+      "observed": "sov_capability: error: argument command: invalid choice: 'enforcement' (choose from 'events', 'build', 'check', 'show', 'offices')",
+      "reason": "sov_capability.py has no enforcement subcommand. 'events' judges emitted receipt events against the map and is the nearest reading, but whether that is what authority enforcement closes on is the custody holder's judgement.",
+      "repair_seat": "seat:root",
+      "repair": "decide whether 'events' or 'check' is the closure reading for authority enforcement, then replace the expression."
+    },
+    {
+      "custody_id": "custody:session-as-node",
+      "expression": "python scripts/sov_node.py admit --session current",
+      "observed": "sov_node: error: argument command: invalid choice: 'admit' (choose from 'status', 'peers', 'validate')",
+      "reason": "the expression names an admission, which is an act rather than a reading, and sov_node.py exposes no admit subcommand. A closure check that performs an admission would settle the thing it grades.",
+      "repair_seat": "seat:root",
+      "repair": "replace with the reading that shows a session was admitted as a node - 'validate' or 'peers' - rather than the act of admitting one."
+    },
+    {
+      "custody_id": "custody:record-custody",
+      "expression": "python -m soveraeign_record_service.cli --root .local/console/journal verify",
+      "observed": "ModuleNotFoundError: No module named 'soveraeign_record_service'",
+      "reason": "the package lives at services/record/src/ and is not on the path from the repository root, so the command runs only with PYTHONPATH set. The expression is right about what to run and silent about how to reach it.",
+      "repair_seat": "seat:root",
+      "repair": "either record the PYTHONPATH= form in the expression, or give the Record Service a console entry point reachable from the root."
+    }
+  ]
+}

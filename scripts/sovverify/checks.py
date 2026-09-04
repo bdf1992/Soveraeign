@@ -5,20 +5,16 @@ checks. That sentence is the check's warrant; an entry without one is a command,
 not evidence.
 
 The table lives apart from the runner so it can grow without dragging the runner
-past its line budget, and it has now split twice on that same pressure, each time
-along a real seam rather than an arithmetic one.
-
-A check whose working directory is a participant's own tree is running that
-participant's own tests, which is a different kind of evidence from a check the
-repository owns over its contracts. Those live in `participants.py`.
-
-A check that rebuilds a published projection and compares the bytes fails for a
-reason no contract edit can express - somebody changed a source and did not
-rebuild - so it hands a reader a different finding. Those live in
-`projections.py`.
-
-What is left here is the repository grading its own contracts and current state.
-`CHECKS` is all three, and `scripts/verify.py` reads only `CHECKS`.
+past its line budget, and it has now split twice on that pressure, each time
+along a real seam rather than an arithmetic one. A check whose working directory
+is a participant's own tree is running that participant's own tests, which is a
+different kind of evidence from a check the repository owns over its contracts;
+those live in `participants.py`. A check that rebuilds a published projection and
+compares the bytes fails for a reason no contract edit can express - somebody
+changed a source and did not rebuild - so it hands a reader a different finding;
+those live in `projections.py`. What is left here is the repository grading its
+own contracts and current state. `CHECKS` is all three, assembled in
+`sovverify/__init__.py`, and `scripts/verify.py` reads only `CHECKS`.
 """
 
 from __future__ import annotations
@@ -228,24 +224,29 @@ REPOSITORY_CHECKS = (
           ("contracts/closure-ownership.json",
            "conformance/fixtures/closure/handoff-cases.json",
            "conformance/fixtures/closure/reachable-operations-cases.json")),
-    Check("closure checks are runnable",
+    Check("closure checks reach their parser",
           [sys.executable, "scripts/sov_closure_checks.py", "check"], ROOT,
-          "reads the closure expression each custody declares and resolves it against the "
-          "filesystem, rather than trusting the schema that only ever validated the string's "
-          "shape. A custody that names a module with no entry point passes every other check in "
-          "this table and exits 0 in silence when run, which is trap T2 aimed at a phase gate: "
-          "green because it is mute. It resolves rather than executes, because several declared "
-          "checks touch live inventory; a check that resolves here can still fail when run, and "
-          "that is the reading this one deliberately does not perform",
+          "drives the command each custody declares as far as its argument parser and stops "
+          "before the body, rather than trusting the schema that only validated the string's "
+          "shape. Resolving the path was the first version and was wrong where it mattered: "
+          "it called twenty-one closure checks runnable while seven exited 2 into a usage "
+          "message, so the gate was itself the defect it named. Driving the parser catches a "
+          "renamed subcommand, a removed flag, and a package that is not importable as "
+          "declared, and still runs no check's body - one declared check names an admission. "
+          "The seven already broken are carried in contracts/closure-checks.json as attributed "
+          "debt, and an entry there that starts dispatching fails, so the list cannot outlive "
+          "the breakage it records. PASS means the gate can speak, never that it said yes",
           ("contracts/custody.schema.json", "contracts/custodies.json",
-           "contracts/custodies", "scripts/sov_closure_checks.py")),
+           "contracts/custodies", "contracts/closure-checks.json",
+           "scripts/sov_closure_checks.py", "scripts/sovcheckrun")),
     Check("closure check refusals fire",
           [sys.executable, "scripts/sov_closure_checks.py", "selfcheck"], ROOT,
-          "drives one fixture per declared refusal through the same grader the check above runs "
-          "and fails when a declared refusal admits its fixture, so a refusal cannot be declared "
-          "in the module docstring and left unwired; it also refuses a declared code that no "
-          "fixture exercises",
-          ("scripts/sov_closure_checks.py",)),
+          "drives one fixture per declared refusal through the same grader the check above "
+          "runs and fails when a refusal admits its fixture, so a refusal cannot be declared "
+          "and left unwired; a declared code no fixture exercises also fails. The mute fixture is a file this package owns whose only job is "
+          "to look runnable and not be: it carries the entry-point text inside its docstring, "
+          "the case that defeated the first reader's substring test",
+          ("scripts/sov_closure_checks.py", "scripts/sovcheckrun")),
     Check("standing authority grants", [sys.executable, "scripts/sov_grant.py", "selfcheck"],
           ROOT,
           "grades a declared corpus of requests against grants the corpus itself carries, so "

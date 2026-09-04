@@ -1,0 +1,91 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A15",
+  "claim": "Phase 1.5 opened with two of its six exit clauses guarded by a command that cannot run. `python conformance/commissioning.py` and `python scripts/sov_active_phase_progress.py` are evaluator modules with no entry point: running either printed nothing and exited 0, so P15-X4 and P15-X5 read closed because their checks could not speak. Both are repaired, and a new gate drives every declared closure command as far as its argument parser so this cannot recur silently. Reading them all found seven more commands, none of them Phase 1.5's, that have never run at any commit in this repository's history. Those seven are recorded as attributed debt with the error each produces and the judgement each repair needs, all of which are yours. What needs your judgement is two things: the seven repairs, and the fact that this work cannot be landed to main under the standing grant, because any change to the verification check count forces an edit to CLAUDE.md and .clarity/coverage.json, which the grant excludes.",
+  "subject": {
+    "artifact": "contracts/closure-checks.json",
+    "from_standing": "OPEN",
+    "to_standing": "BUILT"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": null,
+  "visible_result": {
+    "demo": [
+      "python",
+      "scripts/sov_closure_checks.py",
+      "check"
+    ],
+    "shows": "every closure check every custody declares, driven to its argument parser: which reach it, which do not, and the exact error each failing one produces",
+    "expect": "PASS: 14 of 21 command closure check(s) across 23 custodies reach their argument parser; 7 carried as attributed debt in contracts/closure-checks.json. Then `python scripts/sov_closure_checks.py selfcheck` drives one fixture per declared refusal and prints twelve REFUSES lines, and `python scripts/sov_active_phase_progress.py` is the P15-X5 closure check that used to print nothing."
+  },
+  "evidence": [
+    {
+      "address": "scripts/sov_closure_checks.py",
+      "digest": null,
+      "says": "the reader: nine refusals over one closure expression, three more over the debt list, and a kind census so a closure route this reader does not drive is printed rather than skipped"
+    },
+    {
+      "address": "scripts/sovcheckrun/dispatch.py",
+      "digest": null,
+      "says": "the line between resolving and running. It drives the target under runpy with the declared argv and a patched parse_args that raises the instant a parse succeeds, so a command's body never runs. Its docstring states the four places the reading stops, each one a witness fixture"
+    },
+    {
+      "address": "scripts/sovcheckrun/resolve.py",
+      "digest": null,
+      "says": "the expression grammar: shell operators refused because which stage closes the custody would be undeclared, entry points parsed by AST rather than searched for as text, an ambiguous dotted name refused rather than guessed, and leading NAME=value assignments carried through to the probe rather than dropped"
+    },
+    {
+      "address": "contracts/closure-checks.json",
+      "digest": null,
+      "says": "the seven closure conditions that have never run, each with the error it prints, why it broke, and the seat that can repair it. Its note records the provenance a first draft got wrong: git log -S finds no commit in which any of these five command shapes existed"
+    },
+    {
+      "address": "contracts/closure-checks.schema.json",
+      "digest": null,
+      "says": "why an entry cannot be cheap: every field required, because an entry with no observed error and no repair seat is an exemption rather than attributed debt"
+    },
+    {
+      "address": "scripts/tests/test_closure_checks.py",
+      "digest": null,
+      "says": "45 cases. Most are ones a witness drove against an earlier version that admitted them: a guard inside a docstring, a mute stage hidden behind && , a CLI that swallows the sentinel and runs its body, a target that fails before any parser exists. One runs each debt entry the way a person would and compares the recorded error to what it actually prints"
+    },
+    {
+      "address": "contracts/custodies/phase-1-5.json",
+      "digest": null,
+      "says": "P15-X4's repointed closure check and the note recording why, including that the new command prints CLOSED about the instrument while the clause stays NOT_EARNED"
+    },
+    {
+      "address": "scripts/tests/test_check_table_assembly.py",
+      "digest": null,
+      "says": "the regression test for the latent defect this work exposed: the check table's assembly named each group, so a new group was dropped from every run. It reads the group declarations out of the source by AST, because asking the package would be asking the thing that could have dropped one"
+    }
+  ],
+  "why_it_matters": "A closure check is what stops a phase clause from being declared met on somebody's say-so, and `contracts/custody.schema.json` calls it 'a closure condition somebody can run'. It validated that the expression was a non-empty string and nothing read the string. That is trap T2 aimed at a phase gate rather than at the verification suite: green because it is mute. Two of the six clauses gating the phase you opened on 2026-09-03 were in that state from the first day, and `decisions/0102` names 'a custody whose closure names a command that does not run' as a defeater of its own ruling. The wider reading matters more than the two repairs: seven other closure conditions across this repository have never once run, and nobody could have known, because nothing had ever tried them.",
+  "what_could_defeat_it": [
+    "A closure command that reaches its parser and then answers the wrong question. This gate measures that the gate can speak, never that it says the right thing, and no check in this repository measures the second.",
+    "A target that does consequential work at import time. The probe runs the module body and its import closure up to the parse call, so 'runs no command body' is true of the body under the entry point and not of everything on the way there. The current corpus was checked and none does; the next one is not stopped.",
+    "A CLI that peeks with parse_known_args and validates strictly afterwards. It is admitted whatever its arguments, because the guard can only see a parse_args already on the stack.",
+    "The debt list becoming the place broken checks go to be forgotten. Three guards hold it - a healed entry fails, a phantom entry fails, an entry with no observed error or repair seat fails - and a schema now grades every field. If entries accumulate faster than they are deleted, the guards are not enough and the call to carry them rather than refuse them was wrong.",
+    "Evidence that repointing P15-X4's closure expression was not this seat's to take. It is recorded in the custody's own note with the reasoning; if you disagree, the previous expression is one line away."
+  ],
+  "residuals": [
+    "Two independent witness passes, both defeating. The first refused WITNESSED outright: the check as first built resolved a file path and searched for a substring, and reported twenty-one closure checks runnable while seven exited into a usage message - the gate was itself the defect it named. Thirteen findings. The second pass confirmed the repairs and found five more in the new mechanism, of which four are repaired here and four are carried below. Both passes' findings were repaired in place rather than filed.",
+    "The seven carried commands were never valid. `git log -S` over the whole history finds no commit in which conformance/run.py took --scenario, sov_ainative.py took --check, sov_capability.py declared enforcement, sov_node.py declared admit, or the Record Service CLI declared verify. They were authored aspirationally, so there is no earlier form for a repair to restore. An earlier draft of the debt contract said they were broken by a CLI redesign; that was wrong and the witness caught it.",
+    "custody:record-custody has two faults, not one. The package is not on the path from the root, and with PYTHONPATH set the CLI still answers 'invalid choice: verify'. The first draft of its repair would not have repaired it.",
+    "The probe never tests the declared interpreter: `python3.11 x.py` is driven with this process's own interpreter, so a version-specific failure is invisible.",
+    "A target with no argument parser runs to completion under the probe and its own exit code is read as its verdict. That is why sov_standing.py, which takes no arguments, is correctly admitted; it also means the probe grades such a target less than it grades the others.",
+    "P15-X4's repaired check prints 'CLOSED: P15 instrument' and exits 0 while the clause itself is NOT_EARNED. The custody note says so in the contract, because the two readings are one word apart and a careless reader will take the wrong one.",
+    "decisions/0102 says the commissioning circuit 'will need a reader of its own, which is P15-X5's first piece of work'. That reader was not built. What P15-X5's closure check now runs is a CLI over the exit-custody floor grader that already existed, which is honest about what it grades and is not the circuit reader you asked for. That is scheduled work under this phase, not a question for you.",
+    "This concern's own session is unidentified. `python scripts/sov_session.py brief` reports no registered principal, which is a small live reading against P15-X1, whose whole subject is a fresh participant establishing an attributable principal. Minting one is a write to contracts/principals.json and was not taken.",
+    "No witness record exists under witness/. The sov-witness role carries no Write tool, and the witness declined to reach around that with Bash, which is correct. So this concern has two independent readings and no independent artifact of either.",
+    "scripts/sovverify/checks.py hit the 300-line ceiling and the check table split a second time, into projections.py. That split exposed a live defect it did not cause: sovverify/__init__.py reassembled CHECKS by naming each group, so the new group was dropped from every run while checks.py still read as though it composed the table. Five existing checks disappeared and the only symptom was a count. Repaired, with an AST-based regression test."
+  ],
+  "on_accept": "The closure check every custody declares becomes something the repository drives rather than something it stores, and contracts/closure-checks.json becomes the standing record of which closure conditions have never run. The seven repairs remain open work addressed to you, one judgement each, listed with the reading that would settle them. Nothing about Phase 1.5's standing moves: all six custodies stay PROPOSED and STATUS.yaml is untouched.",
+  "on_reject": "Say whether the objection is the gate or the debt list. If the gate, reverting is deleting scripts/sov_closure_checks.py, scripts/sovcheckrun/, two contracts and two test modules, and removing two entries from the check table; nothing existing was weakened and no check was loosened. If the debt list, the alternative is refusing all seven, which turns verify.py red for defects a different seat authored and blocks unrelated work until judgements only you can make are made."
+}

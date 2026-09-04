@@ -264,6 +264,13 @@ owner_acceptance_queue:
     presented_by_seat: seat:session-control
     at: 2026-08-26T00:00:00Z
 
+  - id: A15
+    packet: acceptance/A15.json
+    presented: Two of Phase 1.5's six exit clauses were guarded by a command that cannot run; every declared closure check is now driven to its parser, and seven that have never run at any commit are named
+    waits_on: seat:root
+    presented_by_seat: seat:session-control
+    at: 2026-09-04T00:00:00Z
+
   - id: A6
     packet: acceptance/A6.json
     presented: The AI-native standard now has an executable grader, and the substantive-operation judgement it needs is one only Bdo can make

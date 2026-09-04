@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/closure-checks.schema.json",
+  "title": "Closure checks carried as attributed debt",
+  "description": "The shape of contracts/closure-checks.json. A debt list with no schema is a place where prose no check reads sits next to error text a check does produce, which is how a wrong reason and a wrong provenance claim both survived a first reading. Every field here is required because an entry missing one is an exemption rather than attributed debt, and scripts/sov_closure_checks.py refuses that with CLOSURE_CHECK_DEBT_UNATTRIBUTED.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_schema",
+    "status",
+    "title",
+    "note",
+    "governed_by",
+    "refuses",
+    "debt"
+  ],
+  "properties": {
+    "contract_schema": {
+      "const": "soveraeign-closure-checks/v1"
+    },
+    "status": {
+      "enum": [
+        "PROPOSED",
+        "ACCEPTED",
+        "RATIFIED"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1
+    },
+    "governed_by": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "refuses": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Every code here must be implemented and driven by a fixture; the selfcheck refuses a declared code no fixture exercises. The naming rule is not expressible here because sovkernel.jsonschema resolves no propertyNames keyword; the selfcheck is what enforces it."
+    },
+    "debt": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "custody_id",
+          "expression",
+          "observed",
+          "reason",
+          "repair_seat",
+          "repair"
+        ],
+        "properties": {
+          "custody_id": {
+            "type": "string",
+            "pattern": "^custody:[a-z0-9][a-z0-9/-]*$"
+          },
+          "expression": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Byte-identical to the expression the custody declares. The entry is keyed on the pair, so repointing a custody leaves its entry unknown rather than silently carrying cover forward."
+          },
+          "observed": {
+            "type": "string",
+            "minLength": 1,
+            "description": "What running the command actually prints: its last line of stderr, with any leading interpreter path stripped, because that path differs between hosts and a host-specific string is not evidence anybody else can reproduce. A paraphrase is how a wrong reason hides; scripts/tests/test_closure_checks.py runs each command and compares."
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "repair_seat": {
+            "type": "string",
+            "pattern": "^seat:[a-z0-9][a-z0-9-]*$"
+          },
+          "repair": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

@@ -42,142 +42,18 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
-from sovcheckrun import dispatch, resolve  # noqa: E402
+from sovcheckrun.grade import (  # noqa: E402
+    DEBT_CONTRACT, DEBT_SCHEMA, REFUSALS, _defect, _kind_census, debt_contract,
+    debt_schema_defects, grade, grade_check,
+)
 from sovcustody import model as custody_model  # noqa: E402
-
-DEBT_CONTRACT = "contracts/closure-checks.json"
-
-REFUSALS = {
-    "CLOSURE_CHECK_UNPARSEABLE":
-        "the expression is not a command line this reader can split",
-    "CLOSURE_CHECK_COMPOUND":
-        "the expression chains more than one command, so which stage closes the custody "
-        "is undeclared",
-    "CLOSURE_CHECK_NOT_PYTHON":
-        "the expression names no python target this reader knows how to drive",
-    "CLOSURE_CHECK_TARGET_MISSING":
-        "the expression names a file or module that does not exist",
-    "CLOSURE_CHECK_AMBIGUOUS":
-        "the dotted module name matches more than one file, so the target is undeclared",
-    "CLOSURE_CHECK_MUTE":
-        "the target has no entry point, so running it exits 0 in silence",
-    "CLOSURE_CHECK_REJECTED":
-        "the target exists and refuses the declared arguments",
-    "CLOSURE_CHECK_UNIMPORTABLE":
-        "the target cannot be imported as declared",
-    "CLOSURE_CHECK_UNSETTLEABLE":
-        "the custody has neither a check nor a judgement seat, so nothing can close it",
-}
-
-DISPATCH_REFUSALS = {
-    dispatch.REJECTED: "CLOSURE_CHECK_REJECTED",
-    dispatch.UNIMPORTABLE: "CLOSURE_CHECK_UNIMPORTABLE",
-}
-
-
-def debt_contract(root: Path = ROOT) -> dict[str, Any]:
-    return json.loads((root / DEBT_CONTRACT).read_bytes().decode("utf-8"))
-
-
-def _defect(code: str, custody_id: str, detail: str) -> dict[str, str]:
-    return {"code": code, "custody": custody_id, "detail": detail}
-
-
-def grade_check(custody: dict[str, Any], root: Path = ROOT) -> list[dict[str, str]]:
-    """Grade one custody's declared closure route."""
-    custody_id = str(custody.get("custody_id") or "unnamed custody")
-    closure = custody.get("closure") or {}
-    check = closure.get("check")
-
-    if not check:
-        if not closure.get("judgement_seat"):
-            return [_defect("CLOSURE_CHECK_UNSETTLEABLE", custody_id,
-                            f"{custody_id} declares neither a check nor a judgement seat")]
-        return []
-    if str(check.get("kind")) != "COMMAND":
-        return []
-
-    expression = str(check.get("expression") or "")
-    target = resolve.resolve(root, expression)
-    if target.refusal:
-        return [_defect(target.refusal, custody_id,
-                        f"{custody_id} closure check {expression!r}: {REFUSALS[target.refusal]}")]
-
-    if target.mode == "path" and not resolve.has_entry_point(target.path):
-        relative = target.path.relative_to(root).as_posix()
-        return [_defect("CLOSURE_CHECK_MUTE", custody_id,
-                        f"{custody_id} closure check {expression!r} resolves to {relative}, "
-                        f"which {REFUSALS['CLOSURE_CHECK_MUTE']}")]
-
-    code, message = dispatch.probe(root, target.mode, target.target, target.argv)
-    refusal = DISPATCH_REFUSALS.get(code)
-    if refusal:
-        return [_defect(refusal, custody_id,
-                        f"{custody_id} closure check {expression!r}: {message or REFUSALS[refusal]}")]
-    if code == dispatch.NO_PARSER and target.mode == "module":
-        return [_defect("CLOSURE_CHECK_MUTE", custody_id,
-                        f"{custody_id} closure check {expression!r} ran without reading an "
-                        "argument, so the declared arguments were never accepted")]
-    return []
-
-
-def grade(records: list[dict[str, Any]] | None = None, root: Path = ROOT,
-          entries: list[dict[str, Any]] | None = None,
-          ) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
-    """Return (refusals, carried debt) over every custody in every collection.
-
-    `entries` overrides the checked-in debt list. Only a test passes it: the two
-    refusals that guard the list against going stale cannot both be driven from a
-    contract that is, by construction, currently accurate.
-    """
-    rows = custody_model.custodies() if records is None else records
-    debt_entries = debt_contract(root).get("debt", []) if entries is None else entries
-    carried = {(entry["custody_id"], entry["expression"]): entry for entry in debt_entries}
-
-    refusals: list[dict[str, str]] = []
-    debt: list[dict[str, str]] = []
-    seen: set[tuple[str, str]] = set()
-
-    for custody in rows:
-        custody_id = str(custody.get("custody_id") or "")
-        check = (custody.get("closure") or {}).get("check") or {}
-        expression = str(check.get("expression") or "")
-        key = (custody_id, expression)
-        found = grade_check(custody, root)
-        if key in carried:
-            seen.add(key)
-            if not found:
-                refusals.append(_defect(
-                    "CLOSURE_CHECK_DEBT_REPAIRED", custody_id,
-                    f"{custody_id} is recorded in {DEBT_CONTRACT} as not dispatching, and it "
-                    "now dispatches; delete the entry rather than leaving it as cover"))
-            else:
-                debt.extend(found)
-            continue
-        refusals.extend(found)
-
-    for custody_id, expression in sorted(set(carried) - seen):
-        refusals.append(_defect(
-            "CLOSURE_CHECK_DEBT_UNKNOWN", custody_id,
-            f"{DEBT_CONTRACT} carries {custody_id} with {expression!r}, which no collection "
-            "declares"))
-    return refusals, debt
-
-
-def _kind_census(rows: list[dict[str, Any]]) -> dict[str, int]:
-    """Every closure route by kind, so a kind this reader does not drive is visible."""
-    census: dict[str, int] = {}
-    for custody in rows:
-        check = (custody.get("closure") or {}).get("check")
-        kind = str(check.get("kind")) if check else "NONE (settled by a seat)"
-        census[kind] = census.get(kind, 0) + 1
-    return census
-
 
 def cmd_check(args: argparse.Namespace) -> int:
     """Report the grade over the checked-in custody collections."""
     rows = custody_model.custodies()
     refusals, debt = grade(rows)
+    refusals = [_defect("CLOSURE_CHECK_DEBT_UNATTRIBUTED", DEBT_CONTRACT, problem)
+                for problem in debt_schema_defects()] + refusals
     census = _kind_census(rows)
     if args.as_json:
         print(json.dumps({"custodies": len(rows), "kinds": census,
@@ -224,6 +100,33 @@ def _fixtures() -> list[tuple[str, dict[str, Any]]]:
     ]
 
 
+def _debt_fixtures() -> list[tuple[str, list[dict[str, Any]], list[dict[str, Any]]]]:
+    """One (records, debt entries) pair per guard on the debt list itself."""
+    working = "python scripts/sov_closure_checks.py check"
+    broken = "python scripts/sov_node.py admit --session current"
+
+    def custody(name: str, expression: str) -> dict[str, Any]:
+        return {"custody_id": f"custody:fixture/{name}", "closure": {
+            "check": {"kind": "COMMAND", "expression": expression},
+            "judgement_seat": "seat:root", "defeated_by": "fixture"}}
+
+    def entry(name: str, expression: str, **fields: str) -> dict[str, Any]:
+        base = {"custody_id": f"custody:fixture/{name}", "expression": expression,
+                "observed": "an observed error", "reason": "a stated reason",
+                "repair_seat": "seat:root", "repair": "a stated repair"}
+        base.update(fields)
+        return base
+
+    return [
+        ("CLOSURE_CHECK_DEBT_REPAIRED",
+         [custody("healed", working)], [entry("healed", working)]),
+        ("CLOSURE_CHECK_DEBT_UNKNOWN",
+         [], [entry("vanished", "python scripts/gone.py")]),
+        ("CLOSURE_CHECK_DEBT_UNATTRIBUTED",
+         [custody("bare", broken)], [entry("bare", broken, observed="", repair_seat="")]),
+    ]
+
+
 def cmd_selfcheck(_: argparse.Namespace) -> int:
     """Prove each declared refusal fires, and that a good custody fires none."""
     failures: list[str] = []
@@ -242,11 +145,17 @@ def cmd_selfcheck(_: argparse.Namespace) -> int:
     else:
         print("ADMITS  a command that reaches its parser")
 
+    for expected, records, entries in _debt_fixtures():
+        codes = [defect["code"] for defect in grade(records, entries=entries)[0]]
+        if codes != [expected]:
+            failures.append(f"{expected}: fixture produced {codes or 'no defect'}")
+        else:
+            print(f"REFUSES {expected}")
+
     declared = set(REFUSALS) | set(debt_contract().get("refuses", {}))
-    exercised = {expected for expected, _ in _fixtures()}
-    unexercised = sorted(declared - exercised - {"CLOSURE_CHECK_DEBT_REPAIRED",
-                                                 "CLOSURE_CHECK_DEBT_UNKNOWN",
-                                                 "CLOSURE_CHECK_DEBT_UNATTRIBUTED"})
+    exercised = ({expected for expected, _ in _fixtures()}
+                 | {expected for expected, _, _ in _debt_fixtures()})
+    unexercised = sorted(declared - exercised)
     if unexercised:
         failures.append(f"declared refusals without a fixture: {unexercised}")
 

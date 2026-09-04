@@ -16,7 +16,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-import sov_closure_checks as closure_checks  # noqa: E402
+import sov_closure_checks as closure_checks  # noqa: E402,F401
 from sovcheckrun import dispatch, resolve  # noqa: E402
 
 MUTE = "python scripts/sovcheckrun/fixtures/mute_docstring_guard.py"
@@ -212,13 +212,17 @@ class CarriedDebt(unittest.TestCase):
         record["custody_id"] = "custody:fixture/healed"
         refusals, _ = closure_checks.grade(
             [record], entries=[{"custody_id": "custody:fixture/healed",
-                                "expression": working}])
+                                "expression": working, "observed": "an error",
+                                "reason": "a reason", "repair_seat": "seat:root",
+                                "repair": "a repair"}])
         self.assertEqual([d["code"] for d in refusals], ["CLOSURE_CHECK_DEBT_REPAIRED"])
 
     def test_an_entry_naming_no_declared_custody_is_refused(self) -> None:
         refusals, _ = closure_checks.grade(
             [], entries=[{"custody_id": "custody:fixture/vanished",
-                          "expression": "python scripts/gone.py"}])
+                          "expression": "python scripts/gone.py", "observed": "an error",
+                          "reason": "a reason", "repair_seat": "seat:root",
+                          "repair": "a repair"}])
         self.assertEqual([d["code"] for d in refusals], ["CLOSURE_CHECK_DEBT_UNKNOWN"])
 
     def test_a_repointed_expression_leaves_its_entry_unknown(self) -> None:
@@ -227,15 +231,126 @@ class CarriedDebt(unittest.TestCase):
         record["custody_id"] = "custody:fixture/repointed"
         refusals, _ = closure_checks.grade(
             [record], entries=[{"custody_id": "custody:fixture/repointed",
-                                "expression": "python scripts/old_name.py"}])
+                                "expression": "python scripts/old_name.py",
+                                "observed": "an error", "reason": "a reason",
+                                "repair_seat": "seat:root", "repair": "a repair"}])
         self.assertEqual([d["code"] for d in refusals], ["CLOSURE_CHECK_DEBT_UNKNOWN"])
+
+
+class TheShimStopsBeforeTheBody(unittest.TestCase):
+    """Cases a witness used to make the shim run a command body it promised not to."""
+
+    def _script(self, tmp: Path, body: str) -> None:
+        (tmp / "cli.py").write_text(body, encoding="utf-8")
+
+    def test_a_cli_that_swallows_exceptions_does_not_reach_its_body(self) -> None:
+        """The sentinel is a BaseException; an Exception one was caught and the body ran."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._script(root,
+                         "import argparse, pathlib\n"
+                         "p = argparse.ArgumentParser(); p.add_argument('n')\n"
+                         "try:\n    p.parse_args()\nexcept Exception:\n    pass\n"
+                         "pathlib.Path('BODY_RAN').write_text('x')\n")
+            code, _ = dispatch.probe(root, "path", "cli.py", ["value"])
+            self.assertEqual(code, dispatch.PARSED)
+            self.assertFalse((root / "BODY_RAN").exists())
+
+    def test_a_target_that_fails_before_any_parser_is_not_dispatching(self) -> None:
+        """Reported as PARSED before: the failure came first and there was no parser."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._script(root, "open('/no/such/path/at/all')\n")
+            code, _ = dispatch.probe(root, "path", "cli.py", [])
+            self.assertEqual(code, dispatch.UNIMPORTABLE)
+
+    def test_a_target_with_no_parser_keeps_its_own_verdict(self) -> None:
+        """sov_standing.py takes no arguments; refusing it would be a false positive."""
+        self.assertEqual(codes(custody("python scripts/sov_standing.py")), [])
+
+
+class DeclaredEnvironmentIsApplied(unittest.TestCase):
+    """Accepting the PYTHONPATH shape and then dropping it made the repair cosmetic."""
+
+    EXPRESSION = "PYTHONPATH=services/record/src python -m soveraeign_record_service.cli"
+
+    def test_the_assignment_is_carried_not_discarded(self) -> None:
+        target = resolve.resolve(ROOT, f"{self.EXPRESSION} --root x operations")
+        self.assertEqual(target.environment, {"PYTHONPATH": "services/record/src"})
+
+    def test_the_package_is_importable_with_it_and_not_without(self) -> None:
+        self.assertEqual(codes(custody(f"{self.EXPRESSION} --root x operations")), [])
+        self.assertEqual(
+            codes(custody("python -m soveraeign_record_service.cli --root x operations")),
+            ["CLOSURE_CHECK_UNIMPORTABLE"])
+
+    def test_the_recorded_expression_still_fails_on_its_subcommand(self) -> None:
+        """Both faults, not one: the debt entry's repair depends on this."""
+        self.assertEqual(codes(custody(f"{self.EXPRESSION} --root x verify")),
+                         ["CLOSURE_CHECK_REJECTED"])
+
+
+class TheDebtContractIsGraded(unittest.TestCase):
+    """A debt list nothing reads is an exemption list."""
+
+    def test_the_checked_in_contract_matches_its_schema(self) -> None:
+        self.assertEqual(closure_checks.debt_schema_defects(), [])
+
+    def test_the_schema_refuses_an_entry_with_no_observed_error(self) -> None:
+        import copy
+        import json
+
+        from sovkernel.jsonschema import validate
+
+        schema = json.loads((ROOT / closure_checks.DEBT_SCHEMA).read_text(encoding="utf-8"))
+        broken = copy.deepcopy(closure_checks.debt_contract())
+        broken["debt"][0].pop("observed")
+        self.assertTrue(list(validate(broken, schema)))
+
+    def test_an_unattributed_entry_is_refused(self) -> None:
+        broken = "python scripts/sov_node.py admit --session current"
+        record = custody(broken)
+        record["custody_id"] = "custody:fixture/bare"
+        refusals, _ = closure_checks.grade(
+            [record], entries=[{"custody_id": "custody:fixture/bare", "expression": broken}])
+        self.assertEqual([d["code"] for d in refusals], ["CLOSURE_CHECK_DEBT_UNATTRIBUTED"])
+
+    def test_every_recorded_observation_matches_what_the_command_prints(self) -> None:
+        """Run the command the way a person would, not through the shim.
+
+        `observed` is what somebody sees when they type the expression. Grading it
+        against the shim's own stderr would compare the record to the tool that
+        wrote it; a hand-written paraphrase slipped through exactly that gap.
+        """
+        import re
+        import shlex
+        import subprocess
+
+        for entry in closure_checks.debt_contract()["debt"]:
+            with self.subTest(custody=entry["custody_id"]):
+                done = subprocess.run(
+                    [sys.executable, *shlex.split(entry["expression"])[1:]],
+                    cwd=ROOT, capture_output=True, text=True, timeout=60)
+                lines = (done.stderr or "").strip().splitlines()
+                last = lines[-1] if lines else ""
+                # The interpreter path differs between hosts, so it is not recorded.
+                last = re.sub(r"^\S*python[0-9.]*: ", "", last)
+                self.assertEqual(last, entry["observed"])
 
 
 class DeclaredRefusalsAreWired(unittest.TestCase):
 
     def test_every_declared_refusal_has_a_firing_fixture(self) -> None:
-        exercised = {expected for expected, _ in closure_checks._fixtures()}
-        self.assertEqual(set(closure_checks.REFUSALS), exercised)
+        exercised = ({expected for expected, _ in closure_checks._fixtures()}
+                     | {expected for expected, _, _ in closure_checks._debt_fixtures()})
+        declared = set(closure_checks.REFUSALS) | set(
+            closure_checks.debt_contract().get("refuses", {}))
+        self.assertEqual(declared, exercised)
+
+    def test_no_declared_refusal_is_exempted_from_that_test(self) -> None:
+        """The debt guards were once named in an exemption list inside the selfcheck."""
+        source = (ROOT / "scripts/sov_closure_checks.py").read_text(encoding="utf-8")
+        self.assertNotIn("unexercised = sorted(declared - exercised - {", source)
 
     def test_a_kind_this_reader_does_not_drive_is_counted_not_skipped(self) -> None:
         """Three of the schema's four kinds are not commands; silence would hide them."""

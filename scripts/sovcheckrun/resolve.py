@@ -25,11 +25,12 @@ INTERPRETERS = ("python", "python3")
 class Target(NamedTuple):
     """What a closure expression resolves to, or why it does not resolve."""
 
-    mode: str            # "path", "module", or "" when unresolved
-    target: str          # the file path or the dotted module name
-    argv: list[str]      # the tokens after the target
-    path: Path | None    # the file on disk, when one is known
-    refusal: str         # a refusal code, or "" when resolved
+    mode: str                 # "path", "module", or "" when unresolved
+    target: str               # the file path or the dotted module name
+    argv: list[str]           # the tokens after the target
+    path: Path | None         # the file on disk, when one is known
+    refusal: str              # a refusal code, or "" when resolved
+    environment: dict[str, str]  # leading NAME=value assignments, applied when probed
 
 
 def _interpreter(token: str) -> bool:
@@ -79,39 +80,51 @@ def resolve(root: Path, expression: str) -> Target:
     try:
         tokens = shlex.split(expression)
     except ValueError:
-        return Target("", "", [], None, "CLOSURE_CHECK_UNPARSEABLE")
+        return Target("", "", [], None, "CLOSURE_CHECK_UNPARSEABLE", {})
     if not tokens:
-        return Target("", "", [], None, "CLOSURE_CHECK_UNPARSEABLE")
-    if any(token in SHELL_OPERATORS for token in tokens):
-        return Target("", "", [], None, "CLOSURE_CHECK_COMPOUND")
+        return Target("", "", [], None, "CLOSURE_CHECK_UNPARSEABLE", {})
+    # `shlex` leaves `;` and `&` glued to the token before them, so a membership
+    # test alone misses `python a.py; python b.py` and grades one arbitrary stage.
+    if any(token in SHELL_OPERATORS or any(op in token for op in ";|&<>")
+           for token in tokens):
+        return Target("", "", [], None, "CLOSURE_CHECK_COMPOUND", {})
 
-    # Leading NAME=value assignments are part of the invocation, not arguments.
-    while tokens and "=" in tokens[0] and not tokens[0].startswith("-") \
-            and not tokens[0].endswith(".py"):
-        tokens = tokens[1:]
+    # Leading NAME=value assignments are part of the invocation, not arguments, and
+    # they are kept rather than dropped: the probe applies them, because dropping
+    # them refused `PYTHONPATH=... python -m ...` for the absence it supplies.
+    environment: dict[str, str] = {}
+
+    def _take_assignments() -> None:
+        while tokens and "=" in tokens[0] and not tokens[0].startswith("-") \
+                and not tokens[0].endswith(".py"):
+            name, _, value = tokens[0].partition("=")
+            environment[name] = value
+            del tokens[0]
+
+    tokens = list(tokens)
+    _take_assignments()
     if tokens[:1] == ["env"]:
-        tokens = tokens[1:]
-        while tokens and "=" in tokens[0] and not tokens[0].startswith("-"):
-            tokens = tokens[1:]
+        del tokens[0]
+        _take_assignments()
     if not tokens or not _interpreter(tokens[0]):
-        return Target("", "", [], None, "CLOSURE_CHECK_NOT_PYTHON")
+        return Target("", "", [], None, "CLOSURE_CHECK_NOT_PYTHON", {})
 
     rest = tokens[1:]
     if rest[:1] == ["-m"]:
         if len(rest) < 2:
-            return Target("", "", [], None, "CLOSURE_CHECK_UNPARSEABLE")
+            return Target("", "", [], None, "CLOSURE_CHECK_UNPARSEABLE", {})
         dotted, argv = rest[1], rest[2:]
         candidates = module_paths(root, dotted)
         if not candidates:
-            return Target("module", dotted, argv, None, "CLOSURE_CHECK_TARGET_MISSING")
+            return Target("module", dotted, argv, None, "CLOSURE_CHECK_TARGET_MISSING", environment)
         if len(candidates) > 1:
-            return Target("module", dotted, argv, candidates[0], "CLOSURE_CHECK_AMBIGUOUS")
-        return Target("module", dotted, argv, candidates[0], "")
+            return Target("module", dotted, argv, candidates[0], "CLOSURE_CHECK_AMBIGUOUS", environment)
+        return Target("module", dotted, argv, candidates[0], "", environment)
 
     script = next((token for token in rest if token.endswith(".py")), None)
     if script is None:
-        return Target("", "", [], None, "CLOSURE_CHECK_NOT_PYTHON")
+        return Target("", "", [], None, "CLOSURE_CHECK_NOT_PYTHON", {})
     path = (root / script).resolve()
     if not path.is_file():
-        return Target("path", script, [], None, "CLOSURE_CHECK_TARGET_MISSING")
-    return Target("path", script, [t for t in rest if t != script], path, "")
+        return Target("path", script, [], None, "CLOSURE_CHECK_TARGET_MISSING", environment)
+    return Target("path", script, [t for t in rest if t != script], path, "", environment)

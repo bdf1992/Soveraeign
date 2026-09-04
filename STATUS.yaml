@@ -231,7 +231,7 @@ accepted_repository_claims:
 #   python scripts/sov_accept.py audit     fails the build if anything waits without a reason
 #
 # The remaining queue is a non-blocking successor/product docket. None of these
-# five items keeps historical phase:i open, authorizes a successor phase, or is
+# six items keeps historical phase:i open, authorizes a successor phase, or is
 # part of the Phase-I boundary closure.
 open_decisions: []
 

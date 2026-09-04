@@ -58,6 +58,11 @@
       "why": "Machine-checkable clarity review coverage. It records which human-facing artifacts were reviewed and invalidates those receipts when their bytes move."
     },
     {
+      "path": "LICENSE",
+      "surface": "HUB",
+      "why": "The MIT licence the repository is published under. It states the terms a reader receives the work on, so it belongs on the public surface rather than being local or derived."
+    },
+    {
       "path": "CLAUDE.md",
       "surface": "HOST",
       "host": "claude-code",

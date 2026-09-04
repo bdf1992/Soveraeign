@@ -131,7 +131,7 @@
           "clause_id": "P15-X4",
           "text": "Settled experience can become cited input to a new Proposal or candidate Definition. The candidate preserves its evidence basis and gains no authority or standing merely because participants generated, agreed with, or successfully demonstrated it. The mechanics are expressed through generic governed primitives rather than hardcoded Controller, Orchestrator, Worker, or Witness species, so Phase II citizens can compose institutions the founder did not need to predict.",
           "verdict": "NOT_EARNED",
-          "reading": "python conformance/commissioning.py proves the P15-Q4 instrument discriminates; no candidate Definition has been synthesized from settled records with its evidence addresses preserved.",
+          "reading": "python scripts/sov_opening_readiness.py --instrument proves the P15-Q4 instrument discriminates; no candidate Definition has been synthesized from settled records with its evidence addresses preserved.",
           "held_by": "custody:phase-1-5/definition-recurrence"
         },
         {

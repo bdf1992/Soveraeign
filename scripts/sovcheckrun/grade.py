@@ -10,6 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 import json
+import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -22,6 +23,12 @@ from sovkernel.jsonschema import validate  # noqa: E402
 
 DEBT_CONTRACT = "contracts/closure-checks.json"
 DEBT_SCHEMA = "contracts/closure-checks.schema.json"
+PHASES = "contracts/phases.json"
+
+#: A phase clause states its reading as prose that names a command. The prose cannot
+#: be split into arguments reliably, so only the target is graded here - which is
+#: exactly the defect that occurred: a reading naming a module with no entry point.
+COMMAND_IN_PROSE = re.compile(r"python (?:-m )?([A-Za-z0-9_./-]+)")
 
 REFUSALS = {
     "CLOSURE_CHECK_UNPARSEABLE":
@@ -169,3 +176,40 @@ def _kind_census(rows: list[dict[str, Any]]) -> dict[str, int]:
         kind = str(check.get("kind")) if check else "NONE (settled by a seat)"
         census[kind] = census.get(kind, 0) + 1
     return census
+
+
+def _phase_readings(root: Path) -> list[tuple[str, str]]:
+    """Every (clause, command target) a phase record names in prose."""
+    document = json.loads((root / PHASES).read_bytes().decode("utf-8"))
+    found: list[tuple[str, str]] = []
+    for phase in document.get("phases", []):
+        phase_id = str(phase.get("phase_id") or "?")
+        for clause in phase.get("exit_clauses", []):
+            where = f"{phase_id} {clause.get('clause_id') or '?'}"
+            for target in COMMAND_IN_PROSE.findall(str(clause.get("reading") or "")):
+                found.append((where, target))
+    return found
+
+
+def grade_phase_readings(root: Path = ROOT) -> list[dict[str, str]]:
+    """Refuse a phase reading that names a command nobody can run.
+
+    The custody collection is not the only place a closure command is written
+    down. `contracts/phases.json` states each exit clause's reading in prose, and
+    repairing P15-X4's custody left the phase record still naming the mute module
+    it was repaired away from. One place was graded and the other was not, which
+    is how a repaired defect went on reading as live.
+    """
+    defects: list[dict[str, str]] = []
+    for where, target in _phase_readings(root):
+        if not target.endswith(".py"):
+            continue
+        path = (root / target).resolve()
+        if not path.is_file():
+            defects.append(_defect("CLOSURE_CHECK_TARGET_MISSING", where,
+                                   f"{where} reading names {target}, which does not exist"))
+        elif not resolve.has_entry_point(path):
+            defects.append(_defect("CLOSURE_CHECK_MUTE", where,
+                                   f"{where} reading names {target}, which "
+                                   f"{REFUSALS['CLOSURE_CHECK_MUTE']}"))
+    return defects

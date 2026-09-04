@@ -338,6 +338,48 @@ class TheDebtContractIsGraded(unittest.TestCase):
                 self.assertEqual(last, entry["observed"])
 
 
+class PhaseReadingsNameRunnableCommands(unittest.TestCase):
+    """A closure command is written down in two places, and only one was graded.
+
+    Repairing P15-X4's custody left `contracts/phases.json` still naming the mute
+    module it was repaired away from, so a repaired defect went on reading as live
+    in the phase record.
+    """
+
+    def _tree(self, tmp: Path, reading: str, target_body: str | None) -> Path:
+        (tmp / "contracts").mkdir()
+        if target_body is not None:
+            (tmp / "reader.py").write_text(target_body, encoding="utf-8")
+        import json
+
+        (tmp / "contracts/phases.json").write_text(json.dumps({"phases": [
+            {"phase_id": "phase:test", "exit_clauses": [
+                {"clause_id": "X1", "reading": reading}]}]}), encoding="utf-8")
+        return tmp
+
+    def test_a_reading_naming_a_module_with_no_entry_point_is_refused(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._tree(Path(tmp), "python reader.py proves the thing",
+                              '"""Docstring says __name__ == \"__main__\" and lies."""\n')
+            self.assertEqual([d["code"] for d in closure_checks.grade_phase_readings(root)],
+                             ["CLOSURE_CHECK_MUTE"])
+
+    def test_a_reading_naming_a_runnable_command_is_admitted(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._tree(Path(tmp), "python reader.py proves the thing",
+                              'if __name__ == "__main__":\n    print("ran")\n')
+            self.assertEqual(closure_checks.grade_phase_readings(root), [])
+
+    def test_a_reading_naming_an_absent_command_is_refused(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._tree(Path(tmp), "python reader.py proves the thing", None)
+            self.assertEqual([d["code"] for d in closure_checks.grade_phase_readings(root)],
+                             ["CLOSURE_CHECK_TARGET_MISSING"])
+
+    def test_the_checked_in_phase_records_name_only_runnable_commands(self) -> None:
+        self.assertEqual(closure_checks.grade_phase_readings(), [])
+
+
 class DeclaredRefusalsAreWired(unittest.TestCase):
 
     def test_every_declared_refusal_has_a_firing_fixture(self) -> None:

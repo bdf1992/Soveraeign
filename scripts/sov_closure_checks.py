@@ -44,7 +44,7 @@ if str(ROOT / "scripts") not in sys.path:
 
 from sovcheckrun.grade import (  # noqa: E402
     DEBT_CONTRACT, DEBT_SCHEMA, REFUSALS, _defect, _kind_census, debt_contract,
-    debt_schema_defects, grade, grade_check,
+    debt_schema_defects, grade, grade_check, grade_phase_readings,
 )
 from sovcustody import model as custody_model  # noqa: E402
 
@@ -52,8 +52,9 @@ def cmd_check(args: argparse.Namespace) -> int:
     """Report the grade over the checked-in custody collections."""
     rows = custody_model.custodies()
     refusals, debt = grade(rows)
-    refusals = [_defect("CLOSURE_CHECK_DEBT_UNATTRIBUTED", DEBT_CONTRACT, problem)
-                for problem in debt_schema_defects()] + refusals
+    refusals = ([_defect("CLOSURE_CHECK_DEBT_UNATTRIBUTED", DEBT_CONTRACT, problem)
+                 for problem in debt_schema_defects()]
+                + grade_phase_readings() + refusals)
     census = _kind_census(rows)
     if args.as_json:
         print(json.dumps({"custodies": len(rows), "kinds": census,

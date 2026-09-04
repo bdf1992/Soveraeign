@@ -252,3 +252,21 @@ The public repository contains the current synthesis, contracts, logical testbed
 reference implementation. Historical evidence and ancestor material are not published by
 default. When they are absent, verification reports them as unavailable rather than
 claiming they were checked. See `PUBLICATION.md`.
+
+<!-- lineage:begin — generated from system-cartographer lineage/lineage.yaml. Do not hand-edit. -->
+
+## Where this sits
+
+This is one of 20 repositories on this account whose relations are recorded, with the evidence for each, in [`lineage.yaml`](https://github.com/bdf1992/system-cartographer/blob/claude/access-requirements-zbl1s7/lineage/lineage.yaml). What that record says about this one:
+
+**Claim.** People and AI models work through the same records, permissions and history.
+
+**Checked.** `python scripts/verify.py` — 50 checks, exit 0, observed 2026-09-04.
+
+**Relations.**
+
+- `schematically` **implements the document format of** this repository. schematically's document format is namespaced under Soveraeign: DATA-FORMATS.md:5 defines .sov as soveraeign.schematic/document@0.1, DATA-FORMATS.md:18 gives the MIME type application/vnd.soveraeign.schematic+json, and API.md:34 returns a soveraeign.schematic/package@0.1 payload. index.html titles itself "Soveraeign Schematic Lab 0.1 Beta.24".
+- This repository **may provide substrate to** `canvas`. Canvas/README.md:5 says integrations such as Soveraeign "may provide stronger grounding, execution, custody, provenance, authority, and evidence, but they are providers of those semantics rather than prerequisites for Canvas itself". The dependency is optional and Canvas is built to work without it: TASK-2.md:38 records "no Soveraeign dependency" and WITNESS.md:3 proves the contract without it.
+- `familiar` **adapts** this repository. familiar's skilltree kernel accepts Soveraeign skills as one artifact type. cast/tests/test_skilltree_kernel.py:49 uses the adapter "soveraeign-skill/v1", and line 63 lists it alongside agent-skill/v1, spell/v0.2 and opaque/v1.
+
+<!-- lineage:end -->

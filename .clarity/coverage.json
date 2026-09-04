@@ -547,7 +547,7 @@
       "changed": true
     },
     ".claude/skills/unslop/SKILL.md": {
-      "artifact_digest": "sha256:c34e88cbaf18c872a9a49272118c52916a9dce54a96852af9607e84c04b3d163",
+      "artifact_digest": "sha256:6ff432cbedc2cc660f067680edb4bba69755b383ddabcf7d3ce4ccab962a009a",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
@@ -558,7 +558,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     ".cursorrules": {
       "artifact_digest": "sha256:4f1ab3e10a3c0e8be92a36c2c930d02373f02291561b91c950bc00664b263ccd",

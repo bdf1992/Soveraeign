@@ -445,6 +445,49 @@ class WitnessResidualsOn3087714(unittest.TestCase):
         self.assertEqual([], self.service.observations)
 
 
+class WitnessResidualsOnF8a755f(unittest.TestCase):
+    """R14 from the fourth witness pass, which is F8 from the first: a well-formed substituted
+    record rode in on the inference `observe_run` was handed. The inference now carries the
+    digest of the whole record it read, and `observe_run` recomputes it."""
+
+    def setUp(self) -> None:
+        self.service = ObservationService(Clock())
+
+    def test_the_inference_names_the_record_it_read(self) -> None:
+        record = RunRecord.from_entries(RUN, journal())
+        inference = self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertEqual(record.record_digest(), inference["record_digest"])
+        self.service.declare_predicates(RUN, PREDICATES)
+        observation = self.service.observe_run(record, "witness-z", reader)
+        self.assertEqual({"output-present": True, "output-digest": True, "asset-recorded": True},
+                         observation["predicate_results"])
+
+    def test_a_well_formed_record_in_which_the_observer_attempted_the_run_refuses(self) -> None:
+        self.service.infer_relation(RunRecord.from_entries(RUN, journal()), "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, PREDICATES)
+        substituted = journal()
+        substituted.insert(-1, _entry("e-attempt-2", "EVENT", RUN, "witness-z", {
+            "event": "ATTEMPTED", "operation_plan_id": "plan-1", "lease": None,
+            "grant_id": "grant-run"}))
+        record = RunRecord.from_entries(RUN, substituted)
+        self.assertIsNone(record.malformed())
+        with self.assertRaises(RelationUndetermined) as caught:
+            self.service.observe_run(record, "witness-z", reader)
+        self.assertIn("another record", str(caught.exception))
+        self.assertEqual("RELATION_UNDETERMINED", self.service.receipts[-1]["reason_code"])
+        self.assertEqual([], self.service.observations)
+
+    def test_a_well_formed_record_in_which_the_observer_produced_the_output_refuses(self) -> None:
+        self.service.infer_relation(RunRecord.from_entries(RUN, journal()), "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, PREDICATES)
+        record = RunRecord.from_entries(RUN, journal(output_actor="witness-z"))
+        self.assertIsNone(record.malformed())
+        with self.assertRaises(RelationUndetermined):
+            self.service.observe_run(record, "witness-z", reader)
+        self.assertEqual("RELATION_UNDETERMINED", self.service.receipts[-1]["reason_code"])
+        self.assertEqual([], self.service.observations)
+
+
 class RealJournalFeedsTheWalk(unittest.TestCase):
     """The Record Service's own entries are the input, unchanged, so a projection can feed it."""
 

@@ -71,7 +71,7 @@ reads `WITNESSED` for commit 3087714, and the current code owes a fresh pass.
   (`test_an_output_with_no_producer_is_unreadable`).
 - R11: `observe_run` reads `malformed()` on the record it is handed, so a malformed
   substituted record refuses `UNREADABLE` (`test_observe_run_reads_the_record_it_is_handed`).
-  This is the repair as pass 3 worded it and no wider: see R14.
+  A well-formed substituted record is R14's case, below.
 - R12: the report-standing, observation-standing, discovery id/inputs shape, settlement
   receipt, discovery-interface, and binding-field rules are pinned one at a time in
   `conformance/tests/test_kernel_predicates.py`. Pass 4 found the first set was the one this
@@ -83,15 +83,15 @@ reads `WITNESSED` for commit 3087714, and the current code owes a fresh pass.
 ## Residuals the fourth witness pass left open
 
 Pass 4 (commit `f8a755f`, `witness/observation-service.md`) re-supported `WITNESSED` on the
-repaired bytes and left these for the builder. None holds the transition.
+repaired bytes and left these for the builder.
 
-- R14: `observe_run` refuses a malformed substituted record and nothing more. A well-formed
-  substituted record in which the observer attempted the run or produced the output is
-  observed, because `observe_run` trusts the inference it is handed to have been read over the
-  same record. The docstring at `observe.py` says a substituted record cannot ride in; only a
-  malformed one cannot. The repair is to bind the inference to the record's entry digests and
-  refuse when they differ, which is F8 from pass 1, still open. The docstring is left as the
-  witnessed bytes until that change.
+- R14, repaired 2026-09-05 and closing F8 from pass 1: an inference now carries
+  `record_digest`, sha256 over every entry digest of the record it read, required by
+  `relation-inference.schema.json`. `observe_run` recomputes it from the record it is handed and
+  refuses `RELATION_UNDETERMINED` when they differ, so a substituted record refuses whether or
+  not it is well formed (`WitnessResidualsOnF8a755f`, three cases: the sound path, the observer
+  as a second attempter, the observer as the output's producer). The bytes a witness observed
+  moved again; the current code owes a fifth pass.
 - J5 (a finding about a check, held for the owner): `scripts/sov_standing.py` reads
   `standing_supported` from the first witness block and reads neither the recorded revision nor
   the tree, so it read `SUPPORTED` while every receipt for the subject was `STALE_SUBJECT`.

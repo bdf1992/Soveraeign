@@ -18,7 +18,7 @@ from typing import Any, Callable
 import hashlib
 import json
 
-from .errors import DigestMismatch, PredicatesUndeclared, Unreadable
+from .errors import DigestMismatch, PredicatesUndeclared, RelationUndetermined, Unreadable
 from .record import RunRecord, digest_address
 from .relation import require_independent
 
@@ -102,12 +102,18 @@ def observe_run(
     `PREDICATES_UNDECLARED` when the declaration is absent, later than the looking, about
     another run, or names an address the run did not report, `UNREADABLE` when the record
     handed in is malformed or an output cannot be read, and `DIGEST_MISMATCH` when the bytes
-    disagree with the record. The record is read here rather than trusted to be the one the
-    inference read, so a substituted record cannot ride in on an earlier inference.
+    disagree with the record. The record is read here, and its digest is compared with the one
+    the inference was read over, so a substituted record refuses whether or not it is well
+    formed: `UNREADABLE` when malformed, `RELATION_UNDETERMINED` when it is another record.
     """
     unreadable = record.malformed()
     if unreadable is not None:
         raise Unreadable(unreadable)
+    if inference.get("record_digest") != record.record_digest():
+        raise RelationUndetermined(
+            f"the inference {inference.get('inference_id')} was read over another record: it "
+            f"names {inference.get('record_digest')} and this record reads "
+            f"{record.record_digest()}")
     require_independent(inference, observer_id)
     if not declaration or declaration.get("run_id") != record.run_id:
         raise PredicatesUndeclared(f"no declaration for {record.run_id}")

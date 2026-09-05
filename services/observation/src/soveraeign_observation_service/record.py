@@ -29,6 +29,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
+import hashlib
 
 ATTEMPTED = "ATTEMPTED"
 REPORTED = "REPORTED"
@@ -174,6 +175,15 @@ class RunRecord:
     def is_terminal(self) -> bool:
         """Reported, or refused by a terminal receipt on the run."""
         return self.report() is not None or self.terminal_receipt() is not None
+
+    def record_digest(self) -> str:
+        """sha256 over every entry digest in append order: the record as one address.
+
+        An inference carries it and `observe_run` recomputes it from the record it is handed,
+        so an inference read over one record cannot admit an observer to another.
+        """
+        material = "\n".join(self.digest_of(entry) for entry in self.entries).encode("utf-8")
+        return "sha256:" + hashlib.sha256(material).hexdigest()
 
     @staticmethod
     def address_of(entry: dict[str, Any]) -> str:

@@ -402,12 +402,47 @@ class WitnessResidualsOn540bc01(unittest.TestCase):
         self.assertEqual("INDEPENDENT", inference["outcome"])
 
     def test_the_run_id_itself_is_not_a_predicate_address(self) -> None:
-        record = RunRecord.from_entries(RUN, journal())
+        # The run id is reported as an output and an OUTPUT entry stands on it, so every
+        # other check would let the predicate through: only the own-entry guard refuses.
+        entries = journal()
+        entries[-1]["payload"]["output_record_addresses"] = ["out/1", RUN]
+        entries.append(_entry("e-out-run", "EVENT", RUN, "worker-a",
+                              {"event": "OUTPUT", "digest": OUTPUT_DIGEST}))
+        record = RunRecord.from_entries(RUN, entries)
         self.service.infer_relation(record, "witness-z", "MODEL")
         self.service.declare_predicates(RUN, [
             {"predicate_id": "reads-run", "kind": "BYTES_PRESENT", "address": RUN}])
-        with self.assertRaises(PredicatesUndeclared):
-            self.service.observe_run(record, "witness-z", reader)
+        with self.assertRaises(PredicatesUndeclared) as caught:
+            self.service.observe_run(record, "witness-z", lambda address: OUTPUT_BYTES)
+        self.assertIn("run's own entry", str(caught.exception))
+
+
+class WitnessResidualsOn3087714(unittest.TestCase):
+    """R10, R11 and R13 from the third witness pass (`KNOWN-GAPS.md`), each with the case that
+    fails without its repair. R12 is pinned in `conformance/tests/test_kernel_predicates.py`."""
+
+    def setUp(self) -> None:
+        self.service = ObservationService(Clock())
+
+    def test_an_output_with_no_producer_is_unreadable(self) -> None:
+        entries = journal()
+        entries[-2]["actor"] = ""
+        record = RunRecord.from_entries(RUN, entries)
+        with self.assertRaises(Unreadable) as caught:
+            self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertIn("no producer", str(caught.exception))
+        self.assertEqual("UNREADABLE", self.service.receipts[-1]["reason_code"])
+
+    def test_observe_run_reads_the_record_it_is_handed(self) -> None:
+        sound = RunRecord.from_entries(RUN, journal())
+        self.service.infer_relation(sound, "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, PREDICATES)
+        substituted = journal()
+        substituted[-1]["actor"] = ""
+        with self.assertRaises(Unreadable):
+            self.service.observe_run(RunRecord.from_entries(RUN, substituted), "witness-z", reader)
+        self.assertEqual("UNREADABLE", self.service.receipts[-1]["reason_code"])
+        self.assertEqual([], self.service.observations)
 
 
 class RealJournalFeedsTheWalk(unittest.TestCase):

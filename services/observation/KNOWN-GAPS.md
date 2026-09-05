@@ -61,16 +61,21 @@ Reversible choices. Each names where it lives so it can be overturned in one pla
 
 ## Residuals the third witness pass left open
 
-Recorded rather than repaired, so the witnessed bytes at 3087714 stay the witnessed bytes.
+Recorded at 3087714 rather than repaired, so the witnessed bytes stayed the witnessed bytes.
+Repaired on 2026-09-05 on the branch, each with the case that fails without its repair. The
+bytes a witness observed are therefore no longer the current bytes: `observation_service_status`
+reads `WITNESSED` for commit 3087714, and the current code owes a fresh pass.
 
-- R10: an `OUTPUT` entry with no actor is not on the run subject, so `malformed()` does not
-  refuse it and its producer edge cannot be answered; it should read `UNREADABLE`.
-- R11: `observe_run` does not call `malformed()` itself; it relies on the inference having done
-  so, which a substituted record could bypass.
-- R12: three oracle rules (`kernel_predicates.py` report standing, discovery id/inputs shape,
-  and settlement receipt) are not yet pinned one at a time in `test_kernel_predicates.py`.
-- R13: the own-entry regression test passes with the repair reverted; it needs a case that
-  fails without the guard.
+- R10: an `OUTPUT` entry with no actor now refuses `UNREADABLE` from `malformed()`, because
+  an output with no producer leaves `PRODUCED_THE_OUTPUT` unanswerable while looking answered
+  (`test_an_output_with_no_producer_is_unreadable`).
+- R11: `observe_run` reads `malformed()` on the record it is handed, so a substituted record
+  cannot ride in on an earlier inference (`test_observe_run_reads_the_record_it_is_handed`).
+- R12: the report-standing, observation-standing, discovery id/inputs shape, and settlement
+  receipt rules are pinned one at a time in `conformance/tests/test_kernel_predicates.py`.
+- R13: `test_the_run_id_itself_is_not_a_predicate_address` now reports the run id as an output
+  with an `OUTPUT` entry standing on it, so only the own-entry guard refuses; reverting the
+  guard fails the case.
 
 ## Where this sits against the AI-native bar
 

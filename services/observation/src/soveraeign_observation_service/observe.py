@@ -100,9 +100,14 @@ def observe_run(
 
     Refuses `OBSERVER_NOT_INDEPENDENT` and `RELATION_UNDETERMINED` from the inference,
     `PREDICATES_UNDECLARED` when the declaration is absent, later than the looking, about
-    another run, or names an address the run did not report, `UNREADABLE` when an output cannot
-    be read, and `DIGEST_MISMATCH` when the bytes disagree with the record.
+    another run, or names an address the run did not report, `UNREADABLE` when the record
+    handed in is malformed or an output cannot be read, and `DIGEST_MISMATCH` when the bytes
+    disagree with the record. The record is read here rather than trusted to be the one the
+    inference read, so a substituted record cannot ride in on an earlier inference.
     """
+    unreadable = record.malformed()
+    if unreadable is not None:
+        raise Unreadable(unreadable)
     require_independent(inference, observer_id)
     if not declaration or declaration.get("run_id") != record.run_id:
         raise PredicatesUndeclared(f"no declaration for {record.run_id}")

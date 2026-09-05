@@ -131,6 +131,12 @@ class EveryRuleNamesItsDefect(unittest.TestCase):
         self.assertOnly(kernel.check_run(observed),
                         "executor output entered with a standing other than REPORT")
 
+    def test_report_without_standing(self) -> None:
+        observed = positive("CONF-RUN-POS"); del observed["report"]["standing"]
+        self.assertEqual(["report missing standing",
+                          "executor output entered with a standing other than REPORT"],
+                         kernel.check_run(observed))
+
     # observe_run
     def test_executor_observing_itself(self) -> None:
         observed = positive("CONF-RUN-POS"); observed["observation"]["observer_id"] = "worker-a"
@@ -168,6 +174,11 @@ class EveryRuleNamesItsDefect(unittest.TestCase):
         self.assertOnly(kernel.check_run(observed),
                         "observed digests do not align with observed addresses")
 
+    def test_observation_with_other_standing(self) -> None:
+        observed = positive("CONF-RUN-POS"); observed["observation"]["standing"] = "REPORT"
+        self.assertOnly(kernel.check_run(observed),
+                        "observation entered with a standing other than OBSERVATION")
+
     # settle_run
     def test_settlement_citing_no_observation(self) -> None:
         observed = positive("CONF-RUN-POS"); observed["settlement"]["observation_id"] = "obs-none"
@@ -199,6 +210,10 @@ class EveryRuleNamesItsDefect(unittest.TestCase):
         observed = positive("CONF-RUN-POS"); observed["settlement"]["settled_by"] = "witness-z"
         self.assertOnly(kernel.check_run(observed), "a participant in the run settled it")
 
+    def test_settlement_without_receipt(self) -> None:
+        observed = positive("CONF-RUN-POS"); del observed["settlement"]["receipt_id"]
+        self.assertOnly(kernel.check_run(observed), "settlement missing receipt_id")
+
     # PARITY-1
     def test_discovery_of_different_operations(self) -> None:
         observed = positive("CONF-DISCOVERY-POS"); observed["model"]["operations"].pop()
@@ -215,6 +230,15 @@ class EveryRuleNamesItsDefect(unittest.TestCase):
         observed = positive("CONF-DISCOVERY-POS"); observed["model"]["interface_id"] = "other/v1"
         self.assertOnly(kernel.check_discovery(observed),
                         "model binding discovered from a different interface")
+
+    def test_discovery_of_an_operation_without_id_or_inputs(self) -> None:
+        observed = positive("CONF-DISCOVERY-POS")
+        operation = observed["model"]["operations"][0]
+        del operation["required_inputs"]
+        self.assertEqual(["model binding discovered an operation without id or inputs",
+                          f"bindings do not discover the same legal operations: "
+                          f"{operation['operation_id']}"],
+                         kernel.check_discovery(observed))
 
 
 class EveryDeclaredPredicateIsExercised(unittest.TestCase):

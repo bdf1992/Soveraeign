@@ -1903,7 +1903,7 @@
       "changed": false
     },
     "services/observation/KNOWN-GAPS.md": {
-      "artifact_digest": "sha256:4a6e04269831c05b773d3bdf2dc6deb97aa2d48bd193bb698d250011ea549af4",
+      "artifact_digest": "sha256:56683e1d5d2dbac899d6db17d3c56dd24985425637f140b05cd4205fccb50b6c",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
@@ -1918,7 +1918,7 @@
           "path": "SPEC.md"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "services/projection/CHARTER.md": {
       "artifact_digest": "sha256:282e71cec734b83e099d0a04ee9fef56f8ed25679a0dd6a6fc3889f09aa6f659",

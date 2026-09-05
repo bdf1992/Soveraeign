@@ -79,7 +79,9 @@ class RunRecord:
         """The first entry this service cannot read as a journal entry, or None.
 
         Every entry needs a kind, a subject, an address, and a sha256 digest; every entry on
-        the run needs an actor, because an anonymous attempt or report would hide an executor.
+        the run needs an actor, because an anonymous attempt or report would hide an executor;
+        every `OUTPUT` entry needs an actor, because an output with no producer leaves the
+        `PRODUCED_THE_OUTPUT` edge unanswerable while looking answered.
         """
         for entry in self.entries:
             address = self.address_of(entry)
@@ -92,6 +94,8 @@ class RunRecord:
                 return f"entry {address} carries no sha256 digest"
             if entry.get("subject") == self.run_id and not entry.get("actor"):
                 return f"entry {address} on the run names no actor"
+            if _event(entry) == OUTPUT and not entry.get("actor"):
+                return f"entry {address} records an output with no producer"
         return None
 
     def attempts(self) -> list[dict[str, Any]]:

@@ -362,5 +362,88 @@
     "standing_supported": "Unchanged in kind: OPEN -> BUILT for the Observation Service command line, now including the OBSERVATION_RECORDED refusal, which has a positive case, a defeating case in two forms, and a defeat-of-the-defeat (guard removed -> both fail). BUILT -> WITNESSED is still not supported for the tree as it stands, because verify.py is red on five checks; the code-level claims are all reproduced and this observation would support that transition for the same bytes once the tree's projections, page, and clarity receipt are rebuilt and verify passes.",
     "landing_position": "I support landing this tree onto d641908 on these conditions, all of which are the branch holder's routine work, none of which needs Bdo: (1) python scripts/sov_interface.py build and the surface page rebuilt so CAPABILITY_MAP_STALE clears (R9, not in the relayed plan); (2) the clarity receipt for services/observation/KNOWN-GAPS.md recorded; (3) docs/documentation.html rebuilt; (4) python scripts/verify.py exit 0 on the landed tree in a fresh clone, as the coordinator states, with the landed tree's digests for the eight paths above equal to those recorded here. If the landing changes any of those eight files beyond what is listed here, this observation does not transfer and a re-witness is owed. R5 (the thin-circuit-1 second observation's declared digests for two addresses match no commit examined) stands as a residual of the export, not of this code, and is not a landing refusal.",
     "judgement_items": []
+  },
+  "third_pass": {
+    "scope": "landed bytes, same lease, same observer; first and second passes untouched. Read and run from the main tree at HEAD 83fbbb4 (branch claude/skill-loop-closure-identity-iiogql); the only write is this append",
+    "landed_commit": "83fbbb4204f8b9c1d134ea787144a967811f429c (observation: a command line for the five built operations, with records that survive a process)",
+    "ancestry": "d641908 and eff1a68 are both ancestors of 83fbbb4; main-tree git status was clean at the start of the pass",
+    "known_gaps_digest": "890d5e2b4acf4343d029c49ebdd4df35014092a8ad4469e79e57539bf7066777 (working file == git show 83fbbb4:services/observation/KNOWN-GAPS.md)",
+    "other_seven_at_83fbbb4": {
+      "service.py": "88288a0ae3c2",
+      "errors.py": "047014f2c6f9",
+      "__init__.py": "4637edc0e520",
+      "contracts/service.json": "a1fcce4d4a46",
+      "cli.py": "c0bd675fb5da",
+      "tests/test_cli.py": "f1868dd8dafd",
+      "store.py": "7eb9819c26ab",
+      "all_equal_to_second_pass": true
+    },
+    "known_gaps_reading": {
+      "git diff 4b0bc1d 83fbbb4 -- services/observation/KNOWN-GAPS.md": "three hunks: (a) lines 12-25, the six rows Receipt ownership, Durable state, The existing observer script, Settlement, Two-binding proof, Independent observation of itself; (b) lines 61-62, the Defaults lead reworded ('Recorded rather than repaired at 3087714 ... A residual repaired since says so in its own row and names the case that pins it'); (c) lines 69-77, R13 rewritten as repaired, naming test_the_run_address_reported_as_its_own_output_is_still_refused in tests/test_thin_slice.py WitnessResidualsOn3087714",
+      "six_rows_vs_second_pass": "byte-identical: diff of every '| ' table line between the second-pass worktree bytes (ef52451e) and the landed file is empty",
+      "lead_and_r13_provenance": "git diff eff1a68 83fbbb4 on the file shows only the six rows; the lead and R13 text are eff1a68's, untouched by this lane",
+      "nothing_else_changed": true,
+      "r13_case_present_at_83fbbb4": "grep finds class WitnessResidualsOn3087714 and test_the_run_address_reported_as_its_own_output_is_still_refused in services/observation/tests/test_thin_slice.py (that case is eff1a68's lane, not witnessed here beyond its presence)"
+    },
+    "commands": [
+      {
+        "cmd": "git rev-parse HEAD",
+        "exit": 0,
+        "out": "83fbbb4204f8b9c1d134ea787144a967811f429c"
+      },
+      {
+        "cmd": "sha256sum services/observation/KNOWN-GAPS.md",
+        "exit": 0,
+        "out": "890d5e2b..."
+      },
+      {
+        "cmd": "git diff 4b0bc1d 83fbbb4 -- services/observation/KNOWN-GAPS.md",
+        "exit": 0,
+        "out": "three hunks as read above"
+      },
+      {
+        "cmd": "python scripts/sov_docs.py check (main tree, clean status)",
+        "exit": 0,
+        "out": "PASS: documentation page matches 280 documents"
+      },
+      {
+        "cmd": "python scripts/sov_clarity.py check",
+        "exit": 0,
+        "out": "PASS: clarity scope and receipts are well-formed and current"
+      },
+      {
+        "cmd": "python scripts/sov_interface.py check",
+        "exit": 0,
+        "out": "PASS: Node Interface matches its sources (R9 cleared)"
+      },
+      {
+        "cmd": "cd services/observation && python -m unittest discover -s tests",
+        "exit": 0,
+        "out": "OK (69 tests at 83fbbb4)"
+      },
+      {
+        "cmd": "python scripts/verify.py (main tree, later in the pass)",
+        "exit": 1,
+        "out": "FAIL: documentation reader, repository tooling tests. Attributed, not the landed tree's: (1) an untracked reports/2026-09-05-wave-1.md appeared in the main tree during the pass (git ls-files: not known to git; not in 83fbbb4), and sov_docs reads every .md under ROOT, so the page reads stale until it lands or leaves - the standalone docs check had passed minutes earlier on the clean tree; (2) test_sov_epic_states scans every file under .claude/, and my witness worktree sits at .claude/worktrees/agent-a5b472900c802dce8, so it read the worktree's decisions/0040 (byte-identical to the main tree's, which is outside .claude and not scanned) as harness output. Both are host state (CLAUDE.md T6), reproduced as such"
+      },
+      {
+        "cmd": "git archive 83fbbb4 into scratch; verify.py there",
+        "exit": 1,
+        "out": "not a measurement: an archive is not a git repository, so four checks that git-show HEAD refuse. Discarded"
+      },
+      {
+        "cmd": "git clone -q --branch claude/skill-loop-closure-identity-iiogql <repository root> <scratch>; verify.py in the clone at 83fbbb4, clean status",
+        "exit": 0,
+        "out": "PASS: 50 checks in 27.299s wall; Observation Service reference tests Ran 69 OK. The coordinator's 50-of-50 fresh-clone claim is reproduced independently"
+      }
+    ],
+    "verdict_transfer": "Second-pass verdicts transfer to the landed bytes. Seven of eight paths are byte-identical to the bytes I graded; the eighth, KNOWN-GAPS.md, carries the six rows byte-identically and differs only by eff1a68's lead and R13 text, which this lane did not author and which is consistent with the repaired case present in the landed test file. Every landing condition I set in the second pass is met and measured here: Node Interface projection rebuilt (interface check PASS), clarity receipt current (clarity check PASS), docs page current on the clean tree (docs check PASS), verify exit 0 on a fresh clone of the landed commit.",
+    "residuals": [
+      "R5 stands as a residual of the thin-circuit-1 export, not of this code.",
+      "R10 (host, not this lane): scripts/tests/test_sov_epic_states.scanned_paths walks all of .claude/, so any witness worktree placed under .claude/worktrees/ is graded as harness output in the main tree. A fresh clone is unaffected. Worth a skip of 'worktrees' in that test or a different worktree root; recorded, not repaired by me.",
+      "R11 (host): an uncommitted markdown from another session stales the docs page in the main tree; the landed commit is not the cause."
+    ],
+    "standing_supported": "BUILT -> WITNESSED for the Observation Service command line as landed at 83fbbb4: cli.py, store.py, the record_refusal and OBSERVATION_RECORDED additions to service.py/errors.py/__init__.py, the manifest's new refusal and mapping, tests/test_cli.py, and the six KNOWN-GAPS.md rows. The positive path, every manifest-declared refusal reachable through the CLI, the second-observation refusal in two forms, and the defeat of its guard were reproduced by a participant that did not build or edit the change, against bytes that are now the landed bytes, on a tree whose gate passes in a fresh clone. This is an observation of the landed tree; it settles nothing and ratifies nothing, and BUILT -> WITNESSED is the only transition it supports.",
+    "judgement_items": []
   }
 }

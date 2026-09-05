@@ -83,21 +83,44 @@ reads `WITNESSED` for commit 3087714, and the current code owes a fresh pass.
 ## Residuals the fourth witness pass left open
 
 Pass 4 (commit `f8a755f`, `witness/observation-service.md`) re-supported `WITNESSED` on the
-repaired bytes and left these for the builder.
+repaired bytes and left these for the builder. R14 is repaired above; the rest stand.
 
-- R14, repaired 2026-09-05 and closing F8 from pass 1: an inference now carries
-  `record_digest`, sha256 over every entry digest of the record it read, required by
-  `relation-inference.schema.json`. `observe_run` recomputes it from the record it is handed and
-  refuses `RELATION_UNDETERMINED` when they differ, so a substituted record refuses whether or
-  not it is well formed (`WitnessResidualsOnF8a755f`, three cases: the sound path, the observer
-  as a second attempter, the observer as the output's producer). The bytes a witness observed
-  moved again; the current code owes a fifth pass.
+- R14, repaired 2026-09-05: an inference carries `record_digest`, sha256 over every entry
+  digest of the record it read, required by `relation-inference.schema.json`. `observe_run`
+  recomputes it from the record it is handed and refuses `RELATION_UNDETERMINED` when they
+  differ (`WitnessResidualsOnF8a755f`). Pass 5 (commit `65a7549`) reproduced the repair and
+  narrowed the claim: this closes the first of F8's three notes, not F8. What stays open is
+  below.
+
 - J5 (a finding about a check, held for the owner): `scripts/sov_standing.py` reads
   `standing_supported` from the first witness block and reads neither the recorded revision nor
   the tree, so it read `SUPPORTED` while every receipt for the subject was `STALE_SUBJECT`.
   The measurement exists in `sov_witness_layer.py records`, which grades staleness as debt.
 - `STATUS.yaml` and `contracts/status-claims.json` still cite `3087714` as the witnessed
   commit; pass 4 supports `f8a755f`. Moving a standing citation is the owner's document.
+
+## Residuals the fifth witness pass left open
+
+Pass 5 re-supported `WITNESSED` at `65a7549`. Each item here is the builder's unless marked held.
+
+- R15: the binding hashes the `entry_digest` values the journal declares and never recomputes
+  one from entry content. An entry whose `actor` or `lease` is rewritten under a kept digest
+  still observes. Recomputing needs the columns the Record Service digest profile binds, which
+  the entry shape this service reads does not carry (J6, held: widening the shape is a boundary
+  question for the two services).
+- R16, repaired 2026-09-05: the service stored and returned the same dict, so a caller
+  rewriting the returned inference or declaration changed what the service later judged
+  through. Records are now stored and returned as separate copies
+  (`test_a_returned_record_cannot_be_rewritten_in_place`).
+- F8 note 2: `read_observation` returns the run's latest declaration, not the one the
+  observation was judged through.
+- F8 note 3: `observation_id` derives from run, observer and addresses only, so two
+  observations over the same addresses with different predicates share an id and
+  `read_observation` returns the first.
+- N1: any `GRANT` or `OUTPUT` entry appended between inference and observation changes the
+  record digest and refuses. Sound, and a liveness cost on a live journal; the inference is
+  re-taken over the grown record.
+- The bytes a witness observed moved again with R16; the current code owes a sixth pass.
 
 ## Where this sits against the AI-native bar
 

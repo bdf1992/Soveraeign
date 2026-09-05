@@ -488,6 +488,33 @@ class WitnessResidualsOnF8a755f(unittest.TestCase):
         self.assertEqual([], self.service.observations)
 
 
+class WitnessResidualsOn65a7549(unittest.TestCase):
+    """R16 from the fifth witness pass: the service stored and returned the same dict, so a
+    caller could rewrite the inference the service would later judge through."""
+
+    def setUp(self) -> None:
+        self.service = ObservationService(Clock())
+
+    def test_a_returned_record_cannot_be_rewritten_in_place(self) -> None:
+        record = RunRecord.from_entries(RUN, journal())
+        # The executor infers its own relation: DIRECT, returned and stored.
+        returned = self.service.infer_relation(record, "worker-a", "WORKER")
+        self.assertEqual("DIRECT", returned["outcome"])
+        returned["outcome"] = "INDEPENDENT"
+        returned["edges_found"] = []
+        returned["record_digest"] = "sha256:" + "0" * 64
+        self.service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(ObserverNotIndependent):
+            self.service.observe_run(record, "worker-a", reader)
+        self.assertEqual("DIRECT", self.service.inferences[-1]["outcome"])
+        self.assertEqual([], self.service.observations)
+        # The same for a declaration: rewriting the returned one moves nothing.
+        declaration = self.service.declarations[-1]
+        returned_declaration = self.service.declare_predicates(RUN, PREDICATES)
+        returned_declaration["predicates"].clear()
+        self.assertEqual(declaration["predicates"], self.service.declarations[-1]["predicates"])
+
+
 class RealJournalFeedsTheWalk(unittest.TestCase):
     """The Record Service's own entries are the input, unchanged, so a projection can feed it."""
 

@@ -29,7 +29,13 @@ Key rules that bind you:
 ## Procedure
 
 1. Establish the `WORK` subject, exact revision, governing contract/fixtures, and
-   supplied `RecordProjection`. Builder-provided paths may locate the subject but
+   supplied `RecordProjection`. When the subject has a prior receipt, start from
+   its pack: `python scripts/sov_witness_layer.py pack <subject> --json`
+   (`contracts/witness-pack.schema.json`). Re-derive every claim that cites a
+   moved or added address; carry the rest from the prior receipt as input
+   findings and say so. The pack's `builder_commits` are claims to check, never
+   findings. A pass that reads outside the pack's addresses has read the
+   builder's report and must say which address and why. Builder-provided paths may locate the subject but
    builder conclusions are not evidence. Do not read an Orchestrator or Controller
    evaluative conclusion before your own Finding freezes.
 2. Read the actual changed files. Compare against the owning contract in

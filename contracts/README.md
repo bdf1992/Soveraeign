@@ -16,6 +16,7 @@ or deployment topology.
 | `observation.schema.json` | records independent evidence of what occurred: what an observer looked at, how it avoided relying solely on the executor's report, and which predicates held (`SPEC.md` `Observation`) |
 | `record-projection.schema.json` | prepares a bounded, reconstructable view of common Record evidence for one subject, recipient relation, purpose, and cutoff; it declares omissions and grants no authority (`SPEC.md` `RecordProjection`) |
 | `finding.schema.json` | records an evaluator's scoped, cited interpretation of a named subject; work, participant conduct, and comparison findings share one shape without becoming observations, authority, or settlement (`SPEC.md` `Finding`) |
+| `witness-pack.schema.json` | derives what a witness pass over one subject starts from: the prior receipt, the exact digest delta since it, the builder's commits as claims to check, the custody exit served, and a `RecordProjection` over the subject at the head; a pass re-derives the delta and carries the rest, and the pack grants nothing (`scripts/sov_witness_layer.py pack`) |
 | `model-binding.schema.json` | declares an owner-selected local or remote model without granting provider authority |
 | `event-envelope.schema.json` | records who decided or acted, why, exact inputs and outputs, authority, effects, and outcome |
 | `source.schema.json` | identifies captured bytes by address, digest, and size so a reading can verify its input before it begins (`SPEC.md` `Source`) |

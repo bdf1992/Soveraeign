@@ -24,6 +24,13 @@
           "decisions/**/*.md"
         ],
         "reason": "Decision records preserve the language, authority context, and provenance of the act they record. Clarity reviews current projections of those decisions rather than rewriting the historical record."
+      },
+      {
+        "include": [
+          ".claude/skills/can-it-run-doom/SKILL.md",
+          ".claude/skills/draw-the-owl/SKILL.md"
+        ],
+        "reason": "Byte copies of bdf1992/bdos cores carried under decisions/0103 and pinned there by digest. The upstream owns their wording; a rewrite here would stop the copy being a copy. To change one, carry a new copy from upstream and record its digest."
       }
     ]
   },

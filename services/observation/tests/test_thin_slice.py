@@ -402,12 +402,117 @@ class WitnessResidualsOn540bc01(unittest.TestCase):
         self.assertEqual("INDEPENDENT", inference["outcome"])
 
     def test_the_run_id_itself_is_not_a_predicate_address(self) -> None:
-        record = RunRecord.from_entries(RUN, journal())
+        # The run id is reported as an output and an OUTPUT entry stands on it, so every
+        # other check would let the predicate through: only the own-entry guard refuses.
+        entries = journal()
+        entries[-1]["payload"]["output_record_addresses"] = ["out/1", RUN]
+        entries.append(_entry("e-out-run", "EVENT", RUN, "worker-a",
+                              {"event": "OUTPUT", "digest": OUTPUT_DIGEST}))
+        record = RunRecord.from_entries(RUN, entries)
         self.service.infer_relation(record, "witness-z", "MODEL")
         self.service.declare_predicates(RUN, [
             {"predicate_id": "reads-run", "kind": "BYTES_PRESENT", "address": RUN}])
-        with self.assertRaises(PredicatesUndeclared):
+        with self.assertRaises(PredicatesUndeclared) as caught:
+            self.service.observe_run(record, "witness-z", lambda address: OUTPUT_BYTES)
+        self.assertIn("run's own entry", str(caught.exception))
+
+
+class WitnessResidualsOn3087714(unittest.TestCase):
+    """R10, R11 and R13 from the third witness pass (`KNOWN-GAPS.md`), each with the case that
+    fails without its repair. R12 is pinned in `conformance/tests/test_kernel_predicates.py`."""
+
+    def setUp(self) -> None:
+        self.service = ObservationService(Clock())
+
+    def test_an_output_with_no_producer_is_unreadable(self) -> None:
+        entries = journal()
+        entries[-2]["actor"] = ""
+        record = RunRecord.from_entries(RUN, entries)
+        with self.assertRaises(Unreadable) as caught:
+            self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertIn("no producer", str(caught.exception))
+        self.assertEqual("UNREADABLE", self.service.receipts[-1]["reason_code"])
+
+    def test_observe_run_reads_the_record_it_is_handed(self) -> None:
+        sound = RunRecord.from_entries(RUN, journal())
+        self.service.infer_relation(sound, "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, PREDICATES)
+        substituted = journal()
+        substituted[-1]["actor"] = ""
+        with self.assertRaises(Unreadable):
+            self.service.observe_run(RunRecord.from_entries(RUN, substituted), "witness-z", reader)
+        self.assertEqual("UNREADABLE", self.service.receipts[-1]["reason_code"])
+        self.assertEqual([], self.service.observations)
+
+
+class WitnessResidualsOnF8a755f(unittest.TestCase):
+    """R14 from the fourth witness pass, which is F8 from the first: a well-formed substituted
+    record rode in on the inference `observe_run` was handed. The inference now carries the
+    digest of the whole record it read, and `observe_run` recomputes it."""
+
+    def setUp(self) -> None:
+        self.service = ObservationService(Clock())
+
+    def test_the_inference_names_the_record_it_read(self) -> None:
+        record = RunRecord.from_entries(RUN, journal())
+        inference = self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertEqual(record.record_digest(), inference["record_digest"])
+        self.service.declare_predicates(RUN, PREDICATES)
+        observation = self.service.observe_run(record, "witness-z", reader)
+        self.assertEqual({"output-present": True, "output-digest": True, "asset-recorded": True},
+                         observation["predicate_results"])
+
+    def test_a_well_formed_record_in_which_the_observer_attempted_the_run_refuses(self) -> None:
+        self.service.infer_relation(RunRecord.from_entries(RUN, journal()), "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, PREDICATES)
+        substituted = journal()
+        substituted.insert(-1, _entry("e-attempt-2", "EVENT", RUN, "witness-z", {
+            "event": "ATTEMPTED", "operation_plan_id": "plan-1", "lease": None,
+            "grant_id": "grant-run"}))
+        record = RunRecord.from_entries(RUN, substituted)
+        self.assertIsNone(record.malformed())
+        with self.assertRaises(RelationUndetermined) as caught:
             self.service.observe_run(record, "witness-z", reader)
+        self.assertIn("another record", str(caught.exception))
+        self.assertEqual("RELATION_UNDETERMINED", self.service.receipts[-1]["reason_code"])
+        self.assertEqual([], self.service.observations)
+
+    def test_a_well_formed_record_in_which_the_observer_produced_the_output_refuses(self) -> None:
+        self.service.infer_relation(RunRecord.from_entries(RUN, journal()), "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, PREDICATES)
+        record = RunRecord.from_entries(RUN, journal(output_actor="witness-z"))
+        self.assertIsNone(record.malformed())
+        with self.assertRaises(RelationUndetermined):
+            self.service.observe_run(record, "witness-z", reader)
+        self.assertEqual("RELATION_UNDETERMINED", self.service.receipts[-1]["reason_code"])
+        self.assertEqual([], self.service.observations)
+
+
+class WitnessResidualsOn65a7549(unittest.TestCase):
+    """R16 from the fifth witness pass: the service stored and returned the same dict, so a
+    caller could rewrite the inference the service would later judge through."""
+
+    def setUp(self) -> None:
+        self.service = ObservationService(Clock())
+
+    def test_a_returned_record_cannot_be_rewritten_in_place(self) -> None:
+        record = RunRecord.from_entries(RUN, journal())
+        # The executor infers its own relation: DIRECT, returned and stored.
+        returned = self.service.infer_relation(record, "worker-a", "WORKER")
+        self.assertEqual("DIRECT", returned["outcome"])
+        returned["outcome"] = "INDEPENDENT"
+        returned["edges_found"] = []
+        returned["record_digest"] = "sha256:" + "0" * 64
+        self.service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(ObserverNotIndependent):
+            self.service.observe_run(record, "worker-a", reader)
+        self.assertEqual("DIRECT", self.service.inferences[-1]["outcome"])
+        self.assertEqual([], self.service.observations)
+        # The same for a declaration: rewriting the returned one moves nothing.
+        declaration = self.service.declarations[-1]
+        returned_declaration = self.service.declare_predicates(RUN, PREDICATES)
+        returned_declaration["predicates"].clear()
+        self.assertEqual(declaration["predicates"], self.service.declarations[-1]["predicates"])
 
 
 class RealJournalFeedsTheWalk(unittest.TestCase):

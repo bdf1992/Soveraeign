@@ -43,7 +43,7 @@
       "changed": false
     },
     ".claude/agents/sov-witness.md": {
-      "artifact_digest": "sha256:9b8aa3f255dd39067560356199f628a5365348f0db7d168362beed0d2d854d80",
+      "artifact_digest": "sha256:3d0b91f776d842cdd11db16829dabda60a5bc943cd9184a9f5cbeab46f9af5d5",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
@@ -54,7 +54,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     ".claude/agents/sov-worker.md": {
       "artifact_digest": "sha256:39164ed9d453d4637d9e3ba122643e45c1aed848132f198e45e7fc4f78a32c82",
@@ -1159,7 +1159,7 @@
       "changed": false
     },
     "contracts/README.md": {
-      "artifact_digest": "sha256:6a12cb2c3fc016c101baf00b5254e43ba047893260ee169027c3dcb0c44f604f",
+      "artifact_digest": "sha256:299119fc7e42a91f3276bf6d3b77528713bea9ab033b0a4955d3fbe2fb0a6938",
       "basis": [],
       "changed": true
     },
@@ -1903,7 +1903,7 @@
       "changed": false
     },
     "services/observation/KNOWN-GAPS.md": {
-      "artifact_digest": "sha256:4a6e04269831c05b773d3bdf2dc6deb97aa2d48bd193bb698d250011ea549af4",
+      "artifact_digest": "sha256:1297f3e25081261d201967e334a217c2eda91ca904b10424f09b78c7dfd0f069",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
@@ -1918,7 +1918,7 @@
           "path": "SPEC.md"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "services/projection/CHARTER.md": {
       "artifact_digest": "sha256:282e71cec734b83e099d0a04ee9fef56f8ed25679a0dd6a6fc3889f09aa6f659",

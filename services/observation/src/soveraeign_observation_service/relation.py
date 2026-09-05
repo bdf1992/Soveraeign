@@ -108,6 +108,14 @@ def _digests(entries: list[dict[str, Any]]) -> list[str]:
         raise Unreadable(str(error)) from error
 
 
+def _record_digest(record: RunRecord) -> str:
+    """The whole record as one address, or `UNREADABLE` when an entry carries no digest."""
+    try:
+        return record.record_digest()
+    except ValueError as error:
+        raise Unreadable(str(error)) from error
+
+
 def infer_relation(
     record: RunRecord,
     candidate_observer_id: str,
@@ -174,6 +182,7 @@ def infer_relation(
         "outcome": outcome,
         "evidence_addresses": [RunRecord.address_of(entry) for entry in walk.read],
         "evidence_digests": _digests(walk.read),
+        "record_digest": _record_digest(record),
         "inferred_at": inferred_at,
     }
     if walk.unanswerable:

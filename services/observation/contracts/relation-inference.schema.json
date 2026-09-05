@@ -17,17 +17,31 @@
     "outcome",
     "evidence_addresses",
     "evidence_digests",
+    "record_digest",
     "inferred_at"
   ],
   "properties": {
-    "inference_id": {"type": "string", "pattern": "^urn:soveraeign:observation:relation-inference:[a-z0-9-]+$"},
-    "run_id": {"type": "string", "minLength": 1},
+    "inference_id": {
+      "type": "string",
+      "pattern": "^urn:soveraeign:observation:relation-inference:[a-z0-9-]+$"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
     "candidate_observer_id": {
       "description": "The actor proposed as observer. Proposing is not declaring independence.",
       "type": "string",
       "minLength": 1
     },
-    "candidate_observer_kind": {"enum": ["HUMAN", "MODEL", "WORKER", "SYSTEM"]},
+    "candidate_observer_kind": {
+      "enum": [
+        "HUMAN",
+        "MODEL",
+        "WORKER",
+        "SYSTEM"
+      ]
+    },
     "executor_id": {
       "description": "The actor the run's record attributes the execution to, read from that record rather than supplied by the candidate.",
       "type": "string",
@@ -38,37 +52,66 @@
       "type": "array",
       "minItems": 5,
       "uniqueItems": true,
-      "items": {"$ref": "#/$defs/edge"}
+      "items": {
+        "$ref": "#/$defs/edge"
+      }
     },
     "edges_found": {
       "description": "The examined edges that held. Non-empty means DIRECT.",
       "type": "array",
       "uniqueItems": true,
-      "items": {"$ref": "#/$defs/finding"}
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
     },
     "record_completeness": {
       "description": "Whether the run's record carried enough to answer every examined edge. INCOMPLETE forces UNDETERMINED; it never reads as independence.",
-      "enum": ["COMPLETE", "INCOMPLETE"]
+      "enum": [
+        "COMPLETE",
+        "INCOMPLETE"
+      ]
     },
     "unanswerable_edges": {
       "description": "Edges the record could not answer. Required to be non-empty when record_completeness is INCOMPLETE, so an incomplete verdict names what it could not see.",
       "type": "array",
       "uniqueItems": true,
-      "items": {"$ref": "#/$defs/edge"}
+      "items": {
+        "$ref": "#/$defs/edge"
+      }
     },
-    "outcome": {"enum": ["DIRECT", "INDEPENDENT", "UNDETERMINED"]},
+    "outcome": {
+      "enum": [
+        "DIRECT",
+        "INDEPENDENT",
+        "UNDETERMINED"
+      ]
+    },
     "evidence_addresses": {
       "description": "What the inference read to reach its finding. An inference that read nothing has not inferred.",
       "type": "array",
       "minItems": 1,
-      "items": {"type": "string", "minLength": 1}
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "evidence_digests": {
       "type": "array",
       "minItems": 1,
-      "items": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      "items": {
+        "type": "string",
+        "pattern": "^sha256:[0-9a-f]{64}$"
+      }
     },
-    "inferred_at": {"type": "string", "format": "date-time"}
+    "record_digest": {
+      "description": "sha256 over the entry digests of the whole record the inference was read over, in append order. observe_run recomputes it from the record it is handed and refuses RELATION_UNDETERMINED when they differ, so an inference cannot be carried onto a substituted record, well formed or not.",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "inferred_at": {
+      "type": "string",
+      "format": "date-time"
+    }
   },
   "$defs": {
     "edge": {
@@ -84,9 +127,14 @@
     "finding": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["edge", "evidence_address"],
+      "required": [
+        "edge",
+        "evidence_address"
+      ],
       "properties": {
-        "edge": {"$ref": "#/$defs/edge"},
+        "edge": {
+          "$ref": "#/$defs/edge"
+        },
         "evidence_address": {
           "description": "Where in the run's record this edge was seen. A found edge with no address is an assertion, not a finding.",
           "type": "string",
@@ -99,29 +147,59 @@
     {
       "description": "DIRECT: at least one edge held. The candidate may not observe this run.",
       "properties": {
-        "outcome": {"const": "DIRECT"},
-        "record_completeness": {"const": "COMPLETE"},
-        "edges_found": {"type": "array", "minItems": 1}
+        "outcome": {
+          "const": "DIRECT"
+        },
+        "record_completeness": {
+          "const": "COMPLETE"
+        },
+        "edges_found": {
+          "type": "array",
+          "minItems": 1
+        }
       },
-      "required": ["outcome", "edges_found"]
+      "required": [
+        "outcome",
+        "edges_found"
+      ]
     },
     {
       "description": "INDEPENDENT: no edge held and the record answered every one of them.",
       "properties": {
-        "outcome": {"const": "INDEPENDENT"},
-        "record_completeness": {"const": "COMPLETE"},
-        "edges_found": {"const": []}
+        "outcome": {
+          "const": "INDEPENDENT"
+        },
+        "record_completeness": {
+          "const": "COMPLETE"
+        },
+        "edges_found": {
+          "const": []
+        }
       },
-      "required": ["outcome", "edges_found"]
+      "required": [
+        "outcome",
+        "edges_found"
+      ]
     },
     {
       "description": "UNDETERMINED: the record could not answer. Refuses; never reads as independence.",
       "properties": {
-        "outcome": {"const": "UNDETERMINED"},
-        "record_completeness": {"const": "INCOMPLETE"},
-        "unanswerable_edges": {"type": "array", "minItems": 1}
+        "outcome": {
+          "const": "UNDETERMINED"
+        },
+        "record_completeness": {
+          "const": "INCOMPLETE"
+        },
+        "unanswerable_edges": {
+          "type": "array",
+          "minItems": 1
+        }
       },
-      "required": ["outcome", "record_completeness", "unanswerable_edges"]
+      "required": [
+        "outcome",
+        "record_completeness",
+        "unanswerable_edges"
+      ]
     }
   ]
 }

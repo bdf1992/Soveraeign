@@ -6,11 +6,14 @@ recomputed any of it: receipts kept reading as evidence about the working tree
 after the tree moved, and probes were never executed again after the day they
 were written.
 
-Three commands, none of which reads a declaration where it could measure a file:
+Four commands, none of which reads a declaration where it could measure a file:
 
     records   recompute every receipt's digests against the working tree
     probes    parse every probe and require its declared reach to still exist
     run       execute every probe and grade the process and the report it emits
+    pack      derive what a witness pass over one subject starts from: the prior
+              receipt, the digest delta since it, the builder's commits, the custody
+              exit served, and a RecordProjection over the subject at the head
 
 `records` and `probes` are wired into `scripts/verify.py`. `run` is not: the
 probes shipped on PR #119 cost 12.7s together, against a 15s ceiling for the
@@ -37,6 +40,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from sovwitness import pack as pack_builder  # noqa: E402
 from sovwitness import probes as probe_grader  # noqa: E402
 from sovwitness import records as record_grader  # noqa: E402
 
@@ -120,13 +124,41 @@ def run(root: Path, as_json: bool) -> int:
     return 1 if failing else 0
 
 
+def pack(root: Path, as_json: bool, subject: str | None, recipient: str) -> int:
+    """Emit the pack a witness pass over `subject` starts from; refuse rather than guess."""
+    if not subject:
+        print("FAIL: pack needs a subject, the <subject> of witness/<subject>.md")
+        return 2
+    try:
+        built = pack_builder.build(root, subject, recipient)
+    except pack_builder.PackRefused as refusal:
+        if as_json:
+            _emit({"refused": refusal.reason_code, "detail": refusal.detail}, True)
+        else:
+            print(f"REFUSED {refusal.reason_code}: {refusal.detail}")
+        return 1
+    if as_json:
+        _emit(built, True)
+    else:
+        for line in pack_builder.describe(built):
+            print(line)
+        print("Standing note: a pack is derived from the record and the tree. It asserts "
+              "nothing about the subject and carries the builder's commits as claims to check.")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
     parser.add_argument("command", nargs="?", default="records",
-                        choices=("records", "probes", "run"))
+                        choices=("records", "probes", "run", "pack"))
+    parser.add_argument("subject", nargs="?", help="for pack: the <subject> of witness/<subject>.md")
     parser.add_argument("--json", action="store_true", dest="as_json")
     parser.add_argument("--root", type=Path, default=ROOT)
+    parser.add_argument("--recipient", default="principal:witness",
+                        help="for pack: the principal the projection is prepared for")
     args = parser.parse_args(argv)
+    if args.command == "pack":
+        return pack(args.root, args.as_json, args.subject, args.recipient)
     return {"records": records, "probes": probes, "run": run}[args.command](
         args.root, args.as_json)
 

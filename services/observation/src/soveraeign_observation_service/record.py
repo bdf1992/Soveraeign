@@ -29,6 +29,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
+import hashlib
 
 ATTEMPTED = "ATTEMPTED"
 REPORTED = "REPORTED"
@@ -79,7 +80,9 @@ class RunRecord:
         """The first entry this service cannot read as a journal entry, or None.
 
         Every entry needs a kind, a subject, an address, and a sha256 digest; every entry on
-        the run needs an actor, because an anonymous attempt or report would hide an executor.
+        the run needs an actor, because an anonymous attempt or report would hide an executor;
+        every `OUTPUT` entry needs an actor, because an output with no producer leaves the
+        `PRODUCED_THE_OUTPUT` edge unanswerable while looking answered.
         """
         for entry in self.entries:
             address = self.address_of(entry)
@@ -92,6 +95,8 @@ class RunRecord:
                 return f"entry {address} carries no sha256 digest"
             if entry.get("subject") == self.run_id and not entry.get("actor"):
                 return f"entry {address} on the run names no actor"
+            if _event(entry) == OUTPUT and not entry.get("actor"):
+                return f"entry {address} records an output with no producer"
         return None
 
     def attempts(self) -> list[dict[str, Any]]:
@@ -170,6 +175,15 @@ class RunRecord:
     def is_terminal(self) -> bool:
         """Reported, or refused by a terminal receipt on the run."""
         return self.report() is not None or self.terminal_receipt() is not None
+
+    def record_digest(self) -> str:
+        """sha256 over every entry digest in append order: the record as one address.
+
+        An inference carries it and `observe_run` recomputes it from the record it is handed,
+        so an inference read over one record cannot admit an observer to another.
+        """
+        material = "\n".join(self.digest_of(entry) for entry in self.entries).encode("utf-8")
+        return "sha256:" + hashlib.sha256(material).hexdigest()
 
     @staticmethod
     def address_of(entry: dict[str, Any]) -> str:

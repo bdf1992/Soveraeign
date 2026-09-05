@@ -15,6 +15,7 @@ leaves exactly one receipt naming the manifest's reason code, which is the invar
 from __future__ import annotations
 
 from typing import Any
+import copy
 import hashlib
 
 from . import observe as _observe
@@ -68,6 +69,10 @@ class ObservationService:
         A malformed record (a missing digest, subject, or payload) is not a crash the caller
         should see without a receipt: it is `UNREADABLE`, the refusal the manifest declares
         for a record this service cannot read.
+
+        What the caller receives is a copy. The record the service keeps and later judges
+        through is its own, so rewriting a returned inference, declaration, or observation
+        changes nothing the service reads (witness pass 5, R16).
         """
         try:
             result = act()
@@ -79,7 +84,7 @@ class ObservationService:
             self._receipt(operation, subject, "REFUSED", refusal.reason_code, refusal.detail)
             raise refusal from error
         self._receipt(operation, subject, commit, None, "")
-        return result
+        return copy.deepcopy(result)
 
     # ---- operations -------------------------------------------------------
 

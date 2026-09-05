@@ -1,0 +1,298 @@
+{
+  "case_id": "WITNESS-2026-09-05-OBSERVATION-SERVICE-THIN-SLICE-4",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-05",
+  "artifact_revision": "f8a755f73a815ce15bea6af486bb924c7cb2970f",
+  "observed": {
+    "subject": "observation_service_status = BUILT_THIN_SLICE_WITNESSED_REMAINDER_DECLARED (bound by its comment to 3087714); fourth pass, scoped to pass 3's residuals R10-R13, to whether pass 3's conclusions hold on commit f8a755f, and to what the record supports for the value on these bytes",
+    "record": "witness/observation-service.md",
+    "record_section": "Pass 4: commit f8a755f (2026-09-05)",
+    "prior_receipts": [
+      "witness/observations/2026-09-03-observation-service-observation.json",
+      "witness/observations/2026-09-03-observation-service-observation-2.json",
+      "witness/observations/2026-09-03-observation-service-observation-3.json"
+    ],
+    "verdict": "RATIFIABLE-WITH-CONDITIONS",
+    "standing_supported": "WITNESSED",
+    "standing_binds": {
+      "field": "observation_service_status",
+      "subject": "observation-service",
+      "revision": "f8a755f73a815ce15bea6af486bb924c7cb2970f",
+      "relation_to_prior_revision": "RE-SUPPORTED at f8a755f, not carried forward from 3087714: the pass-3 receipt is STALE_SUBJECT against this tree (record.py, observe.py, test_thin_slice.py, KNOWN-GAPS.md, test_kernel_predicates.py and seven governing files moved), so the claim was re-derived on the current bytes",
+      "claim": "request-observation, declare-predicates, infer-relation, observe-run, read-observation built, self-tested, and independently observed through ObservationService and RunRecord.from_entries; list-pending-observations, counter-observation, attest-observation declared and unbuilt; no binding routes any of the eight",
+      "a_moved_value_must": "assert WITNESSED as a whole token for the thin slice only, assert neither reachability nor ratification, and name f8a755f rather than 3087714 in STATUS.yaml:46-50 and contracts/status-claims.json:164 if it rests on this pass"
+    },
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-05",
+    "observer_independence_basis": "This participant did not build, edit, stage or commit any file under the subject. It read the tree at the named commit, ran the repository's own gates, drove the service only through ObservationService and RunRecord.from_entries from a scratch directory, and mutated only scratch copies of conformance/ and services/observation. The commit message of f8a755f was displayed by git show --stat before any probe and is the builder's report, not evidence; residual wording was taken from pass 3 of the record, not from the builder's KNOWN-GAPS transcription. The invocation permitted no file under witness/probes/, so both probes are quoted in the record and telemetry.probe is deliberately absent.",
+    "observer_relation": "INDEPENDENT_OF_BUILDER_DECLARED_SURFACE_ONLY",
+    "observed_at": "2026-09-05T04:05:00Z",
+    "observed_state_addresses": [
+      "services/observation/src/soveraeign_observation_service/record.py",
+      "services/observation/src/soveraeign_observation_service/relation.py",
+      "services/observation/src/soveraeign_observation_service/observe.py",
+      "services/observation/src/soveraeign_observation_service/service.py",
+      "services/observation/src/soveraeign_observation_service/errors.py",
+      "services/observation/contracts/service.json",
+      "services/observation/contracts/observation-request.schema.json",
+      "services/observation/tests/test_thin_slice.py",
+      "services/observation/KNOWN-GAPS.md",
+      "conformance/kernel_predicates.py",
+      "conformance/requirements.py",
+      "conformance/run.py",
+      "conformance/oracle-controls.json",
+      "conformance/tests/test_kernel_predicates.py",
+      "scripts/sovverify/checks.py",
+      "scripts/sovkernel/transitions.py",
+      "scripts/sovkernel/capability_map.py",
+      "scripts/sovnode/composition.py",
+      "scripts/sov_standing.py",
+      "scripts/sovstanding/records.py",
+      "contracts/fixtures/capability-map.reference.json",
+      "contracts/fixtures/node-interface.reference.json",
+      "contracts/status-claims.json",
+      "STATUS.yaml",
+      ".clarity/coverage.json",
+      "CLAUDE.md",
+      "services/README.md",
+      "docs/documentation.html",
+      "witness/observations/2026-09-03-observation-service-observation-3.json"
+    ],
+    "observed_state_digests": [
+      "sha256:4941f794ec083892a85c95f6d0bcf7b01dfac78a75eb8aac066b52309cda4d5f",
+      "sha256:7591b945bc824fb1ed510687cb862786285836d77dd7f07dd33c22028eac5b3c",
+      "sha256:0a7d38dd1885487c868c9b1cd4b0e806c8cefb75ab578d5ab881dd23a75e560c",
+      "sha256:e20b03b9a2b2216a7a0aa3ac2798f3e3cfa353facada6d07d62a0f9b7504762f",
+      "sha256:8ce373e72815d7330ce365263acd88431262ffc92b84e43e922e358700cb6539",
+      "sha256:621397d46407709671cbfc841041981d5524743de9b6d253ea1bab30deaede62",
+      "sha256:fd5cb97db1eec5c1f1a997abf86787a7bf2fa8d5d715716d387928f033f79ff9",
+      "sha256:ba38b589f05a61f9b93654a7135c9622556b148ea7b579f1b7d537e5a79cd5fc",
+      "sha256:56683e1d5d2dbac899d6db17d3c56dd24985425637f140b05cd4205fccb50b6c",
+      "sha256:f1d81c804e9270bbe01f37c52f3bf4e38caa054affdfd9b9d8479d50fdd08fd2",
+      "sha256:4b2fe7b337e416aee4aab1e3a2681a485aa5f897f999a80ba6504b7326cb203a",
+      "sha256:c049f9e661e94a1ed5a3df039662d6529c2cb1430e23080a2aa8b0d9451472cc",
+      "sha256:75b4cf02cfeec7acc0a627c7f6df396211be0ae60349b0c90c9162a8e63cc803",
+      "sha256:4f31221a3e9a9ee75c2f988563ba806d052efd22d2450f98c934db43ee9236e7",
+      "sha256:a5316c2666007faa039a161269df3b4eb142f7859cb81d08d76c509be7f6527a",
+      "sha256:478fe0a065c8da6d0b5fc8e4b61e3260d67f6baff9ba00fadbb087433374343b",
+      "sha256:56230a9a21c3b63c4a818c159fc6b95de742f90b5c9cd9ed157c023b35a82bdf",
+      "sha256:e7320557b3d5239e576317668bd299c4a5c63bbc3f3a0fdc90d13100d8bd60ce",
+      "sha256:c80b5df746c4efdba9049410b0332dddf3edb500e37c8aabc63d6745a31e2b11",
+      "sha256:cb6fd19a9fb48c5002352e8c953c4f7d3e28eb83624d57759a8038a878fc23df",
+      "sha256:84e296ce7d76c5b100c7b922320018681d3b47e37c229756d685cb009aec7eae",
+      "sha256:1c3de9b93525be6ff2fc23e88b0f90c39f00d132ca9d5e03cb1c23bc0dac9fab",
+      "sha256:b0c3e4ab87ddd9c2255963bd2471c57ba1ed29459e9b86bbc8a6351808ffb998",
+      "sha256:9ddb4c4f974389b7a8539e3b2e0d3d7e0cb4a020356cb994fea3505210fad9ae",
+      "sha256:d4c71a3ee6c5da3734a9415a8fb8e66397a0bb5503af3deea34379b31718e20d",
+      "sha256:822d69711a793ff5a8e49f5fa38d306ec373002a866db61c0b67a1430f1d34e5",
+      "sha256:ddece1d46bd3e136fab0cc4e90ef919bcb2dd091fe30c947fb674b9687aaf4a7",
+      "sha256:87d64e2894abe4e4cbe37699dbfebeaa0ba48a4b6208da3fe5733a6dfb7e2da7",
+      "sha256:4bf480708d3c442935d19e2f8c8c31bd580c196ddb68ce6d8eda54a0a9f158cc"
+    ],
+    "commands": {
+      "tree": {
+        "command": "git rev-parse HEAD; git status --short",
+        "exit": "0; 0",
+        "excerpt": "f8a755f73a815ce15bea6af486bb924c7cb2970f; empty, before and after every command"
+      },
+      "verify": {
+        "command": "python scripts/verify.py",
+        "exit": 0,
+        "excerpt": "PASS: 50 checks in 17.351s wall; DEBT: no wall-clock grade at 17.351s; BUDGET DEBT: 9 check(s) over ceiling, 26.801s above budget; FAIL lines in the output are planted tooling self-test output inside 'repository tooling tests'"
+      },
+      "lint": {
+        "command": "python scripts/lint.py",
+        "exit": 0,
+        "excerpt": "PASS: repository hygiene (1176 text files, 546 Python modules, 10 named debt)"
+      },
+      "observation_tests": {
+        "command": "python -m unittest discover -s tests (cwd services/observation)",
+        "exit": 0,
+        "excerpt": "Ran 51 tests OK"
+      },
+      "oracle": {
+        "command": "python conformance/run.py",
+        "exit": 0,
+        "excerpt": "SUITE PASS cases=33 coverage_gaps=0"
+      },
+      "oracle_tests": {
+        "command": "python -m unittest discover -s conformance/tests",
+        "exit": 0,
+        "excerpt": "Ran 83 tests OK"
+      },
+      "f2_gate": {
+        "command": "python scripts/sov_f2_gate.py",
+        "exit": 1,
+        "excerpt": "requirement 25/25, transition 14/14, parity 5/5; participants 1/2 bound; OPEN"
+      },
+      "baseline": {
+        "command": "python scripts/sov_baseline.py",
+        "exit": 0,
+        "excerpt": "PASS: participant matches its recorded baseline (9 requirements, 8 failing as recorded)"
+      },
+      "standing": {
+        "command": "python scripts/sov_standing.py",
+        "exit": 0,
+        "excerpt": "SUPPORTED observation_service_status claims WITNESSED; PASS: 1 standing claim(s), each with a witness record (read against pass 3's declaration; the gate reads no revision)"
+      },
+      "witness_layer": {
+        "command": "python scripts/sov_witness_layer.py records",
+        "exit": 0,
+        "excerpt": "PASS: 6 witness receipt(s) graded, 0 unusable, 6 stale against their subject; 2026-09-03-observation-service-observation-3.json STALE_SUBJECT, 12 addresses moved"
+      },
+      "clarity": {
+        "command": "python scripts/sov_clarity.py status; check",
+        "exit": "0; 0",
+        "excerpt": "CURRENT 142, STALE 0, UNCHECKED 3 (witness/observation-service.md, .claude/skills/can-it-run-doom/SKILL.md, .claude/skills/draw-the-owl/SKILL.md), EXEMPT 90; PASS"
+      },
+      "traps": {
+        "command": "python scripts/sov_traps.py",
+        "exit": 0,
+        "excerpt": "PASS: 2 trap(s) still hold, 3 recorded for attended checking"
+      },
+      "guard_reverts": {
+        "command": "scratch copies of services/observation, ROOT pointed at the repository; R10: record.py:97-98 deleted; R11: observe.py:108-110 deleted; R13: observe.py:121 set to record.run_entry_ids(); named test class run",
+        "exit": "1; 1; 1",
+        "excerpt": "R10 test_an_output_with_no_producer_is_unreadable FAIL 'Unreadable not raised'; R11 test_observe_run_reads_the_record_it_is_handed FAIL 'Unreadable not raised'; R13 test_the_run_id_itself_is_not_a_predicate_address FAIL 'PredicatesUndeclared not raised'; unmodified copy FAILED (errors=2) loader errors only"
+      },
+      "mutation_sweep": {
+        "command": "scratch copy of conformance/; each of 97 defects.append statements replaced with pass by AST span; unittest discover -s tests; run.py --cases oracle-controls.json; baseline FAILED (errors=2)",
+        "exit": "n/a",
+        "excerpt": "kernel_predicates.py 34/44 seen, unseen :46 :53 :89 :91 :93 :112 :114 :214 :219 :223; requirements.py 12/53 seen; of pass 3's three, :168 seen (failures=1), :214 and :219 unseen; run.py SUITE PASS for every re-checked deletion"
+      },
+      "probe3_rerun": {
+        "command": "python probe3.py (pass 3's probe, quoted under Pass 3, sys.path absolute)",
+        "exit": 0,
+        "excerpt": "every line as pass 3 recorded except P1d REFUSED UNREADABLE 'entry out1 records an output with no producer' and P7d REFUSED UNREADABLE 'has no entry_id'"
+      },
+      "probe4": {
+        "command": "python probe4.py (quoted in the record)",
+        "exit": 0,
+        "excerpt": "outputs recorded per case in predicate_results"
+      }
+    },
+    "predicate_results": {
+      "r10_anonymous_output_refuses_unreadable": {
+        "held": true,
+        "detail": "P1d (empty), P1g (key absent), P1h (None), P1i (kind RECEIPT): REFUSED UNREADABLE 'entry out1 records an output with no producer', receipts=1"
+      },
+      "r10_case_goes_red_with_guard_reverted": {
+        "held": true,
+        "detail": "record.py:97-98 deleted: test_an_output_with_no_producer_is_unreadable FAIL"
+      },
+      "r11_observe_run_reads_malformed_on_the_record_handed": {
+        "held": true,
+        "detail": "P7d, P7f, P7g: REFUSED UNREADABLE, observations=0, refusal receipt written"
+      },
+      "r11_case_goes_red_with_guard_reverted": {
+        "held": true,
+        "detail": "observe.py:108-110 deleted: test_observe_run_reads_the_record_it_is_handed FAIL"
+      },
+      "r11_wording_a_substituted_record_cannot_ride_in": {
+        "held": false,
+        "detail": "P7e (observer attempted the run in the substitute) and P7h (observer produced the output) OBSERVED {'p': True} with three COMMITTED receipts; direct inference over the same records reads DIRECT. F8 carried; observe.py:105-106 and KNOWN-GAPS R11 overclaim (R14)"
+      },
+      "r12_rule_168_pinned": {
+        "held": true,
+        "detail": "test_observation_with_other_standing; sweep failures=1"
+      },
+      "r12_rule_214_pinned": {
+        "held": false,
+        "detail": "'discovery names no interface' deleted: tests FAILED (errors=2) baseline, run.py SUITE PASS"
+      },
+      "r12_rule_219_pinned": {
+        "held": false,
+        "detail": "'<name> binding missing <field>' deleted: tests FAILED (errors=2) baseline, run.py SUITE PASS"
+      },
+      "r12_builder_repaired_the_record_wording": {
+        "held": false,
+        "detail": "the four new tests pin the set KNOWN-GAPS.md transcribed at 3087714 (report standing, discovery id/inputs, settlement receipt) plus :168; pass 3 named :168, :214, :219"
+      },
+      "r13_case_goes_red_with_guard_reverted": {
+        "held": true,
+        "detail": "observe.py:121 reverted to record.run_entry_ids(): test_the_run_id_itself_is_not_a_predicate_address FAIL 'PredicatesUndeclared not raised' (passed at pass 3)"
+      },
+      "r13_run_id_not_a_predicate_address": {
+        "held": true,
+        "detail": "P7b: PREDICATES_UNDECLARED 'run's own entry' with the run id reported and recorded as OUTPUT"
+      },
+      "f1_reporter_is_an_executor_edge": {
+        "held": true,
+        "detail": "P1: DIRECT [SAME_ACTOR@report]"
+      },
+      "f2_second_attempt_actor_is_an_executor_edge": {
+        "held": true,
+        "detail": "P2: DIRECT, three edges at attempt2"
+      },
+      "f3_malformed_record_refuses_unreadable_with_one_receipt": {
+        "held": true,
+        "detail": "P3, P3b, P4, P4b, P4b', P4c, P4d, P4e, P4f, P4g, P1d, P1g, P1h, P1i: UNREADABLE, receipts=1"
+      },
+      "f4_reported_unsettled_run_not_named_committed": {
+        "held": true,
+        "detail": "P8: UNRESOLVED; P8c: REFUSED; P8d: COMMITTED; J1 carried"
+      },
+      "f5_malformed_declared_digest_refuses": {
+        "held": true,
+        "detail": "P6: REFUSED UNREADABLE"
+      },
+      "f6_run_grant_absent_from_record_refuses": {
+        "held": false,
+        "detail": "P5: INDEPENDENT []; note, unchanged"
+      },
+      "f7_report_entry_is_not_a_predicate_address": {
+        "held": true,
+        "detail": "P7: PREDICATES_UNDECLARED run's own entry"
+      },
+      "f8_inference_bound_to_the_record_it_was_inferred_over": {
+        "held": false,
+        "detail": "P9 refuses; P10 False; P10b True; P7e, P7h observe over a well-formed substitute"
+      },
+      "r3_default_recorded_in_known_gaps": {
+        "held": true,
+        "detail": "KNOWN-GAPS.md:57 records the INCOMPLETE_PROPOSAL default; P8b unchanged; J4 remains"
+      },
+      "r9_witness_record_has_clarity_receipt": {
+        "held": false,
+        "detail": "UNCHECKED; outside the witness's two files"
+      },
+      "c1_capability_map_activation_is_measured": {
+        "held": false,
+        "detail": "capability_map.py, composition.py, capability-map.reference.json byte-identical to pass 3; node-interface.reference.json changed only in regenerated digests; carried as a condition"
+      },
+      "c2_conf_run_def_declares_only_what_it_defeats": {
+        "held": true,
+        "detail": "oracle-controls.json unchanged (75b4cf02...)"
+      },
+      "c3_named_rule_deletions_are_noticed": {
+        "held": true,
+        "detail": "pass 3's 11 still seen; whole corpus 46/97 (R12 partial)"
+      },
+      "oracles_not_weakened": {
+        "held": true,
+        "detail": "kernel_predicates.py, requirements.py, run.py, oracle-controls.json byte-identical to pass 3; test_kernel_predicates.py adds 24 lines, deletes none"
+      },
+      "kernel_parity_reading_carries": {
+        "held": true,
+        "detail": "transitions.py byte-identical to passes 1-3 (sha256 478fe0a0...)"
+      },
+      "unreported_changes_in_commit": {
+        "held": true,
+        "detail": "git show --stat f8a755f: seven files, each named in the message; no secret shapes; production modules under 300 lines; no new vocabulary term"
+      },
+      "standing_gate_measures_the_tree": {
+        "held": false,
+        "detail": "sov_standing.py reads standing_supported from the first witness block and stops; it read SUPPORTED while every receipt for the subject was STALE_SUBJECT; J5"
+      },
+      "prior_passes_intact": {
+        "held": true,
+        "detail": "witness/observation-service.md from '## Pass 3' onward byte-identical to HEAD (cmp)"
+      }
+    },
+    "standing_note": "This is an observation. It supports BUILT -> WITNESSED for observation_service_status at f8a755f, re-supported on these bytes rather than carried from 3087714, and ratifies nothing; condition C1, residuals R12 (in part), R14, R9, and judgement items J1-J5 are in the record."
+  },
+  "telemetry": {
+    "probe_location": "both probes quoted in witness/observation-service.md under Pass 4 / Probe and Pass 3 / Probe; run from a scratch directory because the invocation permitted no file under witness/probes/",
+    "tree_state": "git status --short empty before and after every recorded command; HEAD f8a755f73a815ce15bea6af486bb924c7cb2970f throughout; both witness files written after every recorded command",
+    "predecessors": "pass 1 (169182f), pass 2 (540bc01) and pass 3 (3087714) receipts left intact",
+    "post_write": "after both files were written: sov_standing.py 0 (SUPPORTED observation_service_status claims WITNESSED, now read against this pass's block); sov_witness_layer.py records 0 (this receipt CURRENT, 29 digests recomputed; PASS: 7 graded, 0 unusable, 6 stale against their subject); lint.py 0 (1177 text files); verify.py 1 on exactly two checks, 'documentation reader' and 'repository tooling tests', both the stale docs/documentation.html this record makes (scripts/sovdocs/facets.py indexes witness/*.md); every other check PASS, COST: 50 checks in 17.001s wall. Whoever lands runs python scripts/sov_docs.py build. Pass 3 tail of the record byte-identical to HEAD."
+  }
+}

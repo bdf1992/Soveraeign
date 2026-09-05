@@ -25,7 +25,8 @@ class RunNotTerminal(ObservationRefused):
 
 
 class RelationUndetermined(ObservationRefused):
-    """The run's record could not answer every direct edge. Silence is not a pass."""
+    """The run's record could not answer every direct edge, or the inference offered was read
+    over another record than the one being observed. Silence is not a pass."""
 
     reason_code = "RELATION_UNDETERMINED"
 

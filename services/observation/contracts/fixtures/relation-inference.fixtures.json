@@ -30,6 +30,7 @@
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
       ],
+      "record_digest": "sha256:6fdf798efff90ee31f64dd132fc0d5fd974bf3498c4344b4fe668cd0efacb18f",
       "inferred_at": "2026-08-24T02:10:00Z"
     }
   },
@@ -69,6 +70,7 @@
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
       ],
+      "record_digest": "sha256:6fdf798efff90ee31f64dd132fc0d5fd974bf3498c4344b4fe668cd0efacb18f",
       "inferred_at": "2026-08-24T02:10:00Z"
     }
   },
@@ -103,6 +105,7 @@
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
       ],
+      "record_digest": "sha256:6fdf798efff90ee31f64dd132fc0d5fd974bf3498c4344b4fe668cd0efacb18f",
       "inferred_at": "2026-08-24T02:10:00Z",
       "unanswerable_edges": [
         "GRANT_DESCENDS_FROM_RUN"
@@ -145,6 +148,7 @@
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
       ],
+      "record_digest": "sha256:6fdf798efff90ee31f64dd132fc0d5fd974bf3498c4344b4fe668cd0efacb18f",
       "inferred_at": "2026-08-24T02:10:00Z"
     }
   },
@@ -179,6 +183,7 @@
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
       ],
+      "record_digest": "sha256:6fdf798efff90ee31f64dd132fc0d5fd974bf3498c4344b4fe668cd0efacb18f",
       "inferred_at": "2026-08-24T02:10:00Z"
     }
   },
@@ -213,6 +218,7 @@
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
       ],
+      "record_digest": "sha256:6fdf798efff90ee31f64dd132fc0d5fd974bf3498c4344b4fe668cd0efacb18f",
       "inferred_at": "2026-08-24T02:10:00Z"
     }
   },
@@ -247,6 +253,7 @@
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
       ],
+      "record_digest": "sha256:6fdf798efff90ee31f64dd132fc0d5fd974bf3498c4344b4fe668cd0efacb18f",
       "inferred_at": "2026-08-24T02:10:00Z"
     }
   },
@@ -285,6 +292,7 @@
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
       ],
+      "record_digest": "sha256:6fdf798efff90ee31f64dd132fc0d5fd974bf3498c4344b4fe668cd0efacb18f",
       "inferred_at": "2026-08-24T02:10:00Z"
     }
   },
@@ -316,6 +324,7 @@
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
       ],
+      "record_digest": "sha256:6fdf798efff90ee31f64dd132fc0d5fd974bf3498c4344b4fe668cd0efacb18f",
       "inferred_at": "2026-08-24T02:10:00Z"
     }
   },
@@ -351,6 +360,7 @@
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
       ],
+      "record_digest": "sha256:6fdf798efff90ee31f64dd132fc0d5fd974bf3498c4344b4fe668cd0efacb18f",
       "inferred_at": "2026-08-24T02:10:00Z"
     }
   },
@@ -382,6 +392,7 @@
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
       ],
+      "record_digest": "sha256:6fdf798efff90ee31f64dd132fc0d5fd974bf3498c4344b4fe668cd0efacb18f",
       "inferred_at": "2026-08-24T02:10:00Z"
     }
   },
@@ -398,6 +409,41 @@
       "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
       "run_id": "urn:soveraeign:run:asset-ingest-1",
       "candidate_observer_id": "urn:soveraeign:actor:asset-worker",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "GRANT_DESCENDS_FROM_RUN",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT"
+      ],
+      "edges_found": [],
+      "record_completeness": "COMPLETE",
+      "outcome": "INDEPENDENT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "record_digest": "sha256:6fdf798efff90ee31f64dd132fc0d5fd974bf3498c4344b4fe668cd0efacb18f",
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-NEG-NO-RECORD-DIGEST",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "A well-formed independent finding with no record digest. An inference not bound to the record it read can be handed a different record, and the observer it admits would then be read against entries it never saw.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:qa-witness",
       "candidate_observer_kind": "MODEL",
       "executor_id": "urn:soveraeign:actor:asset-worker",
       "edges_examined": [

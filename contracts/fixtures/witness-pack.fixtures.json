@@ -1,0 +1,147 @@
+[
+  {
+    "id": "WPACK-POS-DELTA-OVER-PRIOR",
+    "contract": "witness-pack.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "description": "One prior receipt, one moved address, one commit landed in between, a live custody claiming the subject, and a projection over the subject at the head. This is the pass that re-derives one file and carries the rest.",
+    "record": {
+      "witness_pack_schema": "soveraeign-witness-pack/v1",
+      "pack_id": "urn:soveraeign:witness-pack:0123456789abcdef01234567",
+      "subject": "observation-service",
+      "subject_roots": ["services/observation/src/soveraeign_observation_service"],
+      "serves_exit": {"custody_id": "custody:phase-1-5/evidenced-judgement", "exit_clause": "P15-X2"},
+      "record_head": "65a75499a0c95d135de35a366a85cf81034f0b34",
+      "prior": {
+        "receipt": "witness/observations/2026-09-05-observation-service-observation-4.json",
+        "case_id": "WITNESS-2026-09-05-OBSERVATION-SERVICE-THIN-SLICE-4",
+        "participant_id": "claude-fable-5-1/sov-witness@2026-09-05",
+        "artifact_revision": "f8a755f73a815ce15bea6af486bb924c7cb2970f",
+        "verdict": "RATIFIABLE-WITH-CONDITIONS",
+        "standing_supported": "WITNESSED",
+        "record": "witness/observation-service.md",
+        "record_section": "Pass 4: commit f8a755f (2026-09-05)"
+      },
+      "delta": {
+        "moved": [
+          {
+            "address": "services/observation/src/soveraeign_observation_service/observe.py",
+            "recorded": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "live": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+          }
+        ],
+        "gone": [],
+        "added": [],
+        "unchanged": 3,
+        "added_source": "git diff --name-only f8a755f73a815ce15bea6af486bb924c7cb2970f..HEAD -- services/observation/src/soveraeign_observation_service"
+      },
+      "builder_commits": [
+        {"commit": "65a75499a0c95d135de35a366a85cf81034f0b34", "subject": "fix: bind the observation inference to the record it was read over"}
+      ],
+      "record_projection": {
+        "record_projection_schema": "soveraeign-record-projection/v1",
+        "projection_id": "urn:soveraeign:record-projection:89abcdef0123456789abcdef",
+        "projection_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      "authority_effect": "NONE",
+      "created_at": "2026-09-05T05:00:00+00:00"
+    }
+  },
+  {
+    "id": "WPACK-NEG-NO-PRIOR",
+    "contract": "witness-pack.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "A pack with no prior receipt. Without a prior there is nothing to carry and nothing to diff against; that is a first pass and takes the full read, not a pack.",
+    "record": {
+      "witness_pack_schema": "soveraeign-witness-pack/v1",
+      "pack_id": "urn:soveraeign:witness-pack:0123456789abcdef01234567",
+      "subject": "observation-service",
+      "subject_roots": ["services/observation"],
+      "serves_exit": null,
+      "record_head": "65a75499a0c95d135de35a366a85cf81034f0b34",
+      "prior": null,
+      "delta": {"moved": [], "gone": [], "added": [], "unchanged": 0, "added_source": "none"},
+      "builder_commits": [],
+      "record_projection": {
+        "record_projection_schema": "soveraeign-record-projection/v1",
+        "projection_id": "urn:soveraeign:record-projection:89abcdef0123456789abcdef",
+        "projection_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      "authority_effect": "NONE",
+      "created_at": "2026-09-05T05:00:00+00:00"
+    }
+  },
+  {
+    "id": "WPACK-NEG-DELTA-WITHOUT-SOURCE",
+    "contract": "witness-pack.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "An empty `added` list with no source named. A reader cannot tell whether nothing was added or nothing could be read, which is the silence this pack exists to remove.",
+    "record": {
+      "witness_pack_schema": "soveraeign-witness-pack/v1",
+      "pack_id": "urn:soveraeign:witness-pack:0123456789abcdef01234567",
+      "subject": "observation-service",
+      "subject_roots": ["services/observation"],
+      "serves_exit": null,
+      "record_head": "65a75499a0c95d135de35a366a85cf81034f0b34",
+      "prior": {
+        "receipt": "witness/observations/2026-09-05-observation-service-observation-4.json",
+        "case_id": "WITNESS-2026-09-05-OBSERVATION-SERVICE-THIN-SLICE-4",
+        "participant_id": "claude-fable-5-1/sov-witness@2026-09-05",
+        "artifact_revision": "f8a755f73a815ce15bea6af486bb924c7cb2970f",
+        "verdict": null,
+        "standing_supported": null,
+        "record": "witness/observation-service.md",
+        "record_section": null
+      },
+      "delta": {"moved": [], "gone": [], "added": [], "unchanged": 4},
+      "builder_commits": [],
+      "record_projection": {
+        "record_projection_schema": "soveraeign-record-projection/v1",
+        "projection_id": "urn:soveraeign:record-projection:89abcdef0123456789abcdef",
+        "projection_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      "authority_effect": "NONE",
+      "created_at": "2026-09-05T05:00:00+00:00"
+    }
+  },
+  {
+    "id": "WPACK-NEG-AUTHORITY-CLAIMED",
+    "contract": "witness-pack.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "A pack that claims an authority effect. A pack is derived from the record and the tree and grants nothing; a shape that could carry authority is the shape a builder would use to hand a witness its conclusion.",
+    "record": {
+      "witness_pack_schema": "soveraeign-witness-pack/v1",
+      "pack_id": "urn:soveraeign:witness-pack:0123456789abcdef01234567",
+      "subject": "observation-service",
+      "subject_roots": ["services/observation"],
+      "serves_exit": null,
+      "record_head": "65a75499a0c95d135de35a366a85cf81034f0b34",
+      "prior": {
+        "receipt": "witness/observations/2026-09-05-observation-service-observation-4.json",
+        "case_id": "WITNESS-2026-09-05-OBSERVATION-SERVICE-THIN-SLICE-4",
+        "participant_id": "claude-fable-5-1/sov-witness@2026-09-05",
+        "artifact_revision": "f8a755f73a815ce15bea6af486bb924c7cb2970f",
+        "verdict": null,
+        "standing_supported": null,
+        "record": "witness/observation-service.md",
+        "record_section": null
+      },
+      "delta": {"moved": [], "gone": [], "added": [], "unchanged": 4, "added_source": "none"},
+      "builder_commits": [],
+      "record_projection": {
+        "record_projection_schema": "soveraeign-record-projection/v1",
+        "projection_id": "urn:soveraeign:record-projection:89abcdef0123456789abcdef",
+        "projection_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      "authority_effect": "RATIFIES",
+      "created_at": "2026-09-05T05:00:00+00:00"
+    }
+  }
+]

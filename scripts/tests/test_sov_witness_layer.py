@@ -622,3 +622,118 @@ class CheckedInLayer(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+from sovkernel.jsonschema import validate as validate_schema  # noqa: E402
+from sovwitness import pack as pack_builder  # noqa: E402
+
+PACK_SCHEMA = json.loads((ROOT / "contracts" / "witness-pack.schema.json").read_text(encoding="utf-8"))
+PROJECTION_SCHEMA = json.loads(
+    (ROOT / "contracts" / "record-projection.schema.json").read_text(encoding="utf-8"))
+
+
+class WitnessPacks(TreeCase):
+    """A pack is derived from the prior receipt and the tree: it names exactly what moved,
+    carries the prior as input, and refuses rather than guess when it cannot be honest."""
+
+    def prior(self, name: str = "obs.json", **override) -> Path:
+        observed = {
+            "observed_state_addresses": ["subject/thing.txt"],
+            "observed_state_digests": [digest(self.subject_text)],
+            "record": "witness/thing.md",
+            "record_section": "Pass 1",
+            "verdict": "RATIFIABLE-WITH-CONDITIONS",
+            "standing_supported": "WITNESSED",
+        }
+        observed.update(override.pop("observed", {}))
+        return self.receipt(name=name, observed=observed, **override)
+
+    def test_pack_names_the_moved_address_and_carries_the_prior(self) -> None:
+        self.prior()
+        write(self.root / "subject" / "thing.txt", "the subject, changed" + LF)
+        pack = pack_builder.build(self.root, "thing", now="2026-09-05T06:00:00+00:00")
+        self.assertEqual(["subject/thing.txt"], [m["address"] for m in pack["delta"]["moved"]])
+        self.assertEqual(digest(self.subject_text), pack["delta"]["moved"][0]["recorded"])
+        self.assertEqual(digest("the subject, changed" + LF), pack["delta"]["moved"][0]["live"])
+        self.assertEqual(0, pack["delta"]["unchanged"])
+        self.assertEqual("CASE-1", pack["prior"]["case_id"])
+        self.assertEqual("WITNESSED", pack["prior"]["standing_supported"])
+        self.assertEqual(["subject"], pack["subject_roots"])
+        # The scratch tree has no git history: the pack says so instead of reading as empty.
+        self.assertEqual("WORKING_TREE", pack["record_head"])
+        self.assertTrue(pack["delta"]["added_source"].startswith("UNAVAILABLE"))
+        self.assertEqual([], pack["builder_commits"])
+        self.assertIsNone(pack["serves_exit"])
+
+    def test_pack_conforms_to_its_contract_and_embeds_a_valid_projection(self) -> None:
+        self.prior()
+        pack = pack_builder.build(self.root, "thing")
+        self.assertEqual([], validate_schema(pack, PACK_SCHEMA, PACK_SCHEMA))
+        projection = pack["record_projection"]
+        self.assertEqual([], validate_schema(projection, PROJECTION_SCHEMA, PROJECTION_SCHEMA))
+        self.assertEqual(["subject/thing.txt"], projection["subject_addresses"])
+        self.assertEqual("NONE", projection["authority_effect"])
+        self.assertEqual(1, pack["delta"]["unchanged"])
+        self.assertTrue(any("carried, not re-read" in o["reason"] for o in projection["omissions"]))
+
+    def test_pack_refuses_without_a_prior_receipt(self) -> None:
+        with self.assertRaises(pack_builder.PackRefused) as caught:
+            pack_builder.build(self.root, "thing")
+        self.assertEqual("NO_PRIOR_RECEIPT", caught.exception.reason_code)
+
+    def test_pack_refuses_when_the_prior_probe_moved(self) -> None:
+        self.prior(observed={
+            "observed_state_addresses": ["subject/thing.txt", "witness/probes/probe_thing.py"],
+            "observed_state_digests": [digest(self.subject_text), digest(GOOD_PROBE)]})
+        write(self.probe_path, GOOD_PROBE + "# moved" + LF)
+        with self.assertRaises(pack_builder.PackRefused) as caught:
+            pack_builder.build(self.root, "thing")
+        self.assertEqual("PRIOR_PROBE_STALE", caught.exception.reason_code)
+
+    def test_pack_refuses_an_ungradeable_prior(self) -> None:
+        self.prior(observed={"observed_state_addresses": ["subject/thing.txt"],
+                             "observed_state_digests": ["not-a-digest"],
+                             "record": "witness/thing.md"})
+        with self.assertRaises(pack_builder.PackRefused) as caught:
+            pack_builder.build(self.root, "thing")
+        self.assertEqual("PRIOR_UNGRADEABLE", caught.exception.reason_code)
+
+    def test_pack_takes_the_head_of_the_receipt_chain(self) -> None:
+        self.prior(name="a-first.json", case_id="CASE-1")
+        self.prior(name="b-second.json", case_id="CASE-2",
+                   observed={"prior_receipts": ["witness/observations/a-first.json"]})
+        # A third receipt that sorts last but is itself named as prior by the second is not head.
+        self.prior(name="c-older.json", case_id="CASE-0")
+        self.prior(name="b-second.json", case_id="CASE-2", observed={
+            "prior_receipts": ["witness/observations/a-first.json",
+                               "witness/observations/c-older.json"]})
+        pack = pack_builder.build(self.root, "thing")
+        self.assertEqual("CASE-2", pack["prior"]["case_id"])
+        self.assertEqual("witness/observations/b-second.json", pack["prior"]["receipt"])
+
+    def test_pack_excludes_witness_machinery_from_the_subject(self) -> None:
+        self.prior(observed={
+            "observed_state_addresses": ["subject/thing.txt", "witness/probes/probe_thing.py"],
+            "observed_state_digests": [digest(self.subject_text), digest(GOOD_PROBE)]})
+        pack = pack_builder.build(self.root, "thing")
+        self.assertEqual(["subject/thing.txt"], pack["record_projection"]["subject_addresses"])
+        self.assertTrue(any(o["record_class"].startswith("witness machinery")
+                            for o in pack["record_projection"]["omissions"]))
+
+    def test_pack_fixtures_validate_as_declared(self) -> None:
+        fixtures = json.loads((ROOT / "contracts" / "fixtures" / "witness-pack.fixtures.json")
+                              .read_text(encoding="utf-8"))
+        self.assertGreaterEqual(len(fixtures), 4)
+        for fixture in fixtures:
+            defects = validate_schema(fixture["record"], PACK_SCHEMA, PACK_SCHEMA)
+            with self.subTest(fixture=fixture["id"]):
+                if fixture["expected_validity"] == "VALID":
+                    self.assertEqual([], defects)
+                else:
+                    self.assertTrue(defects, fixture["id"])
+
+    def test_pack_command_exits(self) -> None:
+        self.assertEqual(2, layer.main(["pack", "--root", str(self.root)]))
+        self.assertEqual(1, layer.main(["pack", "thing", "--root", str(self.root)]))
+        self.prior()
+        self.assertEqual(0, layer.main(["pack", "thing", "--root", str(self.root), "--json"]))

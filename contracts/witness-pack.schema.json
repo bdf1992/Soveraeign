@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/witness-pack.schema.json",
+  "title": "Soveraeign Witness Pack (PROPOSED)",
+  "description": "What a witness pass is handed instead of a prose brief: the prior receipt over the same subject, the exact digest delta since that receipt, the commits the builder landed in between, the custody exit the subject serves, and a RecordProjection over the subject at the current head. A pass re-derives the claims that cite a moved address and carries the rest from the prior receipt as input findings. The pack is derived from the record and the tree; it asserts nothing about the subject, grants nothing, and is rebuilt rather than kept.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "witness_pack_schema",
+    "pack_id",
+    "subject",
+    "subject_roots",
+    "serves_exit",
+    "record_head",
+    "prior",
+    "delta",
+    "builder_commits",
+    "record_projection",
+    "authority_effect",
+    "created_at"
+  ],
+  "properties": {
+    "witness_pack_schema": {"const": "soveraeign-witness-pack/v1"},
+    "pack_id": {"type": "string", "minLength": 1},
+    "subject": {
+      "description": "The witness subject, as the record under witness/<subject>.md names it.",
+      "type": "string",
+      "minLength": 1
+    },
+    "subject_roots": {
+      "description": "Repository directories the prior receipt's subject addresses fall under. History is read for these and nothing else.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "serves_exit": {
+      "description": "The live custody whose member the subject is, or null when no custody claims it. A pass over a subject that serves no exit is still a pass; it is not phase work.",
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["custody_id", "exit_clause"],
+      "properties": {
+        "custody_id": {"type": "string", "minLength": 1},
+        "exit_clause": {"type": "string", "minLength": 1}
+      }
+    },
+    "record_head": {"type": "string", "minLength": 1},
+    "prior": {"$ref": "#/$defs/prior"},
+    "delta": {"$ref": "#/$defs/delta"},
+    "builder_commits": {
+      "description": "Commits between the prior receipt's revision and the head that touch a subject root. Their messages are the builder's claims, which the pass checks and never adopts.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["commit", "subject"],
+        "properties": {
+          "commit": {"type": "string", "pattern": "^[0-9a-f]{7,40}$"},
+          "subject": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "record_projection": {
+      "description": "A RecordProjection conforming to record-projection.schema.json over the subject addresses at the head. Validated against that contract separately; this schema only requires its identity fields.",
+      "type": "object",
+      "required": ["record_projection_schema", "projection_id", "projection_digest"],
+      "properties": {
+        "record_projection_schema": {"const": "soveraeign-record-projection/v1"},
+        "projection_id": {"type": "string", "minLength": 1},
+        "projection_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "authority_effect": {"const": "NONE"},
+    "created_at": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "prior": {
+      "description": "The receipt this pass carries forward. Verdict and standing are what that receipt said; the pass re-reads them as claims.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt", "case_id", "participant_id", "artifact_revision", "verdict",
+                   "standing_supported", "record", "record_section"],
+      "properties": {
+        "receipt": {"type": "string", "minLength": 1},
+        "case_id": {"type": "string", "minLength": 1},
+        "participant_id": {"type": "string", "minLength": 1},
+        "artifact_revision": {"type": "string", "minLength": 1},
+        "verdict": {"type": ["string", "null"]},
+        "standing_supported": {"type": ["string", "null"]},
+        "record": {"type": ["string", "null"]},
+        "record_section": {"type": ["string", "null"]}
+      }
+    },
+    "delta": {
+      "description": "Exactly what moved under the subject since the prior receipt. Recomputed from bytes, never read from a field that states its own freshness.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["moved", "gone", "added", "unchanged", "added_source"],
+      "properties": {
+        "moved": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["address", "recorded", "live"],
+            "properties": {
+              "address": {"type": "string", "minLength": 1},
+              "recorded": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+              "live": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+            }
+          }
+        },
+        "gone": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "added": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "unchanged": {"type": "integer", "minimum": 0},
+        "added_source": {
+          "description": "The command that produced `added`, or UNAVAILABLE with the reason, so a reader knows whether an empty list means nothing was added or nothing could be read.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

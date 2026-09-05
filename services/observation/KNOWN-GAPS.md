@@ -69,13 +69,35 @@ reads `WITNESSED` for commit 3087714, and the current code owes a fresh pass.
 - R10: an `OUTPUT` entry with no actor now refuses `UNREADABLE` from `malformed()`, because
   an output with no producer leaves `PRODUCED_THE_OUTPUT` unanswerable while looking answered
   (`test_an_output_with_no_producer_is_unreadable`).
-- R11: `observe_run` reads `malformed()` on the record it is handed, so a substituted record
-  cannot ride in on an earlier inference (`test_observe_run_reads_the_record_it_is_handed`).
-- R12: the report-standing, observation-standing, discovery id/inputs shape, and settlement
-  receipt rules are pinned one at a time in `conformance/tests/test_kernel_predicates.py`.
+- R11: `observe_run` reads `malformed()` on the record it is handed, so a malformed
+  substituted record refuses `UNREADABLE` (`test_observe_run_reads_the_record_it_is_handed`).
+  This is the repair as pass 3 worded it and no wider: see R14.
+- R12: the report-standing, observation-standing, discovery id/inputs shape, settlement
+  receipt, discovery-interface, and binding-field rules are pinned one at a time in
+  `conformance/tests/test_kernel_predicates.py`. Pass 4 found the first set was the one this
+  page had transcribed at 3087714, not pass 3's; the two discovery rules it named are now pinned.
 - R13: `test_the_run_id_itself_is_not_a_predicate_address` now reports the run id as an output
   with an `OUTPUT` entry standing on it, so only the own-entry guard refuses; reverting the
   guard fails the case.
+
+## Residuals the fourth witness pass left open
+
+Pass 4 (commit `f8a755f`, `witness/observation-service.md`) re-supported `WITNESSED` on the
+repaired bytes and left these for the builder. None holds the transition.
+
+- R14: `observe_run` refuses a malformed substituted record and nothing more. A well-formed
+  substituted record in which the observer attempted the run or produced the output is
+  observed, because `observe_run` trusts the inference it is handed to have been read over the
+  same record. The docstring at `observe.py` says a substituted record cannot ride in; only a
+  malformed one cannot. The repair is to bind the inference to the record's entry digests and
+  refuse when they differ, which is F8 from pass 1, still open. The docstring is left as the
+  witnessed bytes until that change.
+- J5 (a finding about a check, held for the owner): `scripts/sov_standing.py` reads
+  `standing_supported` from the first witness block and reads neither the recorded revision nor
+  the tree, so it read `SUPPORTED` while every receipt for the subject was `STALE_SUBJECT`.
+  The measurement exists in `sov_witness_layer.py records`, which grades staleness as debt.
+- `STATUS.yaml` and `contracts/status-claims.json` still cite `3087714` as the witnessed
+  commit; pass 4 supports `f8a755f`. Moving a standing citation is the owner's document.
 
 ## Where this sits against the AI-native bar
 

@@ -231,6 +231,18 @@ class EveryRuleNamesItsDefect(unittest.TestCase):
         self.assertOnly(kernel.check_discovery(observed),
                         "model binding discovered from a different interface")
 
+    def test_discovery_naming_no_interface(self) -> None:
+        observed = positive("CONF-DISCOVERY-POS"); del observed["interface_id"]
+        self.assertEqual(["discovery names no interface",
+                          "human binding discovered from a different interface",
+                          "model binding discovered from a different interface"],
+                         kernel.check_discovery(observed))
+
+    def test_discovery_binding_missing_a_field(self) -> None:
+        observed = positive("CONF-DISCOVERY-POS"); del observed["human"]["discovery_receipt_id"]
+        self.assertOnly(kernel.check_discovery(observed),
+                        "human binding missing discovery_receipt_id")
+
     def test_discovery_of_an_operation_without_id_or_inputs(self) -> None:
         observed = positive("CONF-DISCOVERY-POS")
         operation = observed["model"]["operations"][0]

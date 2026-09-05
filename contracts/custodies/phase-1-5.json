@@ -46,7 +46,17 @@
         "maturity": "DISCOVERY_ENVELOPE",
         "dimensions": [{"dimension_id": "grants", "low": 0, "high": 1}, {"dimension_id": "judgement_units", "low": 1, "high": 1}]
       },
-      "members": [],
+      "members": [
+        {
+          "member_kind": "OPERATION",
+          "address": "scripts/sov_lease.py",
+          "stage": "VERTICAL_SLICE",
+          "standing": "WITNESSED",
+          "work_state": "PRESENTED",
+          "stage_observed_by": "reports/observations/2026-09-05-wave-1-lease-witness-observation.json",
+          "note": "wave 1 lane B: registry spelling of a principal accepted and mapped, revoked refused, cleanup obligations carried on the lease; landed 240cdfb"
+        }
+      ],
       "depends_on": [],
       "cleanup_obligations": []
     },
@@ -108,6 +118,24 @@
           "work_state": "PRESENTED",
           "stage_observed_by": "reports/observations/2026-09-05-thin-circuit-1-witness-observation.json",
           "note": "the first run observed end to end: worker attempt, controller repair, two independent observations by a separate participant, settle_run judged PERMITTED by the kernel and receipted; 13-entry journal export, self-verifying"
+        },
+        {
+          "member_kind": "SERVICE",
+          "address": "services/record",
+          "stage": "VERTICAL_SLICE",
+          "standing": "WITNESSED",
+          "work_state": "PRESENTED",
+          "stage_observed_by": "reports/observations/2026-09-05-wave-1-record-projection-witness-observation.json",
+          "note": "wave 1 lane A: a run's projection carries the outputs its own report vouched for; omissions [] is a declaration; landed d641908"
+        },
+        {
+          "member_kind": "SERVICE",
+          "address": "services/observation/src/soveraeign_observation_service/cli.py",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "PRESENTED",
+          "stage_observed_by": "reports/observations/2026-09-05-wave-1-observation-cli-witness-observation.json",
+          "note": "wave 1 lane D: command line for the five built operations with durable records; WITNESSED on the code digests, the landed tree read by a third pass; landed 83fbbb4"
         }
       ],
       "depends_on": [],

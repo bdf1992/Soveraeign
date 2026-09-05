@@ -679,7 +679,7 @@
       "changed": false
     },
     "CLAUDE.md": {
-      "artifact_digest": "sha256:6cbeab99e6c8d814599ef7e07d297bca2bcef8c98f8580a97f53a2689e2149a2",
+      "artifact_digest": "sha256:bf4a8e09a3ff0f4a49c25617d1160f829e7a965ec3b077d85d27a117dfcd75e6",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",

@@ -3,13 +3,386 @@
 ```witness
 standing_supported  WITNESSED
 subject  observation-service
-revision  f8a755f73a815ce15bea6af486bb924c7cb2970f
-pass  4
+revision  65a75499a0c95d135de35a366a85cf81034f0b34
+pass  5
 ```
 
-Four passes by the same role, different commits. Pass 4 (commit `f8a755f`) is current and
-owns the declaration above. Pass 3 (commit `3087714`), pass 2 (commit `540bc01`) and pass 1
-(commit `169182f`) follow it unchanged as history.
+Five passes by the same role, different commits. Pass 5 (commit `65a7549`) is current and
+owns the declaration above. Pass 4 (commit `f8a755f`), pass 3 (commit `3087714`), pass 2
+(commit `540bc01`) and pass 1 (commit `169182f`) follow it unchanged as history.
+
+## Pass 5: commit 65a7549 (2026-09-05)
+
+Verdict: **RATIFIABLE-WITH-CONDITIONS**.
+
+Subject: `observation_service_status` in `STATUS.yaml`, value
+`BUILT_THIN_SLICE_WITNESSED_REMAINDER_DECLARED`; its comment (`STATUS.yaml:40-51`) and
+`contracts/status-claims.json:160-166` still bind it to commit `3087714`. This pass is scoped to
+residual R14 as pass 4 worded it (F8 from pass 1), to the contract change that carries the
+repair, to whether pass 4's conclusions still hold on the new bytes, and to what the record
+supports for the value on these bytes.
+
+Commit witnessed: `65a75499a0c95d135de35a366a85cf81034f0b34` on
+`claude/astra-gtp-scalability-6eus65`. `git log --oneline f8a755f..65a7549` lists four commits:
+`b38478e` (pass 4's own record), `5f6fc52` (KNOWN-GAPS wording and two oracle tests, no service
+bytes), `995d395` (`contracts/clarity.json`, not the subject), and `65a7549`, the only one that
+touches the service. Both `5f6fc52` and `65a7549` are read below, because pass 4's receipt covers
+neither. `git rev-parse HEAD` read `65a7549` and `git status --short` was empty before and after
+every command below.
+
+Witness: `claude-fable-5-1/sov-witness@2026-09-05`, fifth invocation. This participant did not
+build, edit, stage, or commit anything under the subject. The only files it changed are this
+record and `witness/observations/2026-09-05-observation-service-observation-5.json`. The commit
+messages of `65a7549` and `5f6fc52` were displayed by `git show --stat` at the start of the pass;
+they are the builder's report and nothing below is taken from them. R14's wording is pass 4's as
+recorded in this file, not the builder's transcription in `services/observation/KNOWN-GAPS.md`.
+Probes ran from a scratch directory outside the repository and are quoted in full under `Probe`;
+guard reverts and the oracle mutation ran on scratch copies; the invocation permitted no file
+under `witness/probes/`.
+
+### Standing supported
+
+`BUILT -> WITNESSED` for `observation_service_status` at `65a7549`, **re-supported** on these
+bytes. It does not carry from `f8a755f`: the pass-4 receipt reads `STALE_SUBJECT` against this
+tree (`sov_witness_layer.py records`: 29 digests recomputed, eight addresses moved, among them
+`record.py`, `relation.py`, `observe.py`, `test_thin_slice.py`, `KNOWN-GAPS.md`,
+`test_kernel_predicates.py`). This pass re-derived the claim on the current bytes: every pass-4
+conclusion re-run holds; R14 as pass 4 worded it is repaired, and the builder's two refusing
+cases go red with the digest comparison deleted in a scratch copy; R12 is now repaired 3 of 3;
+the contract change is additive; the oracle, the kernel transitions, the service facade, and
+the capability map are byte-identical to pass 4. The repair reads the record's *declared* entry
+digests and compares against an in-memory row the caller can rewrite, and both of those are
+recorded below as residuals (R15, R16) that narrow F8 without closing it. The record binds to
+the subject `observation-service`, the field `observation_service_status`, the revision above,
+and the same claim passes 3 and 4 bound: the five operations `request-observation`,
+`declare-predicates`, `infer-relation`, `observe-run`, and `read-observation` are built,
+self-tested, and independently observed through `ObservationService` and
+`RunRecord.from_entries`; `list-pending-observations`, `counter-observation`, and
+`attest-observation` are declared and unbuilt; no binding routes any of the eight. Whoever
+moves the value's comment and the status-claims row to rest on this pass names `65a7549`. This
+is an observation. It supports the transition and ratifies nothing.
+
+### Verified
+
+Commands run from the repository root at the commit above, before either witness file was
+written. `git rev-parse HEAD` and `git status --short` bracketed each one: `65a7549`, empty.
+
+| Command | Exit | Excerpt |
+| --- | --- | --- |
+| `git rev-parse HEAD`; `git status --short` | 0; 0 | `65a75499a0c95d135de35a366a85cf81034f0b34`; empty, before and after every command |
+| `python scripts/verify.py` | 0 | `PASS: 50 checks in 16.924s wall`; `DEBT: no wall-clock grade at 16.924s; SILVER needs 15.000s or less`; `BUDGET DEBT: 9 check(s) over ceiling, 25.269s above budget` (attributed, non-refusing). The verdict is the `PASS: 50 checks` line and the exit code |
+| `python scripts/lint.py` | 0 | `PASS: repository hygiene (1177 text files, 546 Python modules, 10 named debt)`; two `WARN` lines on duplicate `STATUS.yaml` keys, not the subject's |
+| `python -m unittest discover -s tests` in `services/observation` | 0 | `Ran 54 tests OK` (51 at pass 4; three new in `WitnessResidualsOnF8a755f`) |
+| `python -m unittest discover -s conformance/tests` | 0 | `Ran 85 tests OK` (83 at pass 4; two new in `EveryRuleNamesItsDefect`, from `5f6fc52`) |
+| `python conformance/run.py` | 0 | `SUITE PASS cases=33 coverage_gaps=0`; every `*-DEF` control `FAIL`, every `*-POS` `PASS` |
+| `python scripts/sov_f2_gate.py` | 1 | `requirement 25/25`, `transition 14/14`, `parity 5/5`; `participants 1/2 bound`; `OPEN` on the second participant only, as at pass 4 |
+| `python scripts/sov_baseline.py` | 0 | `PASS: participant matches its recorded baseline (9 requirements, 8 failing as recorded)` |
+| `python scripts/sov_standing.py` | 0 | `SUPPORTED observation_service_status claims WITNESSED`; `PASS: 1 standing claim(s), each with a witness record`. Read against pass 4's declaration while the pass-4 receipt was `STALE_SUBJECT`; J5 unchanged |
+| `python scripts/sov_witness_layer.py records` | 0 | `PASS: 7 witness receipt(s) graded, 0 unusable, 7 stale against their subject`; the pass-4 receipt `STALE_SUBJECT (29 digest(s) recomputed)`, eight addresses moved |
+| `python scripts/sov_clarity.py status` / `check` | 0 / 0 | `CURRENT 142, STALE 0, UNCHECKED 1, EXEMPT 92`; `PASS`. The one `UNCHECKED` is this file (R9). The two skill pages pass 4 listed moved to `EXEMPT` through `995d395` |
+| `python scripts/sov_traps.py` | 0 | `PASS: 2 trap(s) still hold, 3 recorded for attended checking` |
+| fixture validation (kernel validator `sovkernel.jsonschema.validate` and a hand-rolled check of required keys, `additionalProperties`, the `record_digest` pattern, and the three `oneOf` arms; no third-party `jsonschema` is installed) | 0 | 13 fixtures; both validators agree with every `expected_validity`; `OBS-RELATION-NEG-NO-RECORD-DIGEST` fails on exactly `missing required property 'record_digest'`; removing, malforming, or unprefixing `record_digest` turns every `VALID` fixture `INVALID`; the twelve carried fixtures minus `record_digest` are equal to pass 4's twelve as parsed JSON |
+| schema semantic diff (parsed JSON, `git show f8a755f:...relation-inference.schema.json`) | 0 | new schema minus the `record_digest` property and its `required` entry equals the pass-4 schema exactly; the 25 deleted lines in `git show` are reformatting from one-line to multi-line JSON |
+| guard revert (scratch copy of `services/observation`, test bootstrap `ROOT` pointed at the repository; `observe.py:112-116`, the `record_digest` comparison, deleted) | 1 | unmodified copy `Ran 54 tests OK`; with the revert `FAILED (failures=2)`: `test_a_well_formed_record_in_which_the_observer_attempted_the_run_refuses` and `test_a_well_formed_record_in_which_the_observer_produced_the_output_refuses`; `test_the_inference_names_the_record_it_read` stays green, as a sound-path case should |
+| R12 mutation (scratch copy of `conformance/`; `kernel_predicates.py:214` then `:219` replaced with `pass`; `unittest discover -s tests` against the copy's baseline `Ran 76 tests FAILED (errors=2)`, two loader errors) | n/a | `:214` ("discovery names no interface"): `failures=1`, `test_discovery_naming_no_interface`. `:219` ("<name> binding missing <field>"): `failures=1`, `test_discovery_binding_missing_a_field`. `run.py --cases oracle-controls.json` reads `SUITE PASS` for both, as at passes 2-4 |
+| pass-5 probe (quoted below) | 0 | outputs under `Residual re-derived` and `Defeats attempted` |
+| `sha256sum` | 0 | byte-identical to pass 4: `conformance/kernel_predicates.py` `f1d81c80...`, `conformance/requirements.py` `4b2fe7b3...`, `conformance/run.py` `c049f9e6...`, `conformance/oracle-controls.json` `75b4cf02...`, `scripts/sovverify/checks.py` `a5316c26...`, `scripts/sovkernel/transitions.py` `478fe0a0...`, `scripts/sovkernel/capability_map.py` `56230a9a...`, `scripts/sovnode/composition.py` `e7320557...`, `contracts/fixtures/capability-map.reference.json` `84e296ce...`, `contracts/fixtures/node-interface.reference.json` `1c3de9b9...`, `service.py` `e20b03b9...`, `errors.py` `8ce373e7...`, `service.json` `621397d4...`, `observation-request.schema.json` `fd5cb97d...`, `scripts/sov_standing.py` `c80b5df7...`, `scripts/sovstanding/records.py` `cb6fd19a...`, `STATUS.yaml` `9ddb4c4f...`, `contracts/status-claims.json` `b0c3e4ab...`. Changed under the subject since pass 4: `record.py`, `relation.py`, `observe.py`, `relation-inference.schema.json`, `relation-inference.fixtures.json`, `test_thin_slice.py`, `KNOWN-GAPS.md`, `conformance/tests/test_kernel_predicates.py`, `.clarity/coverage.json` (one receipt), `docs/documentation.html` |
+
+### Residual re-derived (R14 as pass 4 worded it)
+
+Pass 4's R14: "a substituted record cannot ride in on an earlier inference" holds for a malformed
+substitute and fails for a well-formed one (P7e, P7h); "either bind the inference to the record's
+entry digests (which closes F8) or narrow the sentence to what the guard does."
+
+| Residual | Verdict | Evidence |
+| --- | --- | --- |
+| R14 bind the inference to the record's entry digests and refuse when they differ | **REPAIRED as worded; the binding reads declared digests (R15) over a rewritable row (R16)** | `record.py:179-186` `record_digest()`: `sha256` over every entry's `digest_address(entry_digest)` joined by `\n` in append order, verified equal to an independent recomputation (D8) and equal to `sha256("")` for an empty record (D9). `relation.py:111-116, 185` records it on every inference, `UNREADABLE` when an entry has no digest. `observe.py:112-116` recomputes it from the record handed in and refuses `RELATION_UNDETERMINED` when they differ, after `malformed()` and before `require_independent`. P7e (observer attempts the run in the substitute, a new entry): `REFUSED RELATION_UNDETERMINED ... was read over another record`, `observations=0`, three receipts (`COMMITTED`, `COMMITTED`, `REFUSED`). P7h **as pass 4 wrote it** (observer becomes the output's producer by editing `actor` on entry `out1`, whose declared `entry_digest` in that probe is `sha256(entry_id)` and so does not move): `OBSERVED {'p': True}`, three `COMMITTED` receipts, unchanged from pass 4. P7h with content-bound entry digests (`sha256` over the whole entry): `REFUSED RELATION_UNDETERMINED`. Direct inference over both substitutes reads `DIRECT` as at pass 4. P9 (pass 1's case, substitute with no `OUTPUT`): `RELATION_UNDETERMINED`. Both refusing cases go red with the comparison deleted |
+
+Whether pass 4's P7h models a well-formed record is the line between "repaired" and "open". Under
+`malformed()` it is well formed. Under the Record Service's current digest profile
+(`services/record/CHARTER.md:107-112`, `soveraeign-record-chain/v3`) an entry's digest binds its
+`actor` and `payload`, so an honest journal read cannot present P7h's record: the substitute's
+digests would move with its content and `observe_run` would refuse, as the content-bound re-run
+shows. What P7h models on these bytes is a record whose declared digests do not describe its
+entries, and the service has no way to tell, because it never recomputes an entry digest. That is
+R15 below, and it is why "closes F8" is narrowed rather than dissented.
+
+### Pass-4 conclusions, re-run on the new bytes
+
+| Conclusion | Holds | Evidence |
+| --- | --- | --- |
+| R10 anonymous `OUTPUT` refuses `UNREADABLE` | yes | P1g, P1h, P1i: `REFUSED UNREADABLE: entry out1 records an output with no producer`, `receipts=1` |
+| R11 `observe_run` reads `malformed()` on the record handed in | yes | P7d, P7f, P7g: `REFUSED UNREADABLE`, `observations=0`, refusal receipt written |
+| R12 `kernel_predicates.py:168,214,219` pinned | **now 3 of 3** | `:168` pinned at pass 4; `:214` and `:219` each `failures=1` under mutation (from `5f6fc52`) |
+| R13 run id is not a predicate address | carries by byte-identity of `observe.py:127-137` (the guard moved five lines with the insertion above it; text unchanged) | not re-probed this pass |
+| F1-F5, F7 | carry | `relation.py` walk logic unchanged apart from the `record_digest` field; `record.py` unchanged apart from `record_digest()`; `service.py`, `errors.py` byte-identical |
+| F6 run's grant absent reads `INDEPENDENT` | still open, note | unchanged code path |
+| F8 (pass 1, three notes) | **note 1 narrowed to R15/R16; notes 2 and 3 still open** | note 1 (latest inference reused over whatever record the caller passes): now bound by `record_digest`, P9 refuses. Note 2 (`read_observation` returns the latest declaration, not the one judged through): P10 `False`, returned the later declaration. Note 3 (`observation_id` from run, observer, addresses only): P11 two observations with different predicates over `out/1` share an id and `read_observation` returns the first. `KNOWN-GAPS.md:87` and the commit message say the change closes F8; it addresses one of F8's three notes |
+| R3, R5, R9, C1, C2, C3, C4, S3 | carry as at pass 4 | C1 files byte-identical; C2 `oracle-controls.json` unchanged; C3 the two remaining pass-3 rules now seen; C4 not re-run |
+| J5 standing gate reads a declaration | holds | `sov_standing.py` and `sovstanding/records.py` byte-identical; read `SUPPORTED` over a `STALE_SUBJECT` receipt again |
+
+### Defeats attempted against the binding
+
+Through `ObservationService` and `RunRecord.from_entries`, with content-bound entry digests
+unless stated.
+
+| Case | Result | Reading |
+| --- | --- | --- |
+| D1 the caller recomputes `record_digest` over the substituted record and writes it into the inference `infer_relation` returned, then hands the substitute to `observe_run` | `OBSERVED {'p': True}`, three `COMMITTED` receipts | the returned inference **is** `service.inferences[-1]` (D1b `True`): `service.py:133,137` appends and returns the same object, so the caller holds a write handle on the service's append-only store. R16 |
+| D1c a `DIRECT` inference for the executor, rewritten by the caller to `INDEPENDENT` with `edges_found=[]` | the executor `OBSERVED` its own run; `observer_relation` reads `INDEPENDENT per ...` | same aliasing; `infer-relation` commits a `DIRECT` inference (correctly, it is a finding) and hands back the stored row. R16 |
+| D2 two `GRANT` entries swapped, content unchanged | `REFUSED RELATION_UNDETERMINED` | order is bound; conservative, correct |
+| D3a an extra `GRANT` entry the walk would never cite | `REFUSED RELATION_UNDETERMINED` | any growth in the `GRANT`/`OUTPUT` slice between infer and observe invalidates the inference. Sound; a liveness cost on a busy journal, noted as N1 |
+| D3b an extra unreported `OUTPUT` by the observer | `REFUSED RELATION_UNDETERMINED` | as D3a |
+| D3c an entry on another run, which `from_entries` drops | `OBSERVED` | `record_digest` is over the filtered record, not the journal slice handed in; the walk never reads the dropped entry, so nothing is lost. Note only |
+| D4 an entry digest malformed identically on both sides | `REFUSED UNREADABLE` at `infer-relation` | `malformed()` fires first on both paths |
+| D5 the attempt's `actor` rewritten to the observer, declared `entry_digest` kept | `malformed()` `None`; `OBSERVED {'p': True}` | R15: the binding is to declared digests, not to content |
+| D6 the attempt's lease holder rewritten to the observer, declared digest kept | `OBSERVED {'p': True}` | R15 |
+| D7 module-level `observe_run` (exported in `__init__.__all__`) with a caller-built `INDEPENDENT` inference carrying the right `record_digest` | `OBSERVED` | the module function trusts its arguments by design; the facade is where the lookup binds. Note only |
+| D8, D9 | shape and derivation as documented | `record_digest` matches the schema pattern, equals an independent recomputation, empty record hashes the empty string |
+| D10 the executor asks to observe with no inference of its own | `RELATION_UNDETERMINED` | the lookup is per observer, unchanged |
+
+### Contract change
+
+- `relation-inference.schema.json` gains one required property, `record_digest`, pattern
+  `^sha256:[0-9a-f]{64}$`, with a description that names the mechanism and the refusal. As parsed
+  JSON, the schema minus that property equals the pass-4 schema; nothing else moved.
+- Twelve fixtures gain the same constant `record_digest` (`sha256:6fdf798e...`), which is not
+  derived from their placeholder `evidence_digests`; a shape fixture, consistent with the
+  `3f3f...` placeholders already there. The thirteenth, `OBS-RELATION-NEG-NO-RECORD-DIGEST`, is
+  the defeating case for the new requirement and fails on exactly that property.
+- `test_contract_shapes.py` is byte-identical to pass 4 and validates every fixture as declared;
+  `SemanticGaps` still holds `OBS-RELATION-SEM-SELF-AS-OBSERVER` as the one schema-admitted
+  defeat.
+- Nothing else in the repository reads this schema. `conformance/kernel_predicates.py:148-156`
+  reads a `relation_inference` projection of its own (`outcome`, `edges_found`,
+  `record_completeness`) from `oracle-controls.json`, which carries no `record_digest`
+  (`grep -c`: 0). It never validated against the service schema and is byte-identical to pass 4,
+  so nothing was left behind; the kernel-level oracle cannot see this binding at all, which is
+  J6 below. `test_kernel_parity.py` hands the kernel `observer_relation` only and is unchanged.
+- `grep` for `edges_examined`, `evidence_digests`, `relation_inference`, `record_digest` across
+  `contracts/`, `scripts/`, `conformance/`, `services/`: every other hit is the node-interface,
+  federation-crossing, or registry `record_digest`, a different field on a different record.
+
+### What the builder did not report, and hygiene
+
+- `git show --stat 65a7549`: nine files. Seven are named in the message. `.clarity/coverage.json`
+  changed one receipt (`services/observation/KNOWN-GAPS.md`, `artifact_digest` `2dbc7782...`,
+  the file's current digest; `sov_clarity.py check` `PASS`). `docs/documentation.html` changed one
+  line, regenerated; accepted on the `documentation reader` check.
+- `5f6fc52` (four files): 12 added lines in `conformance/tests/test_kernel_predicates.py`, no
+  deletions; `KNOWN-GAPS.md` prose; one clarity receipt; the documentation page. No service
+  bytes, as its message says.
+- Oracles not weakened: `kernel_predicates.py`, `requirements.py`, `run.py`,
+  `oracle-controls.json` byte-identical to pass 4.
+- Module sizes: `record.py` 202, `observe.py` 173, `relation.py` 207, `service.py` 176,
+  `errors.py` 79, all under 300; `test_thin_slice.py` 517 (a test module; `lint.py` passes).
+- Vocabulary: no new reason code, standing, event, edge, or role term. `RELATION_UNDETERMINED`
+  is reused for "the inference was read over another record"; the manifest declares it for
+  `observe-run` under precondition `relation_inferred_independent`, so the reuse is defensible
+  (no relation is inferred over *this* record), but `errors.py:24-27` still glosses the code as
+  "the run's record could not answer every direct edge" and was not updated. LOW; recorded, not
+  a finding.
+- Secrets: the diff carries no key, token, credential, private-key, or absolute-path shape.
+- `KNOWN-GAPS.md:87-93` says the change closes F8 from pass 1 and that "a substituted record
+  refuses whether or not it is well formed". The first holds for one of F8's three notes; the
+  second holds for a substitute whose declared digests move with its content and while the
+  recorded inference is not rewritten. The page owes the two qualifications.
+
+### Finding on the check itself
+
+- **`observe_run` compares a declaration to a declaration.** `record_digest` is a hash of the
+  `entry_digest` values the record *declares*; nothing in this service recomputes an entry's
+  digest from its bytes, and the entry shape it reads (`entry_id`, `kind`, `subject`, `actor`,
+  `payload`, `entry_digest`) omits `digest_profile`, `prev_digest`, `recorded_at`, and
+  `source_address`, which the Record Service's v3 profile binds, so it could not recompute one
+  without a wider shape. The check therefore sees exactly what an honest journal read gives it
+  and nothing more: a record whose declared digests were carried over altered entries (D5, D6,
+  pass 4's P7h) passes as the record the inference was read over. Currently correct for the
+  boundary the service claims (journal entries in the Record Service's shape); recorded because
+  a check that reads a declaration where it could measure is the defect class this repository's
+  history names, and because the fix is either a wider entry shape or an explicit statement that
+  the journal's digests are trusted at this boundary. R15 and J6.
+- **The store hands out its rows.** `service.py:133,137,152-153,168` append a dict and return the
+  same dict; `read_observation` returns the stored inference and observation. An append-only
+  store whose rows the caller can mutate is append-only in name. D1 and D1c defeat the R14
+  binding and the independence check through it. R16.
+- **`sov_standing.py`** unchanged from pass 4's finding; J5 carried.
+
+### Residuals (the builder's to absorb; none holds the transition)
+
+- **R15 - MEDIUM, `record.py:179-186`, `observe.py:112-116`.** The binding is to declared entry
+  digests. A substituted record whose entries were altered while keeping their declared
+  `entry_digest` values is admitted (D5, D6; pass 4's P7h re-run verbatim still reads
+  `OBSERVED`). Either recompute entry digests per the Record Service's declared profile, which
+  needs the entry shape to carry `digest_profile`, `prev_digest`, `recorded_at`, and
+  `source_address`, or state in `record.py`'s module docstring and `KNOWN-GAPS.md` that the
+  journal's digests are trusted at this boundary and that the binding holds only over an honest
+  journal read. The defeating case to add either way: a record with the same declared digests
+  and a different `actor` on the attempt.
+- **R16 - MEDIUM, `service.py:133,137,152-153,165-170`.** The inference, observation, and
+  declaration the service returns are the objects it stores. A caller that rewrites
+  `record_digest` on the returned inference carries a substituted record through (D1); one that
+  rewrites `outcome` and `edges_found` on a `DIRECT` inference observes its own run (D1c). Store
+  and return copies (`dict(...)` is enough at this depth; `edges_found` is a list of dicts, so a
+  `copy.deepcopy` or a frozen projection is the safe form). Defeating case: mutate the returned
+  inference and assert `observe_run` still refuses.
+- **F8 notes 2 and 3 - LOW, `service.py:165-167`, `observe.py:143-144`.** `read_observation`
+  returns the latest declaration for the run rather than the one the observation was judged
+  through (P10), and `observation_id` is derived from run, observer, and addresses only, so two
+  observations with different predicates over the same addresses share an id and the reader gets
+  the first (P11). Open since pass 1; `KNOWN-GAPS.md:87` says F8 is closed.
+- **`errors.py:24-27` - LOW.** `RelationUndetermined`'s gloss does not mention the
+  another-record refusal that now raises it.
+- **R9 - carried.** This record has no clarity receipt (`UNCHECKED 1`).
+- **The `3087714` citations - carried.** `STATUS.yaml:40-51` and `contracts/status-claims.json:164`
+  still name the commit pass 3 observed; passes 4 and 5 each re-supported the value on later
+  bytes. Whoever holds the branch decides whether they move to `65a7549`.
+- **N1 - note.** `from_entries` keeps every `OUTPUT` and `GRANT` event in the slice handed in,
+  and `record_digest` covers all of them, so any grant issued to anyone or any output recorded
+  by anyone between `infer-relation` and `observe-run` refuses the observation (D3a, D3b). Sound
+  and conservative; on a live journal the two operations will need to read the same snapshot or
+  the inference will rarely survive. Not a defect on these bytes.
+
+### Conditions
+
+- **C1 (passes 1-4), carried unchanged.** The five observation operations still read
+  `activation: ACTIVE`, `address: observation:in-process` in the capability map while
+  `composition.py` routes no such address. Every file the condition names is byte-identical to
+  pass 4.
+
+### Judgement items (questions, not the witness's to answer)
+
+- **J1-J5.** Carried from passes 2, 3, and 4 unchanged.
+- **J6.** Is the Observation Service meant to trust the journal's declared `entry_digest` at its
+  boundary (in which case the entry shape it reads is complete and R15 is a documentation
+  repair), or is it meant to be able to recompute an entry digest under the Record Service's
+  declared profile (in which case the shape needs the four bound columns it omits, and the
+  Record Service's digest profile becomes a contract the Observation Service reads rather than a
+  charter paragraph)? The kernel oracle's `relation_inference` projection carries no record
+  binding either; whether `check_run` should require one is the same question one tier up.
+
+### Uncovered
+
+- Participant mode (`services/asset/scripts/conformance_observations.py` then `run.py --cases
+  conformance/scenarios.json --observations ...`) was not re-run; the oracle files it exercises
+  are byte-identical to pass 4.
+- `docs/documentation.html` was accepted on `verify.py`'s regeneration check; its one changed
+  line in each of `5f6fc52` and `65a7549` was not read beyond confirming it is one line.
+- Pass 3's probe was not re-run in full this pass; its R10/R11 lines were re-run inside the
+  pass-5 probe and the rest carries on byte-identity of `relation.py`'s walk, `service.py`, and
+  `errors.py`, and on the additive-only diff of `record.py` and `observe.py`.
+- `list-pending-observations`, `counter-observation`, and `attest-observation` remain `PROPOSED`
+  and were not examined.
+- No network, no `gh`, no ruleset query.
+
+### Landing residual
+
+As at passes 3 and 4: writing this record makes `docs/documentation.html` stale
+(`scripts/sovdocs/facets.py:66` indexes `witness/*.md`), so `python scripts/verify.py` is
+expected to return 1 on `documentation reader` and on `repository tooling tests` after this
+file is written. The witness may not rebuild the page; whoever lands this record runs
+`python scripts/sov_docs.py build`. Every check under `Verified` ran before either file was
+written and `verify.py` read 0 then. Post-write readings are in the receipt's
+`telemetry.post_write`.
+
+### Probe
+
+One probe, run from a scratch directory against `services/observation/src` at the commit above;
+not a file in this repository. It re-runs pass 4's R10 and R11 lines in pass 4's digest shape
+(`sha256(entry_id)`), re-runs P7e and P7h under content-bound digests, and adds the defeats.
+
+```python
+import hashlib, sys, json
+sys.path.insert(0, 'services/observation/src')  # relative to the repository root; the scratch run used the repository's absolute path
+from soveraeign_observation_service import ObservationService, RunRecord, ObservationRefused, observe_run
+RUN = "urn:soveraeign:run:probe"; OUT = b'{"standing": "RECORDED"}'; OUTD = hashlib.sha256(OUT).hexdigest()
+def e(eid, kind, subject, actor, payload):
+    # pass-4 shape: digest over entry_id only, so content edits keep the declared digest
+    return {"entry_id": eid, "kind": kind, "subject": subject, "actor": actor,
+            "payload": payload, "entry_digest": hashlib.sha256(eid.encode()).hexdigest()}
+def eh(eid, kind, subject, actor, payload):
+    # content-bound shape: digest over the whole entry
+    body = {"entry_id": eid, "kind": kind, "subject": subject, "actor": actor, "payload": payload}
+    body["entry_digest"] = hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
+    return body
+class Clock:
+    t = 0
+    def __call__(self):
+        Clock.t += 1; return f"2026-09-05T{Clock.t//60:02d}:{Clock.t%60:02d}:00+00:00"
+def base(out_actor="worker-a", mk=e):
+    return [
+        mk("g-root","EVENT","grant-root","seat:root",{"event":"GRANT","holder_id":"orch","parent_grant_id":None}),
+        mk("g-run","EVENT","grant-run","orch",{"event":"GRANT","holder_id":"worker-a","parent_grant_id":"grant-root"}),
+        mk("g-z","EVENT","grant-z","orch",{"event":"GRANT","holder_id":"witness-z","parent_grant_id":"grant-root"}),
+        mk("attempt","EVENT",RUN,"worker-a",{"event":"ATTEMPTED","lease":{"holder_id":"worker-a"},"grant_id":"grant-run"}),
+        mk("out1","EVENT","out/1",out_actor,{"event":"OUTPUT","digest":OUTD}),
+        mk("report","EVENT",RUN,"worker-a",{"event":"REPORTED","output_record_addresses":["out/1"]}),
+    ]
+def infer(name, ents, cand="witness-z"):
+    svc = ObservationService(Clock()); rec = RunRecord.from_entries(RUN, ents)
+    try:
+        inf = svc.infer_relation(rec, cand, "MODEL"); print(name, inf["outcome"], [x["edge"]+"@"+x["evidence_address"] for x in inf["edges_found"]], "receipts=%d" % len(svc.receipts))
+    except ObservationRefused as r: print(name, "REFUSED", svc.receipts[-1]["reason_code"], "|", r, "receipts=%d" % len(svc.receipts))
+def observe_sub(name, substituted, mk=e, tamper=None):
+    svc = ObservationService(Clock()); inf = svc.infer_relation(RunRecord.from_entries(RUN, base(mk=mk)), "witness-z", "MODEL")
+    svc.declare_predicates(RUN, [{"predicate_id":"p","kind":"BYTES_PRESENT","address":"out/1"}])
+    rec = RunRecord.from_entries(RUN, substituted)
+    if tamper: tamper(inf, rec)
+    try:
+        o = svc.observe_run(rec, "witness-z", lambda a: OUT)
+        print(name, "OBSERVED", o["predicate_results"], "observations=%d" % len(svc.observations), [r["outcome"] for r in svc.receipts])
+    except ObservationRefused as r: print(name, "REFUSED", svc.receipts[-1]["reason_code"], "|", str(r)[:110], "observations=%d" % len(svc.observations))
+ents = base(); del ents[4]["actor"]; infer("P1g OUTPUT actor key absent", ents)
+ents = base(); ents[4]["actor"] = None; infer("P1h OUTPUT actor None", ents)
+ents = base(); ents[4]["kind"] = "RECEIPT"; infer("P1i OUTPUT-event entry kind RECEIPT, actor empty", [*ents[:4], dict(ents[4], actor=""), ents[5]])
+sub = base(); sub[4]["actor"] = ""; observe_sub("P7f substituted: OUTPUT lost its producer", sub)
+sub = base(); del sub[0]["entry_digest"]; observe_sub("P7g substituted: GRANT lost its digest", sub)
+sub = base(); sub[5]["entry_id"] = None; observe_sub("P7d substituted: REPORTED lost entry_id", sub)
+sub = base(); sub.insert(4, e("attempt2","EVENT",RUN,"witness-z",{"event":"ATTEMPTED","lease":{"holder_id":"witness-z"},"grant_id":"grant-z"})); observe_sub("P7e substituted, well-formed: observer now an executor", sub)
+sub = base(out_actor="witness-z"); observe_sub("P7h substituted, well-formed: observer now the producer (pass-4 digest shape)", sub)
+sub = base(mk=eh); sub.insert(4, eh("attempt2","EVENT",RUN,"witness-z",{"event":"ATTEMPTED","lease":{"holder_id":"witness-z"},"grant_id":"grant-z"})); observe_sub("P7e-h content-bound digests", sub, mk=eh)
+sub = base(out_actor="witness-z", mk=eh); observe_sub("P7h-h content-bound digests", sub, mk=eh)
+ents = base(); ents.insert(4, e("attempt2","EVENT",RUN,"witness-z",{"event":"ATTEMPTED","lease":{"holder_id":"witness-z"},"grant_id":"grant-z"})); infer("P7e' inferred directly", ents)
+infer("P7h' inferred directly", base(out_actor="witness-z"))
+sub = base(mk=eh); sub.insert(4, eh("attempt2","EVENT",RUN,"witness-z",{"event":"ATTEMPTED","lease":{"holder_id":"witness-z"},"grant_id":"grant-z"}))
+observe_sub("D1 caller rewrites record_digest on the returned inference", sub, mk=eh, tamper=lambda inf, rec: inf.__setitem__("record_digest", rec.record_digest()))
+svc = ObservationService(Clock()); inf = svc.infer_relation(RunRecord.from_entries(RUN, base(mk=eh)), "witness-z", "MODEL"); print("D1b returned inference is svc.inferences[-1]:", inf is svc.inferences[-1])
+svc = ObservationService(Clock()); rec = RunRecord.from_entries(RUN, base(mk=eh)); inf = svc.infer_relation(rec, "worker-a", "MODEL"); print("D1c direct inference committed:", inf["outcome"], svc.receipts[-1]["outcome"])
+inf["outcome"] = "INDEPENDENT"; inf["edges_found"] = []
+svc.declare_predicates(RUN, [{"predicate_id":"p","kind":"BYTES_PRESENT","address":"out/1"}])
+try:
+    o = svc.observe_run(rec, "worker-a", lambda a: OUT); print("D1c executor observes its own run: OBSERVED", o["predicate_results"], o["observer_relation"][:40])
+except ObservationRefused as r: print("D1c REFUSED", svc.receipts[-1]["reason_code"])
+sub = base(mk=eh); sub[0], sub[2] = sub[2], sub[0]; observe_sub("D2 reordered, same content", sub, mk=eh)
+sub = base(mk=eh); sub.append(eh("g-other","EVENT","grant-other","orch",{"event":"GRANT","holder_id":"someone-else","parent_grant_id":"grant-root"})); observe_sub("D3a extra GRANT the walk would not cite", sub, mk=eh)
+sub = base(mk=eh); sub.append(eh("out9","EVENT","out/9","witness-z",{"event":"OUTPUT","digest":OUTD})); observe_sub("D3b extra unreported OUTPUT by the observer", sub, mk=eh)
+sub = base(mk=eh); sub.append(eh("other-attempt","EVENT","urn:soveraeign:run:other","witness-z",{"event":"ATTEMPTED","lease":None,"grant_id":None})); observe_sub("D3c entry on another run", sub, mk=eh)
+bad = base(mk=eh); bad[3]["entry_digest"] = "sha256:notahexdigest"; svc = ObservationService(Clock())
+try: svc.infer_relation(RunRecord.from_entries(RUN, bad), "witness-z", "MODEL"); print("D4 INFERRED")
+except ObservationRefused as r: print("D4 malformed digest, same both sides:", svc.receipts[-1]["reason_code"])
+sub = base(mk=eh); sub[3] = dict(sub[3], actor="witness-z"); print("D5 malformed()?", RunRecord.from_entries(RUN, sub).malformed()); observe_sub("D5 attempt actor rewritten, declared digest kept", sub, mk=eh)
+sub = base(mk=eh); sub[3] = dict(sub[3], payload=dict(sub[3]["payload"], lease={"holder_id":"witness-z"})); observe_sub("D6 lease holder rewritten, declared digest kept", sub, mk=eh)
+rec = RunRecord.from_entries(RUN, base(mk=eh))
+forged = {"inference_id":"urn:soveraeign:observation:relation-inference:forged","candidate_observer_id":"worker-a","outcome":"INDEPENDENT","edges_found":[],"edges_examined":["SAME_ACTOR"],"record_digest":rec.record_digest()}
+decl = {"run_id": RUN, "declared_at": "2026-09-05T00:00:00+00:00", "predicates":[{"predicate_id":"p","kind":"BYTES_PRESENT","address":"out/1"}]}
+try: print("D7 module-level observe_run, caller-built inference: OBSERVED", observe_run(rec, forged, decl, "worker-a", lambda a: OUT, "2026-09-05T00:01:00+00:00")["predicate_results"])
+except ObservationRefused as r: print("D7 REFUSED", r)
+svc = ObservationService(Clock()); rec = RunRecord.from_entries(RUN, base(mk=eh)); inf = svc.infer_relation(rec, "witness-z", "MODEL")
+print("D8 equals sha256 of entry digests joined by \\n:", inf["record_digest"] == "sha256:"+hashlib.sha256("\n".join("sha256:"+x["entry_digest"] for x in rec.entries).encode()).hexdigest())
+print("D9 empty record:", RunRecord(RUN, ()).record_digest() == "sha256:"+hashlib.sha256(b"").hexdigest())
+```
+
+A second short probe imported `journal`, `reader`, `RUN`, and `Clock` from the service's own
+`tests/test_thin_slice.py` to re-run pass 1's F8 cases: P9 (substitute with no `OUTPUT`) now
+`RELATION_UNDETERMINED`; P10 `read_observation` returned the later of two declarations, not the
+one judged through; P11 two observations with predicates `a` and `b` over `out/1` shared one
+`observation_id` and `read_observation` returned the first.
+
+Guard revert: copy `services/observation` to a scratch directory, point each test bootstrap's
+`ROOT` at the repository, delete `observe.py:112-116`, run `tests.test_thin_slice`. R12
+mutation: copy `conformance/`, replace `kernel_predicates.py:214` (then `:219`) with `pass` at
+the same indentation, run `python -m unittest discover -s tests` and
+`python run.py --cases oracle-controls.json` from the copy, restore.
 
 ## Pass 4: commit f8a755f (2026-09-05)
 

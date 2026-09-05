@@ -24,6 +24,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from sovlease import commands  # noqa: E402
+from sovlease import principals  # noqa: E402
 from sovlease import selfcheck  # noqa: E402
 from sovsession import store  # noqa: E402
 
@@ -66,6 +67,9 @@ def _envelope_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--minutes", type=int, default=commands.DEFAULT_MINUTES)
     parser.add_argument("--closure", required=True, help="what would count as done")
     parser.add_argument("--defeat", required=True, help="what would show it is not done")
+    parser.add_argument("--cleanup", action="append", metavar="OBLIGATION",
+                        help="what the holder leaves clean whether or not it closes; "
+                             "repeatable")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -87,7 +91,9 @@ def build_parser() -> argparse.ArgumentParser:
     take.add_argument("--lease-id", help="override the derived lease id")
     take.add_argument("--controller", default=None,
                       help="the principal that launched this one")
-    take.add_argument("--principal", help="override the derived instance principal")
+    take.add_argument("--principal",
+                      help="override the derived instance principal; the registry spelling "
+                           "principal:<id> is mapped to its URN")
     _definition_options(take)
     _envelope_options(take)
     take.set_defaults(handler=commands.cmd_take)
@@ -100,7 +106,9 @@ def build_parser() -> argparse.ArgumentParser:
                         choices=["ticket", "operation", "gate", "thread", "seam", "concern"])
     helper.add_argument("--capability-served", metavar="ID")
     helper.add_argument("--lease-id")
-    helper.add_argument("--principal", help="the helper's own instance principal")
+    helper.add_argument("--principal",
+                        help="the helper's own instance principal; the registry spelling "
+                             "principal:<id> is mapped to its URN")
     _definition_options(helper)
     _envelope_options(helper)
     helper.set_defaults(handler=commands.cmd_helper)
@@ -145,7 +153,7 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         return int(args.handler(args))
-    except (commands.LeaseError, store.StoreError) as error:
+    except (commands.LeaseError, principals.PrincipalRefused, store.StoreError) as error:
         print("FAIL: " + str(error), file=sys.stderr)
         return 1
 

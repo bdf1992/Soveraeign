@@ -117,6 +117,128 @@
     }
   },
   {
+    "id": "CONTRACT-LEASE-POS-CLEANUP-OBLIGATIONS",
+    "contract": "work-lease.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "note": "A lease that says what it will leave clean, not only what would count as done (conformance/commissioning.py, Q1.2). The holder is the registry principal principal:claude-fable-5 in the URN spelling the schema requires, with the kind lowercased from the registry's MODEL by scripts/sovlease/principals.py.",
+    "record": {
+      "lease_schema": "soveraeign-work-lease/v1",
+      "status": "PROPOSED",
+      "lease_id": "lease:lease-cleanup-and-principal",
+      "concern": {
+        "kind": "concern",
+        "reference": "concern:phase-1-5/wave-1/lease-cleanup-and-principal"
+      },
+      "holder": {
+        "principal_id": "urn:soveraeign:principal:model:claude-fable-5",
+        "relation": "PARENT",
+        "parent_lease": null,
+        "controller_principal": "urn:soveraeign:principal:human:bdo",
+        "session": "session-69de8a",
+        "definition": {
+          "definition_id": "sov-worker",
+          "definition_kind": "agent",
+          "provenance": "SYSTEM_AUTHORED",
+          "version": "1",
+          "derives_from": null,
+          "source": ".claude/agents/sov-worker.md"
+        }
+      },
+      "grant": {
+        "grant_id": null,
+        "authority_type": null,
+        "capabilities": [],
+        "effect_ceiling": "RECORD_LOCAL"
+      },
+      "budget": {
+        "consumption": [
+          {"dimension": "wallclock_seconds", "limit": 7200},
+          {"dimension": "turns", "limit": 60}
+        ],
+        "emission": [
+          {"counter": "helper_leases", "limit": 2},
+          {"counter": "branches", "limit": 0},
+          {"counter": "external_effects", "limit": 0}
+        ]
+      },
+      "closure": {
+        "condition": "take and helper record cleanup obligations and accept the registry spelling of a principal",
+        "defeating_evidence": "a lease the command line writes that conformance/commissioning.py check_q12 grades as missing cleanup_obligations",
+        "cleanup_obligations": [
+          "release lease:lease-cleanup-and-principal or record its failure",
+          "remove the worktree once its branch has landed or been named abandoned"
+        ]
+      },
+      "fence": 1,
+      "granted_at": "2026-09-05T00:00:00Z",
+      "expires_at": "2026-09-05T04:00:00Z",
+      "state": "HELD"
+    }
+  },
+  {
+    "id": "CONTRACT-LEASE-NEG-EMPTY-CLEANUP-OBLIGATION",
+    "contract": "work-lease.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "An obligation with no words in it. It would count toward Q1.2 as a declared cleanup while binding the holder to nothing, so the list would read as honest and be empty.",
+    "record": {
+      "lease_schema": "soveraeign-work-lease/v1",
+      "status": "PROPOSED",
+      "lease_id": "lease:lease-cleanup-empty-obligation",
+      "concern": {
+        "kind": "concern",
+        "reference": "concern:phase-1-5/wave-1/lease-cleanup-and-principal"
+      },
+      "holder": {
+        "principal_id": "urn:soveraeign:principal:model:claude-fable-5",
+        "relation": "PARENT",
+        "parent_lease": null,
+        "controller_principal": "urn:soveraeign:principal:human:bdo",
+        "session": "session-69de8a",
+        "definition": {
+          "definition_id": "sov-worker",
+          "definition_kind": "agent",
+          "provenance": "SYSTEM_AUTHORED",
+          "version": "1",
+          "derives_from": null,
+          "source": ".claude/agents/sov-worker.md"
+        }
+      },
+      "grant": {
+        "grant_id": null,
+        "authority_type": null,
+        "capabilities": [],
+        "effect_ceiling": "RECORD_LOCAL"
+      },
+      "budget": {
+        "consumption": [
+          {"dimension": "wallclock_seconds", "limit": 7200},
+          {"dimension": "turns", "limit": 60}
+        ],
+        "emission": [
+          {"counter": "helper_leases", "limit": 2},
+          {"counter": "branches", "limit": 0},
+          {"counter": "external_effects", "limit": 0}
+        ]
+      },
+      "closure": {
+        "condition": "take and helper record cleanup obligations and accept the registry spelling of a principal",
+        "defeating_evidence": "a lease the command line writes that conformance/commissioning.py check_q12 grades as missing cleanup_obligations",
+        "cleanup_obligations": [
+          "release lease:lease-cleanup-empty-obligation or record its failure",
+          ""
+        ]
+      },
+      "fence": 1,
+      "granted_at": "2026-09-05T00:00:00Z",
+      "expires_at": "2026-09-05T04:00:00Z",
+      "state": "HELD"
+    }
+  },
+  {
     "id": "CONTRACT-LEASE-NEG-PARENT-NAMES-A-PARENT",
     "contract": "work-lease.schema.json",
     "status": "PROPOSED",

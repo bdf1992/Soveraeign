@@ -194,7 +194,13 @@
       "required": ["condition", "defeating_evidence"],
       "properties": {
         "condition": {"type": "string", "minLength": 1},
-        "defeating_evidence": {"type": "string", "minLength": 1}
+        "defeating_evidence": {"type": "string", "minLength": 1},
+        "cleanup_obligations": {
+          "description": "What the holder must leave clean whether or not the closure condition is reached: a worktree removed, a branch pushed or named as abandoned, a lease released, a temporary store deleted. Declared at take so a reader can grade the exit against it (conformance/commissioning.py, Q1.2). Empty means the holder declares nothing to clean up, which is itself a claim; an empty string is not an obligation and is refused.",
+          "type": "array",
+          "default": [],
+          "items": {"type": "string", "minLength": 1}
+        }
       }
     },
     "closureEvidence": {

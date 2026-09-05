@@ -19,6 +19,7 @@ import json
 
 from sovkernel import lease_budget
 from sovkernel import work_lease
+from sovlease import principals
 from sovlease import store
 from sovsession import commands as session_commands
 from sovsession import store as session_store
@@ -78,8 +79,13 @@ def _grant(args: argparse.Namespace) -> dict[str, Any]:
 
 
 def _build(args: argparse.Namespace, lease_id: str, session: str, relation: str,
-           parent: str | None, controller: str | None, fence: int) -> dict[str, Any]:
-    """Assemble one lease record in the shape the contract declares."""
+           parent: str | None, controller: str | None, fence: int,
+           root: Path) -> dict[str, Any]:
+    """Assemble one lease record in the shape the contract declares.
+
+    The holder may be typed in the registry's `principal:<id>` spelling; the one mapping
+    to the contract's URN lives in `sovlease.principals` and serves take and helper alike.
+    """
     granted = session_store.now()
     expires = (session_store.parse_time(granted)
                + timedelta(minutes=args.minutes)).isoformat(timespec="seconds")
@@ -92,7 +98,8 @@ def _build(args: argparse.Namespace, lease_id: str, session: str, relation: str,
         "lease_id": lease_id,
         "concern": concern,
         "holder": {
-            "principal_id": args.principal or store.principal_id(session),
+            "principal_id": (principals.instance_principal(args.principal, root)
+                             if args.principal else store.principal_id(session)),
             "relation": relation,
             "parent_lease": parent,
             "controller_principal": controller,
@@ -104,7 +111,8 @@ def _build(args: argparse.Namespace, lease_id: str, session: str, relation: str,
             "consumption": _pairs(args.budget, "dimension", float),
             "emission": _pairs(args.emit, "counter", int),
         },
-        "closure": {"condition": args.closure, "defeating_evidence": args.defeat},
+        "closure": {"condition": args.closure, "defeating_evidence": args.defeat,
+                    "cleanup_obligations": list(args.cleanup or [])},
         "fence": fence,
         "granted_at": granted.replace("+00:00", "Z"),
         "expires_at": expires.replace("+00:00", "Z"),
@@ -134,7 +142,7 @@ def cmd_take(args: argparse.Namespace) -> int:
     existing = store.leases(directory)
     lease_id = "lease:" + store.slug(args.lease_id or args.reference)
     lease = _build(args, lease_id, session, "PARENT", None, args.controller,
-                   store.next_fence(existing, lease_id))
+                   store.next_fence(existing, lease_id), root)
     _validate(lease, root)
     store.append(directory, store.LEASES_LOG,
                  {"event": "take", "lease_id": lease_id, "session": session, "lease": lease})
@@ -158,7 +166,8 @@ def cmd_helper(args: argparse.Namespace) -> int:
     args.principal = args.principal or store.principal_id(
         session + "." + store.slug(args.reference))
     lease = _build(args, lease_id, session, args.relation, args.parent,
-                   parent["holder"]["principal_id"], store.next_fence(existing, lease_id))
+                   parent["holder"]["principal_id"], store.next_fence(existing, lease_id),
+                   root)
     _validate(lease, root)
     defects = work_lease.evaluate(lease, parent=parent)
     if defects:

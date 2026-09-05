@@ -1,0 +1,338 @@
+{
+  "record_kind": "witness-observation",
+  "review_envelope": "FINDING",
+  "observed_at": "2026-09-05",
+  "observer": {
+    "actor": "urn:soveraeign:principal:instance:sov-witness-lease",
+    "role": "WITNESS",
+    "lease": "lease:reports-2026-09-05-thin-circuit-1-md-candidate-next-definition-concern-phase-1-5-wave-1-lease-cleanup-and-principal",
+    "concern": "concern:phase-1-5/wave-1/lease-cleanup-and-principal",
+    "source_session": "session-69de8a",
+    "independence": "did not build, edit, or advise on the change; read it after the builder's report, took builder-provided paths as locators only"
+  },
+  "subject": {
+    "kind": "WORK",
+    "worktree": "<repo>/.claude/worktrees/agent-aaf610f6178c6b95b",
+    "head": "4b0bc1d7e3a92f2671d86bc6467f57f2dd62d51b",
+    "git_write_tree": "aea2038984bacf756c1bcbf7a29fc6964e2c3bcc",
+    "write_tree_note": "git write-tree covers only tracked (staged/indexed) content; the two untracked files are attested by digest below. write-tree was identical before and after every command in this observation.",
+    "builder": "urn:soveraeign:principal:instance:sov-worker-lease-cleanup-and-principal",
+    "record_projection": "NOT SUPPLIED; no projection id is invented. Evidence addresses below are working-tree paths, the git tree, and the shared lease ledger <repo>/.git/sov-sessions/leases.ndjson.",
+    "files": {
+      "contracts/work-lease.schema.json": {
+        "state": "M",
+        "sha256": "c6239a021000c64e2d92f1cc14aa4731bb1878529da230a89846a710bac32e26"
+      },
+      "contracts/fixtures/work-lease.fixtures.json": {
+        "state": "M",
+        "sha256": "0094144b9522feef0c64c8d7a8f185e2aba3ff5a71f192cd369010e7e06ddf6f"
+      },
+      "scripts/sovlease/commands.py": {
+        "state": "M",
+        "sha256": "befe733d4672921bd21449f7a92562acf7204fd6f8bf90c73e4a79c553bd64d",
+        "lines": 298
+      },
+      "scripts/sovlease/selfcheck.py": {
+        "state": "M",
+        "sha256": "2b6e1787cd1c7a035299f262ddc1b778ef16ba608a4befa333b5f3bc44c2bc72",
+        "lines": 160
+      },
+      "scripts/sov_lease.py": {
+        "state": "M",
+        "sha256": "d58bb65c9f3f1bb57e60fee0db1771cecd54752fc4a9a167eec18d8cb53d4026",
+        "lines": 163
+      },
+      "scripts/sovlease/principals.py": {
+        "state": "??",
+        "sha256": "df9eabaffcfb396b9c9e919845ccc175677e0a8d7a6e41400bebb328bff91791",
+        "lines": 58
+      },
+      "scripts/tests/test_sov_lease.py": {
+        "state": "??",
+        "sha256": "6e0ca3a56ca6bdc778a84f2e3843fa22bd744c53963b77b2d4e503c82824fade",
+        "lines": 163
+      },
+      "scripts/sovkernel/work_lease.py": {
+        "state": "unchanged",
+        "sha256": "43ec896e938b3e09473154be7f3ab9c34dcd62e7ad3c87d59696e089fc4cafbe",
+        "evidence": "git diff --quiet HEAD -- scripts/sovkernel/work_lease.py exit 0"
+      }
+    },
+    "scope_check": "git status --short lists exactly the seven declared paths (5 M, 2 ??); nothing else changed; diff --stat 210 insertions, 14 deletions across the 5 tracked files."
+  },
+  "commands": [
+    {
+      "cmd": "git status --short; git diff --stat; git write-tree; sha256sum <8 paths>",
+      "exit": 0
+    },
+    {
+      "cmd": "python scripts/sov_lease.py selfcheck",
+      "exit": 0,
+      "output": "PASS: lease construction, projection, budget, subordination, principal spelling and cleanup-obligation checks"
+    },
+    {
+      "cmd": "python -m unittest scripts.tests.test_sov_lease scripts.tests.test_work_lease scripts.tests.test_contract_fixtures",
+      "exit": 0,
+      "output": "Ran 40 tests, OK"
+    },
+    {
+      "cmd": "python scripts/lint.py",
+      "exit": 0,
+      "output": "PASS: repository hygiene (1178 text files, 548 Python modules, 10 named debt); pre-existing WARNs only"
+    },
+    {
+      "cmd": "python scripts/verify.py",
+      "exit": 0,
+      "output": "61 section headers, every section resolves to PASS/OK or a standing note; tooling shards 1-4 OK (345, 317, 655 skipped=4, 791 tests); CONF-*-DEF FAIL lines are fixtures failing as declared (SUITE PASS cases=33 coverage_gaps=0); FAIL:/REFUSED: lines at verify.out 975-980 are captured stdout of selfcheck tests inside tooling shard 4, not verdicts; BUDGET DEBT 9 checks over ceiling, 26.070s above budget, attributed and non-refusing"
+    },
+    {
+      "cmd": "SOV_PRINCIPAL=principal:claude-fable-5 python scripts/sov_lease.py --name witness-b-probe take probe:x --concern-kind operation --principal principal:claude-fable-5 --definition .claude/agents/sov-witness.md --definition-kind agent --closure c --defeat d --cleanup \"remove probe lease\" --json",
+      "exit": 0,
+      "output": "lease:probe-x holder.principal_id=urn:soveraeign:principal:model:claude-fable-5 closure.cleanup_obligations=['remove probe lease'] state=HELD"
+    },
+    {
+      "cmd": "same take with --principal principal:does-not-exist (probe:y)",
+      "exit": 1,
+      "output": "FAIL: UNREGISTERED_PRINCIPAL: principal:does-not-exist is not in contracts/principals.json; a lease holder is either a registered principal or a full urn:soveraeign:principal:<kind>:<id>"
+    },
+    {
+      "cmd": "python scripts/sov_lease.py --name witness-b-probe release lease:probe-x",
+      "exit": 0,
+      "output": "lease:probe-x released; the concern is unheld and still open"
+    },
+    {
+      "cmd": "python scripts/sov_lease.py --name witness-b-probe status --json",
+      "exit": 0,
+      "output": "no lease matching 'probe' in status; ledger holds take(HELD) then release for lease:probe-x"
+    },
+    {
+      "cmd": "fixture discrimination: validate both new fixtures against HEAD schema, WORK schema, and WORK schema with items.minLength removed (sovkernel.jsonschema.validate)",
+      "exit": 0,
+      "output": "POS: HEAD 1 defect (additional property), WORK 0, WORK-minus-minLength 0. NEG: HEAD 1 defect (additional property), WORK 1 defect (/closure/cleanup_obligations/1 shorter than 1 characters), WORK-minus-minLength 0 defects -> the defeating fixture grades exactly the minLength constraint"
+    },
+    {
+      "cmd": "defeat: replace instance_principal body with `return value`, python -m unittest scripts.tests.test_sov_lease, restore from byte copy",
+      "exit": 1,
+      "output": "FAILED (failures=7 of 11): registry_spelling_maps, unregistered_refused_by_name, unreadable_registry_refuses, live_registry_maps_report_principal, take_accepts_registry_spelling, take_refuses_unregistered_exit_1, helper_accepts_registry_spelling. Surviving 4: urn_passes_through (passthrough is that behaviour) and the three cleanup tests (not about mapping). Restored sha256 df9eabaf... identical to pre-mutation copy."
+    },
+    {
+      "cmd": "probe with temporary registry via SOV_PRINCIPAL_REGISTRY: revoked principal and an id containing '/' and ' '",
+      "exit": 0,
+      "output": "principal:gone (revoked) -> urn:soveraeign:principal:model:gone with no refusal; principal:a/b c -> urn:soveraeign:principal:model:a/b c, which does not match the lease holder pattern"
+    }
+  ],
+  "claims": [
+    {
+      "id": 1,
+      "claim": "take and helper accept --principal principal:<id>, map through one function sovlease.principals.instance_principal to urn:soveraeign:principal:<kind lowercased>:<id> from contracts/principals.json via sovsession.principals; URN passes through; unregistered refuses UNREGISTERED_PRINCIPAL exit 1",
+      "verdict": "HOLDS",
+      "basis": "Read scripts/sovlease/principals.py: the only transform on kind is str(kind).lower(); id segment is value[len('principal:'):] verbatim; both subcommands reach it through commands._build (test asserts mapping.assert_called_once on the helper path). CLI take with principal:claude-fable-5 produced urn:soveraeign:principal:model:claude-fable-5 (registry kind MODEL); principal:does-not-exist exited 1 with UNREGISTERED_PRINCIPAL. Registry kind enum HUMAN|MODEL|WORKER|SYSTEM (contracts/principal.schema.json) lowercases to values matching the lease pattern ^[a-z][a-z0-9-]*, so no registry kind can yield a refused URN. Defeat: passthrough body fails 7 of 11 tests."
+    },
+    {
+      "id": 2,
+      "claim": "--cleanup OBLIGATION (repeatable) on both subcommands lands in closure.cleanup_obligations; schema admits array of non-empty strings, default []; fixtures CONTRACT-LEASE-POS-CLEANUP-OBLIGATIONS and CONTRACT-LEASE-NEG-EMPTY-CLEANUP-OBLIGATION added",
+      "verdict": "HOLDS",
+      "basis": "Schema diff is exactly the one property under $defs/closure with type array, default [], items {type string, minLength 1}; closure keeps additionalProperties false; no other schema change. --cleanup is action=append on the shared _envelope_options used by take and helper. CLI take wrote ['remove probe lease']. Fixture discrimination recorded above. Vocabulary: cleanup_obligations already exists in contracts/custody.schema.json, contracts/concern-admission.json and conformance/commissioning.py check_q12; no drift."
+    },
+    {
+      "id": 3,
+      "claim": "sovlease/selfcheck.py gained principal-spelling and cleanup checks",
+      "verdict": "HOLDS",
+      "basis": "Read _check_principal_spelling and _check_cleanup_obligations; root principal is read from the live registry (principal:bdo, HUMAN -> human); both wired into run(); selfcheck exit 0 with the new PASS line."
+    },
+    {
+      "id": 4,
+      "claim": "new scripts/tests/test_sov_lease.py, 11 tests",
+      "verdict": "HOLDS",
+      "basis": "Ran 11 tests in isolation (via defeat run) and inside the 40-test set; tests use a temporary store via mock of commands._context and a temporary registry via SOV_PRINCIPAL_REGISTRY; the live-registry test clears the env override."
+    },
+    {
+      "id": 5,
+      "claim": "selfcheck exit 0, tooling tests exit 0, verify.py exit 0 (50 checks), lint exit 0",
+      "verdict": "HOLDS",
+      "basis": "All four re-run by the witness with the exit codes recorded above. verify discovers the test population dynamically: the uncommitted test_sov_lease appears in tooling shard 2/4 and tooling population integrity reads 109 modules with an independent listing agreeing, so the check read the artifact, not a declared list. '50 checks' is the CLAUDE.md snapshot figure, which the orientation snapshot check reports as matching; the one snapshot mismatch (commits) is the pre-existing shallow-clone reading."
+    },
+    {
+      "id": 6,
+      "claim": "changed files are exactly the seven named; scripts/sovkernel/work_lease.py untouched",
+      "verdict": "HOLDS",
+      "basis": "git status --short lists exactly those seven; git diff --quiet HEAD on work_lease.py exit 0; sha256 recorded."
+    }
+  ],
+  "residuals": [
+    {
+      "id": "R1",
+      "severity": "finding",
+      "text": "A revoked registry principal maps to a lease holder URN without complaint (observed with a temporary registry: principal:gone with revoked set -> urn:soveraeign:principal:model:gone). The builder did not claim revoked handling and no fixture covers it. sovsession.principals already distinguishes REVOKED, so the mapping could refuse or annotate. Repair belongs inside this concern if the builder judges a revoked holder should not take a lease; otherwise record it as a declared non-check in the module docstring."
+    },
+    {
+      "id": "R2",
+      "severity": "note",
+      "text": "contracts/principal.schema.json constrains principal_id only by minLength 1, while the lease holder pattern requires [A-Za-z0-9._-]+ after the kind. A registered id containing '/', ' ' or similar maps to a URN that _validate refuses with a schema pattern error rather than a named refusal. The five ids in the current registry are all safe; this is a gap between two contracts, not a defect in the claimed behaviour."
+    },
+    {
+      "id": "R3",
+      "severity": "note",
+      "text": "cleanup_obligations is optional in the schema (not in closure.required); only the command line always writes it (as [] when --cleanup is absent, proven by test). A lease written by any other path is admitted without the key. The schema description says an empty list is itself a claim; absence is not distinguished from an empty claim by the contract, only by the CLI."
+    },
+    {
+      "id": "R4",
+      "severity": "note",
+      "text": "Values that are neither principal:<id> nor a URN pass through instance_principal unchanged (documented in its docstring) and are refused by the holder pattern at _validate with a pattern error, not a named code. Consistent with the claim; not a named refusal surface."
+    },
+    {
+      "id": "R5",
+      "severity": "cleanup",
+      "text": "The witness probe appended two events (take, release) for lease:probe-x under session witness-b-probe to the shared append-preserving ledger <repo>/.git/sov-sessions/leases.ndjson. No lease is held; the events are not erasable by design."
+    },
+    {
+      "id": "R6",
+      "severity": "host",
+      "text": "verify.py BUDGET DEBT: 9 checks over ceiling, 26.070s above budget on this host; attributed, non-refusing, performance evidence only."
+    },
+    {
+      "id": "R7",
+      "severity": "scope",
+      "text": "The verdict-computation path of verify.py (exit versus stdout) was not re-derived from scripts/sovverify source in this observation; what was checked is that each section's own terminal line is PASS/OK and that the raw FAIL:/REFUSED: strings originate inside selfcheck test stdout."
+    }
+  ],
+  "standing_supported": {
+    "transition": "BUILT -> WITNESSED",
+    "subject": "lease tooling slice: scripts/sovlease/*, scripts/sov_lease.py, contracts/work-lease.schema.json and its fixtures, at the tree above",
+    "note": "This observation supports the proposal; it settles nothing and grants nothing. Landing support: yes, on this exact tree, with R1 named for the builder to absorb or declare inside the concern before or at landing. No residual defeats a claim."
+  },
+  "judgement_items": [],
+  "judgement_note": "Nothing here needs Bdo. R1 is a reversible RECORD_LOCAL choice the builder can settle with a defeating case; escalating it would be the defect AGENTS.md names.",
+  "second_pass": {
+    "scope": "repair of first-pass residual R1 (revoked principal mapped silently), same witness lease, same observer, same concern",
+    "review_envelope": "FINDING",
+    "tree": {
+      "head": "4b0bc1d7e3a92f2671d86bc6467f57f2dd62d51b",
+      "git_write_tree": "aea2038984bacf756c1bcbf7a29fc6964e2c3bcc",
+      "write_tree_note": "unchanged from the first pass because the repaired files that differ are untracked (principals.py, test_sov_lease.py) or the index was not restaged; the subject is fixed by the digests below, which were identical before and after every second-pass command.",
+      "git_status": "same eight entries as the first pass plus this observation file; no other path changed",
+      "files": {
+        "scripts/sovlease/principals.py": {
+          "sha256": "322030ba2013c9e4321c8e58f6b3dcf00e853901950c679e2d99622ce83c1437",
+          "lines": 87,
+          "claimed": "322030ba",
+          "matches_claim": true
+        },
+        "scripts/sovlease/selfcheck.py": {
+          "sha256": "e59ddfadae9c8c0ac2b48fcfd9a839435fe14543410cc0a9f9cd2a1842d80d5a",
+          "lines": 174,
+          "claimed": "e59ddfad",
+          "matches_claim": true
+        },
+        "scripts/sov_lease.py": {
+          "sha256": "e3027a76ffdc1afd1a05a16075e723bb42c8939975cf8f559f572978c6a31b0d",
+          "lines": 162,
+          "claimed": "e3027a76",
+          "matches_claim": true
+        },
+        "scripts/tests/test_sov_lease.py": {
+          "sha256": "bb8620c38b21d235c1bac59ec8bbc0968d997ebad2f457c70501fbc8c382e5a9",
+          "lines": 180,
+          "claimed": "bb8620c3",
+          "matches_claim": true
+        },
+        "contracts/work-lease.schema.json": {
+          "sha256": "c6239a021000c64e2d92f1cc14aa4731bb1878529da230a89846a710bac32e26",
+          "unchanged_from_first_pass": true
+        },
+        "contracts/fixtures/work-lease.fixtures.json": {
+          "sha256": "0094144b9522feef0c64c8d7a8f185e2aba3ff5a71f192cd369010e7e06ddf6f",
+          "unchanged_from_first_pass": true
+        },
+        "scripts/sovlease/commands.py": {
+          "sha256": "befe733d4672921b3c21449f7a92562acf7204fd6f8bf90c73e4a79c553bd64d",
+          "unchanged_from_first_pass": true
+        },
+        "scripts/sovkernel/work_lease.py": {
+          "sha256": "43ec896e938b3e09473154be7f3ab9c34dcd62e7ad3c87d59696e089fc4cafbe",
+          "unchanged": true
+        }
+      }
+    },
+    "delta_read": "principals.py: PrincipalRefused base with UnregisteredPrincipal and RevokedPrincipal subclasses; REVOKED_PRINCIPAL code; resolve(value, loaded) does the mapping against a loaded registry and raises RevokedPrincipal when record['revoked'] is truthy, after the unregistered check and before the kind read; instance_principal(value, root) loads the registry only for the principal: spelling and delegates. Docstring states a URN passes through unchecked and that a URN naming a revoked principal is not caught. selfcheck.py: _check_principal_spelling reaches the revoked refusal on a hand-built registry via resolve and proves the same id maps once revoked is cleared. sov_lease.py: except clause catches principals.PrincipalRefused. Module ceilings: all under 300.",
+    "commands": [
+      {
+        "cmd": "git status --short; git write-tree; sha256sum <8 paths>; wc -l",
+        "exit": 0
+      },
+      {
+        "cmd": "python scripts/sov_lease.py selfcheck",
+        "exit": 0
+      },
+      {
+        "cmd": "python -m unittest scripts.tests.test_sov_lease scripts.tests.test_work_lease scripts.tests.test_contract_fixtures",
+        "exit": 0,
+        "output": "Ran 42 tests, OK"
+      },
+      {
+        "cmd": "python -m unittest scripts.tests.test_sov_lease",
+        "exit": 0,
+        "output": "Ran 13 tests, OK"
+      },
+      {
+        "cmd": "python scripts/lint.py",
+        "exit": 0,
+        "output": "PASS: repository hygiene (1179 text files, 548 Python modules, 10 named debt)"
+      },
+      {
+        "cmd": "python scripts/verify.py",
+        "exit": 0,
+        "output": "61 sections; every section terminates PASS/OK or a standing note; tooling shards 1-4 OK (shard 3 skipped=4); tooling population 109 modules with independent listing agreeing and test_sov_lease present; BUDGET DEBT 9 checks, 28.565s above budget, attributed and non-refusing"
+      },
+      {
+        "cmd": "revoked probe via instance_principal with SOV_PRINCIPAL_REGISTRY pointing at a temp registry (principal:gone revoked, principal:live not)",
+        "exit": 0,
+        "output": "principal:gone -> RevokedPrincipal: REVOKED_PRINCIPAL: principal:gone is revoked in contracts/principals.json and cannot hold a lease; principal:live -> urn:soveraeign:principal:model:live; urn:soveraeign:principal:model:gone passes through unchanged"
+      },
+      {
+        "cmd": "SOV_PRINCIPAL_REGISTRY=<temp> python scripts/sov_lease.py --name witness-b-probe take probe:z ... --principal principal:gone --json",
+        "exit": 1,
+        "output": "FAIL: REVOKED_PRINCIPAL: principal:gone is revoked in contracts/principals.json and cannot hold a lease; status shows no probe lease, so the refused take wrote nothing"
+      },
+      {
+        "cmd": "defeat: sed 'if record.get(\"revoked\"):' -> 'if False:' in principals.py; python -m unittest scripts.tests.test_sov_lease; restore from byte copy",
+        "exit": 1,
+        "output": "FAILED (failures=2 of 13): MappingTests.test_a_revoked_principal_is_refused_and_the_same_id_unrevoked_maps, CommandLineTests.test_take_refuses_a_revoked_spelling_with_exit_1; other 11 pass, so the two new tests grade exactly the guard. Restored sha256 322030ba... and cmp byte-identical."
+      }
+    ],
+    "verdict_on_repair": "HOLDS. The registry spelling of a revoked principal is refused by name with exit 1 through the same PrincipalRefused path as the unregistered case, on the module surface, the selfcheck, the tests, and the live CLI; the same id maps once revoked is cleared; the defeating case fails only the two tests that grade the guard.",
+    "r1_closed": true,
+    "r1_note": "Closed for the registry spelling, which is the surface R1 named. The URN spelling of a revoked principal still passes through; that is declared in the resolve docstring and observed here, and it is recorded below as a declared non-check rather than a defect.",
+    "residuals": [
+      {
+        "id": "R1b",
+        "severity": "declared non-check",
+        "text": "urn:soveraeign:principal:<kind>:<id> is never looked up, so a URN naming a revoked principal is accepted as a lease holder. Declared in scripts/sovlease/principals.py resolve docstring. The holder can bypass the revoked refusal by typing the URN spelling; the check refuses the honest spelling only."
+      },
+      {
+        "id": "R8",
+        "severity": "note",
+        "text": "Refusal messages name registry.REGISTRY_PATH (contracts/principals.json) even when SOV_PRINCIPAL_REGISTRY overrides the file read, as the temp-registry probe shows. The reason code is right; the named path is the default, not the one consulted."
+      },
+      {
+        "id": "R2/R4",
+        "severity": "carried",
+        "text": "Reported by the coordinator as declared in the builder's report rather than coded. Not verified against that report here, since a builder report is not evidence on this path; both remain as recorded in the first pass."
+      },
+      {
+        "id": "R5",
+        "severity": "cleanup",
+        "text": "No new ledger events: the second-pass probe take was refused before any write; the first-pass take/release pair for lease:probe-x remains in the shared ledger."
+      }
+    ],
+    "standing_supported": {
+      "transition": "BUILT -> WITNESSED",
+      "changed": false,
+      "subject": "lease tooling slice at the digests above (principals.py 322030ba..., selfcheck.py e59ddfad..., sov_lease.py e3027a76..., test_sov_lease.py bb8620c3..., other three as in the first pass)",
+      "note": "Same transition as the first pass, now on the repaired bytes. Observation only; settles and grants nothing."
+    },
+    "landing_support": true,
+    "landing_note": "Yes, on these exact digests. R1b and R8 are named for the builder's own judgement; neither defeats a claim and neither needs Bdo.",
+    "judgement_items": []
+  }
+}

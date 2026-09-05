@@ -72,6 +72,12 @@ Run any of them with `--help` for exact arguments.
 | `sov_trace.py` | `up` | One measured execution, walked up to the product intention that justified it. |
 | `sov_f2_gate.py` | — | The F2 milestone gate, exactly as `SPEC.md` states it. |
 
+## Research instruments
+
+| Command | Subcommands | Answers |
+| --- | --- | --- |
+| `sov_disposition.py` | `init` `subject add` `observe` `profile` `report` `verify` | Experimental Disposition Lab evidence storage and rebuildable behavioral-profile projections. Its skill/instrument definitions remain scratch under `.claude/drafts/disposition-lab/`; software success does not validate the psychometrics. |
+
 ## Coordination and scheduling
 
 | Command | Subcommands | Answers |

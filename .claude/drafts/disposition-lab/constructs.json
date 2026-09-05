@@ -1,0 +1,68 @@
+{
+  "schema": "soveraeign-disposition-construct-bank/v0.1",
+  "standing": "EXPERIMENTAL",
+  "issue": 200,
+  "scale": {
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "zero": "balanced, indeterminate, or context-dependent midpoint"
+  },
+  "constructs": [
+    {
+      "id": "exploration",
+      "definition": "Tendency to seek or instantiate novel possibilities rather than preferentially reuse an already-known path.",
+      "low_pole": "exploit-known",
+      "high_pole": "explore-novel",
+      "applicable_subject_kinds": ["human", "agent", "model", "code", "mechanism"]
+    },
+    {
+      "id": "evidence-threshold",
+      "definition": "Amount of evidence normally required before committing to an action under uncertainty.",
+      "low_pole": "commit-with-sparse-evidence",
+      "high_pole": "gather-before-commitment",
+      "applicable_subject_kinds": ["human", "agent", "model", "code", "mechanism"]
+    },
+    {
+      "id": "reversibility-preference",
+      "definition": "Tendency to preserve rollback, optionality, or staged commitment when alternatives exist.",
+      "low_pole": "direct-commitment",
+      "high_pole": "preserve-reversibility",
+      "applicable_subject_kinds": ["human", "agent", "model", "code", "mechanism"]
+    },
+    {
+      "id": "invariant-fidelity",
+      "definition": "Tendency to preserve explicit constraints and invariants when optimizing or interpreting a task.",
+      "low_pole": "reinterpret-constraints",
+      "high_pole": "preserve-invariants",
+      "applicable_subject_kinds": ["human", "agent", "model", "code", "mechanism"]
+    },
+    {
+      "id": "abstraction-preference",
+      "definition": "Tendency to resolve a problem through generalized structure rather than only local concrete instances.",
+      "low_pole": "concrete-local",
+      "high_pole": "generalized-structural",
+      "applicable_subject_kinds": ["human", "agent", "model", "code", "mechanism"]
+    },
+    {
+      "id": "initiative",
+      "definition": "Tendency to begin admissible action without requiring an additional external prompt once the goal and boundary are sufficient.",
+      "low_pole": "reactive",
+      "high_pole": "self-starting",
+      "applicable_subject_kinds": ["human", "agent", "model", "code", "mechanism"]
+    },
+    {
+      "id": "coordination",
+      "definition": "Tendency to make dependencies, handoffs, or shared state explicit rather than resolving independently when both strategies are available.",
+      "low_pole": "independent-resolution",
+      "high_pole": "coordinate-explicitly",
+      "applicable_subject_kinds": ["human", "agent", "model", "code", "mechanism"]
+    },
+    {
+      "id": "scope-horizon",
+      "definition": "Tendency to optimize for broader system or longer-horizon consequences rather than the immediate local result.",
+      "low_pole": "immediate-local",
+      "high_pole": "system-long-horizon",
+      "applicable_subject_kinds": ["human", "agent", "model", "code", "mechanism"]
+    }
+  ]
+}

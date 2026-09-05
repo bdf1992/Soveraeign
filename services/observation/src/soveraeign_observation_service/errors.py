@@ -66,10 +66,23 @@ class IncompleteProposal(ObservationRefused):
     reason_code = "INCOMPLETE_PROPOSAL"
 
 
+class ObservationRecorded(ObservationRefused):
+    """An observation with this identity is already recorded; read it, do not re-record it.
+
+    `observation_id` derives from the run, the observer, and the addresses read, not from
+    the moment, so a second looking over the same addresses is the same observation. The
+    manifest maps this onto the kernel's `STALE_STATE`, the word `SPEC.md` uses for
+    redeclaring an identity that exists.
+    """
+
+    reason_code = "OBSERVATION_RECORDED"
+
+
 __all__ = [
     "DigestMismatch",
     "IncompleteProposal",
     "ObservationMissing",
+    "ObservationRecorded",
     "ObservationRefused",
     "ObserverNotIndependent",
     "PredicatesUndeclared",

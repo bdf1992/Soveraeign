@@ -1,0 +1,366 @@
+{
+  "observation_schema": "soveraeign-witness-observation/free-form-v1",
+  "observer": "urn:soveraeign:principal:instance:sov-witness-observation-cli (independent; did not build or edit any observed file)",
+  "builder": "urn:soveraeign:principal:instance:sov-worker-observation-cli",
+  "concern": "concern:phase-1-5/wave-1/observation-cli",
+  "source_session": "session-69de8a",
+  "lease": "lease:reports-2026-09-05-thin-circuit-1-md-candidate-next-definition-concern-phase-1-5-wave-1-observation-cli",
+  "timestamp": "2026-09-05",
+  "review_envelope": {
+    "kind": "OBSERVATION",
+    "contract_finding_emitted": false,
+    "why": "contracts/finding.schema.json requires record_projection_id; no RecordProjection was supplied with this lease and inventing one is forbidden. Per-claim verdicts below are an observation, not a Finding, not a settlement, not a ratification."
+  },
+  "witnessed_tree": {
+    "worktree": ".claude/worktrees/agent-a5b472900c802dce8 (relative to the repository root; cut from 4b0bc1d)",
+    "branch": "worktree-agent-a5b472900c802dce8",
+    "head": "4b0bc1d7e3a92f2671d86bc6467f57f2dd62d51b",
+    "head_on_main": true,
+    "git_write_tree_index": "aea2038984bacf756c1bcbf7a29fc6964e2c3bcc (index only; the four new files are untracked and not in it)",
+    "git_status_short": [
+      " M services/observation/KNOWN-GAPS.md",
+      " M services/observation/src/soveraeign_observation_service/service.py",
+      "?? reports/observations/2026-09-05-thin-circuit-1-journal.json",
+      "?? services/observation/src/soveraeign_observation_service/cli.py",
+      "?? services/observation/src/soveraeign_observation_service/store.py",
+      "?? services/observation/tests/test_cli.py",
+      "!! .local/ (ignored; holds the builder's default store: 1 declaration, 1 inference, 3 receipts)"
+    ],
+    "sha256": {
+      "services/observation/KNOWN-GAPS.md": "abc9eb0d80a913c6317aafaa8493bdcfd712e4d844ca8c8ed637901487f8d53c (HEAD: 4a6e04269831c05b...)",
+      "services/observation/src/soveraeign_observation_service/service.py": "8e0bdea1b78404be198e7f7a15b2bbfb38c61586317f913383481bb765027e75",
+      "services/observation/src/soveraeign_observation_service/cli.py": "76d7361b3b81c392f8aa49fd1522c587d57af8111c752286d86969f244be0631",
+      "services/observation/src/soveraeign_observation_service/store.py": "7eb9819c26abbe5bc47c38c52cb43d72917e3d8e9b5a26bb79188844a81f9f12",
+      "services/observation/tests/test_cli.py": "661bbef5a2bd6d2c3b2e746b9a696116cdfc8c55cfb9898a7a66209754c23edd",
+      "reports/observations/2026-09-05-thin-circuit-1-journal.json": "2600e868215a67bf41eb6d45151139c51824c1dfc3d4e464945925d51d632e6b (byte-identical to eff1a68:reports/observations/2026-09-05-thin-circuit-1-journal.json; eff1a68 is NOT an ancestor of main)"
+    },
+    "module_lines": {
+      "cli.py": 273,
+      "store.py": 101,
+      "service.py": 186,
+      "test_cli.py": 273,
+      "ceiling": 300
+    },
+    "outside_services_observation": "nothing changed except the materialised export (an input); git diff --stat: 2 files, +16 -6; grep -rn soveraeign_record_service services/observation/src -> no match (exit 1)"
+  },
+  "commands": [
+    {
+      "cmd": "git status --short; git diff --stat",
+      "exit": 0
+    },
+    {
+      "cmd": "cd services/observation && python -m unittest discover -s tests",
+      "exit": 0,
+      "out": "Ran 64 tests OK"
+    },
+    {
+      "cmd": "cd services/observation && python -m unittest discover -s tests -p test_cli.py",
+      "exit": 0,
+      "out": "Ran 15 tests OK (13 CommandLine + 2 Store)"
+    },
+    {
+      "cmd": "python scripts/sov_kernel.py binding-check",
+      "exit": 0
+    },
+    {
+      "cmd": "python scripts/lint.py",
+      "exit": 0,
+      "out": "PASS: repository hygiene (1180 text files, 549 Python modules, 10 named debt)"
+    },
+    {
+      "cmd": "python scripts/verify.py",
+      "exit": 1,
+      "out": "FAIL: documentation reader, repository tooling tests; 50 checks in 16.764s wall (no grade; budget debt pre-existing). Tooling failures: scripts/tests/test_sov_docs.py Staleness.test_the_built_page_is_current (docs stale) AND scripts/tests/test_sov_clarity.py test_recorded_reviews_are_well_formed_and_current: {} != {'services/observation/KNOWN-GAPS.md': 'TEXT_STALE'}"
+    },
+    {
+      "cmd": "python scripts/sov_docs.py check",
+      "exit": 1,
+      "out": "FAIL: docs/documentation.html is stale"
+    },
+    {
+      "cmd": "python scripts/sov_docs.py build --out <scratch>; diff vs docs/documentation.html",
+      "exit": "build 1 (crashed printing a path outside ROOT after writing); diff: 76 differing fragments, all inside the services/observation/KNOWN-GAPS.md document (digest 4a6e0426 -> abc9eb0d and its six rows) plus the search-index string that embeds that text",
+      "attribution": "docs staleness is caused wholly by this tree's KNOWN-GAPS.md edit"
+    },
+    {
+      "cmd": "python scripts/sov_clarity.py check",
+      "exit": 1,
+      "out": "STALE: services/observation/KNOWN-GAPS.md: TEXT_STALE (.clarity/coverage.json line 1905 covers this file)"
+    },
+    {
+      "cmd": "cd services/observation/src && python -m soveraeign_observation_service.cli --store <witnessD-store> operations",
+      "exit": 0,
+      "out": "service_id observation, standing BUILT, reachable_here = the five built operations, authoritative false, store counts all 0; no receipt (discovery)"
+    },
+    {
+      "cmd": "... declare-predicates --journal <export> --run urn:soveraeign:run:thin-circuit-1 --from-record",
+      "exit": 0,
+      "out": "declaration urn:soveraeign:observation:predicates:8536a011258af73b5475d583; 4 DIGEST_EQUALS predicates over test_thin_slice.py 8d4f4b71.., KNOWN-GAPS.md e8689c69.., docs/documentation.html f4da1d40.., .clarity/coverage.json f35b95a4..; receipt a120b6f6.. COMMITTED"
+    },
+    {
+      "cmd": "... infer-relation --observer urn:soveraeign:principal:instance:sov-witness-observation-cli",
+      "exit": 0,
+      "out": "inference urn:soveraeign:observation:relation-inference:0dbad0ef3ebaebcfc65ea795 INDEPENDENT, record_completeness COMPLETE, edges_found []; receipt a326562a.. COMMITTED"
+    },
+    {
+      "cmd": "... observe-run --observer <witness> --reader-root <worktree>",
+      "exit": 2,
+      "out": "REFUSED DIGEST_MISMATCH: .clarity/coverage.json reads sha256:2c5738c4.. (== 4b0bc1d bytes) and the record declares sha256:f35b95a4..; receipt c19d9a5b.. REFUSED DIGEST_MISMATCH"
+    },
+    {
+      "cmd": "defeating A: ... infer-relation --observer urn:soveraeign:principal:instance:sov-worker-thin-1",
+      "exit": 0,
+      "out": "inference DIRECT, edges_found SAME_ACTOR, HOLDS_RUN_LEASE, PRODUCED_THE_OUTPUT; receipt COMMITTED (the manifest declares no OBSERVER_NOT_INDEPENDENT refusal on infer-relation; a DIRECT inference commits)"
+    },
+    {
+      "cmd": "defeating A2: ... observe-run --observer <executor> --reader-root <worktree>",
+      "exit": 2,
+      "out": "REFUSED OBSERVER_NOT_INDEPENDENT: joined by SAME_ACTOR, HOLDS_RUN_LEASE, PRODUCED_THE_OUTPUT; receipt REFUSED OBSERVER_NOT_INDEPENDENT"
+    },
+    {
+      "cmd": "defeating B: fresh empty store; infer-relation (exit 0) then observe-run without any declaration",
+      "exit": 2,
+      "out": "REFUSED PREDICATES_UNDECLARED, kernel_reason_code MISSING_PRECONDITION; receipt REFUSED PREDICATES_UNDECLARED; fresh store holds 2 receipts for 2 attempts"
+    },
+    {
+      "cmd": "positive: declare-predicates --predicates-file (DIGEST_EQUALS+BYTES_PRESENT over the two addresses whose eff1a68 bytes match the record) then observe-run --reader-root <scratch root holding eff1a68 bytes of test_thin_slice.py and KNOWN-GAPS.md>",
+      "exit": 0,
+      "out": "observation urn:soveraeign:observation:39225629559aa580cf8d5b19, predicate_results all true, observer_relation INDEPENDENT per 0dbad0ef..; journal_entry kind OBSERVATION actor <witness> carrying declaration_id and inference_id; receipt COMMITTED"
+    },
+    {
+      "cmd": "... read-observation --observation urn:soveraeign:observation:39225629559aa580cf8d5b19",
+      "exit": 0,
+      "out": "observation, declaration, inference and 7 receipts for the run returned; receipt DERIVED"
+    },
+    {
+      "cmd": "... read-observation --observation urn:nothing",
+      "exit": 3,
+      "out": "REFUSED OBSERVATION_MISSING; receipt REFUSED OBSERVATION_MISSING"
+    },
+    {
+      "cmd": "repeat of the positive observe-run in the same store",
+      "exit": 0,
+      "out": "same observation_id, different observed_at; observations/ still holds 1 file (the first); receipts 10 for 10 attempts"
+    },
+    {
+      "cmd": "receipt census, witnessD-store",
+      "out": "10 attempts from services/observation/src -> 10 receipt files (declare x2, infer x2, observe x4, read x2); operations leaves none by design; one earlier invocation from the repository root failed on module resolution before the module loaded and is not an attempt"
+    },
+    {
+      "cmd": "digests of the four reported addresses",
+      "out": "worktree == 4b0bc1d for all four and none matches the record; at eff1a68 test_thin_slice.py (8d4f4b71) and KNOWN-GAPS.md (e8689c69) match, docs/documentation.html (c6fc972f vs declared f4da1d40) and .clarity/coverage.json (d3f968b9 vs declared f35b95a4) do not"
+    }
+  ],
+  "claims": [
+    {
+      "id": 1,
+      "claim": "cli.py runs as python -m soveraeign_observation_service.cli from services/observation/src with six commands and the stated flags; exit 0 committed, 2 refused, 3 unknown record; every attempt leaves a receipt file",
+      "verdict": "HOLDS",
+      "basis": "all six commands driven by hand; exits 0/2/3 observed as stated; 10 attempts -> 10 receipt files; --store default is .local/observation (DEFAULT_STORE, cli.py:36); operations writes no receipt and an argparse usage error exits 2 without one, both stated in the module docstring"
+    },
+    {
+      "id": 2,
+      "claim": "store.py persists requests, declarations, inferences, observations and receipts as JSON files and rebuilds the service per invocation",
+      "verdict": "HOLDS with residual",
+      "basis": "one file per record under <store>/<kind>/<id>.json, replayed by moment then id (store.py:58-77); cross-process continuity observed by hand and by the subprocess tests. Residual: observation_id derives from run|observer|addresses (observe.py:145), and save() skips an existing path (store.py:86), so a repeat observation by the same observer over the same addresses commits, leaves a receipt, and is not persisted; its observed_at is lost (reproduced: same id, different observed_at, 1 file on disk)"
+    },
+    {
+      "id": 3,
+      "claim": "service.py gained record_refusal (+10 lines) and nothing else",
+      "verdict": "HOLDS",
+      "basis": "git diff: exactly one hunk, 10 insertions, 0 deletions, the record_refusal method"
+    },
+    {
+      "id": 4,
+      "claim": "tests/test_cli.py 16 tests; service suite 64 OK; binding-check exit 0; lint exit 0; verify exit 1 only because docs/documentation.html is stale from the KNOWN-GAPS.md rows",
+      "verdict": "DISSENT (two parts)",
+      "basis": "test_cli.py holds 15 tests, not 16 (13 CommandLine + 2 Store; discover -p test_cli.py ran 15). Suite 64 OK, binding-check 0, lint 0 reproduced. verify.py exit 1 has two failing checks: documentation reader (docs stale, wholly attributable to the KNOWN-GAPS.md edit) and repository tooling tests, which fails on the same docs staleness AND on test_sov_clarity: services/observation/KNOWN-GAPS.md is TEXT_STALE under .clarity/coverage.json. Rebuilding the docs page alone leaves verify red; the covered prose also needs a clarity review and receipt (AGENTS.md, Human-facing output). The builder did not report the clarity failure"
+    },
+    {
+      "id": 5,
+      "claim": "KNOWN-GAPS.md rows changed: Receipt ownership, Durable state, The existing observer script, Settlement, Two-binding proof, Independent observation of itself",
+      "verdict": "HOLDS as to which rows; content graded row by row",
+      "rows": {
+        "Receipt ownership": "HOLDS: in memory and one file each under the store (store.py, receipts dir)",
+        "Durable state": "HOLDS: verified against store.py and cli.py; observe-run prints journal_entry and appends nothing (cli.py:152-165)",
+        "The existing observer script": "HOLDS mechanically: --from-record derives DIGEST_EQUALS from OUTPUT entries (cli.py:93-98). The clause 'so the script no longer has a reason to exist that this service cannot serve' is the builder's judgement; scripts/witness_observe.py is unchanged and still present",
+        "Settlement": "HOLDS against the export: RECEIPT entry event settle_run outcome COMMITTED, actor claude-fable-5, detail.kernel_verdict 'PERMITTED: settle_run may commit as COMMITTED', settled_by claude-fable-5 'as participant'. The export cited is not on main (see residuals)",
+        "Two-binding proof": "HOLDS with residual: five tests use subprocess for seven invocations; run_cli defaults to in-process cli.main(), and the module docstring 'These tests run the module as a subprocess' overstates that",
+        "Independent observation of itself": "HOLDS against the export: two OBSERVATION entries, observer sov-witness-thin-1, relation INDEPENDENT over a COMPLETE record; 'driven from a session scratchpad' matches eff1a68's report, fizzle 12. Residual: the cited export is not on main and is untracked here; and the second observation's declared digests for docs/documentation.html and .clarity/coverage.json match no commit examined, so that observation is not reproducible from any committed tree"
+      }
+    },
+    {
+      "id": 6,
+      "claim": "driving the CLI over the export for thin-circuit-1 yields INDEPENDENT/COMPLETE then DIGEST_MISMATCH on .clarity/coverage.json because the worktree bytes are at 4b0bc1d; the service never imports the Record Service",
+      "verdict": "HOLDS, with a sharper reading",
+      "basis": "reproduced exactly as an independent observer. Sharper: .clarity/coverage.json is merely the first address in sorted order; all four reported addresses mismatch in this worktree, and two of them mismatch at eff1a68 as well. A positive observe-run over the real export was reachable only over the two addresses whose eff1a68 bytes match. No Record Service import (grep exit 1); the boundary is the entry shape"
+    }
+  ],
+  "check_witnessing": [
+    "sov_docs check compares the committed page's bytes to a fresh render: it measures, it does not read a declaration.",
+    "sov_clarity check compares recorded digests to file bytes: measures.",
+    "test_cli asserts subprocess returncode and parsed stdout JSON, not a FAIL token in stdout; receipt counts are file counts on disk: measures.",
+    "cli operations reports 'standing' straight from the manifest (a declaration); reachable_here is the COMMANDS tuple that also keys the dispatch table, so it is effectively measured. test_operations_answers_from_the_manifest compares the manifest's BUILT set to reachable_here: two declarations compared to each other, though the same tuple drives dispatch.",
+    "No oracle was weakened: conformance/ untouched; the 33 CONF-*-DEF fixtures fail as declared (T2)."
+  ],
+  "residuals": [
+    "R1 verify.py is red on two checks; the clarity TEXT_STALE on services/observation/KNOWN-GAPS.md is unreported by the builder and is not cleared by rebuilding docs.",
+    "R2 The KNOWN-GAPS.md rows and the cli.py docstring cite reports/observations/2026-09-05-thin-circuit-1-journal.json and reports/2026-09-05-thin-circuit-1.md, which live on eff1a68, not on main (4b0bc1d is main's head; eff1a68 is not its ancestor). The export is untracked in this tree; the report is absent from it. Landed alone, the rows cite evidence the trunk does not hold.",
+    "R3 Repeat observation collapses onto one observation_id and is not persisted (claim 2 residual).",
+    "R4 test count is 15, not 16; the test module docstring overstates subprocess use.",
+    "R5 The thin-circuit-1 second observation's declared digests for docs/documentation.html and .clarity/coverage.json match neither 4b0bc1d nor eff1a68; reproducibility from the artifact holds for the export verification and for two of four addresses, not for the observation as a whole.",
+    "R6 Builder left a default store under .local/observation in the worktree (ignored, not in the tree).",
+    "R7 No RecordProjection was supplied, so no contract-typed Finding is emitted; this file is an observation record.",
+    "R8 verify wall 16.76s with pre-existing budget debt; not this builder's."
+  ],
+  "standing_supported": "OPEN -> BUILT for the Observation Service command line (cli.py, store.py, record_refusal, test_cli.py): the positive path and every manifest-declared refusal reachable through the CLI were reproduced by an independent observer. BUILT -> WITNESSED is not supported for the tree as presented: verify.py is red on two checks, one of them unreported. A landing would need the docs rebuild AND a clarity review receipt for KNOWN-GAPS.md, then a re-witness of the moved tree; this observation does not transfer to a different set of bytes. This is an observation, not a settlement and not a ratification.",
+  "judgement_items": [
+    "Routine, for the branch holder, not Bdo: does the materialised export land with this tree as a tracked input, or does this tree wait for eff1a68 to land on main? Either way the KNOWN-GAPS rows must cite something the trunk holds.",
+    "For the launcher: the lease supplied no RecordProjection; is an observation record in this repository's existing reports/observations shape the independent observation the landing gate requires, or must a Record address be minted for the WORK subject first?"
+  ],
+  "overall_verdict": "REPRODUCED_WITH_DEFECTS against 4b0bc1d plus the six changed/new paths digested above",
+  "second_pass": {
+    "scope": "repairs of R3 and R4 and the infer-relation note, same lease, same observer, same worktree; first pass above untouched",
+    "tree_state": {
+      "head": "4b0bc1d7e3a92f2671d86bc6467f57f2dd62d51b",
+      "git_status_short": [
+        " M services/observation/KNOWN-GAPS.md",
+        " M services/observation/contracts/service.json",
+        " M services/observation/src/soveraeign_observation_service/__init__.py",
+        " M services/observation/src/soveraeign_observation_service/errors.py",
+        " M services/observation/src/soveraeign_observation_service/service.py",
+        "?? reports/observations/2026-09-05-thin-circuit-1-journal.json",
+        "?? reports/observations/2026-09-05-wave-1-observation-cli-witness-observation.json (this file)",
+        "?? services/observation/src/soveraeign_observation_service/cli.py",
+        "?? services/observation/src/soveraeign_observation_service/store.py",
+        "?? services/observation/tests/test_cli.py"
+      ],
+      "git_diff_stat": "5 tracked files, +44 -7",
+      "sha256_prefix": {
+        "service.py": "88288a0ae3c2 (196 lines)",
+        "errors.py": "047014f2c6f9 (92)",
+        "__init__.py": "4637edc0e520 (45)",
+        "contracts/service.json": "a1fcce4d4a46 (202)",
+        "cli.py": "c0bd675fb5da (279)",
+        "tests/test_cli.py": "f1868dd8dafd (319)",
+        "KNOWN-GAPS.md": "ef52451ee2bc (81)",
+        "store.py": "7eb9819c26ab (unchanged, 101)"
+      },
+      "all_eight_match_builder_claims": true,
+      "digests_identical_before_and_after_this_pass": true,
+      "landing_target": "d641908 (record: a run's projection carries the outputs its own report vouched for); eff1a68 and 4b0bc1d are both ancestors of d641908, so R2's cited paths resolve there"
+    },
+    "delta_read": {
+      "service.py": "+1 import; +record_refusal (first pass); +9-line guard inside observe_run's act() AFTER _observe.observe_run returned, comparing observation_id against self.observations and raising ObservationRecorded; inside _attempt so exactly one REFUSED receipt",
+      "errors.py": "+ObservationRecorded(ObservationRefused) reason_code OBSERVATION_RECORDED; docstring cites SPEC.md's STALE_STATE for redeclaring an identity (SPEC.md:137 does use it so)",
+      "__init__.py": "export only",
+      "contracts/service.json": "observe-run refusals += OBSERVATION_RECORDED; local_refusals += OBSERVATION_RECORDED -> STALE_STATE",
+      "cli.py": "docstring paragraph: infer-relation commits DIRECT included, only observe-run refuses OBSERVER_NOT_INDEPENDENT, second observe-run refuses OBSERVATION_RECORDED; infer-relation help says the same (cli.py:221-222)",
+      "test_cli.py": "docstring names the subprocess cases (positive path, three defeating cases, second-observation) and says the rest are in-process; matches process=True at lines 99-126, 179, 191, 204, 215, 219. New CommandLine test (subprocess) and Identity test (in-process). 17 tests in the module: 14 CommandLine, 1 Identity, 2 Store",
+      "KNOWN-GAPS.md": "Durable-state row now states the OBSERVATION_RECORDED refusal; other five rows as in the first pass"
+    },
+    "commands": [
+      {
+        "cmd": "cd services/observation && python -m unittest discover -s tests",
+        "exit": 0,
+        "out": "Ran 66 tests OK"
+      },
+      {
+        "cmd": "python scripts/sov_kernel.py binding-check",
+        "exit": 0
+      },
+      {
+        "cmd": "python scripts/lint.py",
+        "exit": 0
+      },
+      {
+        "cmd": "fresh store witnessD-pass2: declare-predicates --predicates-file (two addresses whose eff1a68 bytes match); infer-relation; observe-run #1",
+        "exit": "0,0,0",
+        "out": "observation urn:soveraeign:observation:39225629559aa580cf8d5b19 all predicates true, receipt COMMITTED"
+      },
+      {
+        "cmd": "observe-run #2, same identity",
+        "exit": 2,
+        "out": "REFUSED OBSERVATION_RECORDED, kernel_reason_code STALE_STATE; message: '<id> already records <observer>'s observation of <run> over these addresses; read it with read-observation'; receipt REFUSED OBSERVATION_RECORDED"
+      },
+      {
+        "cmd": "read-observation <id>",
+        "exit": 0,
+        "out": "returns the first observation; run receipts COMMITTED, COMMITTED, COMMITTED, REFUSED; observations on disk: 1; receipts: 5 for 5 attempts"
+      },
+      {
+        "cmd": "ordering: fresh store, first observe-run committed, then observe-run against a reader root with one byte appended to KNOWN-GAPS.md",
+        "exit": 2,
+        "out": "REFUSED DIGEST_MISMATCH (not OBSERVATION_RECORDED): the identity check runs after the bytes are read, as claimed"
+      },
+      {
+        "cmd": "revert experiment, on a full scratch copy of the worktree (tar, excluding .git and .local), never on the witnessed bytes: guard line replaced with `if False:`; python -m unittest discover -s tests -p test_cli.py -k second_observation_of_the_same_identity -k refuses_a_second_observation_of_one_identity",
+        "exit": 1,
+        "out": "FAILED (failures=2): CommandLine: AssertionError 2 != 0 (second observe-run committed at exit 0); Identity: ObservationRecorded not raised"
+      },
+      {
+        "cmd": "same two tests on the untouched worktree",
+        "exit": 0,
+        "out": "Ran 2 tests OK; worktree service.py sha256 88288a0ae3c2 before and after"
+      },
+      {
+        "cmd": "python scripts/verify.py (second-pass tree)",
+        "exit": 1,
+        "out": "FAIL: Node Interface projection, documentation reader, operation surface page, repository tooling tests, Host Service reference tests; 50 checks in 14.637s"
+      },
+      {
+        "cmd": "python scripts/sov_interface.py check (worktree)",
+        "exit": 1,
+        "out": "DEFECT: CAPABILITY_MAP_STALE: authored inputs moved past the projection"
+      },
+      {
+        "cmd": "python scripts/sov_interface.py check (copy with services/observation/contracts/service.json restored to 4b0bc1d bytes, sha 621397d46407)",
+        "exit": 0,
+        "out": "PASS: Node Interface matches its sources"
+      },
+      {
+        "cmd": "copy with HEAD manifest: services/host unittest discover; scripts.tests.test_node_interface + test_gateway_observe + test_sov_surface",
+        "exit": "0,0",
+        "out": "OK, OK: every failure beyond docs and clarity is one cascade from the manifest edit"
+      }
+    ],
+    "claims": [
+      {
+        "claim": "second observe-run over the same identity is refused by name inside the service's own attempt; OBSERVATION_RECORDED -> STALE_STATE in local_refusals; exit 2; message names the existing id; exactly one REFUSED receipt; checked after the bytes are read so DIGEST_MISMATCH wins",
+        "verdict": "HOLDS",
+        "basis": "every clause reproduced by hand in a fresh store and by the tampered-root ordering case; guard sits inside act() after _observe.observe_run, inside _attempt"
+      },
+      {
+        "claim": "two tests prove it (subprocess in CommandLine, in-process in Identity) and both fail with the guard removed",
+        "verdict": "HOLDS",
+        "basis": "revert experiment on a scratch copy: FAILED (failures=2) with `if False:`; OK on the worktree"
+      },
+      {
+        "claim": "test_cli.py docstring states which cases run as subprocesses and which in-process",
+        "verdict": "HOLDS",
+        "basis": "docstring lines 5-10 match the process=True sites"
+      },
+      {
+        "claim": "cli.py docstring and infer-relation help say an inference commits DIRECT included and only observe-run refuses OBSERVER_NOT_INDEPENDENT",
+        "verdict": "HOLDS",
+        "basis": "cli.py:21-24 and :221-222; consistent with the manifest, which declares no OBSERVER_NOT_INDEPENDENT on infer-relation"
+      },
+      {
+        "claim": "changed since first pass: the seven named files; store.py unchanged; suite 66; binding-check 0; lint 0",
+        "verdict": "HOLDS",
+        "basis": "digests and counts above"
+      }
+    ],
+    "r3_verdict": "REPAIRED. The defect I recorded (repeat observation commits, leaves a receipt, is not persisted, observed_at lost) is now a named refusal with a receipt, the first observation stays readable, and one file is on disk. The choice to refuse rather than mint a moment-bearing id is a reversible default the builder took; it is coherent with SPEC.md:137's STALE_STATE for redeclaring an identity.",
+    "r4_verdict": "REPAIRED. The docstring now states the subprocess/in-process split accurately. The count residual is moot: 17 tests in test_cli.py, 66 in the suite, both measured.",
+    "new_finding": {
+      "id": "R9",
+      "text": "The manifest edit (OBSERVATION_RECORDED added to observe-run's refusals and to local_refusals) moves an authored input past the checked-in Node Interface projection: contracts/fixtures/capability-map.reference.json and node-interface.reference.json still list observe-run's refusals without it. verify.py now fails five checks, three more than in the first pass: Node Interface projection (CAPABILITY_MAP_STALE), operation surface page (refuses on the same defect), Host Service reference tests, and in repository tooling tests test_node_interface, three test_gateway_observe and three test_sov_surface cases, all shown to be one cascade by restoring the HEAD manifest in a copy. The builder reported suite, binding-check and lint for this pass and did not report verify. The landing plan as relayed (clarity receipt + docs rebuild) does not clear this; the projection must be rebuilt (python scripts/sov_interface.py build, then the surface page) and re-checked on the landed tree.",
+      "attribution": "the builder's manifest change, not another session: reproduced in an isolated copy with only the manifest reverted"
+    },
+    "check_witnessing": "sov_interface check digests the authored manifests against the projection (measures). The revert experiment measured each test against the guard's absence rather than trusting the builder's report of it.",
+    "standing_supported": "Unchanged in kind: OPEN -> BUILT for the Observation Service command line, now including the OBSERVATION_RECORDED refusal, which has a positive case, a defeating case in two forms, and a defeat-of-the-defeat (guard removed -> both fail). BUILT -> WITNESSED is still not supported for the tree as it stands, because verify.py is red on five checks; the code-level claims are all reproduced and this observation would support that transition for the same bytes once the tree's projections, page, and clarity receipt are rebuilt and verify passes.",
+    "landing_position": "I support landing this tree onto d641908 on these conditions, all of which are the branch holder's routine work, none of which needs Bdo: (1) python scripts/sov_interface.py build and the surface page rebuilt so CAPABILITY_MAP_STALE clears (R9, not in the relayed plan); (2) the clarity receipt for services/observation/KNOWN-GAPS.md recorded; (3) docs/documentation.html rebuilt; (4) python scripts/verify.py exit 0 on the landed tree in a fresh clone, as the coordinator states, with the landed tree's digests for the eight paths above equal to those recorded here. If the landing changes any of those eight files beyond what is listed here, this observation does not transfer and a re-witness is owed. R5 (the thin-circuit-1 second observation's declared digests for two addresses match no commit examined) stands as a residual of the export, not of this code, and is not a landing refusal.",
+    "judgement_items": []
+  }
+}

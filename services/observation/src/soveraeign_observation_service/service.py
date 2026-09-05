@@ -22,6 +22,7 @@ from . import relation as _relation
 from .errors import (
     IncompleteProposal,
     ObservationMissing,
+    ObservationRecorded,
     ObservationRefused,
     RelationUndetermined,
     RunNotTerminal,
@@ -61,6 +62,16 @@ class ObservationService:
         }
         self.receipts.append(receipt)
         return receipt
+
+    def record_refusal(self, operation: str, subject: str,
+                       refusal: ObservationRefused) -> dict[str, Any]:
+        """Receipt a refusal met before the operation's own attempt could begin.
+
+        A caller that cannot even build the run's record (an unreadable journal, say) has
+        still attempted the operation, and an attempt without a receipt is the defect the
+        receipt invariant exists to refuse.
+        """
+        return self._receipt(operation, subject, "REFUSED", refusal.reason_code, refusal.detail)
 
     def _attempt(self, operation: str, subject: str, commit: str, act):
         """Run one operation; admitted or refused, exactly one receipt is left behind.
@@ -149,6 +160,15 @@ class ObservationService:
                                 if entry["run_id"] == record.run_id), None) or {}
             observation = _observe.observe_run(record, inference, declaration, observer_id,
                                                reader, self._clock())
+            # The id names the run, the observer, and the addresses read, so a second
+            # looking over the same addresses is this observation again, not a new one. It
+            # is refused after the bytes were read, so changed bytes still surface as
+            # DIGEST_MISMATCH rather than hiding behind the identity that already exists.
+            identity = observation["observation_id"]
+            if any(entry["observation_id"] == identity for entry in self.observations):
+                raise ObservationRecorded(
+                    f"{identity} already records {observer_id}'s observation of "
+                    f"{record.run_id} over these addresses; read it with read-observation")
             self.observations.append(observation)
             return observation
         return self._attempt("observe-run", record.run_id, "COMMITTED", act)

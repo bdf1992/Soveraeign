@@ -1903,7 +1903,7 @@
       "changed": false
     },
     "services/observation/KNOWN-GAPS.md": {
-      "artifact_digest": "sha256:e8689c699243e36b5ee7148cf8176bfa17cf4d5698d9de589164ef249ca0671f",
+      "artifact_digest": "sha256:890d5e2b4acf4343d029c49ebdd4df35014092a8ad4469e79e57539bf7066777",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",

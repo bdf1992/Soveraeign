@@ -1,0 +1,397 @@
+{
+  "observer": "urn:soveraeign:principal:instance:sov-witness-record-projection",
+  "observer_note": "independent witness; did not build or edit any observed file; the builder's report was read as a list of claims to re-derive, never as evidence",
+  "concern": "concern:phase-1-5/wave-1/record-projection",
+  "source_session": "session-69de8a",
+  "lease": "lease:reports-2026-09-05-thin-circuit-1-md-candidate-next-definition-concern-phase-1-5-wave-1-record-projection",
+  "relation": "WITNESS",
+  "observed_at": "2026-09-05T21:05:13Z",
+  "subject": "WORK: uncommitted working tree of worktree agent-a7351e35219db47e0",
+  "builder": "urn:soveraeign:principal:instance:sov-worker-record-projection",
+  "witnessed_tree": {
+    "head": "4b0bc1d7e3a92f2671d86bc6467f57f2dd62d51b",
+    "git_write_tree_index": "aea2038984bacf756c1bcbf7a29fc6964e2c3bcc",
+    "git_write_tree_index_note": "equals HEAD^{tree}; the index holds no staged change, so write-tree does not see this work",
+    "working_tree_fingerprint_temp_index": "748f1b16c80abc6f6c2afc36cb6f32877a8c0092",
+    "working_tree_fingerprint_note": "GIT_INDEX_FILE copy of the index, git add -A, git write-tree; the real index was left untouched",
+    "status_short": [
+      " M conformance/commissioning.py",
+      " M contracts/record-projection.schema.json",
+      " M services/record/src/soveraeign_record_service/projections.py",
+      " M services/record/tests/test_evidence_projection.py",
+      "?? conformance/tests/test_commissioning.py"
+    ],
+    "diff_stat": "4 files changed, 92 insertions(+), 2 deletions(-), plus one untracked file",
+    "file_digests": {
+      "conformance/commissioning.py": "sha256:56f245fb89ed9988508a1d71387c019475e41ddd3e6be23ab06966e169bf583d",
+      "contracts/record-projection.schema.json": "sha256:29922a9c9a5882431484a5bfd7340f5fddd0cf51fc1659a4cc24ffa623a13a01",
+      "services/record/src/soveraeign_record_service/projections.py": "sha256:4fcf1998a644c7cc1d50cd3dd01cf1822ecf06044d80219e50eb8be98070340d",
+      "services/record/tests/test_evidence_projection.py": "sha256:754ac735445b2b461fe4344f771c51916bc93472768e4eed78c2aef48e13f2b9",
+      "conformance/tests/test_commissioning.py": "sha256:3f175b0b1a81ce92d8bb692ee3d734df8186ca7fdbb39b881c890a499f3e1028"
+    },
+    "head_digests_for_swaps": {
+      "services/record/src/soveraeign_record_service/projections.py": "sha256:db55a8886c25ff7080f212ff865154201763a3010de19bfd65293d9904f99aa2",
+      "conformance/commissioning.py": "sha256:e25005a98e7a9e140d720c6e13fc4545a744fd8af7b636719ef2d1f8896bd90d"
+    },
+    "paths_outside_the_five": "none; git status --short and git diff --stat list exactly the five paths",
+    "line_endings": "grep -lU $'\\r' over the five paths matched nothing (exit 1)",
+    "tree_moved_during_witness": false,
+    "final_status_after_swaps": "identical to status_short; both swapped files restored byte-for-byte (sha256 above)"
+  },
+  "record_projection": {
+    "supplied": false,
+    "note": "No RecordProjection over this WORK subject was supplied to the witness. The tree was read directly by HEAD, temp-index tree id and per-file sha256. No projection id is invented; this file is an observation, and the contract-typed Finding that needs a projection cutoff is not minted here."
+  },
+  "commands": [
+    {
+      "cmd": "git status --short; git diff --stat",
+      "exit": 0
+    },
+    {
+      "cmd": "sha256sum <five paths>",
+      "exit": 0
+    },
+    {
+      "cmd": "git diff (full, read)",
+      "exit": 0
+    },
+    {
+      "cmd": "cd services/record && python -m unittest discover -s tests",
+      "exit": 0,
+      "result": "Ran 69 tests, OK"
+    },
+    {
+      "cmd": "python -m unittest discover -s conformance/tests",
+      "exit": 0,
+      "result": "Ran 87 tests, OK"
+    },
+    {
+      "cmd": "python conformance/run.py",
+      "exit": 0,
+      "result": "SUITE PASS cases=33 coverage_gaps=0; every FAIL line is a CONF-*-DEF fixture failing as declared"
+    },
+    {
+      "cmd": "python scripts/sov_opening_readiness.py",
+      "exit": 0,
+      "result": "ACTIVE_PHASE: non-authoritative opening rehearsal; no defects printed"
+    },
+    {
+      "cmd": "python scripts/verify.py",
+      "exit": 0,
+      "result": "50 checks; DEBT: wall 17.031s (SILVER needs 15.000s); BUDGET DEBT 9 checks over ceiling, advisory"
+    },
+    {
+      "cmd": "python scripts/verify.py --observe <scratch>/verify-observe.json",
+      "exit": 0,
+      "result": "50 observations, outcome PASS for all 50, run_id run_1fe7035bcb754e01850d3351b81886cf; FAIL: lines in the log at 700/711-712/768-789 are fixture output inside the repository tooling tests shard, not check verdicts"
+    },
+    {
+      "cmd": "python scripts/lint.py",
+      "exit": 0,
+      "result": "PASS: repository hygiene (1177 text files, 547 Python modules, 10 named debt)"
+    },
+    {
+      "cmd": "python scripts/sov_docs.py check (worktree) and (HEAD archive in scratch)",
+      "exit": 0,
+      "result": "documentation page matches 279 documents in both"
+    },
+    {
+      "cmd": "swap projections.py to HEAD; record tests; restore",
+      "exit": "unittest FAILED (failures=2) on HEAD; restored sha256 4fcf1998..."
+    },
+    {
+      "cmd": "swap conformance/commissioning.py to HEAD; conformance/tests; restore",
+      "exit": "unittest exit 1, FAILED (failures=2) on HEAD; restored sha256 56f245fb..."
+    },
+    {
+      "cmd": "git show eff1a68:reports/observations/2026-09-05-thin-circuit-1-journal.json > scratch; sha256 2600e868...",
+      "exit": 0
+    },
+    {
+      "cmd": "soveraeign_record_service.cli --root <scratch>/witnessA-store restore-journal --export <journal>",
+      "exit": 0,
+      "result": "13 entries restored"
+    },
+    {
+      "cmd": "project-evidence --subject urn:soveraeign:run:thin-circuit-1 --recipient-principal <witness id> --recipient-relation WITNESS --purpose 'witness observation'",
+      "exit": 0,
+      "result": "included_records=13, omissions=[], as_of record:entry_6a14553aa71e4f8cb84fc6512bbfe672, projection_digest sha256:baa701222f6b30b7a3807076a11a9fe6206c1aae441ac2843b23dcd266d75620"
+    },
+    {
+      "cmd": "same with --exclude-kind OBSERVATION",
+      "exit": 0,
+      "result": "included_records=11, omissions=[{record_class: OBSERVATION, reason: excluded by the projection request}], projection_digest sha256:21fca8b235bbab5b0b24364aca7977a84e0b2edc1af4c1f8c8e046a935188adb"
+    },
+    {
+      "cmd": "shape check of both real projections against contracts/record-projection.schema.json (required present, no extra properties, digest pattern, authority_effect NONE, omission item shape)",
+      "exit": 0,
+      "result": "both conform"
+    }
+  ],
+  "claims": [
+    {
+      "id": 1,
+      "claim": "evidence_projection includes, for requested subject S, entries whose subject is S and entries whose payload run_id equals S, and nothing else; omissions unchanged, [] means nothing excluded by rule",
+      "verdict": "HOLDS",
+      "basis": "projections.py _names_subject (lines 34-44) is the only change to the matching rule; matching = subject in requested OR payload.run_id in requested; omissions loop untouched. Unit: RunScopedEvidenceProjection excludes the entry on the same output address with no run_id and the one naming another run. Real data: the thin-circuit-1 journal has 7 entries on the run subject and 6 OUTPUT entries on file paths naming it; built code includes 13 with omissions [], HEAD rule would include 7 (defeating swap made test_output_naming_the_run_is_included_in_journal_order fail on HEAD).",
+      "spec_reading": "SPEC.md RecordProjection (lines 284-298) defines a projection as a bounded reconstructable reading 'for one subject' and says an empty omission list is an explicit claim that no class was withheld; it does not define which entries belong to a subject. run_id is SPEC vocabulary on Run, Observation and Attestation (lines 405, 417, 429). The rule is compatible with SPEC; SPEC neither requires nor forbids payload run_id membership.",
+      "forged_run_id": "Yes: any actor that can append can put an EVENT on any subject with payload run_id = S and it enters S's projection; the projection carries only address and digest, so the recipient cannot tell from the projection which entries sit on S and which only name it. Under HEAD the same appender could append directly on S, so the class of exposure is not new, but the built rule widens the set of entries that can claim membership and no fixture exercises the forged case. Recorded as residual R3 and judgement item J1."
+    },
+    {
+      "id": 2,
+      "claim": "check_q22 fails on omissions absent, None or non-list, passes on [], and no other check is weakened",
+      "verdict": "HOLDS",
+      "basis": "Diff touches only check_q22: omissions removed from the _missing tuple and replaced by isinstance(list). On HEAD, test_an_empty_omission_list_is_a_declaration and test_a_non_list_omission_field_is_a_defect fail (HEAD accepted the string 'none' because _missing only refuses None, '' and []); on the built version all 8 cases pass. included_records [] still reads as missing; authority and reconstructable defects still fire. Fixture template P15-Q2.2 and case P15-Q2.2-defeating (authority_effect GRANTED) are unchanged and run.py is SUITE PASS."
+    },
+    {
+      "id": 3,
+      "claim": "tests in test_evidence_projection.py and new conformance/tests/test_commissioning.py prove both polarities",
+      "verdict": "HOLDS",
+      "basis": "Record: 2 of the 4 new tests fail with HEAD projections.py (test_output_naming_the_run_is_included_in_journal_order, test_excluding_a_kind_names_the_omission_and_nothing_else_does); the other 2 pass on both versions and are exclusion/digest guards, not defeating cases. Conformance: 2 of the 8 new tests fail with HEAD commissioning.py; the other 6 pass on both and are regression guards. Each consequential behaviour therefore has at least one positive and one defeating case. conformance/tests is discovered by verify (scripts/sovverify/checks.py line 116) so the new file is graded, not merely present."
+    },
+    {
+      "id": 4,
+      "claim": "contracts/record-projection.schema.json gained only a description on omissions",
+      "verdict": "HOLDS",
+      "basis": "git diff shows one added line, a description string under properties.omissions; required, type, items and additionalProperties unchanged. Both real-data projections conform to the schema shape."
+    },
+    {
+      "id": 5,
+      "claim": "record suite 69 OK, conformance tests 87 OK, conformance/run.py SUITE PASS, verify.py exit 0, lint exit 0",
+      "verdict": "HOLDS",
+      "basis": "Reproduced with the exit codes listed under commands. verify: 50/50 outcome PASS by --observe; wall-clock DEBT 17.031s and 9 per-check ceiling overruns are advisory under contracts/verification-budget.json and are host performance, not the builder's."
+    }
+  ],
+  "residuals": [
+    {
+      "id": "R1",
+      "severity": "must repair before landing",
+      "text": "Docstrings in projections.py (line 39), test_evidence_projection.py (line 80) and test_commissioning.py (line 3) cite reports/2026-09-05-thin-circuit-1.md and reports/observations/2026-09-05-thin-circuit-1-journal.json. Neither path exists at HEAD 4b0bc1d (git ls-tree HEAD matches no thin-circuit path). They were added in eff1a68, which is one commit ahead of this HEAD on claude/skill-loop-closure-identity-iiogql (HEAD is its ancestor). Landing this tree on a base without eff1a68 leaves three citations that resolve to nothing; land on or after eff1a68, or cite the commit."
+    },
+    {
+      "id": "R2",
+      "severity": "repair in concern",
+      "text": "The payload run_id membership rule is undeclared in any contract in this tree: services/record/contracts/service.json and SERVICE-SPEC.md say only subject_declared; contracts/record-projection.schema.json describes omissions, not membership; the Observation service's record.py documents OUTPUT payloads as carrying digest and ties outputs to a run through REPORTED.output_record_addresses, not payload run_id. The Record service now depends on a payload key another service writes, with no declared contract (AGENTS.md Implementation order step 2; Directory boundaries). Same service, same effect class, same authority: absorbable in this concern by declaring the rule in the Record service contract text."
+    },
+    {
+      "id": "R3",
+      "severity": "record",
+      "text": "No fixture exercises an entry on another subject that names S with a forged or mistaken run_id; the projection output does not mark why an entry was included. Whether that is acceptable is J1."
+    },
+    {
+      "id": "R4",
+      "severity": "record",
+      "text": "The omissions-declared reading of P15-Q2.2 is covered only by conformance/tests/test_commissioning.py; conformance/fixtures/commissioning/qualification-cases.json still carries one defeating case for P15-Q2.2 (authority_effect GRANTED) and none for omissions undeclared, so conformance/run.py does not exercise this clause either way."
+    },
+    {
+      "id": "R5",
+      "severity": "not the builder's",
+      "text": "conformance/commissioning.py line 52 is 104 characters; identical at HEAD."
+    },
+    {
+      "id": "R6",
+      "severity": "not the builder's",
+      "text": "verify.py wall clock 17.031s DEBT and 9 checks over their ceilings; advisory, host load."
+    },
+    {
+      "id": "R7",
+      "severity": "record",
+      "text": "No RecordProjection over this WORK subject was supplied; the witness read the tree directly. A contract-typed Finding with a projection cutoff is not minted."
+    },
+    {
+      "id": "R8",
+      "severity": "record",
+      "text": "Builder terminal is a presented, uncommitted tree; nothing is filed or ticketed elsewhere. Nothing in the diff changes STATUS.yaml, decisions/, or any governing document."
+    }
+  ],
+  "not_reported_by_builder_and_checked": [
+    "module sizes: commissioning.py 189, projections.py 194, test_evidence_projection.py 144, test_commissioning.py 86 lines; all under 300",
+    "vocabulary: record_class values are the journal kinds (EVENT, RECEIPT, OBSERVATION, COUNTER), unchanged from HEAD; no new standing, event, effect or role term introduced",
+    "secrets: none; the CRLF check matched nothing",
+    "docs page: sov_docs.py check PASS on the worktree and on a HEAD archive, so the schema description did not stale docs/documentation.html",
+    "weakened oracle: none found; check_q22 is stricter than HEAD on non-list values",
+    "helpers: the builder named no helper as witness; this observation is the independent reading"
+  ],
+  "standing_supported": {
+    "transition": "BUILT -> WITNESSED",
+    "scope": "Record Service project-evidence run-scoped inclusion (subject or payload run_id) and conformance check_q22 declared-omissions reading, as exercised by the tests and the thin-circuit-1 journal",
+    "condition": "R1 repaired (base contains eff1a68 or the citations are rewritten) before landing; R2 absorbed or recorded in the Record service contract text",
+    "note": "This is an observation supporting a standing proposal; it settles nothing and grants no authority."
+  },
+  "landing_position": "Would support landing once R1 is repaired; R2 is a small in-concern contract-text repair and should accompany it. No dissent on the five claims.",
+  "judgement_items": [
+    {
+      "id": "J1",
+      "question": "Is payload run_id membership the intended meaning of 'a subject's evidence' for a RecordProjection (SPEC.md RecordProjection defines the projection as 'for one subject' without defining membership), or should run-scoped membership derive from the Run object's emitted_record_addresses / the REPORTED event's output_record_addresses that the Observation service already uses? The answer decides whether an appender can enrol an entry into another subject's projection by naming it, and which service owns that rule.",
+      "tier": "SPEC owner; a witness cannot settle it"
+    }
+  ],
+  "second_pass": {
+    "observed_at": "2026-09-05T21:15:58Z",
+    "observer": "urn:soveraeign:principal:instance:sov-witness-record-projection",
+    "lease": "lease:reports-2026-09-05-thin-circuit-1-md-candidate-next-definition-concern-phase-1-5-wave-1-record-projection",
+    "scope": "repairs of R1, R2, R3 and J1 from the first pass; same worktree, same builder",
+    "first_pass_preserved": {
+      "sha256_before_append": "d426811fd5347bd05cdf6f4523051f5437aa120911226024146cd5021d9ca479",
+      "method": "loaded, asserted round-trip byte-identical, appended this key only"
+    },
+    "witnessed_tree": {
+      "head": "4b0bc1d7e3a92f2671d86bc6467f57f2dd62d51b",
+      "working_tree_fingerprint_temp_index": "2a72c78229ab75ef33766613b6c2106cc1ff2710",
+      "working_tree_fingerprint_note": "includes this observation file as it stood after the first pass",
+      "status_short": [
+        " M conformance/commissioning.py",
+        " M contracts/record-projection.schema.json",
+        " M services/record/SERVICE-SPEC.md",
+        " M services/record/src/soveraeign_record_service/projections.py",
+        " M services/record/tests/test_evidence_projection.py",
+        "?? conformance/tests/test_commissioning.py",
+        "?? reports/observations/2026-09-05-wave-1-record-projection-witness-observation.json"
+      ],
+      "diff_stat": "5 files changed, 102 insertions(+), 3 deletions(-), plus two untracked files (the conformance test and this observation)",
+      "file_digests": {
+        "services/record/src/soveraeign_record_service/projections.py": "sha256:980da9ae2e83bc83dc000b3deed20916569bc91e48fdb970305372a91a3f45e6",
+        "services/record/tests/test_evidence_projection.py": "sha256:b6bc36bea1347987adbcfbce80f69ec41b8a4125ed9e8642a216d6b08290849b",
+        "services/record/SERVICE-SPEC.md": "sha256:50bb587119b2f980f21232cd951530997fbf71aab4d4b0024e000da5ae378ca3",
+        "conformance/commissioning.py": "sha256:56f245fb89ed9988508a1d71387c019475e41ddd3e6be23ab06966e169bf583d",
+        "contracts/record-projection.schema.json": "sha256:29922a9c9a5882431484a5bfd7340f5fddd0cf51fc1659a4cc24ffa623a13a01",
+        "conformance/tests/test_commissioning.py": "sha256:83f0074167384c3713c9fb563f05e7f6ba89e3151bebb3780269ee931dfaf1e9"
+      },
+      "digest_claims": "projections.py, test_evidence_projection.py and SERVICE-SPEC.md match the claimed 980da9ae, b6bc36be and 50bb5871 prefixes; commissioning.py and the schema are unchanged since the first pass; conformance/tests/test_commissioning.py changed (3f175b0b -> 83f00741) to add the (eff1a68) citation, which the coordinator did not list as a changed path",
+      "module_sizes": {
+        "projections.py": 204,
+        "test_evidence_projection.py": 141,
+        "test_commissioning.py": 86,
+        "SERVICE-SPEC.md": 131
+      },
+      "line_endings_and_length": "no CRLF in the four touched text files; no line over 100 characters in the three Python files",
+      "tree_moved_during_witness": false,
+      "revert_restore_proof": "projections.py swapped to HEAD (sha256 db55a888...), tests run, restored to sha256 980da9ae... byte-for-byte; git status identical before and after"
+    },
+    "commands": [
+      {
+        "cmd": "cd services/record && python -m unittest discover -s tests",
+        "exit": 0,
+        "result": "Ran 69 tests, OK"
+      },
+      {
+        "cmd": "python -m unittest discover -s conformance/tests",
+        "exit": 0,
+        "result": "Ran 87 tests, OK"
+      },
+      {
+        "cmd": "python conformance/run.py",
+        "exit": 0,
+        "result": "SUITE PASS cases=33 coverage_gaps=0"
+      },
+      {
+        "cmd": "python scripts/sov_opening_readiness.py",
+        "exit": 0,
+        "result": "no defects"
+      },
+      {
+        "cmd": "python scripts/verify.py --observe <scratch>/verify-observe2.json",
+        "exit": 1,
+        "result": "48 PASS, 2 FAIL: 'documentation reader' (docs/documentation.html stale) and 'repository tooling tests' (test_sov_docs.Staleness.test_the_built_page_is_current; test_sov_clarity.ClarityCoverageTests.test_recorded_reviews_are_well_formed_and_current -> {'services/record/SERVICE-SPEC.md': 'TEXT_STALE'})"
+      },
+      {
+        "cmd": "comm -13 <FAIL lines pass 1> <FAIL lines pass 2>",
+        "exit": 0,
+        "result": "the only FAIL lines new since the first pass are the docs-stale line, the two unittest names above, and their aggregate lines; every other FAIL line is fixture output inside the tooling shards and was present in the first pass"
+      },
+      {
+        "cmd": "python scripts/sov_docs.py check",
+        "exit": 1,
+        "result": "docs/documentation.html is stale (it was current in the first pass; SERVICE-SPEC.md is an ingested document)"
+      },
+      {
+        "cmd": "python scripts/lint.py",
+        "exit": 0,
+        "result": "PASS: repository hygiene (1178 text files, 547 Python modules, 10 named debt)"
+      },
+      {
+        "cmd": "restore-journal into fresh <scratch>/witnessB-store from the eff1a68 export (sha256 2600e868...)",
+        "exit": 0,
+        "result": "13 entries"
+      },
+      {
+        "cmd": "project-evidence --subject urn:soveraeign:run:thin-circuit-1 (full cutoff)",
+        "exit": 0,
+        "result": "included 13, omissions [], as_of record:entry_6a14553aa71e4f8cb84fc6512bbfe672, projection_digest sha256:73b14a258aff478d3dfac42a318d1de53346f6f25bb5e083e9230932a478e97e (purpose string differs from the first pass, so digests across passes are not comparable)"
+      },
+      {
+        "cmd": "project-evidence --as-of-entry entry_9cc74a5be727413f9af38d7932e0a18d (the OUTPUT immediately before the first REPORTED)",
+        "exit": 0,
+        "result": "included 1 (the ATTEMPTED entry only), omissions [], projection_digest sha256:7b9cf581f394614783e85c4d73767e28dd7f3ec41c344b3ccab5e19ce5473e92; the three OUTPUT entries already in the journal are not yet vouched for"
+      },
+      {
+        "cmd": "project-evidence --as-of-entry entry_a0588d75bda54691abefb001dc038ab2 (first ATTEMPTED)",
+        "exit": 0,
+        "result": "included 1, projection_digest sha256:2b636ab4f4c3da324f16868cb2d857d65e096d9c5f3b3e8327183fdef980d66b"
+      },
+      {
+        "cmd": "project-evidence --exclude-kind OBSERVATION",
+        "exit": 0,
+        "result": "included 11, omissions [{OBSERVATION, excluded by the projection request}], projection_digest sha256:5978dc9a86a5b102b830619217e1c219ce2e0c9219b53f93a895588bb19afcdc"
+      },
+      {
+        "cmd": "forgery probe F1 on a copy of the store: actor urn:forger appends EVENT on services/observation/KNOWN-GAPS.md (an address S reported) with run_id urn:soveraeign:run:other",
+        "exit": 0,
+        "result": "included 14: the foreign entry on a vouched address is enrolled"
+      },
+      {
+        "cmd": "forgery probe F2: actor urn:forger appends EVENT on forged/path.txt with run_id = S",
+        "exit": 0,
+        "result": "included still 14: not enrolled"
+      },
+      {
+        "cmd": "forgery probe F3: actor urn:forger appends EVENT on S itself with event REPORTED and output_record_addresses [forged/path.txt]",
+        "exit": 0,
+        "result": "included 16: the foreign REPORTED and the previously refused forged/path.txt entry are both enrolled"
+      },
+      {
+        "cmd": "swap projections.py to HEAD; cd services/record && python -m unittest discover -s tests; restore",
+        "exit": "FAILED (failures=2) on HEAD",
+        "result": "failing on HEAD: test_a_reported_output_is_included_without_any_run_id_key, test_excluding_a_kind_names_the_omission_and_nothing_else_does; test_naming_the_run_as_run_id_does_not_enrol_an_unreported_address and test_before_the_report_the_run_has_vouched_for_nothing pass on both versions (guards, not defeating cases)"
+      }
+    ],
+    "repairs": [
+      {
+        "id": "R1",
+        "verdict": "HOLDS",
+        "basis": "projections.py line 40, test_evidence_projection.py line 79 and test_commissioning.py line 3 now cite the report path with '(eff1a68)'. The path still does not exist at HEAD 4b0bc1d, but the citation names the commit that holds it, which git resolves in this repository."
+      },
+      {
+        "id": "R2",
+        "verdict": "HOLDS",
+        "basis": "SERVICE-SPEC.md record-projection bullet gained one sentence stating the membership rule (subject entries plus entries on addresses the subject's own REPORTED lists under output_record_addresses); it matches the code in _reported_addresses and the evidence_projection docstring. The edit stales docs/documentation.html and the clarity receipt for SERVICE-SPEC.md, which is the only source of the verify exit 1."
+      },
+      {
+        "id": "R3",
+        "verdict": "HOLDS with a narrower residual",
+        "basis": "Membership no longer reads payload run_id; F2 and the unit test show a run_id naming S on an unreported address is not enrolled. What remains: (a) the vouching REPORTED entry is any EVENT on S with event == REPORTED, by any actor; the service does not tie it to the run's ATTEMPTED actor, so F3 enrols a forged address by first forging a report on S, which is the same class of exposure HEAD had (anyone who can append on S shapes S's projection); (b) vouching is by address, so every entry on a vouched address is included, including entries by other actors or other runs on the same file (F1), and the first-pass guarantee 'entries on the output address without this run_id are not included' no longer holds by design. Neither (a) nor (b) has a fixture."
+      },
+      {
+        "id": "J1",
+        "verdict": "settled as a reversible default by the evidence; one question remains",
+        "basis": "The controller's default, membership from the run's own REPORTED.output_record_addresses, is the linkage the Observation service already uses (record.py reported_addresses) and is now declared in the Record service's own spec; the record-local, revertible change is the lowest tier that can settle it (decisions/0033 Ruling 1). What the evidence does not settle, recorded as J2: whether a projection 'for one subject' should carry every entry on a vouched address or only entries the vouching run's actor produced, and whether the vouching REPORTED must come from the run's own actor. The defeater for the default is a real journal where two runs write the same file and a Finding cites the other run's output as this run's."
+      }
+    ],
+    "enrolment_answer": "An appender cannot enrol an entry into S's projection without S having reported the address (F2 refused). But 'S having reported' means any actor appended a REPORTED-shaped EVENT on S's subject (F3 succeeded), and once an address is vouched every entry on it by any actor is in (F1). The rule closes the payload-key hole and leaves the subject-append hole that HEAD already had.",
+    "standing_supported": {
+      "transition": "BUILT -> WITNESSED",
+      "changed_from_first_pass": false,
+      "scope": "Record Service project-evidence run-scoped inclusion by the subject's REPORTED output_record_addresses, and conformance check_q22 declared-omissions reading, as exercised by the tests, the thin-circuit-1 export at three cutoffs, and the three forgery probes",
+      "condition": "docs/documentation.html rebuilt and the clarity receipt for services/record/SERVICE-SPEC.md refreshed, then verify.py re-run to exit 0 on the tree that lands; the standing grant requires verify PASS and this pass observed exit 1",
+      "note": "observation only; settles nothing and grants no authority"
+    },
+    "landing_position": "Support landing once docs and the SERVICE-SPEC clarity receipt are rebuilt and verify exits 0 on that exact tree. Residuals R3(a), R3(b) and J2 are recorded, not blocking; they belong to the Record service's append boundary, not to this concern's rule.",
+    "judgement_items": [
+      {
+        "id": "J2",
+        "question": "Should a RecordProjection for run S include every entry on an address S reported (the built rule; F1 shows another actor's entry on that file is included), or only entries the reporting run's actor produced, and must the vouching REPORTED come from the run's ATTEMPTED actor? The answer decides whether a shared output file can carry another run's evidence into S's projection.",
+        "tier": "Record service owner as a next reversible default; SPEC owner only if the answer changes what 'for one subject' means"
+      }
+    ]
+  }
+}

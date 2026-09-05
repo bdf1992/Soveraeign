@@ -65,6 +65,7 @@
       }
     },
     "omissions": {
+      "description": "Record classes a rule of the request withheld from included_records, each with its reason. An empty list is the explicit claim that no class was withheld; the field is required so an undeclared omission never reads as none (SPEC.md, RecordProjection).",
       "type": "array",
       "items": {
         "$ref": "#/$defs/omission"

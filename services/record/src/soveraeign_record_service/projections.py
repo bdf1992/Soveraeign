@@ -31,6 +31,27 @@ def _projection_digest(payload: dict[str, Any]) -> str:
     return sha256(encoded).hexdigest()
 
 
+def _reported_addresses(bounded: list[dict[str, Any]], requested: tuple[str, ...]) -> set[str]:
+    """Addresses a requested subject vouched for in a ``REPORTED`` entry at or before the cutoff.
+
+    A run's outputs sit on the address each produced; the run's own report names
+    them in ``output_record_addresses``, which is what the Observation Service keys
+    on. Membership follows that declaration rather than a ``run_id`` any appender
+    could write on any subject. A reading scoped to the run subject alone delivered
+    two entries of five and declared nothing omitted
+    (``reports/2026-09-05-thin-circuit-1.md`` (eff1a68), fizzle 2).
+    """
+    vouched: set[str] = set()
+    for entry in bounded:
+        payload = entry["payload"]
+        if entry["subject"] in requested and isinstance(payload, dict) \
+                and payload.get("event") == "REPORTED":
+            addresses = payload.get("output_record_addresses")
+            if isinstance(addresses, list):
+                vouched.update(str(address) for address in addresses)
+    return vouched
+
+
 def _cutoff_time(recorded_at: float) -> str:
     """Use the cutoff row's recorded time so rebuilding the same view is stable."""
     return datetime.fromtimestamp(recorded_at, timezone.utc).isoformat().replace("+00:00", "Z")
@@ -104,6 +125,12 @@ class ProjectionSurface:
         is deterministic for one verified journal, request and cutoff. The caller
         names the recipient relation; this service records no identity or authority
         claim on its behalf.
+
+        A subject's evidence is every bounded entry on that subject plus every bounded
+        entry on an address the subject's own ``REPORTED`` entry lists under
+        ``output_record_addresses``. ``omissions`` lists only what a rule of
+        the request withheld; an empty list says no rule withheld anything
+        (``SPEC.md`` ``RecordProjection``).
         """
         requested = tuple(dict.fromkeys(str(item) for item in subjects if str(item)))
         if not requested:
@@ -128,7 +155,8 @@ class ProjectionSurface:
                 raise UnknownEntry(as_of_entry)
         cutoff = replayed[cutoff_index]
         bounded = replayed[:cutoff_index + 1]
-        matching = [entry for entry in bounded if entry["subject"] in requested]
+        in_scope = set(requested) | _reported_addresses(bounded, requested)
+        matching = [entry for entry in bounded if entry["subject"] in in_scope]
         included = [entry for entry in matching if entry["kind"] not in excluded]
         if not included:
             raise UnknownEntry("no included records for requested subjects at cutoff")

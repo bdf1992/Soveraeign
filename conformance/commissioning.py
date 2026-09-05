@@ -70,8 +70,12 @@ def check_q21(observed: dict[str, Any]) -> list[str]:
 def check_q22(observed: dict[str, Any]) -> list[str]:
     projection = observed.get("projection") or {}
     required = ("projection_id", "subject_addresses", "recipient_relation", "as_of",
-                "included_records", "omissions", "projection_digest")
+                "included_records", "projection_digest")
     defects = [f"RecordProjection missing {field}" for field in _missing(projection, required)]
+    # An empty omission list is the explicit claim that no class was withheld
+    # (SPEC.md, RecordProjection); only an undeclared field is a defect here.
+    if not isinstance(projection.get("omissions"), list):
+        defects.append("RecordProjection missing omissions")
     if projection.get("authority_effect") != "NONE":
         defects.append("RecordProjection changed authority")
     if observed.get("reconstructable") is not True:

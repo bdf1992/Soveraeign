@@ -2065,7 +2065,7 @@
       "changed": false
     },
     "services/record/SERVICE-SPEC.md": {
-      "artifact_digest": "sha256:b1b3b4e56eba7fa6bce0cb38d5304eb52d5b7fb5df7757a2e2c32ba04bd85f98",
+      "artifact_digest": "sha256:50bb587119b2f980f21232cd951530997fbf71aab4d4b0024e000da5ae378ca3",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
@@ -2080,7 +2080,7 @@
           "path": "SPEC.md"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "services/record/SRD.md": {
       "artifact_digest": "sha256:b6ea2c515ee1af68e506a14d88f5f3e7f4a5190632281b2c9260c168db2026c1",

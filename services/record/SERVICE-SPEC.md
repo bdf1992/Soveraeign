@@ -31,7 +31,9 @@ and states only what is local to this service.
 - **record-projection** — a bounded evidence reading matching
   `contracts/record-projection.schema.json`: exact subjects, recipient relation,
   purpose, verified cutoff, included Record addresses and digests, explicit
-  omissions, and `authority_effect: NONE`. The same journal/request/cutoff
+  omissions, and `authority_effect: NONE`. A subject's evidence is every bounded
+  entry on that subject plus every bounded entry on an address the subject's own
+  `REPORTED` entry lists under `output_record_addresses`. The same journal/request/cutoff
   rebuilds the same projection identity; it is not stored as authoritative history.
 - **journal-export** — the portable document `export-journal` renders and
   `restore-journal` replays; carries every row's digest profile so a version-2

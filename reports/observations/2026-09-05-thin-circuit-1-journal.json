@@ -294,9 +294,24 @@
       "recorded_at": 1788633385.869451,
       "source_address": null,
       "subject": "urn:soveraeign:run:thin-circuit-1"
+    },
+    {
+      "actor": "urn:soveraeign:principal:model:claude-fable-5",
+      "digest_profile": "soveraeign-record-chain/v3",
+      "entry_digest": "0f6c42b8772cb066962ad5243700dd30214ced765e2be98446c1ba2e0c8f802d",
+      "entry_id": "entry_27b64ea9fc084ae9b5e26f9ba4528b32",
+      "kind": "COUNTER",
+      "payload": {
+        "counters": "entry_6a14553aa71e4f8cb84fc6512bbfe672",
+        "reason": "SELF_SETTLEMENT_REFUSED: the settler is a REPORTED actor on this run (entry_69e69611 is its second attempt's report); settlement stands countered until a participant that neither reported nor observed the run performs settle_run through the kernel (decisions/0104, ruling 1; lane C)"
+      },
+      "prev_digest": "6f59baa19095bade850f557fafac6538624372b92b8b461ada6f23718d8b5709",
+      "recorded_at": 1788651848.1187708,
+      "source_address": null,
+      "subject": "urn:soveraeign:run:thin-circuit-1"
     }
   ],
-  "entry_count": 13,
+  "entry_count": 14,
   "export_schema": "soveraeign-record-export/v2",
-  "head_digest": "6f59baa19095bade850f557fafac6538624372b92b8b461ada6f23718d8b5709"
+  "head_digest": "0f6c42b8772cb066962ad5243700dd30214ced765e2be98446c1ba2e0c8f802d"
 }

@@ -177,3 +177,15 @@ Presented on the branch. Not landed on `main`: the change edits `contracts/custo
 and this report, and the ratified standing grant excludes neither, but the session was asked to
 run the circuit and collect the disposition, not to land. The landing gate is the next step if
 Bdo wants it, and the witness's second pass says the tree meets its three evidence conditions.
+
+## Countered after the fact, 2026-09-05
+
+Lane C of wave 1 measured, from this journal's own bytes, that the settlement recorded at entry
+`entry_6a14553a...` was a self-settlement: the settler, `principal:claude-fable-5`, is also the
+actor of the second attempt's `REPORTED` entry (seq 10), and `contracts/tier-bindings.json`
+refuses exactly that as `SELF_SETTLEMENT_REFUSED`. The receipt is not erased. A `COUNTER` entry
+now follows it in the export (seq 14) naming the reason, and the run stands unsettled until a
+participant that neither reported nor observed it performs `settle_run` through the kernel's
+`settle` act. The custody member for this run carries the same note. Q3.1's "independent
+observation present" still holds; what failed was the settler's independence, which the
+instrument does not grade and the tier table does.

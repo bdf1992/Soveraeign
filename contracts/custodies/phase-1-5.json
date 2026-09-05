@@ -89,7 +89,7 @@
           "standing": "WITNESSED",
           "work_state": "LANDED",
           "stage_observed_by": "witness/observation-service.md",
-          "note": "independent observation with independence inferred from the record; witnessed as code at 3087714, no run observed yet"
+          "note": "independent observation with independence inferred from the record; witnessed as code at 3087714; one run observed through observe-run on 2026-09-05 (thin-circuit-1)"
         },
         {
           "member_kind": "CONTRACT",
@@ -99,6 +99,15 @@
           "work_state": "LANDED",
           "stage_observed_by": null,
           "note": "every normative predicate SPEC.md states carries both polarities; the second bound participant is open"
+        },
+        {
+          "member_kind": "ITEM",
+          "address": "reports/observations/2026-09-05-thin-circuit-1-journal.json",
+          "stage": "VERTICAL_SLICE",
+          "standing": "WITNESSED",
+          "work_state": "PRESENTED",
+          "stage_observed_by": "reports/observations/2026-09-05-thin-circuit-1-witness-observation.json",
+          "note": "the first run observed end to end: worker attempt, controller repair, two independent observations by a separate participant, settle_run judged PERMITTED by the kernel and receipted; 13-entry journal export, self-verifying"
         }
       ],
       "depends_on": [],

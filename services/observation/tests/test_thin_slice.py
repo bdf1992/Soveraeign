@@ -410,6 +410,28 @@ class WitnessResidualsOn540bc01(unittest.TestCase):
             self.service.observe_run(record, "witness-z", reader)
 
 
+class WitnessResidualsOn3087714(unittest.TestCase):
+    """The third pass's residuals, each pinned by a case that fails without its repair."""
+
+    def test_the_run_address_reported_as_its_own_output_is_still_refused(self) -> None:
+        # R13. The executor lists the run's own address as a durable output and writes an
+        # OUTPUT entry for it, so the address is in both `reported` and `outputs`; only the
+        # `| {record.run_id}` half of the own-entry guard stands between it and a reading.
+        entries = journal()
+        entries[-1]["payload"]["output_record_addresses"] = ["out/1", RUN]
+        entries.append(_entry("e-out-run", "EVENT", RUN, "worker-a",
+                              {"event": "OUTPUT", "digest": OUTPUT_DIGEST}))
+        record = RunRecord.from_entries(RUN, entries)
+        service = ObservationService(Clock())
+        service.infer_relation(record, "witness-z", "MODEL")
+        service.declare_predicates(RUN, [
+            {"predicate_id": "reads-run", "kind": "BYTES_PRESENT", "address": RUN}])
+        with self.assertRaises(PredicatesUndeclared) as caught:
+            service.observe_run(record, "witness-z", lambda address: OUTPUT_BYTES)
+        self.assertIn("run's own entry", str(caught.exception))
+        self.assertEqual("PREDICATES_UNDECLARED", service.receipts[-1]["reason_code"])
+
+
 class RealJournalFeedsTheWalk(unittest.TestCase):
     """The Record Service's own entries are the input, unchanged, so a projection can feed it."""
 

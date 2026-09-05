@@ -1,0 +1,302 @@
+{
+  "entries": [
+    {
+      "actor": "urn:soveraeign:principal:instance:sov-worker-thin-1",
+      "digest_profile": "soveraeign-record-chain/v3",
+      "entry_digest": "791009831bc4b0a5767a8a5c7de41217c3ba7779caa5c3b04666e79912f13e4b",
+      "entry_id": "entry_a0588d75bda54691abefb001dc038ab2",
+      "kind": "EVENT",
+      "payload": {
+        "event": "ATTEMPTED",
+        "grant_id": null,
+        "lease": {
+          "expires_at": "2026-09-05T21:05:34Z",
+          "fence": 1,
+          "holder_id": "urn:soveraeign:principal:instance:sov-worker-thin-1"
+        },
+        "operation_plan_id": "lease:services-observation-known-gaps-md-r13",
+        "pre_tree": "aea2038984bacf756c1bcbf7a29fc6964e2c3bcc"
+      },
+      "prev_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+      "recorded_at": 1788631561.8112674,
+      "source_address": "services/observation/KNOWN-GAPS.md#R13",
+      "subject": "urn:soveraeign:run:thin-circuit-1"
+    },
+    {
+      "actor": "urn:soveraeign:principal:instance:sov-worker-thin-1",
+      "digest_profile": "soveraeign-record-chain/v3",
+      "entry_digest": "8854aa4ea73622e1b4c068dda1242356ef9810d76e08930789fea5567a84d6cf",
+      "entry_id": "entry_ed1b5eb030b049a78a276f4e6347f180",
+      "kind": "EVENT",
+      "payload": {
+        "digest": "sha256:8d4f4b71a298b5c0257205aa0e452259cee43d5b07520ae8d906b0d1047275a7",
+        "event": "OUTPUT",
+        "run_id": "urn:soveraeign:run:thin-circuit-1"
+      },
+      "prev_digest": "791009831bc4b0a5767a8a5c7de41217c3ba7779caa5c3b04666e79912f13e4b",
+      "recorded_at": 1788632096.5091715,
+      "source_address": null,
+      "subject": "services/observation/tests/test_thin_slice.py"
+    },
+    {
+      "actor": "urn:soveraeign:principal:instance:sov-worker-thin-1",
+      "digest_profile": "soveraeign-record-chain/v3",
+      "entry_digest": "98d1b594f74b5b63c2d4cb7fa7678ea51f2c28cda5688a6a0e3e868bd23bf6f4",
+      "entry_id": "entry_f75ee08ee46e400c88fa653943eb3ae6",
+      "kind": "EVENT",
+      "payload": {
+        "digest": "sha256:1fd56a50ebe300e8d38489f8e05ab627aefe8e2b4d1e0305b4d8304a136a3511",
+        "event": "OUTPUT",
+        "run_id": "urn:soveraeign:run:thin-circuit-1"
+      },
+      "prev_digest": "8854aa4ea73622e1b4c068dda1242356ef9810d76e08930789fea5567a84d6cf",
+      "recorded_at": 1788632096.5789082,
+      "source_address": null,
+      "subject": "services/observation/KNOWN-GAPS.md"
+    },
+    {
+      "actor": "urn:soveraeign:principal:model:claude-fable-5",
+      "digest_profile": "soveraeign-record-chain/v3",
+      "entry_digest": "e000e7bb5898f845572b3471f402ca7d1d510ba35fcc2433d57c05bc305c2b55",
+      "entry_id": "entry_9cc74a5be727413f9af38d7932e0a18d",
+      "kind": "EVENT",
+      "payload": {
+        "digest": "sha256:49a784187e7c5da1f288fe9c4ee33c760b686842c819d2c1362b355d78b3937a",
+        "event": "OUTPUT",
+        "run_id": "urn:soveraeign:run:thin-circuit-1"
+      },
+      "prev_digest": "98d1b594f74b5b63c2d4cb7fa7678ea51f2c28cda5688a6a0e3e868bd23bf6f4",
+      "recorded_at": 1788632096.6508331,
+      "source_address": null,
+      "subject": "docs/documentation.html"
+    },
+    {
+      "actor": "urn:soveraeign:principal:instance:sov-worker-thin-1",
+      "digest_profile": "soveraeign-record-chain/v3",
+      "entry_digest": "69c8b0aef7867f83f2667fa7855c0d57bb49fa073e360a63a11e98278b8286bd",
+      "entry_id": "entry_69e69611f31241b6a7eb3e578d52275b",
+      "kind": "EVENT",
+      "payload": {
+        "event": "REPORTED",
+        "output_record_addresses": [
+          "services/observation/tests/test_thin_slice.py",
+          "services/observation/KNOWN-GAPS.md",
+          "docs/documentation.html"
+        ],
+        "report": "R13 repaired: WitnessResidualsOn3087714.test_the_run_address_reported_as_its_own_output_is_still_refused fails with the run_id union reverted (exit 1) and passes with it (33 tests, exit 0); observe.py unchanged; verify.py exit 1 on a stale docs projection, repaired by the controller with sov_docs.py build; no helper (host withheld the Agent tool)"
+      },
+      "prev_digest": "e000e7bb5898f845572b3471f402ca7d1d510ba35fcc2433d57c05bc305c2b55",
+      "recorded_at": 1788632096.7147727,
+      "source_address": null,
+      "subject": "urn:soveraeign:run:thin-circuit-1"
+    },
+    {
+      "actor": "urn:soveraeign:principal:model:claude-fable-5",
+      "digest_profile": "soveraeign-record-chain/v3",
+      "entry_digest": "a1918bec5edfe3e8883f4a8be304877f85a80ea02c5bdbbfb935c6912074e5fd",
+      "entry_id": "entry_b9fe1cf2b4f5436486e27d354fcd1ee9",
+      "kind": "EVENT",
+      "payload": {
+        "event": "ATTEMPTED",
+        "grant_id": null,
+        "lease": {
+          "expires_at": "2026-09-05T21:05:34Z",
+          "fence": 1,
+          "holder_id": "urn:soveraeign:principal:model:claude-fable-5"
+        },
+        "operation_plan_id": "lease:services-observation-known-gaps-md-r13",
+        "repairs": [
+          "R-a clarity receipt for services/observation/KNOWN-GAPS.md",
+          "R-e heading wording under Residuals the third witness pass left open",
+          "docs projection rebuilt"
+        ]
+      },
+      "prev_digest": "69c8b0aef7867f83f2667fa7855c0d57bb49fa073e360a63a11e98278b8286bd",
+      "recorded_at": 1788633050.1897001,
+      "source_address": null,
+      "subject": "urn:soveraeign:run:thin-circuit-1"
+    },
+    {
+      "actor": "urn:soveraeign:principal:model:claude-fable-5",
+      "digest_profile": "soveraeign-record-chain/v3",
+      "entry_digest": "75871e04d01917cd68cb04621095fcace6901502e1679c36c7806ceeb3e1f997",
+      "entry_id": "entry_e1cc1e2c524140bf8a59c3e44575614a",
+      "kind": "EVENT",
+      "payload": {
+        "digest": "sha256:e8689c699243e36b5ee7148cf8176bfa17cf4d5698d9de589164ef249ca0671f",
+        "event": "OUTPUT",
+        "run_id": "urn:soveraeign:run:thin-circuit-1"
+      },
+      "prev_digest": "a1918bec5edfe3e8883f4a8be304877f85a80ea02c5bdbbfb935c6912074e5fd",
+      "recorded_at": 1788633050.2571876,
+      "source_address": null,
+      "subject": "services/observation/KNOWN-GAPS.md"
+    },
+    {
+      "actor": "urn:soveraeign:principal:model:claude-fable-5",
+      "digest_profile": "soveraeign-record-chain/v3",
+      "entry_digest": "12a05ae9db927cbceca4a96d2480e7dad1e1af94498a93decc5b73cc5ead173d",
+      "entry_id": "entry_8c2c571f1b3c4b4caaef46e7f0eb7188",
+      "kind": "EVENT",
+      "payload": {
+        "digest": "sha256:f4da1d40604e3efd54e59f3e015de24e835f6d601777d6df850d952cce8f5a9a",
+        "event": "OUTPUT",
+        "run_id": "urn:soveraeign:run:thin-circuit-1"
+      },
+      "prev_digest": "75871e04d01917cd68cb04621095fcace6901502e1679c36c7806ceeb3e1f997",
+      "recorded_at": 1788633050.3256032,
+      "source_address": null,
+      "subject": "docs/documentation.html"
+    },
+    {
+      "actor": "urn:soveraeign:principal:model:claude-fable-5",
+      "digest_profile": "soveraeign-record-chain/v3",
+      "entry_digest": "10ee907a2f8048079810d54c1eedd1c11671872963bfeba8dbfd66a96512473c",
+      "entry_id": "entry_4cb25d70a2a84029ac92d65b84ca35f5",
+      "kind": "EVENT",
+      "payload": {
+        "digest": "sha256:f35b95a455dfd61d1f10ecd73f2aeed26fc2bf347080ed9cf8715e4944d47479",
+        "event": "OUTPUT",
+        "run_id": "urn:soveraeign:run:thin-circuit-1"
+      },
+      "prev_digest": "12a05ae9db927cbceca4a96d2480e7dad1e1af94498a93decc5b73cc5ead173d",
+      "recorded_at": 1788633050.3983867,
+      "source_address": null,
+      "subject": ".clarity/coverage.json"
+    },
+    {
+      "actor": "urn:soveraeign:principal:model:claude-fable-5",
+      "digest_profile": "soveraeign-record-chain/v3",
+      "entry_digest": "158b56642f8c28678f1d43d41c43a508f16253698817d4b4f72cce0e9a6eaa5a",
+      "entry_id": "entry_35b411c92da141fdb28487030b90d1ec",
+      "kind": "EVENT",
+      "payload": {
+        "event": "REPORTED",
+        "output_record_addresses": [
+          "services/observation/tests/test_thin_slice.py",
+          "services/observation/KNOWN-GAPS.md",
+          "docs/documentation.html",
+          ".clarity/coverage.json"
+        ],
+        "report": "controller repaired the witness dissent R-a (clarity receipt recorded after reading the changed row against the case it names) and residual R-e (heading lead now admits a later repair); docs projection rebuilt; test file untouched since the first attempt"
+      },
+      "prev_digest": "10ee907a2f8048079810d54c1eedd1c11671872963bfeba8dbfd66a96512473c",
+      "recorded_at": 1788633050.460652,
+      "source_address": null,
+      "subject": "urn:soveraeign:run:thin-circuit-1"
+    },
+    {
+      "actor": "urn:soveraeign:principal:instance:sov-witness-thin-1",
+      "digest_profile": "soveraeign-record-chain/v3",
+      "entry_digest": "266400502973ea74e830566933206df1dfd4a483f353a4a52ac4825a647bf098",
+      "entry_id": "entry_f678205e924d423bbad743146629b860",
+      "kind": "OBSERVATION",
+      "payload": {
+        "event": "OBSERVED",
+        "inference_id": "urn:soveraeign:observation:relation-inference:dbc0d178e6a6038f3b568790",
+        "note": "appended by the controller from the observer's own written result, after the controller's repair attempt was recorded; the observer holds no journal write path",
+        "observation": {
+          "observation_id": "urn:soveraeign:observation:37d4ce4929b27589eaf57417",
+          "observed_at": "2026-09-05T18:21:19.917952Z",
+          "observed_state_addresses": [
+            "docs/documentation.html",
+            "services/observation/KNOWN-GAPS.md",
+            "services/observation/tests/test_thin_slice.py"
+          ],
+          "observed_state_digests": [
+            "sha256:49a784187e7c5da1f288fe9c4ee33c760b686842c819d2c1362b355d78b3937a",
+            "sha256:1fd56a50ebe300e8d38489f8e05ab627aefe8e2b4d1e0305b4d8304a136a3511",
+            "sha256:8d4f4b71a298b5c0257205aa0e452259cee43d5b07520ae8d906b0d1047275a7"
+          ],
+          "observer_id": "urn:soveraeign:principal:instance:sov-witness-thin-1",
+          "observer_relation": "INDEPENDENT per urn:soveraeign:observation:relation-inference:dbc0d178e6a6038f3b568790: none of SAME_ACTOR, HOLDS_RUN_LEASE, GRANT_DESCENDS_FROM_RUN, PRODUCED_THE_OUTPUT, ONLY_EXECUTOR_REPORT found over a COMPLETE record; outputs read directly, not through the executor's report",
+          "predicate_results": {
+            "digest-0": true,
+            "digest-1": true,
+            "digest-2": true,
+            "present-0": true,
+            "present-1": true,
+            "present-2": true
+          },
+          "run_id": "urn:soveraeign:run:thin-circuit-1"
+        },
+        "recorded_by": "urn:soveraeign:principal:model:claude-fable-5"
+      },
+      "prev_digest": "158b56642f8c28678f1d43d41c43a508f16253698817d4b4f72cce0e9a6eaa5a",
+      "recorded_at": 1788633080.9029098,
+      "source_address": "reports/observations/2026-09-05-thin-circuit-1-witness-observation.json",
+      "subject": "urn:soveraeign:run:thin-circuit-1"
+    },
+    {
+      "actor": "urn:soveraeign:principal:model:claude-fable-5",
+      "digest_profile": "soveraeign-record-chain/v3",
+      "entry_digest": "05f797242fb20ada27f146d9f057cca81ac171166c1b52ca32ba04428f4e2da4",
+      "entry_id": "entry_a6cbc975185e44a8a1630dfc1c403839",
+      "kind": "OBSERVATION",
+      "payload": {
+        "event": "OBSERVED",
+        "inference_id": "urn:soveraeign:observation:relation-inference:d2368fc563323517f7227a80",
+        "note": "appended by the controller, who is the actor of this entry; the observer is named in the payload (witness residual S-a)",
+        "observation": {
+          "observation_id": "urn:soveraeign:observation:8fb249ea03d093ffbd2ad9f6",
+          "observed_at": "2026-09-05T18:32:36.538199Z",
+          "observed_state_addresses": [
+            ".clarity/coverage.json",
+            "docs/documentation.html",
+            "services/observation/KNOWN-GAPS.md",
+            "services/observation/tests/test_thin_slice.py"
+          ],
+          "observed_state_digests": [
+            "sha256:f35b95a455dfd61d1f10ecd73f2aeed26fc2bf347080ed9cf8715e4944d47479",
+            "sha256:f4da1d40604e3efd54e59f3e015de24e835f6d601777d6df850d952cce8f5a9a",
+            "sha256:e8689c699243e36b5ee7148cf8176bfa17cf4d5698d9de589164ef249ca0671f",
+            "sha256:8d4f4b71a298b5c0257205aa0e452259cee43d5b07520ae8d906b0d1047275a7"
+          ],
+          "observer_id": "urn:soveraeign:principal:instance:sov-witness-thin-1",
+          "observer_relation": "INDEPENDENT per urn:soveraeign:observation:relation-inference:d2368fc563323517f7227a80: none of SAME_ACTOR, HOLDS_RUN_LEASE, GRANT_DESCENDS_FROM_RUN, PRODUCED_THE_OUTPUT, ONLY_EXECUTOR_REPORT found over a COMPLETE record; outputs read directly, not through the executor's report",
+          "predicate_results": {
+            "digest-0": true,
+            "digest-1": true,
+            "digest-2": true,
+            "digest-3": true,
+            "present-0": true,
+            "present-1": true,
+            "present-2": true,
+            "present-3": true
+          },
+          "run_id": "urn:soveraeign:run:thin-circuit-1"
+        },
+        "observer_id": "urn:soveraeign:principal:instance:sov-witness-thin-1"
+      },
+      "prev_digest": "266400502973ea74e830566933206df1dfd4a483f353a4a52ac4825a647bf098",
+      "recorded_at": 1788633385.7826145,
+      "source_address": "reports/observations/2026-09-05-thin-circuit-1-witness-observation.json",
+      "subject": "urn:soveraeign:run:thin-circuit-1"
+    },
+    {
+      "actor": "urn:soveraeign:principal:model:claude-fable-5",
+      "digest_profile": "soveraeign-record-chain/v3",
+      "entry_digest": "6f59baa19095bade850f557fafac6538624372b92b8b461ada6f23718d8b5709",
+      "entry_id": "entry_6a14553aa71e4f8cb84fc6512bbfe672",
+      "kind": "RECEIPT",
+      "payload": {
+        "detail": {
+          "basis": "python scripts/sov_kernel.py check over the recorded observation; settlement performed by the controller as participant",
+          "input_state_digest": "f70f5fbec59c5f8320b27cb70d81787720dc95e8fff7fcd2da8f5776921b9a3b",
+          "kernel_verdict": "PERMITTED: settle_run may commit as COMMITTED",
+          "observation_id": "urn:soveraeign:observation:8fb249ea03d093ffbd2ad9f6",
+          "settled_by": "urn:soveraeign:principal:model:claude-fable-5"
+        },
+        "event": "settle_run",
+        "outcome": "COMMITTED"
+      },
+      "prev_digest": "05f797242fb20ada27f146d9f057cca81ac171166c1b52ca32ba04428f4e2da4",
+      "recorded_at": 1788633385.869451,
+      "source_address": null,
+      "subject": "urn:soveraeign:run:thin-circuit-1"
+    }
+  ],
+  "entry_count": 13,
+  "export_schema": "soveraeign-record-export/v2",
+  "head_digest": "6f59baa19095bade850f557fafac6538624372b92b8b461ada6f23718d8b5709"
+}

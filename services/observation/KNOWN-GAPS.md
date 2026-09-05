@@ -61,7 +61,8 @@ Reversible choices. Each names where it lives so it can be overturned in one pla
 
 ## Residuals the third witness pass left open
 
-Recorded rather than repaired, so the witnessed bytes at 3087714 stay the witnessed bytes.
+Recorded rather than repaired at 3087714, so the witnessed bytes at 3087714 stay the witnessed
+bytes. A residual repaired since says so in its own row and names the case that pins it.
 
 - R10: an `OUTPUT` entry with no actor is not on the run subject, so `malformed()` does not
   refuse it and its producer edge cannot be answered; it should read `UNREADABLE`.
@@ -69,8 +70,13 @@ Recorded rather than repaired, so the witnessed bytes at 3087714 stay the witnes
   so, which a substituted record could bypass.
 - R12: three oracle rules (`kernel_predicates.py` report standing, discovery id/inputs shape,
   and settlement receipt) are not yet pinned one at a time in `test_kernel_predicates.py`.
-- R13: the own-entry regression test passes with the repair reverted; it needs a case that
-  fails without the guard.
+- R13: repaired. The repair at 3087714 was the `| {record.run_id}` half of the own-entry guard
+  in `observe.py`, and `test_the_run_id_itself_is_not_a_predicate_address` passed with it
+  reverted because the second check already refuses an address the run never reported.
+  `test_the_run_address_reported_as_its_own_output_is_still_refused`
+  (`tests/test_thin_slice.py`, `WitnessResidualsOn3087714`) lists the run's own address as a
+  reported durable output with an `OUTPUT` entry, so only that half of the guard refuses it;
+  it fails with the union reverted and passes with it present. The guard bytes are unchanged.
 
 ## Where this sits against the AI-native bar
 

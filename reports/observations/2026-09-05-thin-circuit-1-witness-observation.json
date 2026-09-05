@@ -1,0 +1,378 @@
+{
+  "observer": "urn:soveraeign:principal:instance:sov-witness-thin-1",
+  "observer_note": "independent witness; did not build or edit any observed file; read the REPORTED payload as a claim only",
+  "concern": "concern:phase-1-5/thin-circuit-1",
+  "source_session": "session-69de8a",
+  "lease": "lease:services-observation-known-gaps-md-r13-urn-soveraeign-run-thin-circuit-1",
+  "observed_at": "2026-09-05T18:28:09Z",
+  "subject": "urn:soveraeign:run:thin-circuit-1",
+  "witnessed_tree": {
+    "head": "4b0bc1d7e3a92f2671d86bc6467f57f2dd62d51b",
+    "git_write_tree": "aea2038984bacf756c1bcbf7a29fc6964e2c3bcc",
+    "git_write_tree_note": "equals HEAD^{tree} and the ATTEMPTED pre_tree; write-tree reads the index and does not see unstaged changes",
+    "working_tree_fingerprint_temp_index": "ff20bf90ccf3b0aee5b8f25be822a73c6011bf7a",
+    "status_short": [
+      "M docs/documentation.html",
+      " M services/observation/KNOWN-GAPS.md",
+      " M services/observation/tests/test_thin_slice.py"
+    ],
+    "file_digests": {
+      "services/observation/KNOWN-GAPS.md": "sha256:1fd56a50ebe300e8d38489f8e05ab627aefe8e2b4d1e0305b4d8304a136a3511",
+      "services/observation/tests/test_thin_slice.py": "sha256:8d4f4b71a298b5c0257205aa0e452259cee43d5b07520ae8d906b0d1047275a7",
+      "docs/documentation.html": "sha256:49a784187e7c5da1f288fe9c4ee33c760b686842c819d2c1362b355d78b3937a"
+    },
+    "observe_py_digest": "sha256:ed24eca438eae83ba25a1c9adea1b38a87af3d01968fc37b16079fb503d49978",
+    "tree_unmoved": "digests and status re-read at freeze time equal the first read"
+  },
+  "record": {
+    "journal_command": "cd services/record/src && python -m soveraeign_record_service.cli --root <repository-root>/.local/record reconstruct-journal (exit 0, 5 entries, authoritative true)",
+    "head": "sha256:69c8b0aef7867f83f2667fa7855c0d57bb49fa073e360a63a11e98278b8286bd",
+    "entries": {
+      "entry_a0588d75bda54691abefb001dc038ab2": "ATTEMPTED by sov-worker-thin-1, pre_tree aea20389 (= HEAD^{tree})",
+      "entry_ed1b5eb030b049a78a276f4e6347f180": "OUTPUT test_thin_slice.py sha256:8d4f4b71 (worker)",
+      "entry_f75ee08ee46e400c88fa653943eb3ae6": "OUTPUT KNOWN-GAPS.md sha256:1fd56a50 (worker)",
+      "entry_9cc74a5be727413f9af38d7932e0a18d": "OUTPUT docs/documentation.html sha256:49a78418 (actor urn:soveraeign:principal:model:claude-fable-5, not the worker)",
+      "entry_69e69611f31241b6a7eb3e578d52275b": "REPORTED by sov-worker-thin-1; report text read as a claim"
+    },
+    "record_projection_id": "urn:soveraeign:record-projection:262dac6649d1f79fead54611de409d49fe279fe1f702519e65294da55416c31e",
+    "projection_reproduced": "project-evidence with the same subject, principal, relation WITNESS, purpose and --as-of-entry reproduces projection_id and record_head byte-for-byte",
+    "projection_residual": "included_records hold only the two run-subject entries; the three OUTPUT entries are outside it and omissions is []"
+  },
+  "claims": [
+    {
+      "claim": "Working tree on HEAD 4b0bc1d with exactly three modified files whose digests match the OUTPUT entries",
+      "claimed_by": "controller task / REPORTED payload",
+      "verdict": "HOLDS",
+      "evidence": "git rev-parse HEAD; git status --short; sha256sum (all exit 0)"
+    },
+    {
+      "claim": "observe.py unchanged",
+      "claimed_by": "REPORTED payload",
+      "verdict": "HOLDS",
+      "evidence": "sha256 ed24eca4... equals HEAD:observe.py and the builder's observe.py.orig; git diff --stat services/observation/src empty"
+    },
+    {
+      "claim": "New test fails with the `| {record.run_id}` union reverted (exit 1) and passes with it (33 tests, exit 0)",
+      "claimed_by": "REPORTED payload, KNOWN-GAPS R13 row",
+      "verdict": "HOLDS",
+      "evidence": "unittest discover -p test_thin_slice.py: positive exit 0 / 33 OK; union removed in place (sha256 c5e9705d) exit 1 failures=1 only the new test, 'PredicatesUndeclared not raised'; restored sha256 ed24eca4"
+    },
+    {
+      "claim": "The pre-existing test passed with the union reverted because the second check already refused it",
+      "claimed_by": "KNOWN-GAPS R13 row",
+      "verdict": "HOLDS",
+      "evidence": "the negative run reports failures=1 and names only the new test"
+    },
+    {
+      "claim": "docs/documentation.html regenerated and current",
+      "claimed_by": "REPORTED payload (controller ran sov_docs.py build)",
+      "verdict": "HOLDS",
+      "evidence": "python scripts/sov_docs.py check exit 0; one changed line, confined to the rendered KNOWN-GAPS block"
+    },
+    {
+      "claim": "verify.py's exit 1 was the stale docs projection, since repaired",
+      "claimed_by": "REPORTED payload",
+      "verdict": "DISSENT",
+      "evidence": "python scripts/verify.py exit 1 (both runs); --observe records 49 PASS / 1 FAIL 'repository tooling tests'; test_sov_clarity fails: services/observation/KNOWN-GAPS.md TEXT_STALE; python scripts/sov_clarity.py check exit 1 here, exit 0 on a git-archive of HEAD"
+    },
+    {
+      "claim": "lint passes",
+      "claimed_by": "REPORTED payload (implicit)",
+      "verdict": "HOLDS",
+      "evidence": "python scripts/lint.py exit 0"
+    },
+    {
+      "claim": "ATTEMPTED pre_tree fingerprints the pre-change tree",
+      "claimed_by": "record entry_a0588d75",
+      "verdict": "UNATTESTABLE",
+      "evidence": "pre_tree == HEAD^{tree} == post-change git write-tree; the index was measured, not the working tree"
+    }
+  ],
+  "verify": {
+    "command": "python scripts/verify.py [--observe PATH]",
+    "exit_code": 1,
+    "checks": 50,
+    "pass": 49,
+    "fail": [
+      "repository tooling tests"
+    ],
+    "cause": "scripts/tests/test_sov_clarity.py::test_recorded_reviews_are_well_formed_and_current: {'services/observation/KNOWN-GAPS.md': 'TEXT_STALE'}",
+    "stdout_fail_lines_that_are_not_check_verdicts": "docs stale, strand packet.json, acceptance routing defects, SELF_GRADED, snapshot planted cases: all planted test output, identical in the HEAD baseline; verdicts were taken from --observe predicate_results.outcome, not from stdout",
+    "wall": "19.3s, SILVER not reached; budget debt attributed, advisory"
+  },
+  "lint": {
+    "command": "python scripts/lint.py",
+    "exit_code": 0
+  },
+  "observe_run": {
+    "command": "python <scratchpad>/thin_circuit_observe.py observe urn:soveraeign:run:thin-circuit-1 urn:soveraeign:principal:instance:sov-witness-thin-1 <scratchpad>/declaration.json <scratchpad>/observation-witness.json",
+    "exit_code": 0,
+    "driver_reads": "journal via Record CLI reconstruct-journal (authoritative), artifact bytes via Path.read_bytes on ROOT/address; expected digests from the run's OUTPUT entries",
+    "inference_id": "urn:soveraeign:observation:relation-inference:dbc0d178e6a6038f3b568790",
+    "relation": "INDEPENDENT",
+    "record_completeness": "COMPLETE",
+    "edges_found": [],
+    "observation_id": "urn:soveraeign:observation:37d4ce4929b27589eaf57417",
+    "predicate_results": {
+      "present-0": true,
+      "digest-0": true,
+      "present-1": true,
+      "digest-1": true,
+      "present-2": true,
+      "digest-2": true
+    },
+    "declared_at": "2026-09-05T18:15:31.213419Z",
+    "observed_at": "2026-09-05T18:21:19.917952Z",
+    "meaning": "the artifact bytes are the bytes the run recorded; this does not by itself prove R13 repaired"
+  },
+  "residuals": [
+    "R-a (builder's, unreported): services/observation/KNOWN-GAPS.md is clarity-covered prose (services/**/*.md) with a recorded review at the HEAD digest; the edit made it TEXT_STALE, sov_clarity.py check exits 1 and verify's 'repository tooling tests' check fails. The tree is not landable under grant:standing-landing-loop (verify PASS required) until a clarity review and receipt are recorded for the new bytes.",
+    "R-b (record/tooling): ATTEMPTED pre_tree and `git write-tree` fingerprint the index and equal HEAD^{tree} before and after the change; the record does not show a pre-state distinct from the post-state.",
+    "R-c (record): the OUTPUT for docs/documentation.html is by urn:soveraeign:principal:model:claude-fable-5, while the worker's REPORTED lists that path among its own outputs; the run's outputs come from two actors.",
+    "R-d (substrate): the RecordProjection for a WORK finding on this run includes only run-subject entries; the OUTPUT entries whose digests the observation depends on are outside it with omissions [].",
+    "R-e (docs coherence): the R13 row reads 'repaired' under the heading 'Residuals the third witness pass left open' whose lead sentence says 'Recorded rather than repaired'.",
+    "R-f (repository, pre-existing, not this concern's): verify wall 19.3s past SILVER; budget debt on 12 checks; STATUS.yaml duplicate-key WARNs."
+  ],
+  "standing_supported": "OPEN -> BUILT for residual R13 (services/observation/KNOWN-GAPS.md#R13): the defeating case is real and reproduced. No support for landing this tree as it stands (verify FAIL, R-a). Not a settlement, not a ratification.",
+  "judgement_items": [
+    "None require Bdo. For the builder: record the clarity review for services/observation/KNOWN-GAPS.md inside this concern (R-a). For the Record/Observation owners, as questions not tickets: should a RecordProjection for a WORK subject include OUTPUT entries whose payload run_id is the subject (R-d)? Should ATTEMPTED record a working-tree fingerprint rather than the index tree (R-b)?"
+  ],
+  "finding": {
+    "finding_schema": "soveraeign-finding/v1",
+    "finding_id": "urn:soveraeign:finding:thin-circuit-1:sov-witness-thin-1:2026-09-05",
+    "subject": {
+      "kind": "WORK",
+      "address": "urn:soveraeign:run:thin-circuit-1"
+    },
+    "evaluator": {
+      "principal_id": "urn:soveraeign:principal:instance:sov-witness-thin-1",
+      "relation": "WITNESS"
+    },
+    "scope": {
+      "concern": "concern:phase-1-5/thin-circuit-1",
+      "source_session": "session-69de8a",
+      "lease": "lease:services-observation-known-gaps-md-r13-urn-soveraeign-run-thin-circuit-1",
+      "head": "4b0bc1d7e3a92f2671d86bc6467f57f2dd62d51b",
+      "working_tree_fingerprint": "ff20bf90ccf3b0aee5b8f25be822a73c6011bf7a (git write-tree over a temporary index after `git add -u`; the plain `git write-tree` and the ATTEMPTED pre_tree both read the index and equal HEAD^{tree} aea20389, which does not see the uncommitted change)",
+      "file_digests": {
+        "services/observation/KNOWN-GAPS.md": "sha256:1fd56a50ebe300e8d38489f8e05ab627aefe8e2b4d1e0305b4d8304a136a3511",
+        "services/observation/tests/test_thin_slice.py": "sha256:8d4f4b71a298b5c0257205aa0e452259cee43d5b07520ae8d906b0d1047275a7",
+        "docs/documentation.html": "sha256:49a784187e7c5da1f288fe9c4ee33c760b686842c819d2c1362b355d78b3937a"
+      },
+      "observe_py_digest": "sha256:ed24eca438eae83ba25a1c9adea1b38a87af3d01968fc37b16079fb503d49978",
+      "record_head": "sha256:69c8b0aef7867f83f2667fa7855c0d57bb49fa073e360a63a11e98278b8286bd",
+      "addresses_outside_projection": "The three OUTPUT entries (entry_ed1b5eb030b049a78a276f4e6347f180, entry_f75ee08ee46e400c88fa653943eb3ae6, entry_9cc74a5be727413f9af38d7932e0a18d) carry the digests this finding relied on but are not in the supplied RecordProjection, whose included_records hold only the two run-subject entries and whose omissions list is empty. They are therefore named here and not cited as evidence_addresses. counterevidence_addresses are repository paths, not Record addresses.",
+      "non_record_evidence": [
+        "git status --short (exit 0): exactly the three claimed files modified",
+        "python -m unittest discover -s services/observation/tests -t services/observation/tests -p test_thin_slice.py: 33 tests OK exit 0 with the union; with `| {record.run_id}` removed in place (observe.py sha256 c5e9705d...) exit 1, failures=1, only test_the_run_address_reported_as_its_own_output_is_still_refused ('PredicatesUndeclared not raised'); observe.py restored to sha256 ed24eca4...",
+        "python scripts/verify.py (twice, second with --observe): exit 1; 49 PASS, 1 FAIL 'repository tooling tests' reading scripts/tests + scripts/run_tooling_tests.py",
+        "python scripts/sov_clarity.py check: exit 1, 'STALE: services/observation/KNOWN-GAPS.md: TEXT_STALE'; on a git-archive of HEAD: exit 0",
+        "python scripts/sov_docs.py check: exit 0, 'PASS: documentation page matches 279 documents'; the check compares the page bytes to a fresh build() of the sources",
+        "python scripts/lint.py: exit 0",
+        "Record CLI project-evidence with the supplied subject, principal, relation, purpose and as-of entry reproduces the projection id byte-for-byte",
+        "session-local driver thin_circuit_observe.py observe: relation INDEPENDENT over a COMPLETE record, observation urn:soveraeign:observation:37d4ce4929b27589eaf57417, all six predicates true"
+      ]
+    },
+    "record_projection_id": "urn:soveraeign:record-projection:262dac6649d1f79fead54611de409d49fe279fe1f702519e65294da55416c31e",
+    "claims": [
+      {
+        "claim_id": "C1-tree",
+        "verdict": "CONFIRMED",
+        "detail": "HEAD 4b0bc1d; git status shows exactly docs/documentation.html, services/observation/KNOWN-GAPS.md, services/observation/tests/test_thin_slice.py; their sha256 match the three OUTPUT entries' digests."
+      },
+      {
+        "claim_id": "C2-observe-py-unchanged",
+        "verdict": "CONFIRMED",
+        "detail": "observe.py sha256 ed24eca4... equals HEAD:observe.py; git diff --stat on services/observation/src is empty. The `| {record.run_id}` union was introduced at 3087714 (git show)."
+      },
+      {
+        "claim_id": "C3-defeating-case",
+        "verdict": "CONFIRMED",
+        "detail": "New test fails (exit 1, 'PredicatesUndeclared not raised') with the union removed in place and passes with it (33 tests, exit 0); the file was restored byte-for-byte and proven by sha256. The test puts the run address in both reported_addresses and outputs so only the union half of the guard refuses it; without the union the bytes were read and matched, i.e. an executor's own report would have been graded as an output."
+      },
+      {
+        "claim_id": "C4-known-gaps-row",
+        "verdict": "CONFIRMED",
+        "detail": "Every sentence of the new R13 row is reproduced: the 3087714 diff is the union; with the union reverted only the new test fails, so test_the_run_id_itself_is_not_a_predicate_address does pass without the guard; the guard bytes are unchanged. Residual: the row now reads 'repaired' under a heading that says 'Recorded rather than repaired'."
+      },
+      {
+        "claim_id": "C5-docs-projection",
+        "verdict": "CONFIRMED",
+        "detail": "docs/documentation.html differs from HEAD in one line (1580), inside the rendered KNOWN-GAPS.md block only (digest 4a6e0426 -> 1fd56a50 and the R13 text). sov_docs.py check exit 0. The OUTPUT entry for it is by a different actor (urn:soveraeign:principal:model:claude-fable-5) than the run's executor."
+      },
+      {
+        "claim_id": "C6-verify-green-after-repair",
+        "verdict": "DISSENTED",
+        "detail": "The REPORTED payload attributes verify's exit 1 to a stale docs projection, since repaired. Against this tree verify still exits 1: the one FAIL check verdict is 'repository tooling tests', from test_sov_clarity.test_recorded_reviews_are_well_formed_and_current: services/observation/KNOWN-GAPS.md is TEXT_STALE against its recorded clarity review in .clarity/coverage.json (artifact_digest = HEAD digest 4a6e0426). The HEAD baseline passes the clarity check, so this change introduced it. It is covered prose (clarity scope services/**/*.md) edited without the review and receipt AGENTS.md requires, and the report does not mention it."
+      },
+      {
+        "claim_id": "C7-lint",
+        "verdict": "CONFIRMED",
+        "detail": "python scripts/lint.py exit 0; PASS repository hygiene (1176 text files, 546 Python modules, 10 named debt); no new module-size debt."
+      },
+      {
+        "claim_id": "C8-pre-tree-fingerprint",
+        "verdict": "UNATTESTABLE",
+        "detail": "ATTEMPTED records pre_tree aea20389..., which is HEAD^{tree}; `git write-tree` reads the index, not the working tree, so it also reads aea20389 after the change. The record therefore cannot distinguish the pre-state from the post-state; the working tree's own fingerprint (temp index) is ff20bf90.... A check that reads the index where it could have measured the tree."
+      },
+      {
+        "claim_id": "C9-observe-run",
+        "verdict": "CONFIRMED",
+        "detail": "Observation Service, driven by the session-local script that reads ROOT/address bytes with read_bytes and the journal via reconstruct-journal: relation INDEPENDENT (no SAME_ACTOR, HOLDS_RUN_LEASE, GRANT_DESCENDS_FROM_RUN, PRODUCED_THE_OUTPUT, ONLY_EXECUTOR_REPORT edge; record COMPLETE); all six predicates true. Expected digests come from the executor's OUTPUT entries, so this proves the artifact is the bytes the run recorded, not that R13 is repaired; C3 proves that."
+      },
+      {
+        "claim_id": "C10-helper-and-terminal",
+        "verdict": "CONFIRMED",
+        "detail": "The report states no helper was recruited (host withheld the Agent tool); no helper is offered as witness. The worker's terminal was a presented uncommitted working tree after an AUTHORITY_SEAM handoff for the docs regeneration, which the controller served and recorded as an OUTPUT. Nothing in the record contradicts this."
+      }
+    ],
+    "evidence_addresses": [
+      "record:entry_a0588d75bda54691abefb001dc038ab2",
+      "record:entry_69e69611f31241b6a7eb3e578d52275b"
+    ],
+    "counterevidence_addresses": [
+      ".clarity/coverage.json",
+      "services/observation/KNOWN-GAPS.md"
+    ],
+    "input_finding_ids": [],
+    "created_at": "2026-09-05T18:28:09Z",
+    "frozen_at": "2026-09-05T18:28:09Z",
+    "authority_effect": "NONE",
+    "settlement_effect": "NONE",
+    "supersedes": []
+  },
+  "finding_schema_validation": {
+    "command": "scripts/sovkernel/jsonschema.validate(finding, contracts/finding.schema.json)",
+    "errors": [],
+    "valid": true
+  },
+  "second_pass": {
+    "observer": "urn:soveraeign:principal:instance:sov-witness-thin-1",
+    "lease": "lease:services-observation-known-gaps-md-r13-urn-soveraeign-run-thin-circuit-1",
+    "observed_at": "2026-09-05T18:35:10Z",
+    "scope": "repairs recorded after the first Finding froze (second ATTEMPTED by urn:soveraeign:principal:model:claude-fable-5); the frozen `finding` object above is unchanged, sha256 of its canonical JSON 93c70e0502145b1bc8fd68a257d1eee68c8f4b7300fcfc3e5340ddfad526d8e8",
+    "tree": {
+      "head": "4b0bc1d7e3a92f2671d86bc6467f57f2dd62d51b",
+      "status_short": [
+        "M .clarity/coverage.json",
+        " M docs/documentation.html",
+        " M services/observation/KNOWN-GAPS.md",
+        " M services/observation/tests/test_thin_slice.py",
+        "?? reports/observations/2026-09-05-thin-circuit-1-witness-observation.json"
+      ],
+      "file_digests": {
+        "services/observation/tests/test_thin_slice.py": "sha256:8d4f4b71a298b5c0257205aa0e452259cee43d5b07520ae8d906b0d1047275a7",
+        "services/observation/KNOWN-GAPS.md": "sha256:e8689c699243e36b5ee7148cf8176bfa17cf4d5698d9de589164ef249ca0671f",
+        "docs/documentation.html": "sha256:f4da1d40604e3efd54e59f3e015de24e835f6d601777d6df850d952cce8f5a9a",
+        ".clarity/coverage.json": "sha256:f35b95a455dfd61d1f10ecd73f2aeed26fc2bf347080ed9cf8715e4944d47479"
+      },
+      "match_newest_output_entries": true,
+      "observe_py_digest": "sha256:ed24eca438eae83ba25a1c9adea1b38a87af3d01968fc37b16079fb503d49978",
+      "test_thin_slice_unchanged_since_first_pass": true,
+      "note": "the second attempt recorded no OUTPUT entry for the test file; its REPORTED lists it among four outputs and the declaration reuses the first attempt's digest, which the bytes still match"
+    },
+    "record": {
+      "journal_command": "python -m soveraeign_record_service.cli --root <repository-root>/.local/record reconstruct-journal (exit 0, 11 entries, authoritative true)",
+      "head": "sha256:266400502973ea74e830566933206df1dfd4a483f353a4a52ac4825a647bf098",
+      "new_entries": {
+        "entry_b9fe1cf2b4f5436486e27d354fcd1ee9": "ATTEMPTED by claude-fable-5; lease holder claude-fable-5, fence 1 (same fence and expiry as the worker's lease), same operation_plan_id; no pre_tree",
+        "entry_e1cc1e2c524140bf8a59c3e44575614a": "OUTPUT KNOWN-GAPS.md sha256:e8689c69 (controller)",
+        "entry_8c2c571f1b3c4b4caaef46e7f0eb7188": "OUTPUT docs/documentation.html sha256:f4da1d40 (controller)",
+        "entry_4cb25d70a2a84029ac92d65b84ca35f5": "OUTPUT .clarity/coverage.json sha256:f35b95a4 (controller)",
+        "entry_35b411c92da141fdb28487030b90d1ec": "REPORTED by claude-fable-5; read as a claim",
+        "entry_f678205e924d423bbad743146629b860": "OBSERVED, kind OBSERVATION, actor field sov-witness-thin-1, payload recorded_by claude-fable-5, copied from this file's first-pass observation 37d4ce49; this witness holds no journal write path and did not append it"
+      }
+    },
+    "checks": {
+      "clarity": {
+        "command": "python scripts/sov_clarity.py check",
+        "exit_code": 0,
+        "output": "PASS: clarity scope and receipts are well-formed and current"
+      },
+      "verify": {
+        "command": "python scripts/verify.py --observe PATH",
+        "exit_code": 0,
+        "checks": 50,
+        "pass": 50,
+        "fail": [],
+        "wall": "19.0s, SILVER not reached, advisory debt"
+      },
+      "docs": {
+        "command": "python scripts/sov_docs.py check",
+        "exit_code": 0
+      },
+      "lint": {
+        "command": "python scripts/lint.py",
+        "exit_code": 0
+      }
+    },
+    "repairs": [
+      {
+        "repair": "R-a: clarity review recorded for services/observation/KNOWN-GAPS.md",
+        "verdict": "HOLDS",
+        "evidence": ".clarity/coverage.json diff pins artifact_digest sha256:e8689c69 (the current bytes) with basis SYSTEM.md, CONTRACT.md, SPEC.md unchanged and changed:true; sov_clarity.py check exit 0; the first-pass DISSENT on verify is resolved (50/50 PASS)",
+        "residual": "sov_clarity.py record writes only artifact and basis digests plus a changed flag (soveraeign-clarity/v3); the receipt cannot carry who read what, so 'after reading the changed row against the case it names' is the controller's claim, and the reviewer is a participant in the work"
+      },
+      {
+        "repair": "R-e: heading lead admits a later repair",
+        "verdict": "HOLDS",
+        "evidence": "git diff: lead now reads 'Recorded rather than repaired at 3087714, so the witnessed bytes at 3087714 stay the witnessed bytes. A residual repaired since says so in its own row and names the case that pins it.' The R13 row says 'repaired' and names test_the_run_address_reported_as_its_own_output_is_still_refused; heading and row agree"
+      },
+      {
+        "repair": "docs projection rebuilt",
+        "verdict": "HOLDS",
+        "evidence": "one changed line (1580) against HEAD, confined to the rendered KNOWN-GAPS block (digest e8689c69, new lead sentence, R13 row); sov_docs.py check exit 0"
+      }
+    ],
+    "observe_run": {
+      "command": "python <scratchpad>/thin_circuit_observe.py observe urn:soveraeign:run:thin-circuit-1 urn:soveraeign:principal:instance:sov-witness-thin-1 <scratchpad>/declaration2.json <scratchpad>/observation-witness-2.json",
+      "exit_code": 0,
+      "driver_sha256": "6ea349948691d9eec37615eebb8f5550d58e838691cc8f6f15658b36b8739e0d",
+      "inference_id": "urn:soveraeign:observation:relation-inference:d2368fc563323517f7227a80",
+      "relation": "INDEPENDENT",
+      "record_completeness": "COMPLETE",
+      "edges_found": [],
+      "executor_id_reported": "urn:soveraeign:principal:instance:sov-worker-thin-1",
+      "evidence_addresses": [
+        "entry_a0588d75bda54691abefb001dc038ab2",
+        "entry_b9fe1cf2b4f5436486e27d354fcd1ee9",
+        "entry_35b411c92da141fdb28487030b90d1ec",
+        "entry_ed1b5eb030b049a78a276f4e6347f180",
+        "entry_e1cc1e2c524140bf8a59c3e44575614a",
+        "entry_8c2c571f1b3c4b4caaef46e7f0eb7188",
+        "entry_4cb25d70a2a84029ac92d65b84ca35f5"
+      ],
+      "two_executors_note": "relation.py sets executor_id to attempts[0].actor (the worker) while RunRecord.executors() and the SAME_ACTOR / HOLDS_RUN_LEASE loops cover every ATTEMPTED and REPORTED actor; both attempts (entry_a0588d75, entry_b9fe1cf2) and the controller's REPORTED are cited, and no edge to this observer was found from either executor. INDEPENDENT still holds against both; the single-valued executor_id understates a two-executor record. The OBSERVED entry is not among the cited addresses",
+      "observation_id": "urn:soveraeign:observation:8fb249ea03d093ffbd2ad9f6",
+      "predicate_results": {
+        "present-0": true,
+        "digest-0": true,
+        "present-1": true,
+        "digest-1": true,
+        "present-2": true,
+        "digest-2": true,
+        "present-3": true,
+        "digest-3": true
+      },
+      "observed_state_digests": [
+        "sha256:f35b95a455dfd61d1f10ecd73f2aeed26fc2bf347080ed9cf8715e4944d47479",
+        "sha256:f4da1d40604e3efd54e59f3e015de24e835f6d601777d6df850d952cce8f5a9a",
+        "sha256:e8689c699243e36b5ee7148cf8176bfa17cf4d5698d9de589164ef249ca0671f",
+        "sha256:8d4f4b71a298b5c0257205aa0e452259cee43d5b07520ae8d906b0d1047275a7"
+      ],
+      "declared_at": "2026-09-05T18:30:50.579488Z",
+      "observed_at": "2026-09-05T18:32:36.538199Z"
+    },
+    "residuals": [
+      "S-a (record attribution): entry_f678205e is an OBSERVATION whose actor field names this witness but which the controller appended (payload recorded_by and note disclose it). The actor of an append should be the principal that performed it; the observer belongs in the payload. It also records first-pass digests after the tree had moved to the second-pass bytes, correctly dated 18:21:19.",
+      "S-b (lease substrate): the second ATTEMPTED reuses fence 1 and the same expiry under a different holder; a re-lease that does not advance the fence cannot be told from a concurrent one. The second ATTEMPTED also records no pre_tree.",
+      "S-c (relation inference): executor_id is single-valued over a two-executor record (see two_executors_note).",
+      "S-d (clarity receipt): the receipt shape holds no reviewer or reading; the review's substance is the controller's claim.",
+      "Carried from the first pass, unrepaired and not this concern's to repair: R-b (index fingerprint), R-c (outputs from two actors), R-d (projection omits OUTPUT entries)."
+    ],
+    "standing_supported": "OPEN -> BUILT for R13 stands. The first-pass reason for withholding landing support (verify FAIL, R-a) is resolved: verify PASS 50/50, lint PASS, clarity PASS, and an independent observation exists, which are the three evidence conditions grant:standing-landing-loop names. This observation supports landing this tree at these digests. It is not a settlement and not a ratification; the record residuals S-a to S-d stand and none of them is a defect in the landed bytes.",
+    "judgement_items": [
+      "None for Bdo. For the Record owner, as a question: may a participant append an OBSERVATION under another principal's actor id when that principal holds no write path, or must actor be the appender with the observer in the payload (S-a)?"
+    ]
+  }
+}

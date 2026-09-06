@@ -117,7 +117,7 @@
           "standing": "WITNESSED",
           "work_state": "PRESENTED",
           "stage_observed_by": "reports/observations/2026-09-05-thin-circuit-1-witness-observation.json",
-          "note": "the first run observed end to end: worker attempt, controller repair, two independent observations by a separate participant, settle_run judged PERMITTED by the kernel and receipted, then countered as a self-settlement (the settler had reported the second attempt); 14-entry journal export, self-verifying; re-settlement by a non-reporting actor owed"
+          "note": "the first run observed end to end; its first settlement countered as a self-settlement, then settled through sov_kernel.py settle by sov-controller-circuit-2, which neither reported nor observed it (receipt seq 16, RECONCILED advances seq 17 in reports/observations/2026-09-06-circuit-2-journal.json)"
         },
         {
           "member_kind": "SERVICE",
@@ -136,6 +136,15 @@
           "work_state": "PRESENTED",
           "stage_observed_by": "reports/observations/2026-09-05-wave-1-observation-cli-witness-observation.json",
           "note": "wave 1 lane D: command line for the five built operations with durable records; WITNESSED on the code digests, the landed tree read by a third pass; landed 83fbbb4"
+        },
+        {
+          "member_kind": "ITEM",
+          "address": "reports/observations/2026-09-06-circuit-2-journal.json",
+          "stage": "VERTICAL_SLICE",
+          "standing": "WITNESSED",
+          "work_state": "PRESENTED",
+          "stage_observed_by": "reports/observations/2026-09-06-circuit-2-witness-observation.json",
+          "note": "circuit 2: R10 and R11 repaired and landed a9c043a; two Findings on two subjects and a comparison; the run itself receipted UNRESOLVED because a run under a grant the journal does not hold cannot be observed independent; held at DEPENDENCY_SEAM for GRANT and lease journal entries"
         }
       ],
       "depends_on": [],

@@ -10,9 +10,12 @@ executable projection of the SPEC.md Transition contract. The binding commands r
 every service manifest plus ``contracts/kernel-paradigms.json`` and derive how those
 participants compose against the same Kernel grammar.
 
-Nothing here grants authority, touches a service, or settles an operation. These are
-read/check/compiler surfaces: they answer what is declared and whether declarations
-compose, never whether an effect happened.
+Nothing here grants authority. Every command but one is a read/check/compiler surface:
+it answers what is declared and whether declarations compose, never whether an effect
+happened. The exception is ``settle``, which performs ``settle_run`` by judging the
+request through the same function ``check`` uses and then appending the receipt through
+the Record Service command line (``scripts/sovkernel/settle.py``). It decides nothing
+``check`` did not; it records the decision where the record lives.
 """
 
 from __future__ import annotations
@@ -29,6 +32,7 @@ from sovkernel import kernel_binding as binding_check  # noqa: E402
 from sovkernel.closure_inputs import rebuild as rebuild_closure  # noqa: E402
 from sovkernel import projection  # noqa: E402
 from sovkernel import parity as parity_check  # noqa: E402
+from sovkernel import settle  # noqa: E402
 from sovkernel import transitions as kernel  # noqa: E402
 from sovkernel.jsonschema import validate  # noqa: E402
 
@@ -104,12 +108,12 @@ def command_check(args: argparse.Namespace) -> int:
     """Judge one transition request read from a file."""
     request = json.loads(Path(args.request).read_text(encoding="utf-8"))
     current = json.loads(Path(args.current).read_text(encoding="utf-8")) if args.current else {}
-    defects = validate(request, _schema())
+    defects, decision = settle.judge(ROOT, request, current)
     if defects:
         for defect in defects:
             print(f"FAIL: {defect}")
         return 1
-    decision = kernel.evaluate(request, kernel.load_table(ROOT), current)
+    assert decision is not None
     print(decision.render())
     return 0 if decision.permitted else 1
 
@@ -220,6 +224,8 @@ def build_parser() -> argparse.ArgumentParser:
     check.add_argument("--request", required=True, help="path to a transition request")
     check.add_argument("--current", help="path to the observed current state")
     check.set_defaults(handler=command_check)
+
+    settle.add_parser(sub, ROOT)
 
     drift = sub.add_parser("drift", help="compare the traversal projection against SPEC.md")
     drift.set_defaults(handler=command_drift)

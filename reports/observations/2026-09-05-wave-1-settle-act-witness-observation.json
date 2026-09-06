@@ -1,0 +1,377 @@
+{
+  "record_kind": "witness-observation",
+  "review_envelope": "FINDING",
+  "observed_at": "2026-09-05",
+  "observer": {
+    "actor": "urn:soveraeign:principal:instance:sov-witness-settle-act",
+    "role": "WITNESS",
+    "lease": "lease:concern-phase-1-5-wave-1-settle-act-scripts-sovkernel-settle-py-witness",
+    "concern": "concern:phase-1-5/wave-1/settle-act",
+    "source_session": "session-69de8a",
+    "independence": "did not build, edit, or advise on the change; builder-provided paths used as locators only; every claim re-derived from the files, the Record CLI, and scratch stores under <session-scratchpad>/witnessC-*; no helper was used; decision 0104 (at d97dec8) read as a governing source after the independent reading and before this freeze, and no Orchestrator or Controller evaluation of this build was read"
+  },
+  "subject": {
+    "kind": "WORK",
+    "worktree": "<repo>/.claude/worktrees/agent-a65a8147b225df05f",
+    "head": "2ea81ea001cfdd375ec616d1cee0e5ab7ecc1088",
+    "git_write_tree": "801ff97a1181d4883275c1aeff89d2c73bffba65",
+    "write_tree_note": "git write-tree equals HEAD^{tree} (801ff97a1181d4883275c1aeff89d2c73bffba65) because none of the work is staged; it does not identify the witnessed tree. The file digests below are the identity of what was witnessed. The tree did not move during the session: git status and the three digests read the same at the start and at this write.",
+    "builder": "urn:soveraeign:principal:instance:sov-worker-settle-act",
+    "branch_tip_claimed": "d97dec8",
+    "branch_tip_relation": "d97dec8 is exactly one commit ahead of HEAD 2ea81ea (decisions/0104-settlement-at-three-scales.md plus CLAUDE.md, .clarity/coverage.json, docs/documentation.html); git diff --stat 2ea81ea d97dec8 over scripts/sov_kernel.py, scripts/sovkernel, scripts/tests, conformance/fixtures/kernel, contracts/kernel-transitions.json is empty, so the witnessed bytes carry unchanged onto d97dec8",
+    "record_projection": "NOT SUPPLIED; no projection id is invented. Record addresses cited below are entries of the export reports/observations/2026-09-05-thin-circuit-1-journal.json (soveraeign-record-export/v2, 13 entries, head_digest 6f59baa19095bade850f557fafac6538624372b92b8b461ada6f23718d8b5709), restored into a scratch store with restore-journal (count 13, same head) before being read",
+    "files": {
+      "scripts/sov_kernel.py": {
+        "state": "M",
+        "sha256": "74de0800a678d43202c23e7ec54a430eda9acfa3030497c79d0b1c2d17020901",
+        "lines": 257
+      },
+      "scripts/sovkernel/settle.py": {
+        "state": "??",
+        "sha256": "a5daab24d4623e2a051337b2b2cc2f16a10abc2cc3cb2f202b0b4891b1673e49",
+        "lines": 248
+      },
+      "scripts/tests/test_sov_kernel_settle.py": {
+        "state": "??",
+        "sha256": "1c11ee438f1a5bbd700c5ba7897d2705ac5cc15e1da57b21df647db58b15ed7c",
+        "lines": 240
+      }
+    },
+    "scope_check": "git status --short lists exactly 3 paths: M scripts/sov_kernel.py; ?? scripts/sovkernel/settle.py; ?? scripts/tests/test_sov_kernel_settle.py. git diff --stat: scripts/sov_kernel.py 11 insertions, 5 deletions. git diff HEAD --quiet -- conformance/fixtures/kernel/transition-cases.json exit 0. Nothing else changed."
+  },
+  "commands": [
+    {
+      "cmd": "git status --short; git diff --stat; git write-tree",
+      "exit": 0
+    },
+    {
+      "cmd": "sha256sum scripts/sovkernel/settle.py scripts/sov_kernel.py scripts/tests/test_sov_kernel_settle.py",
+      "exit": 0,
+      "note": "a5daab24…, 74de0800…, 1c11ee43… as claimed; 248/257/240 lines"
+    },
+    {
+      "cmd": "grep -rn soveraeign_record_service scripts/sovkernel scripts/sov_kernel.py",
+      "exit": 0,
+      "note": "two source hits: settle.py:74 is a subprocess argv (-m soveraeign_record_service.cli), not an import; participants.py:82 is a pre-existing import unchanged at HEAD and outside this change"
+    },
+    {
+      "cmd": "python scripts/sov_kernel.py selfcheck",
+      "exit": 0,
+      "note": "PASS: 18 kernel transition cases (5 positive, 13 defeating)"
+    },
+    {
+      "cmd": "python -m unittest scripts.tests.test_sov_kernel_settle",
+      "exit": 0,
+      "note": "Ran 12 tests, OK"
+    },
+    {
+      "cmd": "python -m unittest scripts.tests.test_sov_kernel",
+      "exit": 0,
+      "note": "Ran 23 tests, OK; none of them drives the check CLI"
+    },
+    {
+      "cmd": "python scripts/verify.py",
+      "exit": 0,
+      "note": "PASS: 50 checks in 15.648s wall. Every FAIL/REFUSED line in the output sits inside a tooling selfcheck's planted case (surface, docs, witness receipts, land, snapshot) and every shard reports OK; no check verdict was non-PASS. Budget: five checks over their per-check ceiling, reported as debt, not a refusal"
+    },
+    {
+      "cmd": "python scripts/lint.py",
+      "exit": 0,
+      "note": "PASS: repository hygiene (1191 text files, 554 modules, 10 named debt); WARNs are pre-existing STATUS.yaml duplicate keys and witness/ debt"
+    },
+    {
+      "cmd": "sov_kernel.py check --request <case> --current <current> over all 18 cases of conformance/fixtures/kernel/transition-cases.json (witnessC-checkcli)",
+      "exit": 0,
+      "note": "18 of 18 match expect with exit 0 for PERMITTED and 1 for refusals: the check CLI's behaviour over the existing fixtures is unchanged through settle.judge"
+    },
+    {
+      "cmd": "soveraeign_record_service.cli --root witnessC-restore/store restore-journal --export reports/observations/2026-09-05-thin-circuit-1-journal.json",
+      "exit": 0,
+      "note": "13 entries, head 6f59baa1…"
+    },
+    {
+      "cmd": "sov_kernel.py settle --record-root witnessC-restore/store --actor urn:soveraeign:principal:instance:witnessC-fresh-settler (request: run thin-circuit-1, input/pre-state f70f5fbe…, observation 8fb249ea…)",
+      "exit": 2,
+      "note": "REFUSED STALE_STATE 'the declared pre-state is not the current state'; appended []; measured.settle_receipt entry_6a14553aa71e4f8cb84fc6512bbfe672; journal after: count 13, head unchanged"
+    },
+    {
+      "cmd": "append-entry x12 from the export's first twelve entries into witnessC-noreceipt/store (kind, subject, actor, payload, source-address)",
+      "exit": 0,
+      "note": "count 12, head d65120ed…"
+    },
+    {
+      "cmd": "sov_kernel.py settle --record-root witnessC-noreceipt/store --actor urn:soveraeign:principal:model:claude-fable-5",
+      "exit": 2,
+      "note": "REFUSED SELF_SETTLEMENT_REFUSED 'produced the report it would settle'; measured.reporters [sov-worker-thin-1, claude-fable-5]; appended []; count 12 and head d65120ed… unchanged"
+    },
+    {
+      "cmd": "sov_kernel.py settle --record-root witnessC-noreceipt/store --actor urn:soveraeign:principal:instance:witnessC-fresh-settler --concern concern:phase-1-5/thin-circuit-1 --relation advances --basis 'witness reproduction'",
+      "exit": 0,
+      "note": "COMMITTED; RECEIPT seq 13 entry_23da8b29… on the run subject with detail {kernel_verdict, observation_id 8fb249ea…, input_state_digest f70f5fbe…, settled_by fresh settler}; EVENT seq 14 entry_ce6d8aaf… on concern:phase-1-5/thin-circuit-1 with payload {event RECONCILED, run_id, receipt_entry_id = seq 13's id, relation advances, basis}; reconstruct-journal count 14"
+    },
+    {
+      "cmd": "witness defeating probe: copy of the restored store (witnessC-bypass), request with pre_state_digest and declared.input_state_digest = 6f59baa1… (the existing receipt's entry_digest) and current.state_digest the same, fresh actor",
+      "exit": 0,
+      "note": "COMMITTED: a second settle_run RECEIPT was appended at seq 14 on an already-settled run while measured.settle_receipt named entry_6a14553a…; journal count 14. See R1"
+    },
+    {
+      "cmd": "guard removal: cp settle.py scratch; sed -i '185,187d' (the self_settlement call); python -m unittest scripts.tests.test_sov_kernel_settle",
+      "exit": 1,
+      "note": "FAILED (failures=3): test_settler_equal_to_reporter_is_refused, test_reporter_measured_from_the_journal_not_only_from_current, test_settler_equal_to_observer_is_refused; the other 9 still pass"
+    },
+    {
+      "cmd": "cp scratch copy back; sha256sum; cmp",
+      "exit": 0,
+      "note": "restored a5daab24d4623e2a051337b2b2cc2f16a10abc2cc3cb2f202b0b4891b1673e49, cmp exit 0, byte-identical; git status unchanged"
+    },
+    {
+      "cmd": "git diff HEAD --quiet -- conformance/fixtures/kernel/transition-cases.json",
+      "exit": 0
+    },
+    {
+      "cmd": "git log --oneline 2ea81ea..d97dec8; git diff --stat 2ea81ea d97dec8 -- <this work's paths>",
+      "exit": 0,
+      "note": "one commit (0104), no overlap"
+    }
+  ],
+  "claims": [
+    {
+      "id": 1,
+      "claim": "new scripts/sovkernel/settle.py (a5daab24…, 248 lines) and a settle subcommand in scripts/sov_kernel.py (74de0800…, 257 lines) judging through the same settle.judge() that check now uses; Record read through reconstruct-journal as a subprocess; never importing the Record Service",
+      "verdict": "HOLDS",
+      "basis": "digests and line counts match; git diff shows command_check now calls settle.judge(ROOT, request, current) and the only kernel.evaluate call on either path is inside judge (settle.py:65); settle.py:73-75 runs sys.executable -m soveraeign_record_service.cli as a subprocess with PYTHONPATH pointed at services/record/src and imports only sovkernel.transitions and sovkernel.jsonschema; check CLI over the 18 corpus cases matches every expected verdict and exit code. Note: the test that pins 'one judgement' (test_check_and_settle_share_one_judgement) reads the source text of command_check with inspect.getsource; it grades a declaration, my corpus run is the behavioural measure"
+    },
+    {
+      "id": 2,
+      "claim": "refusal order: kernel verdict by name; OBSERVATION_MISSING when the declared observation is not in the store; SELF_SETTLEMENT_REFUSED for current.reporter_id, any REPORTED actor, the request's observer, or the journal's observer; then append-receipt with detail {kernel_verdict, observation_id, input_state_digest, settled_by}; with --concern an EVENT RECONCILED on the concern subject; refusals exit 2 with nothing appended; RECORD_UNREACHABLE carries the Record CLI's stderr",
+      "verdict": "HOLDS with two qualifications",
+      "basis": "settle.py:148-187 read; order observed as: transition mismatch -> MALFORMED_REQUEST exit 1; reconstruct-journal failure -> RECORD_UNREACHABLE (stderr tail, STDERR_LIMIT 600; test asserts NotADirectoryError in detail); schema defects -> MALFORMED_REQUEST exit 1; kernel verdict by name (STALE_STATE reproduced); requested_outcome outside terminal_outcomes -> MISSING_PRECONDITION (unreported, unfixtured); OBSERVATION_MISSING; SELF_SETTLEMENT_REFUSED from the four sources (lines 122-127); receipt detail and RECONCILED payload observed byte-for-byte at seq 13/14. Qualification a: 'nothing appended' holds for every refusal raised before the first append; a RECORD_UNREACHABLE raised by the RECONCILED append (settle.py:206-208, 87) fires after the receipt is in the journal and reports it under 'appended' with exit 2; no fixture covers that path. Qualification b: RECORD_UNREACHABLE is a token no contract declares (R2)"
+    },
+    {
+      "id": 3,
+      "claim": "a settled run's state_digest is its receipt's entry_digest, so a second settle refuses STALE_STATE",
+      "verdict": "HOLDS for a replayed request; DISSENT as a guarantee",
+      "basis": "current_state() (settle.py:111-116) substitutes the prior receipt's entry_digest; a replay of the original request refuses STALE_STATE (reproduced on the restored export, exit 2, head unchanged; test_second_settlement_of_the_same_run_is_stale pins the same). But the guard is digest equality, not 'already settled': a request that declares the receipt's entry_digest as its pre-state was PERMITTED and a second settle_run RECEIPT was appended at seq 14 (witnessC-bypass) even though measure() had read the existing receipt into measured['receipt']. The module docstring (lines 18-20) promises 'a second settlement meets the kernel's own STALE_STATE'; the bytes deliver that only when the second request repeats the first's pre-state. No defeating fixture covers a second settlement declared against the receipt, so that property is unwitnessable as built (R1)"
+    },
+    {
+      "id": 4,
+      "claim": "scripts/tests/test_sov_kernel_settle.py (1c11ee43…), 12 tests exit 0; selfcheck 18 cases exit 0; verify exit 0 (50 checks); lint exit 0",
+      "verdict": "HOLDS",
+      "basis": "digest matches; commands and exit codes above; the three self-settlement tests fail when the guard is removed and the module restores byte-identical"
+    },
+    {
+      "id": 5,
+      "claim": "restoring the thin-circuit export and settling run thin-circuit-1 refuses STALE_STATE; a store with the same entries minus the receipt refuses SELF_SETTLEMENT_REFUSED for urn:soveraeign:principal:model:claude-fable-5 and commits for a fresh actor with receipt at seq 13 and RECONCILED at seq 14",
+      "verdict": "HOLDS",
+      "basis": "reproduced in witnessC-restore and witnessC-noreceipt with my own request/current files and my own append loop from the export; entries, seqs, outcomes and heads recorded in the commands above"
+    },
+    {
+      "id": 6,
+      "claim": "conformance/fixtures/kernel/transition-cases.json untouched",
+      "verdict": "HOLDS",
+      "basis": "git diff HEAD --quiet on the path exits 0; git status lists only the three declared paths"
+    }
+  ],
+  "item_4_reading": {
+    "question": "Is the thin circuit's recorded settlement (receipt entry_6a14553aa71e4f8cb84fc6512bbfe672, settled_by urn:soveraeign:principal:model:claude-fable-5) a self-settlement by the journal's bytes?",
+    "answer": "Yes, by the definition the contract already holds. contracts/tier-bindings.json refusal_codes.SELF_SETTLEMENT_REFUSED reads 'The actor that produced a report also settled it.' In the export: entry_35b411c92da141fdb28487030b90d1ec is an EVENT REPORTED on subject urn:soveraeign:run:thin-circuit-1 with actor urn:soveraeign:principal:model:claude-fable-5; entry_6a14553aa71e4f8cb84fc6512bbfe672 is the RECEIPT settle_run COMMITTED on the same subject with actor urn:soveraeign:principal:model:claude-fable-5 and detail.settled_by the same principal. The same actor also holds entry_b9fe1cf2b4f5436486 (ATTEMPTED on the run), three OUTPUT events (entry_e1cc1e2c…, entry_8c2c571f…, entry_4cb25d70…), and is the appending actor of entry_a6cbc975185e44a8a1630dfc1c403839, the OBSERVATION the receipt cites (observation 8fb249ea…, observer named in the payload as sov-witness-thin-1). The settler produced the report it settled; that is the refusal's own sentence. The kernel check returned PERMITTED because sovkernel/transitions.py _check_observation compares the observer against current.reporter_id and nothing compares the settler against anyone; the participant that would have refused did not exist, which is the gap item 4 of the thin-circuit report names. Under the tree witnessed here the same request from that actor refuses (reproduced). The recorded receipt is not thereby erased or invalid as a record: it stands as disclosed history (the thin-circuit report discloses the settler as the second executor), and the route for changing its standing is a counter-record, which this observation does not add and cannot add"
+  },
+  "residuals": [
+    {
+      "id": "R1",
+      "severity": "finding",
+      "text": "An already-settled run accepts a second settle_run when the request declares the existing receipt's entry_digest as its pre-state (witnessC-bypass: second RECEIPT appended at seq 14 with measured.settle_receipt naming the first). The module measures the prior receipt and does not refuse on it. Builder to absorb inside the concern: refuse a second settlement when measured['receipt'] is not None (which reason code is the builder's reversible choice; STALE_STATE with a detail naming the receipt stays inside the kernel vocabulary, and decision 0104 ruling 3 says no new word is minted here) and pin it with a test whose request declares the receipt digest. Until then claim 3's guarantee is unwitnessable and the docstring at settle.py:18-20 overstates the bytes"
+    },
+    {
+      "id": "R2",
+      "severity": "residual",
+      "text": "Vocabulary. RECORD_UNREACHABLE appears in no contract; the declared neighbours are SERVICE_UNREACHABLE and SOURCE_UNREACHABLE (contracts/fixtures/capability-map.reference.json, node-interface.reference.json, services/asset and gateway service.json). RECONCILED is not in SPEC.md event_phase (ATTEMPTED | REPORTED | OBSERVED | SETTLED | COUNTERED); decision 0104 ruling 2 does rule a Record EVENT on the concern subject for the RECONCILE step, so the entry is governed and only the token is undeclared. SELF_SETTLEMENT_REFUSED is extended from 'produced a report' to the observer; 0104 ruling 1 rules that the act refuses the observer too, so the extension is governed but tier-bindings.json's one-line definition no longer states the whole rule. None of these changes a verdict; the builder should either reuse a declared token or declare the new ones where the vocabulary is owned"
+    },
+    {
+      "id": "R3",
+      "severity": "residual",
+      "text": "Partial append: if the RECONCILED append fails after the receipt is written, the refusal is RECORD_UNREACHABLE exit 2 with 'appended' listing the receipt (settle.py:87, 206-208). The behaviour is honest but unfixtured, and the claim 'refusals exit 2 with nothing appended' is overstated for that path. A defeating case that breaks the store between the two appends would witness it"
+    },
+    {
+      "id": "R4",
+      "severity": "residual",
+      "text": "The RECONCILED event records --relation and --basis exactly as the caller typed them; nothing measures that the landing happened or that the relation holds (concern-admission.json defines RECONCILE as re-reading the landed revision rather than trusting the landing report). As built, the entry is a declaration by the settler with attribution, not a measurement. 0104 rules the entry's existence; what it is evidence of is narrower than the step's name suggests, and the builder should say so in the module docstring or the entry payload"
+    },
+    {
+      "id": "R5",
+      "severity": "note",
+      "text": "self_settlement compares the actor against the OBSERVATION payload's observer ids but not against the OBSERVATION entry's own actor (its appender). In the thin-circuit bytes the appender is caught anyway as a reporter. Whether an appender who is neither reporter nor observer may settle is undeclared; noted, not graded"
+    },
+    {
+      "id": "R6",
+      "severity": "note",
+      "text": "MISSING_PRECONDITION for a requested_outcome outside terminal_outcomes (settle.py:178-181) and the exit-1 MALFORMED_REQUEST paths are unreported and have no fixture; settle.py:178 reaches kernel._entry, a private name of the transitions module"
+    },
+    {
+      "id": "R7",
+      "severity": "note",
+      "text": "Not the builder's: scripts/sovkernel/participants.py:82 imports soveraeign_record_service (pre-existing, unchanged at HEAD), so the repository already has one in-process Record import under sovkernel/ that the task's grep finds; verify wall 15.648s sits at the SILVER edge on this host (advisory); git write-tree cannot freeze an unstaged tree, so the digests here are the frozen identity"
+    }
+  ],
+  "standing_supported": {
+    "transition": "OPEN -> BUILT",
+    "subject": "settle participant: scripts/sovkernel/settle.py, the settle subcommand and the shared judge in scripts/sov_kernel.py, scripts/tests/test_sov_kernel_settle.py, at the digests above",
+    "note": "Six claims re-derived; five hold, one holds for the replay and is dissented as a guarantee (R1). This observation supports BUILT and does not support BUILT -> WITNESSED on this exact tree: the property the module's own docstring promises for a second settlement is defeated by a request that names the receipt digest, and no fixture covers it. Landing support onto d97dec8: not on this tree; yes on the tree that absorbs R1 (a bounded repair inside the concern with one defeating test), after a second pass over the repaired bytes. R2-R4 are residuals the builder can absorb or declare at landing; none defeats a claim. This observation settles nothing and grants nothing"
+  },
+  "judgement_items": [
+    "Does the thin circuit's recorded receipt entry_6a14553aa71e4f8cb84fc6512bbfe672, a self-settlement by tier-bindings.json's definition (settler = actor of REPORTED entry_35b411c9…), stand as disclosed history, or does the owner want a counter-record appended against it now that a participant exists which would have refused it? A counter-record is a record-local act; the question is only whether the accepted thin-circuit result should carry one.",
+    "Is a second settle_run receipt on an already-settled run ever legitimate (a re-settlement on a later observation), or must the participant always refuse it? The builder can take the reversible default of refusing (R1) without waiting on this; the question is recorded because SPEC.md's settle_run row does not say."
+  ],
+  "second_pass": {
+    "scope": "repairs of R1, R2, R3 under the same witness lease; first pass above untouched (its bytes were re-read before this append)",
+    "review_envelope": "FINDING",
+    "observed_at": "2026-09-06",
+    "tree": {
+      "head": "497c56b2421b4d291ebd802f03933af0a99ee332",
+      "head_note": "497c56b 'record: counter the thin circuit's settlement as a self-settlement', one commit past d97dec8; the export at HEAD now holds 14 entries (head_digest 0f6c42b8…), the 14th a COUNTER entry_27b64ea9fc084ae9b5e26f9ba4528b32 by claude-fable-5 naming entry_6a14553a… with reason SELF_SETTLEMENT_REFUSED",
+      "git_status": [
+        "M scripts/sov_kernel.py",
+        "?? reports/observations/2026-09-05-wave-1-settle-act-witness-observation.json",
+        "?? scripts/sovkernel/settle.py",
+        "?? scripts/tests/test_sov_kernel_settle.py"
+      ],
+      "files": {
+        "scripts/sov_kernel.py": {
+          "state": "M",
+          "sha256": "74de0800a678d43202c23e7ec54a430eda9acfa3030497c79d0b1c2d17020901",
+          "lines": 257
+        },
+        "scripts/sovkernel/settle.py": {
+          "state": "??",
+          "sha256": "d42319231a694df642004589855e424b09f490666fc551589b1fb532a99534d4",
+          "lines": 271
+        },
+        "scripts/tests/test_sov_kernel_settle.py": {
+          "state": "??",
+          "sha256": "977527b38b70388f1803a3e7621fd7f511b3ac7cb281a488ec66af9e16f0ccdd",
+          "lines": 294
+        }
+      },
+      "unchanged": "scripts/sov_kernel.py digest 74de0800… identical to the first pass; conformance/fixtures/kernel/transition-cases.json untouched; git status lists only the three declared paths plus this record",
+      "record_projection": "NOT SUPPLIED; addresses cited are entries of the 14-entry export read with git show HEAD:reports/observations/2026-09-05-thin-circuit-1-journal.json (sha256 2eaa84d7…) and restored with restore-journal into scratch store witnessC2-restore (count 14, head 0f6c42b8…)"
+    },
+    "delta_read": "diff -u of my first-pass byte copy (a5daab24…) against d4231923…: docstring rewritten to cite 0104 rulings 1 and 2 and to say SERVICE_UNREACHABLE is borrowed from gateway.route-request; measure() now collects every settle_run RECEIPT on the run and every COUNTER whose payload.counters names one (counters read from the whole journal regardless of subject), returning receipts/countered/standing; current_state() removed; already_settled() refuses STALE_STATE 'already settled: <last standing receipt id>' while any un-countered receipt stands; refusal order after the kernel verdict and MISSING_PRECONDITION is now already_settled, OBSERVATION_MISSING, self_settlement; _measured_view exposes settle_receipts/countered/standing; --concern help declares the partial-append behaviour. Two new tests read: test_digest_equal_replay_is_still_refused (my R1 request shape, asserts the exact detail) and test_countered_receipt_reopens_the_run (restores the 14-entry export, fresh actor, asserts countered/standing, seq 15 RECEIPT and seq 16 RECONCILED, journal re-read).",
+    "commands": [
+      {
+        "cmd": "git rev-parse HEAD; git status --short; sha256sum <three paths>",
+        "exit": 0,
+        "note": "497c56b2421b4d291ebd802f03933af0a99ee332; d4231923… (271 lines), 74de0800…, 977527b3… (294 lines)"
+      },
+      {
+        "cmd": "python scripts/sov_kernel.py selfcheck",
+        "exit": 0,
+        "note": "18 cases"
+      },
+      {
+        "cmd": "python -m unittest scripts.tests.test_sov_kernel_settle",
+        "exit": 0,
+        "note": "Ran 14 tests, OK"
+      },
+      {
+        "cmd": "python scripts/verify.py",
+        "exit": 0,
+        "note": "PASS: 50 checks in 11.675s wall; the only FAIL lines outside tooling selfchecks are CONF-*-DEF fixtures failing as declared"
+      },
+      {
+        "cmd": "python scripts/lint.py",
+        "exit": 0,
+        "note": "PASS: repository hygiene (1193 text files)"
+      },
+      {
+        "cmd": "restore-journal from the HEAD export into witnessC2-restore/store",
+        "exit": 0,
+        "note": "count 14, last kind COUNTER"
+      },
+      {
+        "cmd": "settle --actor urn:soveraeign:principal:model:claude-fable-5",
+        "exit": 2,
+        "note": "SELF_SETTLEMENT_REFUSED; measured.countered [entry_6a14553a…], standing []; appended []; count 14, head unchanged"
+      },
+      {
+        "cmd": "settle --actor urn:soveraeign:principal:instance:sov-controller-settle-act --concern concern:phase-1-5/thin-circuit-1 --relation advances --basis 'witness reproduction, second pass'",
+        "exit": 0,
+        "note": "COMMITTED; RECEIPT seq 15 entry_4ecfe886…; RECONCILED seq 16 entry_4c8b35b8…; count 16"
+      },
+      {
+        "cmd": "settle, digest-equal replay (pre_state_digest and current.state_digest = seq 15 receipt entry_digest c86c3d08…)",
+        "exit": 2,
+        "note": "STALE_STATE 'already settled: entry_4ecfe88622d14c33b7ac2d70af8b093e'; standing [seq 15 id]; appended []; count 16, head unchanged"
+      },
+      {
+        "cmd": "settle, original-digest replay by a third fresh actor",
+        "exit": 2,
+        "note": "STALE_STATE 'already settled: entry_4ecfe886…'; journal unchanged"
+      },
+      {
+        "cmd": "R1 replay attack re-run: 13-entry store (witnessC2-bypass, copy of the first pass's restored export), pre-state = 6f59baa1…, fresh actor",
+        "exit": 2,
+        "note": "STALE_STATE 'already settled: entry_6a14553aa71e4f8cb84fc6512bbfe672'; standing [entry_6a14553a…]; count 13, head 6f59baa1… unchanged. The first pass's seq-14 append no longer happens"
+      },
+      {
+        "cmd": "witness probe: append-entry --kind COUNTER --subject urn:soveraeign:probe:unrelated --actor urn:soveraeign:principal:instance:witnessC-anyone --payload {counters: <seq 15 id>}; then settle as a fresh actor",
+        "exit": 0,
+        "note": "COUNTER appended at seq 17; settle COMMITTED with RECEIPT seq 18; measured.countered lists both receipts, standing []. See R8"
+      },
+      {
+        "cmd": "revert already_settled to 'return None' (byte copy kept); python -m unittest scripts.tests.test_sov_kernel_settle",
+        "exit": 1,
+        "note": "FAILED (failures=2): test_digest_equal_replay_is_still_refused, test_second_settlement_of_the_same_run_is_stale; the other 12 pass"
+      },
+      {
+        "cmd": "restore from byte copy; sha256sum; cmp",
+        "exit": 0,
+        "note": "d42319231a694df642004589855e424b09f490666fc551589b1fb532a99534d4, cmp exit 0, byte-identical"
+      },
+      {
+        "cmd": "grep RECORD_UNREACHABLE scripts --include=*.py; walk capability-map.reference.json for SERVICE_UNREACHABLE",
+        "exit": 0,
+        "note": "old token gone; one declaration at /capabilities[51]/shape/refusals[0], the capability identified as {\"operation\": \"route-request\"}"
+      }
+    ],
+    "verdict_per_repair": {
+      "R1": {
+        "verdict": "REPAIRED",
+        "basis": "already_settled refuses on any un-countered settle_run RECEIPT measured from the journal, not on digest equality; my original attack (pre-state = receipt digest) refuses on the 13-entry store, the same attack against the seq-15 receipt refuses on the 16-entry store, and the original-digest replay refuses too, each with the journal head unchanged. The defeating fixture now exists (test_digest_equal_replay_is_still_refused) and reverting the guard fails it plus test_second_settlement_of_the_same_run_is_stale. Note the kernel's own STALE_STATE (pre-state digest comparison) is now untouched by the module; the word is reused for a module-level guard with a distinct detail, which the docstring says plainly"
+      },
+      "R2": {
+        "verdict": "REPAIRED for the refusal token; DECLARED for the rest",
+        "basis": "RECORD_UNREACHABLE is gone; SERVICE_UNREACHABLE is declared at capabilities[51] of the capability-map fixture and the docstring says it is borrowed, not minted; the observer half of SELF_SETTLEMENT_REFUSED now cites 0104 ruling 1. RECONCILED remains a token SPEC.md event_phase does not list, governed by 0104 ruling 2 as an entry; unchanged and not a defect"
+      },
+      "R3": {
+        "verdict": "DECLARED, not fixtured",
+        "basis": "the --concern help now states that a failed second append leaves the receipt in the journal and lists it under appended. The behaviour is declared where a caller reads it; no test breaks the store between the two appends, so the path is still witnessed by reading settle.py:87 and 226-228 rather than by a run. Acceptable as a declared residual; it does not defeat a claim"
+      }
+    },
+    "r1_closed": true,
+    "r1_note": "Closed on this tree: the property the first pass could not witness now has a positive case (seq 15 after a countered receipt), a defeating case (digest-equal replay), and a guard whose removal fails exactly those cases.",
+    "residuals": [
+      {
+        "id": "R8",
+        "severity": "residual",
+        "text": "Any COUNTER whose payload.counters names a receipt reopens the run for settlement, whoever appended it, under whatever subject, and through append-entry rather than counter-entry (probe: seq 17 COUNTER by an arbitrary actor under an unrelated subject, then a fresh actor's RECEIPT at seq 18). The module documents this choice (measure() docstring) and 0104 gives retraction to the counter-record, so it is a declared design, not a defect of the claim; but who may counter a settle_run receipt, and whether a COUNTER not made through counter-entry counts, is decided nowhere the module cites. A settler who wants a run open can reopen it. Record this where counter admissibility is owned (the Record Service or SPEC.md Retraction), or refuse counters whose actor is the receipt's settler; either is a bounded follow-on outside this concern's authority to settle alone"
+      },
+      {
+        "id": "R9",
+        "severity": "note",
+        "text": "already_settled reports the last standing receipt; when more than one stands (possible only if the guard was absent when they were appended) the detail names one and hides the rest, while measured.standing lists all. Cosmetic"
+      },
+      {
+        "id": "R4-carried",
+        "severity": "residual",
+        "text": "Unchanged from the first pass: the RECONCILED entry records --relation and --basis as typed, with no measurement of landing or relation. Declared behaviour under 0104 ruling 2; not repaired in this pass and not in this pass's scope"
+      }
+    ],
+    "standing_supported": {
+      "transition": "BUILT -> WITNESSED",
+      "subject": "settle participant: scripts/sovkernel/settle.py d4231923…, scripts/sov_kernel.py 74de0800…, scripts/tests/test_sov_kernel_settle.py 977527b3…, on HEAD 497c56b with those three paths uncommitted",
+      "note": "Every first-pass claim now holds as stated, R1 is closed with both polarities fixtured, R2 and R3 are repaired or declared, and the three real-proof steps reproduce byte-for-byte in an independent store. This observation supports the proposal; it settles nothing and grants nothing. R8 is a residual for the builder to declare at landing or route to the seam that owns counter admissibility; it does not defeat the claim that the participant refuses what it says it refuses"
+    },
+    "landing_support": true,
+    "landing_note": "Yes, onto 497c56b, this exact tree (the three digests above), with R8 and R4 declared in the landing or absorbed inside the concern. verify PASS, lint PASS, independent observation from a participant that did not build the change: the three conditions grant:standing-landing-loop names are met on the bytes read here. If the tree moves before landing, this support does not transfer."
+  }
+}

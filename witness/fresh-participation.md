@@ -3,17 +3,238 @@
 ```witness
 standing_supported  BUILT
 subject  fresh-participation
-revision  161d559fc4eba85dab598c3495d0620cbacbf011
-pass  2
+revision  8fd7716d6f1bb9a3b7bd1b11d76d9bbe06362c16
+pass  3
 ```
 
-Two passes by the same role, different commits. Pass 2 (commit `161d559`) is current and
-owns the declaration above. Pass 1 (commit `d40d61f`) follows it unchanged as history.
+Three passes by the same role, different commits. Pass 3 (commit `8fd7716`) is current and
+owns the declaration above. Pass 2 (commit `161d559`) and pass 1 (commit `d40d61f`) follow it
+unchanged as history.
 
 No `*_status` field in `STATUS.yaml` names this subject, so `scripts/sov_standing.py` does not
 read this file. The subject is the one `ITEM` member under
 `custody:phase-1-5/fresh-participation` in `contracts/custodies/phase-1-5.json`:
 `scripts/sov_fresh.py`, stage `VERTICAL_SLICE`, standing `BUILT`, `stage_observed_by` null.
+
+## Pass 3: commit 8fd7716 (2026-09-06)
+
+Verdict: **RATIFIABLE-WITH-CONDITIONS**.
+
+Claim under observation, as the builder states it: F18, F19, F20 and F21 from pass 2 are repaired
+at this commit. Only `SOV_PRINCIPAL_REGISTRY` counts as an undeclared resolver input, and only
+when no registry is passed (`scripts/sovfresh/layers.py` `undeclared_inputs`); the fixture
+registry is read from the repository path with a fixture root (`scripts/sov_fresh.py`
+`fixture_registry`); the foreign-session leg binds to a session the node never opened and the
+Gateway refuses it at `check-attribution` with a receipt (`scripts/sovfresh/probe.py` `_refusals`,
+`scripts/sovfresh/node.py` `bind`); only the registry's `root_principal` may issue, any other or
+empty issuer issues nothing (`node.py` `admit`, `layers.py` `root_principal`). F23 is answered by a
+`node_session_id` field beside `session_id` in the Q1.1 observation. Builder's report:
+`reports/2026-09-06-fresh-participation-slice.md`, section "Independent witness". It was read
+after every command below had run and after the findings below were fixed; it is the executor's
+self-report and nothing here is taken from it.
+
+Commit witnessed: `8fd7716d6f1bb9a3b7bd1b11d76d9bbe06362c16` on
+`claude/phase-2-citizen-mechanics-inrozu`. `git status --porcelain` was empty before and after
+every command, `git rev-parse HEAD` read the commit throughout, three changed files digest
+identically in the tree and in `git show 8fd7716:<path>`, and `.local/sov-sessions/` does not
+exist on this host, so every probe run wrote only to its temporary directory or to this
+witness's scratch directory. The commit changes 10 files (+736/-53): the four probe modules, the
+unit suite, the custody fixture's member note, the report, the built documentation page, and the
+two pass-2 witness files. `conformance/` is not among them, so the oracle is unchanged since
+`d40d61f`.
+
+Witness: `claude-fable-5-1/sov-witness@2026-09-06`, pass 3 by the same role. This participant
+did not build, edit, stage or commit anything under the subject. The only files it wrote are this
+section, the two header lines and one paragraph above that name the current pass, and
+`witness/observations/2026-09-06-fresh-participation-observation-3.json`, all after every command
+under `Verified` had returned. Pass 2 and pass 1 below are carried unchanged: the bytes from
+`## Pass 2` to the end of this file are identical to `git show 8fd7716:witness/fresh-participation.md`
+from the same heading, the pass-1 section is byte-identical between `161d559` and `8fd7716`, the
+pass-1 receipt is unchanged between those commits and its 24 digests recompute against `d40d61f`,
+and the pass-2 receipt's 25 digests recompute exactly against `git show 161d559:<address>`. Pass 2's
+section and receipt first enter history in `8fd7716`, the commit they are graded alongside, so
+"unchanged" for pass 2 rests on that recomputation and on nothing older (F30).
+
+### Standing supported
+
+`BUILT`, unchanged in the block above. The pass-2 conditions are discharged as written: C5 (F18),
+C6 (F19) and C7 (F20, F21) each reproduce through the declared surface, and every value in the
+positive run's three observations is read from a node record, the artifact, or derived from
+them. `BUILT -> WITNESSED` is supported for the instrument claim once C8 and C9 below are
+discharged, and is not declared, because a conditional advance is not an advance and the gate
+reads one word. C8 (F26) is a small correctness defect masked today by another failure; C9 (F27)
+is a statement defect: the issuer gate that now refuses a non-root issuer is the probe's rule, the
+Console still makes the first issuer a fresh node's root, and `node.py`'s docstring and the
+observation's `node.admitted` field present the probe's refusal as the node's. Whether the
+positive run, a temporary node whose genesis the probe seeds under the registry root's typed
+name, is evidence for P15-X1 remains J4 and is the owner's, not a reason this pass withholds.
+
+### Verified
+
+Commands run from the repository root at the commit above. Exit codes are the process's own.
+`<copy>` is a byte copy of `contracts/principals.json` in the witness's scratch directory;
+`<other-root>` is the same copy with `root_principal` set to `principal:other-root` and that
+principal appended.
+
+| Command | Exit | Reading |
+| --- | --- | --- |
+| `git rev-parse HEAD`; `git status --porcelain`; `git diff --stat 161d559 8fd7716` | 0; 0; 0 | `8fd7716d...`; empty before and after every command; 10 files +736/-53, none under `conformance/` |
+| `python scripts/sov_fresh.py selfcheck` | 0 | `PASS: fresh participation slice closes on the positive variant and 3 defeating variants each fail their own predicates` |
+| `SOV_PRINCIPAL=principal:bdo python scripts/sov_fresh.py selfcheck` | 0 | same `PASS` (F18) |
+| `SOV_PRINCIPAL_REGISTRY=/nonexistent python scripts/sov_fresh.py selfcheck` | 0 | same `PASS` (F18) |
+| `python scripts/sov_fresh.py run --principal principal:claude-fable-5 --issuer principal:bdo --json` | 0 | `passed: true`; `root_principal: principal:bdo`; `node.admitted: null`; own `COMMITTED` with `receipt_id`, `stage: null`, `grant_id: null`; `foreign_session` `REFUSED`, `stage: check-attribution`, `ACTOR_ATTRIBUTION_MISMATCH`, `receipt_id` present (F19); `other_actor_on_this_session` the same code and stage; `other_actor_without_the_grant` `stage: check-authority`, `AUTHORITY_REFUSED` / `AuthorityRefused`, `receipt_id`; Q1.1 `session_id: fresh-1aca0dbe`, `node_session_id: session_c560a1fb1e4a48dd` (F23); Q1.3 identities `principal:claude-fable-5` / `session_c560a1fb1e4a48dd` / `grant_20bd94abd3124ed5` / `urn:soveraeign:binding:node-interface:model-json-v1`, mismatch `REFUSED`; all three predicates hold |
+| `... --issuer principal:nobody-at-all --json` | 1 | `node.admitted: "issuer 'principal:nobody-at-all' is not the registry's root principal 'principal:bdo'; nothing issued"`; own `REFUSED` at `stage: bind`, `SESSION_IDENTITY_REQUIRED`; only the `foreign_session` leg observed (`REFUSED`, `check-attribution`, receipt); `node_session_id: null`; Q1.3 `missing session_id; missing grant_id; missing interface_binding_id; collapsed; mismatch did not refuse` (F20) |
+| `... --issuer "" --json` | 1 | `node.admitted: "issuer '' is not the registry's root principal 'principal:bdo'; nothing issued"`; no traceback; otherwise the row above (F21) |
+| `... --json` (no `--issuer`) | 1 | `node.admitted: "no issuer: this node has recorded no grant for any actor"`; otherwise the row above |
+| `SOV_PRINCIPAL_REGISTRY=<copy> python scripts/sov_fresh.py run --principal principal:claude-fable-5 --issuer principal:bdo` | 1 | `P15-Q1.1: fresh participation required oral history`; `defect: undeclared environment inputs: SOV_PRINCIPAL_REGISTRY`; Q1.2, Q1.3 `holds` |
+| the same with `--registry <copy>` | 0 | `PASS`; all three `holds` |
+| the same with both the variable and `--registry <copy>` | 0 | `PASS`; the flag declares the input |
+| `SOV_PRINCIPAL_REGISTRY=<other-root> ... --issuer principal:other-root --json` | 1 | `root_principal: principal:bdo` while the principal resolved through `<other-root>`; `node.admitted: "issuer 'principal:other-root' is not the registry's root principal 'principal:bdo' ..."`; Q1.1 `required oral history` (F26) |
+| `SOV_PRINCIPAL_REGISTRY=<other-root> ... --issuer principal:bdo --json` | 1 | `root_principal: principal:bdo`; `node.admitted: null`, grants issued; Q1.3 `holds`; the run fails on Q1.1 `required oral history` only (F26) |
+| `... --registry <other-root> --issuer principal:other-root --json` | 0 | `PASS`; `root_principal: principal:other-root`: whoever writes the registry file names who may issue (F27) |
+| `... --registry /nonexistent --issuer principal:bdo --json` | 1 | `root_principal: null`; `principal: null`; `node.admitted: "issuer 'principal:bdo' is not the registry's root principal None ..."`; Q1.1 `missing principal_id`; `other_defects: []` |
+| `SOV_PRINCIPAL=principal:bdo python scripts/sov_fresh.py run --issuer principal:bdo --json` (no `--principal`) | 0 | `PASS`; `principal: principal:bdo`; `oral_history_used: false` (F28) |
+| `run --principal principal:claude-fable-5 --issuer principal:bdo --variant unregistered-principal` / `work-dies-with-session` / `no-grant` | 1 / 1 / 1 | `COMMITTED`, Q1.1 `missing principal_id`, Q1.3 `missing principal_id; collapsed` (F25 reproduced) / Q1.2 `missing custody_or_lease; does not survive`, Q1.1 and Q1.3 `holds` / `REFUSED SESSION_IDENTITY_REQUIRED`, Q1.3 fails, `node: no issuer` |
+| witness's own drive of `sovfresh.probe.run` against a kept node (fixture registry and fixture issuer from `sov_fresh.fixture_registry`), then `LocalActionPath(...).record.reconstruct()` | 0 | `passed True`; 35 journal entries (24 `EVENT`, 11 `RECEIPT`); the four `receipt_id`s resolve to `RECEIPT` entries whose payloads read `REFUSED` / `check-attribution` / `ACTOR_ATTRIBUTION_MISMATCH` (two legs), `REFUSED` / `check-authority` / `AuthorityRefused`, and `COMMITTED` (subject `sov://asset/ingest-asset`); grants in the journal: genesis `grant:authority` and `revoke:authority` to `principal:fixture-root` by `principal:fixture-root`, then `open:session` and `read:registry` to the actor and `open:session` to the other actor, all `granted_by principal:fixture-root` |
+| `python -m unittest scripts.tests.test_sov_fresh` | 0 | `Ran 17 tests in 2.986s OK` |
+| `python -m unittest discover -s services/console/tests`; `... -s services/gateway/tests` | 0; 0 | `Ran 193 tests OK`; `Ran 26 tests OK` (pass 2 left both uncovered) |
+| `python scripts/sov_custody.py selfcheck`; `python scripts/sov_custody.py board custody:phase-1-5/fresh-participation` | 0; 0 | `46 case(s), 27/27 declared refusals reached; selfcheck PASS`; `ITEM scripts/sov_fresh.py [build claim]`, `closes when COMMAND python scripts/sov_fresh.py selfcheck`, the member note names both prior passes and carries no repair claim (F24) |
+| `python scripts/sov_next.py --strict`; `python scripts/sov_active_phase_progress.py` | 0; 0 | `PASS: phase/custody precedence is explicit ...`; no output (pass-1 residual reproduced) |
+| `python scripts/lint.py` | 0 | `PASS: repository hygiene (1187 text files, 553 Python modules, 10 named debt)` |
+| `python scripts/verify.py` | 0 | `PASS: 51 checks in 16.914s wall`; `DEBT: no wall-clock grade`; `BUDGET DEBT: 9 check(s) over ceiling`, among them `fresh participation slice: 1.630s over its 1.500s ceiling` (F24); the `FAIL` lines in the output are planted tooling self-test output |
+| `python scripts/sov_witness_layer.py records`; `python scripts/sov_standing.py`; `python scripts/sov_docs.py check` (before writing) | 0; 0; 0 | `PASS: 8 witness receipt(s) graded, 0 unusable, 8 stale against their subject`; `PASS: 1 standing claim(s)`; `PASS: documentation page matches 281 documents` |
+| pass-1 section bytes, `git show 161d559:` against `8fd7716`; pass-1 receipt `git diff 161d559 8fd7716`; pass-1 receipt digests against `d40d61f` | 0 | identical (199 lines); unchanged; 24/24 |
+| pass-2 receipt's 25 digests against `git show 161d559:<address>` | 0 | 25/25 |
+| lines over 100 characters in the five changed Python files (`awk`); `python -m ruff` | - | `probe.py:188` (116), `probe.py:86` (101), `sov_fresh.py:94` (101); Ruff is not installed on this host (F29) |
+| `sha256sum` over 20 addresses | 0 | recorded in the receipt's `observed_state_digests` |
+
+### Pass-2 findings, disposition at 8fd7716
+
+- **F18 - repaired.** `undeclared_inputs` (`layers.py:29-38`) considers `SOV_PRINCIPAL_REGISTRY`
+  alone and returns nothing when a registry was passed; `fixture_registry` reads
+  `ROOT / contracts/principals.json` directly (`sov_fresh.py:83-86`) and substitutes a fixture root
+  (`:87-98`). Measured: `selfcheck` exit 0 under a bare environment, under `SOV_PRINCIPAL`, and
+  under `SOV_PRINCIPAL_REGISTRY=/nonexistent`. Both polarities are pinned
+  (`test_sov_fresh.py:86-116`). Successor residual: F28.
+- **F19 - repaired.** `_refusals` binds the participant's own binding to
+  `session_id="session_never_opened_on_this_node"` (`probe.py:56-57`); the composer binds, the
+  Gateway refuses at `check-attribution` with `ACTOR_ATTRIBUTION_MISMATCH`, and the receipt is a
+  `RECEIPT` entry in the node's journal, re-read by this witness from a kept node. `_mismatch`
+  requires that code for the leg (`probe.py:76`); the unit suite pins stage and receipt
+  (`test_sov_fresh.py:64-66`).
+- **F20 - repaired as pass 2's first alternative, with a successor.** `admit` refuses an issuer that
+  is not the registry's `root_principal` and returns the refusal (`node.py:50-53`);
+  `principal:nobody-at-all` reads exit 1 and Q1.3 unmet, and `principal:bdo` issues nothing
+  against the fixture registry whose root is `principal:fixture-root`
+  (`test_sov_fresh.py:118-123`). The gate is the probe's, not the node's, and is stated as the
+  node's: F27. Which registry names the root when the environment overrides it: F26.
+- **F21 - repaired.** `--issuer ""` returns `node.admitted` with a reason and exit 1; no traceback
+  (`node.py:50`).
+- **F22 - open, residual (product).** `own.grant_id` and `own.stage` are `null` in the `COMMITTED`
+  reading; unchanged.
+- **F23 - answered in part, residual.** Q1.1 carries `node_session_id` beside `session_id`
+  (`probe.py:165`), so a reader can relate the host session to the console session. Q1.1
+  `session_id` and Q1.3 `identities.session_id` still name two different sessions under one
+  label; `conformance/commissioning.py` reads neither bridge field.
+- **F24 - half repaired, half open.** The member note no longer carries the builder's repair claim
+  and cites this record with both prior verdicts (`contracts/custodies/phase-1-5.json:57`). The
+  check read 1.630s pooled against a 1.500s ceiling at this pass; attributed debt, not a refusal.
+- **F25 - open, residual (product).** Reproduced: `--variant unregistered-principal --issuer
+  principal:bdo` reads `COMMITTED` for a session opened with `principal_id: null`.
+- **F10 (pass 1) - CLI half repaired.** `run --registry` exists (`sov_fresh.py:155-156`); the
+  result carries `root_principal` but still not the path the principal resolved from.
+
+### New findings
+
+Severity names the consequence if the member were ratified at `VERTICAL_SLICE` as-is. Defects are
+the builder's to repair inside the concern; residuals are recorded and hold nothing.
+
+- **F26 - LOW, defect. `scripts/sovfresh/layers.py:41-47`; `scripts/sovsession/principals.py:46-49`;
+  `scripts/sovfresh/probe.py:96-97`; `scripts/sov_fresh.py:68`.** `root_principal` reads
+  `root / contracts/principals.json` whenever no `--registry` is passed, while the resolver's
+  `registry_path` honours `SOV_PRINCIPAL_REGISTRY`. With the variable naming a registry whose
+  root is `principal:other-root` and `--issuer principal:bdo`, the principal resolved through the
+  environment registry and the issuer gate compared against the checked-in root and issued:
+  `node.admitted: null`, Q1.3 `holds`. Two registries were in force in one run, and the docstring
+  "the root principal the registry in force names" is untrue in the override case. Masked today
+  because the same run fails Q1.1 for the undeclared input, so no passing run results.
+  Consequence: the issuer gate can be satisfied by a registry the run did not resolve from.
+- **F27 - LOW, defect (statement). `scripts/sovfresh/node.py:1-7,38-53`;
+  `scripts/sovfresh/probe.py:187-189`; `scripts/sov_fresh.py:153-154`;
+  `services/console/src/soveraeign_console_service/permits.py:101-102`.** The root check is the
+  probe's rule. `permits.issue` still takes whoever grants first as a fresh node's root, neither
+  the Console nor the Gateway reads `contracts/principals.json`, and `--registry <file naming X
+  as root> --issuer X` passes. The `node.py` docstring says everything in the module "is read back
+  from records the node's own services wrote" and that the probe "decides nothing about whether
+  they are admitted", but `admit` decides at `:50-53` before the node is asked, and its reason
+  string is reported under `node.admitted` as though the node said it. The `--issuer` help "any
+  other name issues nothing" reads as product behaviour. `sov_fresh.py:9-10` carries the honest
+  half: naming the root seat "shows the mechanism; it is not evidence that the seat acted".
+  Consequence: a reader of a failing observation cannot tell whether the node or the probe
+  refused; a reader of the passing one cannot tell from the code that the node would have taken
+  any name. This is the one value in the run written by the probe rather than read from a record
+  or honestly `None`; it appears only on failing paths.
+- **F28 - LOW, residual. `scripts/sovfresh/layers.py:25-26,29-38`; `scripts/sov_fresh.py:59-63`.**
+  `undeclared_inputs` no longer considers `SOV_PRINCIPAL` at all, and its `declared` parameter is
+  tested only for `SOV_PRINCIPAL_REGISTRY`, which `cmd_run` never adds, so the parameter is dead;
+  the `ENVIRONMENT_INPUTS` docstring "set and undeclared, they are oral history" is stale for the
+  principal variable. `SOV_PRINCIPAL=principal:bdo run --issuer principal:bdo` with no
+  `--principal` reads `PASS` with `oral_history_used: false`: the host environment supplied the
+  principal and the CLI counts the variable as a declaration channel. Whether a variable preset
+  on the host is artifact-derived entry or private history is a reading of P15-Q1.1 the probe
+  has settled by definition (J6).
+- **F29 - LOW, residual (style). `scripts/sovfresh/probe.py:188` (116 characters), `:86` (101);
+  `scripts/sov_fresh.py:94` (101).** `AGENTS.md` targets 100; `lint.py` does not grade it and Ruff
+  is not installed here.
+- **F30 - LOW, residual (record provenance).** Pass 2's section and receipt first enter history in
+  `8fd7716`, the builder's repair commit, as pass 1's did in `161d559`. Their integrity rests on
+  digest recomputation against the commits they name (25/25, 24/24) and on the pass-1 section
+  being byte-identical across the two commits that carry it; no copy independent of the
+  builder's hand exists, and this pass will be committed the same way.
+
+### Conditions for a later pass to support `BUILT -> WITNESSED`
+
+- C8 (F26): take the root from the registry the resolver actually used (the resolver's claim
+  names it), so one registry is in force per run; or refuse the run when the environment names a
+  registry, none was passed, and the two differ.
+- C9 (F27): state in `node.py`'s docstring and the `--issuer` help that the root check is the
+  probe's rule and that the Console makes a fresh node's first issuer its root; report the
+  probe-side refusal under a key that does not read as the node's, or mark it `refused_by`.
+- C5 to C7 from pass 2 are discharged.
+
+### Judgement items (questions, not the witness's to answer)
+
+- J1 to J3 carried from pass 1; J4 carried from pass 2, sharpened: the product rule is that a
+  fresh node's first issuer becomes its root; the registry check is the instrument's. May P15-X1 be
+  observed against a temporary node whose genesis the instrument seeds in the root seat's typed
+  name, when nothing verifies that the seat acted?
+- J5. The exit custody closes on `python scripts/sov_fresh.py selfcheck`, which since the F18
+  repair cannot see the operator's environment by design, while the custody's `defeated_by`
+  names "a fresh session that needs oral history to find its principal". Only `run` observes
+  that condition. Is closing on the instrument's discrimination what the clause wants, or does
+  closure want a recorded live `run`?
+- J6. Under P15-Q1.1, is a `SOV_PRINCIPAL` preset on the host a declaration channel, as the CLI
+  reads it, or oral history?
+
+### Uncovered
+
+- `docs/documentation.html`: the 10 changed lines were read for shape only (the witness block of
+  this record and two re-wrapped unrelated lines); accepted on `sov_docs.py check`.
+- The Console and Gateway suites were run, not read; their behaviour was read through
+  `permits.py`, `authority.py`, `attribution.py`, and the kept node's journal.
+- The Record Service's `evidence_projection` was not exercised beyond the probe's own call.
+- The builder's report was read after the findings above were fixed; its statements of F18 to
+  F21 and F23 match what was measured, and its "Independent witness" section describes passes 1
+  and 2, not this one.
+- No network, no `gh`, no ruleset query.
+
+### Landing residual
+
+As in passes 1 and 2: `scripts/sovdocs/facets.py` indexes `witness/*.md`, so after this section
+is written `documentation reader`, `repository tooling tests` and `sov_docs.py check` are expected
+to read the built page as stale. The witness may not rebuild the page; whoever lands this record
+runs `python scripts/sov_docs.py build`. The exact readings after writing are in the receipt's
+`telemetry.after_writing`.
 
 ## Pass 2: commit 161d559 (2026-09-06)
 

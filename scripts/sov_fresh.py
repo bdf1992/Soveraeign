@@ -4,7 +4,8 @@
 a node of this repository's shape as the registered principal it declares, and the three
 P15-Q1 predicates are graded on what it resolved. A fresh node has recorded no grant, so
 P15-Q1.3 reads unmet until an issuer opens the node's permits office; `--issuer ID` lets
-the seat that holds that authority do so for the run. `selfcheck` proves the probe
+the run seed that first grant, and by the probe's own rule only under the name the registry
+in force names as root. `selfcheck` proves the probe
 discriminates against a temporary registry and a fixture issuer: the positive variant
 passes and each defeating variant fails exactly the predicates it declares. Naming the
 root seat as issuer shows the mechanism; it is not evidence that the seat acted. Neither
@@ -56,11 +57,7 @@ def _render(result: dict) -> str:
 
 
 def cmd_run(args: argparse.Namespace) -> int:
-    declared: set[str] = set()
-    principal_id = args.principal
-    if not principal_id and os.environ.get(principals.ENV_PRINCIPAL, "").strip():
-        principal_id = os.environ[principals.ENV_PRINCIPAL].strip()
-        declared.add(principals.ENV_PRINCIPAL)
+    principal_id = args.principal or os.environ.get(principals.ENV_PRINCIPAL, "").strip()
     if not principal_id:
         print("REFUSED PRINCIPAL_REQUIRED: declare the registered principal this participant "
               "speaks as with --principal or SOV_PRINCIPAL; the registry names, it does not guess")
@@ -68,7 +65,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     registry = Path(args.registry) if args.registry else None
     with tempfile.TemporaryDirectory() as temp:
         result = probe.run(ROOT, Path(temp), principal_id, args.variant, registry=registry,
-                           issuer=args.issuer, declared=declared)
+                           issuer=args.issuer)
     print(json.dumps(result, indent=2, sort_keys=True) if args.as_json else _render(result))
     return 0 if result["passed"] else 1
 
@@ -91,7 +88,7 @@ def fixture_registry(temp: Path) -> Path:
         "anchor": {"kind": "fixture", "reference": "scripts/sov_fresh.py selfcheck"},
         "crossing_class": "in-node", "model": None, "delegation": None,
         "claim": {"claimed_at": "2026-09-06T00:00:00Z",
-                  "claim_basis": "fixture root of a temporary node; exists only for this self-check",
+                  "claim_basis": "fixture root of a temporary node; self-check only",
                   "verification": "UNVERIFIED"},
         "verification_channel": {"kind": "local-file", "reference": "temporary"},
         "revoked": None,
@@ -150,8 +147,8 @@ def main(argv: list[str] | None = None) -> int:
     run = sub.add_parser("run", parents=[shared],
                          help="one live fresh-participation run as a declared principal")
     run.add_argument("--principal", help="registered principal id this participant speaks as")
-    run.add_argument("--issuer", help="the registry's root principal, opening this node's "
-                                      "permits office for the run; any other name issues nothing")
+    run.add_argument("--issuer", help="seed the temporary node's first grant under this name; "
+                                      "the probe accepts only the registry's root principal")
     run.add_argument("--registry", help="principal registry to read instead of "
                                         "contracts/principals.json")
     run.add_argument("--variant", default="positive", choices=sorted(probe.VARIANTS))

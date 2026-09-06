@@ -7,7 +7,7 @@ throughout. No phase state, standing field, or floor moved.
 
 ## Terminal
 
-Presented on the branch for acceptance, in three commits: the slice, then the repairs each
+Presented on the branch for acceptance, in four commits: the slice, then the repairs each
 witness pass asked for. Not landed on `main`: the change touches `CLAUDE.md`, which
 the ratified standing grant excludes, so `scripts/sov_land.py` is not the path and Bdo's
 review of the branch is.
@@ -24,8 +24,8 @@ review of the branch is.
 | Custody board | `python scripts/sov_custody.py board custody:phase-1-5/fresh-participation` | one `ITEM` member at `VERTICAL_SLICE`, standing `BUILT`, `stage_observed_by` null |
 | Repository gate | `python scripts/verify.py`; `python scripts/lint.py` | 51 checks PASS; hygiene PASS |
 
-"Second commit" in the heading reads "third" for the rows that changed after pass 2: the
-foreign-session refusal, the issuer gate, and the environment handling below.
+The heading's "second commit" reads "latest commit" for rows that changed under later passes:
+the foreign-session refusal, the issuer gate, and the environment handling below.
 
 The closed path: host session registered; principal resolved from the registry as the
 participant declares it; campaign read from `STATUS.yaml` and `contracts/phases.json` by
@@ -96,6 +96,27 @@ and Gateway commit a crossing for a null `principal_id` (F25, a product question
 J4 asks whether P15-X1 may be observed against a temporary node whose root grant the run
 seeded under the registry's root name, or wants a persisted node whose office the root seat
 opened; `--issuer` shows the mechanism and is not evidence the seat acted.
+
+Pass 3 observed commit `8fd7716`, scoped to the pass 2 repairs. Verdict
+`RATIFIABLE-WITH-CONDITIONS`; standing supported `BUILT`, with `BUILT -> WITNESSED` supported
+for the instrument claim once two low defects are discharged. Both repaired in the fourth
+commit:
+
+- F26: the issuer gate read the checked-in registry while the resolver honoured
+  `SOV_PRINCIPAL_REGISTRY`, so the two could read different registries. Now the gate reads
+  the registry the resolver reads, and the Q1.1 observation records which registry that was.
+- F27: the issuer gate is the probe's rule, not the node's, and was described as the node's.
+  The Console makes a fresh node's first issuer its root and reads no registry. The rule is
+  now named `PROBE_ISSUER_GATE`, its refusal is reported as the probe's, and the module
+  docstring says so.
+
+Pass 3 residuals recorded: the committed receipt names no grant (F22); host and node
+sessions remain two sessions (F23); the check reads over its ceiling under load (F24); the
+node commits a crossing for a null principal (F25); a host-preset `SOV_PRINCIPAL` is accepted
+as the declaration channel and not flagged as oral history (F28, J6); pass 2's record first
+entered history in the builder's commit (F30, as pass 1's did and this pass's will). Pass 3
+adds J5: the custody closes on `selfcheck`, which is environment-blind by design, while its
+`defeated_by` names oral history that only `run` observes.
 
 Pass 1 residuals recorded rather than changed: `--json` now works after the subcommand (F8);
 the declared verify/lint evidence in the old authority request is gone with that request

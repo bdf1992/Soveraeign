@@ -83,17 +83,17 @@ def _mismatch(readings: dict[str, Any], own: dict[str, Any]) -> str:
         if reading["outcome"] != "REFUSED":
             return str(reading["outcome"] or "UNRESOLVED")
         if code not in (reading.get("reason"), reading.get("diagnostic")):
-            return f"REFUSED_FOR_ANOTHER_REASON:{reading.get('diagnostic') or reading.get('reason')}"
+            code_read = reading.get("diagnostic") or reading.get("reason")
+            return f"REFUSED_FOR_ANOTHER_REASON:{code_read}"
     return "REFUSED" if own.get("outcome") == "COMMITTED" else "UNOBSERVED"
 
 
 def run(root: Path, work_dir: Path, principal_id: str, variant: str = "positive", *,
-        registry: Path | None = None, issuer: str | None = None,
-        declared: set[str] | None = None) -> dict[str, Any]:
+        registry: Path | None = None, issuer: str | None = None) -> dict[str, Any]:
     """Run one variant and return observations, grades, and the trace they came from."""
     if variant not in VARIANTS:
         raise ValueError(f"unknown variant {variant!r}; declared: {', '.join(VARIANTS)}")
-    undeclared = layers.undeclared_inputs(declared or set(), registry is not None)
+    undeclared = layers.undeclared_inputs(registry is not None)
     root_principal = layers.root_principal(root, registry)
     directory = work_dir / "sov-sessions"
     session = "fresh-" + uuid.uuid4().hex[:8]
@@ -105,8 +105,10 @@ def run(root: Path, work_dir: Path, principal_id: str, variant: str = "positive"
 
     entry = layers.open_session(directory, session, root, principal_id, registry)
     principal = entry["principal"]["principal"]
+    registry_read = entry["principal"].get("registry")
     actor = lease_store.principal_id(session)
-    trace.append(f"host session {session}; principal {principal or 'UNIDENTIFIED'}; actor {actor}")
+    trace.append(f"host session {session}; principal {principal or 'UNIDENTIFIED'} "
+                 f"from {registry_read}; actor {actor}")
     phase = layers.campaign(root)
     trace.append(f"phase {phase['phase_state']} from {phase['governance_context']}")
     work = layers.bounded_work(root)
@@ -163,6 +165,7 @@ def run(root: Path, work_dir: Path, principal_id: str, variant: str = "positive"
             "record_projection_id": projected["projection"]["projection_id"],
             "oral_history_used": bool(undeclared),
             "node_session_id": (admitted["session"] or {}).get("session_id"),
+            "registry": registry_read,
         },
         "P15-Q1.2": {
             "work": {"address": work["address"],
@@ -184,8 +187,11 @@ def run(root: Path, work_dir: Path, principal_id: str, variant: str = "positive"
     other = list(projected["schema_defects"]) + list(phase["defects"])
     if undeclared:
         other.append("undeclared environment inputs: " + ", ".join(undeclared))
-    return {"variant": variant, "session": session, "principal": principal, "actor": actor,
-            "issuer": issuer, "root_principal": root_principal, "node": {"admitted": admitted["reason"], "own": own,
-                                       "refusals": readings},
-            "observations": observations, "grades": grades, "other_defects": other,
-            "passed": not any(grades.values()) and not other, "trace": trace}
+    return {
+        "variant": variant, "session": session, "principal": principal, "actor": actor,
+        "issuer": issuer, "root_principal": root_principal, "registry": registry_read,
+        "node": {"admitted": admitted["reason"], "refused_by": admitted["refused_by"],
+                 "own": own, "refusals": readings},
+        "observations": observations, "grades": grades, "other_defects": other,
+        "passed": not any(grades.values()) and not other, "trace": trace,
+    }

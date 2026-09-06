@@ -3,7 +3,9 @@
 Everything here is read back from records the node's own services wrote: the Console
 Service opens the session and issues the grant, the Gateway refuses or admits each
 crossing, and its receipt carries the stage and reason. The probe composes requests,
-including ones the node must refuse; it decides nothing about whether they are admitted.
+including ones the node must refuse, and decides nothing about whether the node admits
+them. It applies one rule of its own, in `admit`: which name may seed a fresh node's first
+grant. That rule is the probe's and is reported as such.
 """
 
 from __future__ import annotations
@@ -28,6 +30,8 @@ SCOPE = "registry:any"
 ARGUMENTS = {"name": "sov://asset/ingest-asset"}
 SESSION_BINDING = "urn:soveraeign:binding:session:fresh-probe"
 OPEN_SESSION = "open:session"
+PROBE_ISSUER_GATE = "PROBE_ISSUER_GATE"
+"""The probe's own refusal: an issuer the registry does not name as root seeds nothing."""
 
 
 def open_node(work_dir: Path) -> LocalActionPath:
@@ -40,21 +44,25 @@ def admit(node: LocalActionPath, issuer: str | None, root: str | None, actor: st
     """Open the participant's console session and, when the root issues, record its grant.
 
     With no issuer nothing is granted and no session opens: a node whose permits office
-    has never been opened admits nobody, which is the honest reading of a fresh node. A
-    node's first grant makes its issuer that node's root, so only the principal the
-    registry names as root may be offered here; any other name issues nothing.
+    has never been opened admits nobody, which is the honest reading of a fresh node.
+
+    The Console makes whoever issues a fresh node's first grant that node's root and reads
+    no registry. The probe therefore refuses, by its own rule `PROBE_ISSUER_GATE`, to offer
+    that first grant under any name but the one the registry in force names as root. The
+    rule is the probe's, not the node's; the node would have accepted the name.
     """
     if issuer is None:
-        return {"session": None, "grant_id": None,
+        return {"session": None, "grant_id": None, "refused_by": None,
                 "reason": "no issuer: this node has recorded no grant for any actor"}
     if not issuer or issuer != root:
-        return {"session": None, "grant_id": None,
-                "reason": f"issuer {issuer!r} is not the registry's root principal "
-                          f"{root!r}; nothing issued"}
+        return {"session": None, "grant_id": None, "refused_by": PROBE_ISSUER_GATE,
+                "reason": f"probe rule {PROBE_ISSUER_GATE}: issuer {issuer!r} is not the "
+                          f"registry's root principal {root!r}; the probe seeded nothing"}
     node.console.grant(actor, OPEN_SESSION, actor, granted_by=issuer)
     granted = node.console.grant(actor, required_authority, SCOPE, granted_by=issuer)
     session = node.console.open_session(actor, MODEL, SESSION_BINDING, principal_id)
-    return {"session": session, "grant_id": granted["grant_id"], "reason": None}
+    return {"session": session, "grant_id": granted["grant_id"], "refused_by": None,
+            "reason": None}
 
 
 def reachable_operation(document: dict[str, Any]) -> dict[str, Any]:

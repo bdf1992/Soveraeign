@@ -34,7 +34,7 @@
       "entry_stage": "ROOT_POINT",
       "target_stage": "HORIZONTAL_SURFACE",
       "closure": {
-        "check": {"kind": "COMMAND", "expression": "python scripts/sov_session.py brief"},
+        "check": {"kind": "COMMAND", "expression": "python scripts/sov_fresh.py selfcheck"},
         "judgement_seat": "seat:root",
         "defeated_by": "a fresh session that needs oral history to find its principal, its work, or its authority, or a work record that dies with the session that carried it"
       },
@@ -46,7 +46,17 @@
         "maturity": "DISCOVERY_ENVELOPE",
         "dimensions": [{"dimension_id": "grants", "low": 0, "high": 1}, {"dimension_id": "judgement_units", "low": 1, "high": 1}]
       },
-      "members": [],
+      "members": [
+        {
+          "member_kind": "ITEM",
+          "address": "scripts/sov_fresh.py",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "PRESENTED",
+          "stage_observed_by": null,
+          "note": "the closed path session -> principal -> campaign -> work -> lease -> capability -> authority -> Record projection -> session end -> survival -> instrument; P15-Q1.1 to Q1.3 graded by conformance/commissioning.py on a live run, three defeating variants fail their own predicates; built and self-tested, no independent observation yet"
+        }
+      ],
       "depends_on": [],
       "cleanup_obligations": []
     },

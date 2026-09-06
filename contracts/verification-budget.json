@@ -37,7 +37,8 @@
       "participant against its baseline": 1.0,
       "documentation reader": 1.0,
       "kernel participant parity": 1.0,
-      "semantic cold-start task": 1.0
+      "semantic cold-start task": 1.0,
+      "fresh participation slice": 1.5
     }
   },
   "catastrophic_check_seconds": 30.0,

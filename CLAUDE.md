@@ -75,7 +75,7 @@ been receiving merged pull requests. This section is orientation, not standing.
 `STATUS.yaml`, the working tree, and the newest relevant report override it
 whenever they disagree.
 
-- `python scripts/verify.py` runs 50 checks. Total wall time is graded by the
+- `python scripts/verify.py` runs 51 checks. Total wall time is graded by the
   bands in `contracts/verification-budget.json` but is advisory rather than a
   repository failure by itself. The landed budget policy reruns a pooled suspect
   alone and fails catastrophically only when that isolated read still exceeds the
@@ -194,7 +194,7 @@ engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
 Sov, the federation harness, defeating fixtures for receipts and proofing,
 LF line-ending enforcement, and the stack certification. At the end of day two
 the record held 26 commits, 17 decision records and 8 reports; it now holds
-942 commits, 90 decision records and 30 reports. The
+942 commits, 90 decision records and 31 reports. The
 first independently witnessed work landed on 2026-08-25; owner-accepted packets
 now exist and are enumerated under `STATUS.yaml` `owner_accepted`.
 

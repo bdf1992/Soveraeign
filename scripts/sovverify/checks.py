@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import sys
 
+from sovverify.commissioning import COMMISSIONING_CHECKS
 from sovverify.participants import PARTICIPANT_CHECKS
 from sovverify.shape import ROOT, Check
 
@@ -295,6 +296,5 @@ REPOSITORY_CHECKS = (
           ("scripts/tests", "scripts/run_tooling_tests.py")),
 )
 
-#: Every check, in the order a run prints them: what the repository owns, then
-#: what each participant says about itself.
-CHECKS = REPOSITORY_CHECKS + PARTICIPANT_CHECKS
+#: Every check, in print order: the repository's own, the active phase's, each participant's.
+CHECKS = REPOSITORY_CHECKS + COMMISSIONING_CHECKS + PARTICIPANT_CHECKS

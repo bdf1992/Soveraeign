@@ -1,0 +1,281 @@
+{
+  "observation_schema": "soveraeign-witness-observation/v1",
+  "observation_id": "urn:soveraeign:witness-observation:circuit-2:7604505cc4898ff680f844b8",
+  "observer": "urn:soveraeign:principal:instance:sov-witness-circuit-2",
+  "relation": "WITNESS",
+  "concern": "concern:phase-1-5/circuit-2",
+  "source_session": "session-69de8a",
+  "recorded_at": "2026-09-06T00:41:47.466050Z",
+  "note": "An observation, not a settlement or ratification. The builder's REPORTED text (record:entry_4f8dff1c) is the claim under test, not evidence.",
+  "claim": {
+    "by": "urn:soveraeign:principal:instance:sov-worker-circuit-2",
+    "record": "record:entry_4f8dff1c3c4b4c2a9f09b112b5687ee4",
+    "text": "R10 and R11 repaired with three tests in WitnessResidualsOn3087714; 70 service tests OK; binding-check and lint exit 0; verify exit 1 only on the docs page and clarity receipt the KNOWN-GAPS edit staled; CLI proof: an actorless OUTPUT refuses UNREADABLE exit 2 through infer-relation; absorbed one guard beyond the two rows: observe_run refuses an inference about another run; no helper"
+  },
+  "tree_state": {
+    "worktree": ".claude/worktrees/agent-aa4b6211c5a2818dd",
+    "head": "3a3dbf8184d07f76393db39d7ba25bd7260be6e6",
+    "modified": [
+      "services/observation/KNOWN-GAPS.md",
+      "services/observation/src/soveraeign_observation_service/observe.py",
+      "services/observation/src/soveraeign_observation_service/record.py",
+      "services/observation/tests/test_thin_slice.py"
+    ],
+    "untracked": [],
+    "worktree_note": "path relative to the repository root; the worktree is a git worktree of that root"
+  },
+  "commands": [
+    {
+      "cmd": "git rev-parse HEAD; git status --short",
+      "exit": 0,
+      "result": "3a3dbf8; four M files, no untracked"
+    },
+    {
+      "cmd": "sha256sum <four files>",
+      "exit": 0,
+      "result": "equal to OUTPUT digests at seq 18-21"
+    },
+    {
+      "cmd": "python: cross-check projection included_records against journal entry digests and prev_digest chain",
+      "exit": 0,
+      "result": "9 of 9 match; as_of == head; chain links consistent"
+    },
+    {
+      "cmd": "git diff",
+      "exit": 0,
+      "result": "94 insertions, 10 deletions across the four files"
+    },
+    {
+      "cmd": "cd services/observation && python -m unittest discover -s tests",
+      "exit": 0,
+      "result": "Ran 70 tests OK"
+    },
+    {
+      "cmd": "python scripts/sov_kernel.py binding-check",
+      "exit": 0,
+      "result": "PASS 10 manifests, 135 operations"
+    },
+    {
+      "cmd": "python scripts/lint.py",
+      "exit": 0,
+      "result": "PASS repository hygiene (1193 text files, 554 modules, 10 named debt)"
+    },
+    {
+      "cmd": "python scripts/verify.py",
+      "exit": 1,
+      "result": "FAIL: documentation reader, repository tooling tests (test_sov_docs.Staleness.test_the_built_page_is_current); 50 checks, SILVER 11.1s"
+    },
+    {
+      "cmd": "python scripts/sov_docs.py check",
+      "exit": 1,
+      "result": "docs/documentation.html is stale"
+    },
+    {
+      "cmd": "python scripts/sov_clarity.py check",
+      "exit": 1,
+      "result": "STALE: services/observation/KNOWN-GAPS.md: TEXT_STALE"
+    },
+    {
+      "cmd": "D1: remove R10 guard (record.py 98-100); unittest test_an_output_without_a_producer_is_unreadable; restore",
+      "exit": 1,
+      "result": "FAIL Unreadable not raised; restored sha256 8704aed7 identical"
+    },
+    {
+      "cmd": "D2: remove malformed() call (observe.py 108-110); unittest test_observe_run_reads_the_record_it_is_given_not_the_inference; restore",
+      "exit": 1,
+      "result": "FAIL Unreadable not raised; restored sha256 44d994bf identical"
+    },
+    {
+      "cmd": "D3: remove run-id guard (observe.py 111-113); unittest test_observe_run_refuses_an_inference_about_another_run; restore",
+      "exit": 1,
+      "result": "ERROR PredicatesUndeclared raised instead of RelationUndetermined; restored sha256 44d994bf identical"
+    },
+    {
+      "cmd": "post-defeat: unittest discover; git status --short",
+      "exit": 0,
+      "result": "70 tests OK; same four M files"
+    },
+    {
+      "cmd": "cli infer-relation --store c2-observation-store --journal c2-journal.json --run urn:soveraeign:run:circuit-2 --observer <me> --observer-kind MODEL",
+      "exit": 2,
+      "result": "REFUSED RELATION_UNDETERMINED: GRANT_DESCENDS_FROM_RUN unanswerable; receipt ef0ab418; inference 309bf186 UNDETERMINED/INCOMPLETE"
+    },
+    {
+      "cmd": "cli observe-run --store c2-observation-store --journal c2-journal.json --run urn:soveraeign:run:circuit-2 --observer <me> --reader-root <worktree>",
+      "exit": 2,
+      "result": "REFUSED RELATION_UNDETERMINED; receipt bf436be9; no observation, no journal_entry"
+    },
+    {
+      "cmd": "cli infer-relation over c2-journal-actorless.json (actor blanked on entry_48bad624) with fresh store, worktree package",
+      "exit": 2,
+      "result": "REFUSED UNREADABLE 'names no actor, so its producer cannot be read'; 1 receipt"
+    },
+    {
+      "cmd": "git archive 3a3dbf8 services/observation; same two journals against that package with fresh stores",
+      "exit": 2,
+      "result": "both REFUSED RELATION_UNDETERMINED (GRANT_DESCENDS_FROM_RUN): grant refusal predates the build; actorless journal is not UNREADABLE at HEAD, so C2's CLI reading is the build's delta"
+    }
+  ],
+  "cli_used": "services/observation/src at 3a3dbf8 plus the worker's uncommitted repair; the inference path exercised is unchanged by the diff, the malformed() path is the worker's",
+  "observe_run_result": {
+    "outcome": "REFUSED",
+    "reason_code": "RELATION_UNDETERMINED",
+    "observation_id": null,
+    "predicate_results": null,
+    "journal_entry": null,
+    "inference_id": "urn:soveraeign:observation:relation-inference:309bf1866318c84e088d063a",
+    "inference_outcome": "UNDETERMINED",
+    "record_completeness": "INCOMPLETE",
+    "unanswerable_edges": [
+      "GRANT_DESCENDS_FROM_RUN"
+    ],
+    "receipts": [
+      "urn:soveraeign:observation:receipt:ef0ab418097ba83aa0afae3d",
+      "urn:soveraeign:observation:receipt:bf436be9bf59fe672f6e8a54"
+    ],
+    "declaration_found_in_store": "urn:soveraeign:observation:predicates:d3e4f5c1b0cb5675ff1756ff"
+  },
+  "verdicts": {
+    "C1-outputs-match-record": "CONFIRMED",
+    "C2-R10-actorless-output-unreadable": "CONFIRMED",
+    "C3-R11-observe-run-calls-malformed": "CONFIRMED",
+    "C4-absorbed-run-id-guard": "CONFIRMED",
+    "C5-suites-and-gates": "CONFIRMED",
+    "C6-verify-failures-attributed": "CONFIRMED",
+    "C7-known-gaps-rows": "CONFIRMED",
+    "C8-service-path-observation-of-circuit-2": "UNRESOLVED"
+  },
+  "residuals": [
+    {
+      "id": "RS-1",
+      "severity": "record",
+      "text": "The journal export holds no GRANT entry while the run's ATTEMPTED (record:entry_e8f619f2) names grant:standing-landing-loop, so no candidate observer can be read INDEPENDENT on GRANT_DESCENDS_FROM_RUN and the run cannot be observed through the service. This is the record's defect, not the tree's; repairing it is inside concern:phase-1-5/circuit-2 (record GRANT entries for the run's grant and for any grant the witness holds, or decide that a candidate holding no recorded grant is answerable). Until then the service-path observation the AI-NATIVE check wants for this run does not exist; this witness observation is the manual path."
+    },
+    {
+      "id": "RS-2",
+      "severity": "fixture",
+      "text": "test_observe_run_refuses_an_inference_about_another_run builds the other-run record from journal(), whose REPORTED entry is on RUN, so the substitute reports nothing; without the guard the call refuses PredicatesUndeclared rather than producing an observation citing a foreign inference. The test detects removal, but it does not show the hazard the guard exists for. A stronger fixture reports out/1 on the other run so removal yields a committed observation."
+    },
+    {
+      "id": "RS-3",
+      "severity": "precision",
+      "text": "The builder's sentence attributes verify's exit 1 to 'the docs page and clarity receipt'. verify.py does not run sov_clarity.py; its exit 1 is the stale docs page twice (documentation reader, and test_sov_docs.test_the_built_page_is_current). The clarity receipt is stale under its own check."
+    },
+    {
+      "id": "RS-4",
+      "severity": "pending",
+      "text": "docs/documentation.html and the clarity receipt for services/observation/KNOWN-GAPS.md are stale in this tree; both need rebuilding before the landing gate reads verify PASS."
+    }
+  ],
+  "not_reported_check": {
+    "files_outside_the_four": "none",
+    "weakened_checks": "none; no test, fixture, oracle, or manifest assertion removed or loosened",
+    "vocabulary": "reason codes match errors.py and service.json; no new terms",
+    "module_size": "record.py 194, observe.py 170 (both under 300)",
+    "secrets": "none"
+  },
+  "standing_supported": "BUILT -> WITNESSED for the R10/R11 repair as WORK (urn:soveraeign:run:circuit-2), on this witness's own reading; the service-path observation of the run is refused by the record (RS-1) and is not what this supports.",
+  "landing_position": "Would support landing this tree onto 3a3dbf8 once docs/documentation.html and the KNOWN-GAPS clarity receipt are rebuilt and verify reads PASS, with RS-1 and RS-2 carried as residuals in the concern rather than filed elsewhere.",
+  "judgement_items": [
+    "Does the Record for a run under grant:standing-landing-loop have to carry GRANT entries so an observer's relation can be inferred, or should the Observation Service read 'candidate holds no recorded grant' as answerable? This is a reversible engineering choice for the concern holder, listed so it is not lost; it asks nothing of Bdo."
+  ],
+  "finding": {
+    "finding_schema": "soveraeign-finding/v1",
+    "finding_id": "urn:soveraeign:finding:circuit-2-witness:7604505cc4898ff680f844b8",
+    "subject": {
+      "kind": "WORK",
+      "address": "urn:soveraeign:run:circuit-2"
+    },
+    "evaluator": {
+      "principal_id": "urn:soveraeign:principal:instance:sov-witness-circuit-2",
+      "relation": "WITNESS"
+    },
+    "scope": {
+      "concern": "concern:phase-1-5/circuit-2",
+      "source_session": "session-69de8a",
+      "lease": "lease:services-observation-known-gaps-md-r10-r11-urn-soveraeign-run-circuit-2-witness",
+      "tree": {
+        "worktree": ".claude/worktrees/agent-aa4b6211c5a2818dd",
+        "head": "3a3dbf8184d07f76393db39d7ba25bd7260be6e6",
+        "modified": [
+          "services/observation/KNOWN-GAPS.md",
+          "services/observation/src/soveraeign_observation_service/observe.py",
+          "services/observation/src/soveraeign_observation_service/record.py",
+          "services/observation/tests/test_thin_slice.py"
+        ],
+        "untracked": [],
+        "worktree_note": "path relative to the repository root; the worktree is a git worktree of that root"
+      },
+      "journal_export": {
+        "path": "scratchpad/c2-journal.json",
+        "entry_count": 22,
+        "head_digest": "0f6e7e1756b5b966687ab440eda03ad5b28417e44664bd866cfb35ea4bc27a8c",
+        "chain_links_verified": true
+      },
+      "helpers_declared_by_builder": "none (host withheld the Agent tool)"
+    },
+    "record_projection_id": "urn:soveraeign:record-projection:e90c46f1e24f7380b6df6a3f894d641de075d4362db78f795e0f60ab3226509f",
+    "claims": [
+      {
+        "claim_id": "C1-outputs-match-record",
+        "verdict": "CONFIRMED",
+        "detail": "sha256 of the four modified files in the worktree at 3a3dbf8 equals the digest in each OUTPUT entry (seq 18-21): record.py 8704aed7..., observe.py 44d994bf..., test_thin_slice.py 9d602f7d..., KNOWN-GAPS.md 9a8ca66f.... git status --short lists exactly those four files, no untracked files; HEAD and the four digests were unchanged before and after every check below."
+      },
+      {
+        "claim_id": "C2-R10-actorless-output-unreadable",
+        "verdict": "CONFIRMED",
+        "detail": "RunRecord.malformed() now refuses an entry on any address the run reported that names no actor. Defeat D1: with those three lines removed, tests.test_thin_slice.WitnessResidualsOn3087714.test_an_output_without_a_producer_is_unreadable fails 'Unreadable not raised' (exit 1); restored byte-identical (sha256 8704aed7...). Through the CLI: a copy of the circuit-2 export with the actor blanked on entry_48bad624 refuses UNREADABLE exit 2 with one receipt in a fresh store; the identical journal against the 3a3dbf8 package (git archive, observe.py ed24eca4..., record.py 7cfa8537...) refuses RELATION_UNDETERMINED instead, so the UNREADABLE reading is this build's delta and not a property of the input."
+      },
+      {
+        "claim_id": "C3-R11-observe-run-calls-malformed",
+        "verdict": "CONFIRMED",
+        "detail": "observe_run calls record.malformed() first and raises Unreadable. Defeat D2: with that call removed, test_observe_run_reads_the_record_it_is_given_not_the_inference fails 'Unreadable not raised' (exit 1); restored byte-identical (sha256 44d994bf...). The service path (service.py observe_run) hands the record to the same function, so the refusal reaches both surfaces as the test asserts."
+      },
+      {
+        "claim_id": "C4-absorbed-run-id-guard",
+        "verdict": "CONFIRMED",
+        "detail": "observe_run refuses RelationUndetermined when inference['run_id'] != record.run_id. require_independent checks candidate_observer_id only and service.observe_run selects the inference by run_id, so the guard is load-bearing only on the direct call, which is the kernel-facing surface. Absorption test (contracts/closure-ownership.json): same service (observation), same effect class (RECORD_LOCAL), same authority (none widened; a new refusal on an already-declared reason code) - absorbable, not scope creep. Defeat D3: with the guard removed, test_observe_run_refuses_an_inference_about_another_run errors with PredicatesUndeclared ('output-present reads out/1, which the run did not report'), exit 1; restored byte-identical. The test pins the guard, but see residual RS-2: the substitute record is not terminal on the other run, so the fixture shows the refusal changing code rather than a false observation being prevented."
+      },
+      {
+        "claim_id": "C5-suites-and-gates",
+        "verdict": "CONFIRMED",
+        "detail": "cd services/observation && python -m unittest discover -s tests: Ran 70 tests OK, exit 0 (before and after the defeat runs). python scripts/sov_kernel.py binding-check: PASS 10 manifests, exit 0. python scripts/lint.py: PASS repository hygiene, exit 0. Reason codes used (UNREADABLE, RELATION_UNDETERMINED) are the ones services/observation/contracts/service.json already declares for infer-relation and observe-run; no vocabulary drift, no manifest change."
+      },
+      {
+        "claim_id": "C6-verify-failures-attributed",
+        "verdict": "CONFIRMED",
+        "detail": "python scripts/verify.py exit 1: 'FAIL: documentation reader, repository tooling tests'. documentation reader = docs/documentation.html stale; repository tooling tests = the single failure scripts.tests.test_sov_docs.Staleness.test_the_built_page_is_current, which asserts sov_docs.cmd_check == 0, i.e. the same stale page. No other check refused. python scripts/sov_docs.py check exit 1 (stale page); python scripts/sov_clarity.py check exit 1 (services/observation/KNOWN-GAPS.md TEXT_STALE). Precision correction to the builder's sentence: verify's exit 1 comes from the docs page alone; the clarity receipt is graded by sov_clarity.py, which neither verify.py, scripts/sovverify/, nor sov_land.py invokes. The substantive claim - nothing unrelated fails - holds."
+      },
+      {
+        "claim_id": "C7-known-gaps-rows",
+        "verdict": "CONFIRMED",
+        "detail": "R10 and R11 rows now begin 'repaired.' and name the pinning tests; the section lead already admits a row repaired after 3087714. No other reference to R10/R11 exists at HEAD or in the tree (services/observation/README.md, services/README.md carry none). The CLI sentence in the R10 row (exit 2, UNREADABLE, one receipt file) reproduced exactly."
+      },
+      {
+        "claim_id": "C8-service-path-observation-of-circuit-2",
+        "verdict": "UNRESOLVED",
+        "detail": "As the witness, infer-relation over the export refused: outcome REFUSED, reason_code RELATION_UNDETERMINED, 'the record could not answer: GRANT_DESCENDS_FROM_RUN', receipt urn:soveraeign:observation:receipt:ef0ab418097ba83aa0afae3d, exit 2; the recorded inference urn:soveraeign:observation:relation-inference:309bf1866318c84e088d063a reads UNDETERMINED / INCOMPLETE, edges_found [], unanswerable_edges [GRANT_DESCENDS_FROM_RUN]. observe-run then refused RELATION_UNDETERMINED, receipt urn:soveraeign:observation:receipt:bf436be9bf59fe672f6e8a54, exit 2; no observation_id, no predicate results, no journal_entry printed. Cause, from the record: the ATTEMPTED at record:entry_e8f619f2 names grant_id 'grant:standing-landing-loop' and the 22-entry export carries no GRANT entry at all, so relation._walk_grants finds no grant held by the candidate and cannot answer the edge. thin-circuit-1's attempts carried grant_id null, which skips the walk, which is why its observations succeeded. The same refusal occurs with the 3a3dbf8 package, so this is a Record defect in the journal the run was recorded into, not the builder's. The declaration already in the store (d3e4f5c1..., four DIGEST_EQUALS predicates equal to the OUTPUT digests, declared 2026-09-06T00:33:10Z before my looking) was never evaluated by the service."
+      }
+    ],
+    "evidence_addresses": [
+      "record:entry_48bad6247a0a44bc877c16dbf41e06e6",
+      "record:entry_df04d034de514f88987bc39868115d20",
+      "record:entry_c6a4d816b47a454ba1c81b9bb5d59604",
+      "record:entry_5a93719fd7f549aeba696a3be1237ed4",
+      "record:entry_4f8dff1c3c4b4c2a9f09b112b5687ee4",
+      "record:entry_e8f619f2019443f9be259e8c6bbcb31e",
+      "record:entry_ed1b5eb030b049a78a276f4e6347f180",
+      "record:entry_f75ee08ee46e400c88fa653943eb3ae6",
+      "record:entry_e1cc1e2c524140bf8a59c3e44575614a"
+    ],
+    "counterevidence_addresses": [
+      "record:entry_e8f619f2019443f9be259e8c6bbcb31e"
+    ],
+    "input_finding_ids": [],
+    "created_at": "2026-09-06T00:41:47.466050Z",
+    "frozen_at": "2026-09-06T00:41:47.466050Z",
+    "authority_effect": "NONE",
+    "settlement_effect": "NONE",
+    "supersedes": []
+  }
+}

@@ -64,10 +64,25 @@ Reversible choices. Each names where it lives so it can be overturned in one pla
 Recorded rather than repaired at 3087714, so the witnessed bytes at 3087714 stay the witnessed
 bytes. A residual repaired since says so in its own row and names the case that pins it.
 
-- R10: an `OUTPUT` entry with no actor is not on the run subject, so `malformed()` does not
-  refuse it and its producer edge cannot be answered; it should read `UNREADABLE`.
-- R11: `observe_run` does not call `malformed()` itself; it relies on the inference having done
-  so, which a substituted record could bypass.
+- R10: repaired. `malformed()` in `record.py` refused an anonymous entry only on the run
+  subject, so an `OUTPUT` entry with no actor passed and `PRODUCED_THE_OUTPUT` was answered
+  from nothing. It now also refuses any entry on an address the run reported as a durable
+  output that names no actor, so `infer_relation` reads `UNREADABLE` with a receipt.
+  `test_an_output_without_a_producer_is_unreadable` (`tests/test_thin_slice.py`,
+  `WitnessResidualsOn3087714`) drives both polarities: the actorless entry refuses, the same
+  entry with its producer named infers `INDEPENDENT`; it fails with the guard reverted and
+  passes with it present. Through the command line, `infer-relation` over a journal export
+  whose `OUTPUT` entry has lost its `actor` exits 2 with `reason_code` `UNREADABLE` and one
+  receipt file in the store.
+- R11: repaired. `observe_run` in `observe.py` now calls `malformed()` on the record it is
+  given and refuses `UNREADABLE` itself, before reading the inference, and refuses
+  `RELATION_UNDETERMINED` when the inference names another run.
+  `test_observe_run_reads_the_record_it_is_given_not_the_inference` forms the inference and
+  declaration over a well-formed record, observes with a substitute whose `OUTPUT` entry has
+  no entry digest, and expects `UNREADABLE` with a receipt both through `observe_run` directly
+  and through the service; the well-formed record then observes as before. It fails with the
+  guard reverted and passes with it present.
+  `test_observe_run_refuses_an_inference_about_another_run` pins the run-id check.
 - R12: three oracle rules (`kernel_predicates.py` report standing, discovery id/inputs shape,
   and settlement receipt) are not yet pinned one at a time in `test_kernel_predicates.py`.
 - R13: repaired. The repair at 3087714 was the `| {record.run_id}` half of the own-entry guard

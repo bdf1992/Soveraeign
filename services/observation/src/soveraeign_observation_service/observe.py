@@ -18,7 +18,7 @@ from typing import Any, Callable
 import hashlib
 import json
 
-from .errors import DigestMismatch, PredicatesUndeclared, Unreadable
+from .errors import DigestMismatch, PredicatesUndeclared, RelationUndetermined, Unreadable
 from .record import RunRecord, digest_address
 from .relation import require_independent
 
@@ -98,11 +98,19 @@ def observe_run(
 ) -> dict[str, Any]:
     """Read the run's outputs yourself and evaluate the declared predicates against them.
 
-    Refuses `OBSERVER_NOT_INDEPENDENT` and `RELATION_UNDETERMINED` from the inference,
-    `PREDICATES_UNDECLARED` when the declaration is absent, later than the looking, about
-    another run, or names an address the run did not report, `UNREADABLE` when an output cannot
-    be read, and `DIGEST_MISMATCH` when the bytes disagree with the record.
+    Refuses `UNREADABLE` when the record handed in is malformed, whatever record the inference
+    was formed over; `OBSERVER_NOT_INDEPENDENT` and `RELATION_UNDETERMINED` from the inference,
+    or when the inference is about another run; `PREDICATES_UNDECLARED` when the declaration
+    is absent, later than the looking, about another run, or names an address the run did not
+    report; `UNREADABLE` when an output cannot be read; and `DIGEST_MISMATCH` when the bytes
+    disagree with the record.
     """
+    unreadable = record.malformed()
+    if unreadable is not None:
+        raise Unreadable(unreadable)
+    if inference.get("run_id") != record.run_id:
+        raise RelationUndetermined(
+            f"the inference is about {inference.get('run_id')}, not {record.run_id}")
     require_independent(inference, observer_id)
     if not declaration or declaration.get("run_id") != record.run_id:
         raise PredicatesUndeclared(f"no declaration for {record.run_id}")

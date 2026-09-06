@@ -1,0 +1,113 @@
+{
+  "finding_schema": "soveraeign-finding/v1",
+  "finding_id": "urn:soveraeign:finding:participant-in-work:circuit-2:sov-orchestrator-circuit-2",
+  "subject": {
+    "kind": "PARTICIPANT_IN_WORK",
+    "address": "urn:soveraeign:run:circuit-2"
+  },
+  "evaluator": {
+    "principal_id": "urn:soveraeign:principal:instance:sov-orchestrator-circuit-2",
+    "relation": "ORCHESTRATOR"
+  },
+  "scope": {
+    "concern": "concern:phase-1-5/circuit-2",
+    "source_session": "session-69de8a",
+    "participant": "urn:soveraeign:principal:instance:sov-worker-circuit-2",
+    "participant_lease": "lease:services-observation-known-gaps-md-r10-r11-services-observation-known-gaps-md-r10-r11-build",
+    "parent_lease": "lease:services-observation-known-gaps-md-r10-r11",
+    "grant": "grant:standing-landing-loop",
+    "evaluator_lease": "lease:services-observation-known-gaps-md-r10-r11-urn-soveraeign-run-circuit-2-orchestrator-review",
+    "base_commit": "3a3dbf8",
+    "worktree": ".claude/worktrees/agent-aa4b6211c5a2818dd",
+    "question": "assignment fidelity only: write paths, effect class, output completeness, helper disclosure, absorption and its disclosure, terminal reached, lease budget",
+    "not_in_scope": "technical correctness of the R10/R11 repair (the independent witness's subject)",
+    "projection_records_not_relied_on": [
+      "record:entry_ed1b5eb030b049a78a276f4e6347f180",
+      "record:entry_f75ee08ee46e400c88fa653943eb3ae6",
+      "record:entry_e1cc1e2c524140bf8a59c3e44575614a"
+    ],
+    "direct_observations": "git log, git status (with ignored and untracked), git diff, sha256sum in the worker's worktree; find over .local/ in worktree and main tree; no acceptance suite run",
+    "not_read_before_freezing": [
+      "the witness's file",
+      "any controller conclusion"
+    ]
+  },
+  "record_projection_id": "urn:soveraeign:record-projection:307ffd07c094cfe4953c943da4d75463fe7a6f3b51a1f937a2ef7aeb6330b1fc",
+  "claims": [
+    {
+      "claim_id": "c2-piw-01-base",
+      "verdict": "CONFIRMED",
+      "detail": "The participant worked from the assigned base. Recorded: record:entry_e8f619f2019443f9be259e8c6bbcb31e carries base_commit 3a3dbf8. Observed: `git log --oneline -1` in the worker's worktree reads 3a3dbf8 with no commit on top."
+    },
+    {
+      "claim_id": "c2-piw-02-write-paths",
+      "verdict": "CONFIRMED",
+      "detail": "The participant wrote only under services/observation/. Observed: `git status --short --untracked-files=all --ignored` in the worktree lists exactly four modified tracked files, all under services/observation/, no untracked files, and one ignored directory .local/ holding two files (.local/landing/ledger.ndjson, .local/registrar/bodies-before/body-52.md) that scripts/sovland/ledger.py and the verify landing tests emit (every ledger row carries grant_id grant:test, from_branch work; the main tree holds the same pair from an earlier verify at 21:32Z). Those are test side effects of running the named acceptance commands, not participant writes. Reported: record:entry_4f8dff1c3c4b4c2a9f09b112b5687ee4 names the same four paths and no other."
+    },
+    {
+      "claim_id": "c2-piw-03-effect-class",
+      "verdict": "CONFIRMED",
+      "detail": "The participant stayed inside RECORD_LOCAL. Recorded: record:entry_e8f619f2019443f9be259e8c6bbcb31e names grant grant:standing-landing-loop under parent lease lease:services-observation-known-gaps-md-r10-r11 with fence 1. Observed: no commit, no branch, no pull request, no issue, no docs/documentation.html or .clarity/coverage.json change in the worktree; the report's own account that verify exits 1 on exactly the docs page and clarity receipt is consistent with the instruction not to rebuild either."
+    },
+    {
+      "claim_id": "c2-piw-04-no-record-write",
+      "verdict": "UNATTESTABLE",
+      "detail": "Whether the participant itself appended to the Record cannot be read from the Record. The six circuit-2 entries (record:entry_e8f619f2019443f9be259e8c6bbcb31e, the four OUTPUT entries, record:entry_4f8dff1c3c4b4c2a9f09b112b5687ee4) carry actor urn:soveraeign:principal:instance:sov-worker-circuit-2 and, unlike the thin-circuit-1 observation entries, no note naming who performed the append. Observed circumstantial evidence points away from the worker: the worktree contains no .local/record/ store at all; the main tree's .local/record/record-service.sqlite3 was last written at 00:33:10.116Z, the exact microsecond of record:entry_4f8dff1c3c4b4c2a9f09b112b5687ee4 recorded_at and of this projection's created_at, which the worker did not produce. Record defect: circuit-2 entries do not distinguish appender from actor."
+    },
+    {
+      "claim_id": "c2-piw-05-outputs-complete",
+      "verdict": "CONFIRMED",
+      "detail": "Every changed file has an OUTPUT entry and every OUTPUT entry has a changed file. Observed: sha256 of the four modified files in the worktree equals the digests recorded in record:entry_48bad6247a0a44bc877c16dbf41e06e6, record:entry_df04d034de514f88987bc39868115d20, record:entry_c6a4d816b47a454ba1c81b9bb5d59604, record:entry_5a93719fd7f549aeba696a3be1237ed4 (record.py 8704aed7\u2026, observe.py 44d994bf\u2026, test_thin_slice.py 9d602f7d\u2026, KNOWN-GAPS.md 9a8ca66f\u2026). Recorded: record:entry_4f8dff1c3c4b4c2a9f09b112b5687ee4 output_record_addresses lists the same four. The bijection holds one-to-one."
+    },
+    {
+      "claim_id": "c2-piw-06-helper-disclosed",
+      "verdict": "CONFIRMED",
+      "detail": "The helper situation was disclosed and specific. Reported: record:entry_4f8dff1c3c4b4c2a9f09b112b5687ee4 states 'no helper (host withheld the Agent tool)', naming the tool and the host as CLAUDE.md requires, and the emission counter helper_leases stays at 0 of its limit of 1. The report is silent on whether a second reading was done in-session in place of the helper; that silence is a minor disclosure gap, not a false statement."
+    },
+    {
+      "claim_id": "c2-piw-07-helper-claim-accuracy",
+      "verdict": "UNATTESTABLE",
+      "detail": "Whether the host actually withheld the Agent tool is not in the Record; no entry records the invocation's tool grant. Rests on the executor's self-report only."
+    },
+    {
+      "claim_id": "c2-piw-08-absorption-disclosed",
+      "verdict": "CONFIRMED",
+      "detail": "The participant absorbed exactly one thing beyond the two rows and disclosed it. Reported: record:entry_4f8dff1c3c4b4c2a9f09b112b5687ee4 says 'absorbed one guard beyond the two rows: observe_run refuses an inference about another run'. Observed: observe.py in the worktree adds that run_id check raising RelationUndetermined, test_thin_slice.py adds test_observe_run_refuses_an_inference_about_another_run, and the R11 row names it. The absorption stays in the same service (services/observation), same effect class (RECORD_LOCAL) and same authority (the same lease), so it passes the closure-ownership absorption test. No undisclosed absorption found: the KNOWN-GAPS.md diff touches only the R10 and R11 rows (R12 and R13 are unchanged context), and the record.py and observe.py docstring edits describe the R10 and R11 guards themselves."
+    },
+    {
+      "claim_id": "c2-piw-09-terminal",
+      "verdict": "CONFIRMED",
+      "detail": "The participant reached the terminal it was asked for: a presented, uncommitted, evidenced tree, not a handoff. Recorded: record:entry_4f8dff1c3c4b4c2a9f09b112b5687ee4 is a REPORTED event naming files, counts, exit codes, the CLI proof and the residual (verify exit 1 attributed to the docs page and clarity receipt), and no OBSERVATION or RECEIPT entry on urn:soveraeign:run:circuit-2 carries the worker's actor, so it neither self-witnessed nor self-settled. Observed: HEAD unchanged at 3a3dbf8 with the four files modified in the working tree. The report names no seam and asks no question upward."
+    },
+    {
+      "claim_id": "c2-piw-10-acceptance-commands",
+      "verdict": "CONFIRMED",
+      "detail": "The participant reported exit codes for the acceptance commands it ran. Reported only: record:entry_4f8dff1c3c4b4c2a9f09b112b5687ee4 gives 70 service tests OK, binding-check exit 0, lint exit 0, verify exit 1 with its cause attributed, and the infer-relation CLI proof exiting 2 with UNREADABLE. Whether those exits are true and whether the repair is correct is the witness's subject and is not judged here."
+    },
+    {
+      "claim_id": "c2-piw-11-experiment-reverts",
+      "verdict": "UNATTESTABLE",
+      "detail": "The assignment asked that experiments be reverted with sha256 proof. Neither record:entry_e8f619f2019443f9be259e8c6bbcb31e nor record:entry_4f8dff1c3c4b4c2a9f09b112b5687ee4 records a pre_tree, a revert, or a restore digest (the thin-circuit-1 ATTEMPTED carried pre_tree; circuit-2's carries only base_commit). Observed: the worktree differs from 3a3dbf8 in only the four reported files, which is consistent with every experiment having been reverted, but the byte-for-byte restore obligation in the lease is not evidenced in the Record."
+    },
+    {
+      "claim_id": "c2-piw-12-lease-budget",
+      "verdict": "CONFIRMED",
+      "detail": "Within the lease's time budget as far as the Record shows. Recorded: record:entry_e8f619f2019443f9be259e8c6bbcb31e at 2026-09-06T00:24:42Z and record:entry_4f8dff1c3c4b4c2a9f09b112b5687ee4 at 2026-09-06T00:33:10Z, both before the lease expiry 2026-09-06T02:54:41Z, fence 1 throughout; emission counters pull_requests 0, issues 0, helper_leases 0 are all observed at zero. The turns dimension (limit 60) is not recorded anywhere in the Record and is not attested."
+    }
+  ],
+  "evidence_addresses": [
+    "record:entry_e8f619f2019443f9be259e8c6bbcb31e",
+    "record:entry_48bad6247a0a44bc877c16dbf41e06e6",
+    "record:entry_df04d034de514f88987bc39868115d20",
+    "record:entry_c6a4d816b47a454ba1c81b9bb5d59604",
+    "record:entry_5a93719fd7f549aeba696a3be1237ed4",
+    "record:entry_4f8dff1c3c4b4c2a9f09b112b5687ee4"
+  ],
+  "counterevidence_addresses": [],
+  "input_finding_ids": [],
+  "created_at": "2026-09-06T00:37:08Z",
+  "frozen_at": "2026-09-06T00:37:08Z",
+  "authority_effect": "NONE",
+  "settlement_effect": "NONE",
+  "supersedes": []
+}

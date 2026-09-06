@@ -98,6 +98,10 @@ PREDICATES = [
 ]
 
 
+#: A moment after anything a `Clock` below will produce, for a direct `observe_run` call.
+LATER = "2026-09-03T01:00:00+00:00"
+
+
 class Clock:
     """Strictly increasing ISO moments, so declared-before-observed is decidable."""
 
@@ -430,6 +434,57 @@ class WitnessResidualsOn3087714(unittest.TestCase):
             service.observe_run(record, "witness-z", lambda address: OUTPUT_BYTES)
         self.assertIn("run's own entry", str(caught.exception))
         self.assertEqual("PREDICATES_UNDECLARED", service.receipts[-1]["reason_code"])
+
+    def test_an_output_without_a_producer_is_unreadable(self) -> None:
+        # R10. An OUTPUT entry is not on the run subject, so the run-actor rule in
+        # `malformed()` never saw it; an anonymous output cannot answer PRODUCED_THE_OUTPUT.
+        service = ObservationService(Clock())
+        record = RunRecord.from_entries(RUN, journal(output_actor=""))
+        with self.assertRaises(Unreadable) as caught:
+            service.infer_relation(record, "witness-z", "MODEL")
+        self.assertIn("out/1", str(caught.exception))
+        self.assertEqual("UNREADABLE", service.receipts[-1]["reason_code"])
+        # The same entry with its producer named reads as before.
+        inference = service.infer_relation(RunRecord.from_entries(RUN, journal()),
+                                           "witness-z", "MODEL")
+        self.assertEqual("INDEPENDENT", inference["outcome"])
+        self.assertEqual("COMMITTED", service.receipts[-1]["outcome"])
+
+    def test_observe_run_reads_the_record_it_is_given_not_the_inference(self) -> None:
+        # R11. The inference was formed over a well-formed record; the record handed to
+        # `observe_run` is a substitute whose output entry carries no entry digest. Only
+        # `observe_run`'s own `malformed()` call stands between it and a reading.
+        good = RunRecord.from_entries(RUN, journal())
+        substituted = journal()
+        substituted[-2].pop("entry_digest")
+        bad = RunRecord.from_entries(RUN, substituted)
+        service = ObservationService(Clock())
+        inference = service.infer_relation(good, "witness-z", "MODEL")
+        declaration = service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(Unreadable):
+            observe_run(bad, inference, declaration, "witness-z", reader, LATER)
+        with self.assertRaises(Unreadable) as caught:
+            service.observe_run(bad, "witness-z", reader)
+        self.assertIn("e-out-1", str(caught.exception))
+        self.assertEqual("UNREADABLE", service.receipts[-1]["reason_code"])
+        # The record the inference was formed over still observes.
+        observation = service.observe_run(good, "witness-z", reader)
+        self.assertEqual(RUN, observation["run_id"])
+        self.assertEqual("COMMITTED", service.receipts[-1]["outcome"])
+
+    def test_observe_run_refuses_an_inference_about_another_run(self) -> None:
+        # R11, the other substitution: a well-formed record and declaration for a different
+        # run, handed in with an inference formed over this one. The declaration guard
+        # cannot see it; only the inference's own run id can.
+        other_run = "urn:soveraeign:run:other"
+        service = ObservationService(Clock())
+        inference = service.infer_relation(RunRecord.from_entries(RUN, journal()),
+                                           "witness-z", "MODEL")
+        declaration = service.declare_predicates(other_run, PREDICATES)
+        other = RunRecord.from_entries(other_run, journal())
+        with self.assertRaises(RelationUndetermined) as caught:
+            observe_run(other, inference, declaration, "witness-z", reader, LATER)
+        self.assertIn(RUN, str(caught.exception))
 
 
 class RealJournalFeedsTheWalk(unittest.TestCase):

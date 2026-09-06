@@ -7,8 +7,8 @@ throughout. No phase state, standing field, or floor moved.
 
 ## Terminal
 
-Presented on the branch for acceptance, in four commits: the slice, then the repairs each
-witness pass asked for. Not landed on `main`: the change touches `CLAUDE.md`, which
+Presented on the branch for acceptance, in five commits: the slice, the repairs each
+witness pass asked for, and the standing the fourth pass supports. Not landed on `main`: the change touches `CLAUDE.md`, which
 the ratified standing grant excludes, so `scripts/sov_land.py` is not the path and Bdo's
 review of the branch is.
 
@@ -21,7 +21,8 @@ review of the branch is.
 | The probe can fail | `python scripts/sov_fresh.py selfcheck` | positive variant passes; `unregistered-principal` fails Q1.1 and Q1.3, `work-dies-with-session` fails Q1.2, `no-grant` fails Q1.3, nothing else fails |
 | The layers are the product's own | `scripts/sovfresh/layers.py`, `scripts/sovfresh/node.py` | session registry, lease store, custody model, Node Interface, `LocalActionPath` (Console, Gateway, Record, Registry services); the grade comes from `conformance/commissioning.py`, which imports none of them |
 | Unit cases | `python -m unittest scripts.tests.test_sov_fresh` | 15 cases |
-| Custody board | `python scripts/sov_custody.py board custody:phase-1-5/fresh-participation` | one `ITEM` member at `VERTICAL_SLICE`, standing `BUILT`, `stage_observed_by` null |
+| Custody board | `python scripts/sov_custody.py board custody:phase-1-5/fresh-participation` | one `ITEM` member at `VERTICAL_SLICE`, standing `WITNESSED`, observed by the pass 4 witness at `0cf5a57` |
+| Progress floor | `python scripts/sov_active_phase_progress.py` | `custody:phase-1-5/fresh-participation` floor raised `ROOT_POINT` to `VERTICAL_SLICE`; the reader refuses a fall below it |
 | Repository gate | `python scripts/verify.py`; `python scripts/lint.py` | 51 checks PASS; hygiene PASS |
 
 The heading's "second commit" reads "latest commit" for rows that changed under later passes:
@@ -118,6 +119,16 @@ entered history in the builder's commit (F30, as pass 1's did and this pass's wi
 adds J5: the custody closes on `selfcheck`, which is environment-blind by design, while its
 `defeated_by` names oral history that only `run` observes.
 
+Pass 4 observed commit `0cf5a57`, scoped to F26 and F27. Verdict `REPRODUCED`; standing
+supported `BUILT -> WITNESSED` for the instrument claim at that revision, with the words for
+the member's `stage_observed_by` field given by the witness and carried verbatim. The
+witness attached a scope, not a precondition: the standing says the probe is what it says
+and grades what it says. It is not evidence that P15-X1 holds for this node, whose permits
+office no seat has opened (J4). Pass 4 found one low defect, F31: reverting either repair
+left the unit suite green. Two cases now pin them, in the fifth commit, after the witnessed
+bytes; the standing binds to `0cf5a57`. Pass 4 adds J7: the custody schema says
+`stage_observed_by` names who "settled" the stage, and a witness settles nothing.
+
 Pass 1 residuals recorded rather than changed: `--json` now works after the subcommand (F8);
 the declared verify/lint evidence in the old authority request is gone with that request
 (F9); `SOV_PRINCIPAL_REGISTRY` is now an explicit argument and, when set undeclared, is
@@ -129,6 +140,14 @@ the package `__init__` (F13); the custody closure command and the verify `Check`
 declarations nothing ties together (F14, same as every other custody); the work the
 participant accepts is the custody that lists the probe (F16); an `UNIDENTIFIED` principal can
 still take a lease with `controller_principal: null` (F17, a lease-contract question).
+
+## Standing changes
+
+- `custody:phase-1-5/fresh-participation` member `scripts/sov_fresh.py`: `BUILT` to
+  `WITNESSED` at `0cf5a57`, on the pass 4 record by a participant that built nothing here.
+- `contracts/phase-progress.json`: the custody's floor `ROOT_POINT` to `VERTICAL_SLICE`,
+  the progress record the opening note reserves for a witnessed member.
+- No `STATUS.yaml` field, phase state, or clause verdict moved. P15-X1 stays `NOT_EARNED`.
 
 ## Defaults taken
 

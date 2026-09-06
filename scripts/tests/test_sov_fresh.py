@@ -115,6 +115,34 @@ class PositiveRun(ProbeCase):
         self.assertEqual(result["principal"], FIXTURE)
         self.assertTrue(result["passed"])
 
+    def test_the_issuer_gate_reads_the_registry_the_resolver_reads(self) -> None:
+        other = self.temp / "other-root.json"
+        other.write_text(self.registry.read_text(encoding="utf-8").replace(
+            f'"root_principal": "{ISSUER}"', '"root_principal": "principal:other-root"'),
+            encoding="utf-8")
+        saved = os.environ.get(principals.ENV_REGISTRY)
+        os.environ[principals.ENV_REGISTRY] = str(other)
+        try:
+            result = probe.run(ROOT, self.temp / "env-root", FIXTURE, issuer=ISSUER)
+        finally:
+            if saved is None:
+                os.environ.pop(principals.ENV_REGISTRY, None)
+            else:
+                os.environ[principals.ENV_REGISTRY] = saved
+        self.assertEqual(result["root_principal"], "principal:other-root")
+        self.assertEqual(result["registry"], str(other))
+        self.assertEqual(result["observations"]["P15-Q1.1"]["registry"], str(other))
+        self.assertEqual(result["node"]["refused_by"], "PROBE_ISSUER_GATE")
+        self.assertIsNone(result["observations"]["P15-Q1.3"]["identities"]["grant_id"])
+
+    def test_the_issuer_gate_names_itself_as_the_probes_rule(self) -> None:
+        result = self.run_variant(issuer="principal:nobody-at-all")
+        self.assertEqual(result["node"]["refused_by"], "PROBE_ISSUER_GATE")
+        self.assertTrue(result["node"]["admitted"].startswith("probe rule PROBE_ISSUER_GATE:"))
+        admitted = self.run_variant()["node"]
+        self.assertIsNone(admitted["refused_by"])
+        self.assertIsNone(admitted["admitted"])
+
     def test_only_the_registry_root_may_issue(self) -> None:
         for issuer in ("principal:nobody-at-all", "", "principal:bdo"):
             result = self.run_variant(issuer=issuer)

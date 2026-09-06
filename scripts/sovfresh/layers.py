@@ -23,7 +23,8 @@ from sovsession import phase_context, principals, store
 EXIT_CUSTODY = "custody:phase-1-5/fresh-participation"
 DEFINITION = "scripts/sov_fresh.py"
 ENVIRONMENT_INPUTS = (principals.ENV_REGISTRY, principals.ENV_PRINCIPAL)
-"""Host variables the resolver honours. Set and undeclared, they are oral history."""
+"""Host variables the resolver honours; `speaking_as` overrides and restores both. Only the
+registry can reach the resolver undeclared, and then it is oral history."""
 
 
 def undeclared_inputs(registry_declared: bool) -> list[str]:

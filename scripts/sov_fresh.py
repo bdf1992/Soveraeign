@@ -31,6 +31,7 @@ if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
 from sovfresh import layers, node as nodelayer, probe  # noqa: E402
+from sovnode import journal  # noqa: E402
 from sovsession import principals  # noqa: E402
 
 FIXTURE_PRINCIPAL = "principal:fresh-probe"
@@ -186,6 +187,41 @@ def _persisted_cases(state: Path, registry: Path) -> list[str]:
     if not ungranted["grades"]["P15-Q1.3"] or ungranted["grades"]["P15-Q1.1"]:
         failures.append("persisted node, operator with no grant: Q1.3 must fail alone: "
                         + _render(ungranted))
+    failures.extend(_custody_cases(state, registry))
+    return failures
+
+
+def _grant_count(state: Path) -> int:
+    with nodelayer.open_node_at(state) as node:
+        return sum(1 for entry in node.record.reconstruct()
+                   if entry["payload"].get("record_kind") == "authority-grant")
+
+
+def _custody_cases(state: Path, registry: Path) -> list[str]:
+    """The journal leaves one node and carries the office into another, or refuses."""
+    failures: list[str] = []
+    exported = journal.export(state, state.parent / "exports")
+    restored = state.parent / "restored"
+    journal.restore(exported["path"], restored, exported["head"])
+    before = _grant_count(restored)
+    carried = probe.run(ROOT, state.parent / "carried", FIXTURE_PRINCIPAL,
+                        registry=registry, node_state=restored)
+    if not carried["passed"]:
+        failures.append("restored node: the carried office did not admit the operator: "
+                        + _render(carried))
+    if _grant_count(restored) != before:
+        failures.append("restored node: entering it issued a grant; the office must carry over")
+    document = json.loads(exported["path"].read_text(encoding="utf-8"))
+    document["entries"] = document["entries"][:-1]
+    document["entry_count"] -= 1
+    document["head_digest"] = document["entries"][-1]["entry_digest"]
+    truncated = state.parent / "exports" / "truncated.json"
+    truncated.write_text(json.dumps(document), encoding="utf-8")
+    try:
+        journal.restore(truncated, state.parent / "truncated", exported["head"])
+        failures.append("truncated export: restore with the outside head did not refuse")
+    except journal.custody.TruncatedExport:
+        pass
     return failures
 
 
@@ -215,8 +251,9 @@ def cmd_selfcheck(args: argparse.Namespace) -> int:
         print("FAIL: fresh participation probe does not discriminate")
         print("\n".join("  " + line for line in failures))
         return 1
-    print(f"PASS: fresh participation slice closes on the positive variant and "
-          f"{len(EXPECTED_FAILURES)} defeating variants each fail their own predicates")
+    print(f"PASS: fresh participation slice closes on the positive variant, "
+          f"{len(EXPECTED_FAILURES)} defeating variants each fail their own predicates, and "
+          "the office carries across an export and restore")
     return 0
 
 

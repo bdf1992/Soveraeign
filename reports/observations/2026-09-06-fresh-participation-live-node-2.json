@@ -1,0 +1,200 @@
+{
+  "branch": "claude/phase-2-citizen-mechanics-inrozu",
+  "cited_entries": [
+    "entry_61baa146a275455993aa8b9845700c03",
+    "entry_1da94f8e03794cd48f8fb78f5bbfb837",
+    "entry_f1a27b9a963b4669862a978ed5ecbc69",
+    "entry_7fefb7fb20934397a89dddebc6523f4e",
+    "entry_4ab80594be8041879c727ae62c127b30",
+    "entry_22b99483ce8540c49a863da39b497de4",
+    "entry_ed5084259217420286670127ae99689d",
+    "entry_35e52cfbea6344588188724f40f24113",
+    "entry_ae74e7a5de6548f5aace1ca25281a4a6"
+  ],
+  "journal": {
+    "address": "nodes/node-local/journal/23d3b48086be.json",
+    "entries": 85,
+    "head": "23d3b48086becd541d6054d78185f730e41a10054848ad4f654191315f87b342",
+    "verify": "python scripts/sov_node.py journals; PYTHONPATH=services/record/src python -m soveraeign_record_service.cli verify-export --export nodes/node-local/journal/23d3b48086be.json --expect-head <the witness's head>"
+  },
+  "live_run": {
+    "actor": "principal:claude-fable-5",
+    "grades": {
+      "P15-Q1.1": [],
+      "P15-Q1.2": [],
+      "P15-Q1.3": []
+    },
+    "issuer": null,
+    "node": {
+      "admitted": null,
+      "own": {
+        "diagnostic": null,
+        "grant_id": null,
+        "outcome": "COMMITTED",
+        "reason": null,
+        "receipt_id": "entry_22b99483ce8540c49a863da39b497de4",
+        "stage": null
+      },
+      "refusals": {
+        "beyond_the_grant": {
+          "diagnostic": "AuthorityRefused",
+          "grant_id": null,
+          "outcome": "REFUSED",
+          "reason": "AUTHORITY_REFUSED",
+          "receipt_id": "entry_ed5084259217420286670127ae99689d",
+          "stage": "check-authority"
+        },
+        "foreign_session": {
+          "diagnostic": "ACTOR_ATTRIBUTION_MISMATCH",
+          "grant_id": null,
+          "outcome": "REFUSED",
+          "reason": "ACTOR_ATTRIBUTION_MISMATCH",
+          "receipt_id": "entry_35e52cfbea6344588188724f40f24113",
+          "stage": "check-attribution"
+        },
+        "other_actor_on_this_session": {
+          "diagnostic": "ACTOR_ATTRIBUTION_MISMATCH",
+          "grant_id": null,
+          "outcome": "REFUSED",
+          "reason": "ACTOR_ATTRIBUTION_MISMATCH",
+          "receipt_id": "entry_ae74e7a5de6548f5aace1ca25281a4a6",
+          "stage": "check-attribution"
+        }
+      },
+      "refused_by": null
+    },
+    "node_state": ".local/node-interface",
+    "observations": {
+      "P15-Q1.1": {
+        "capability": "registry.resolve",
+        "effect_envelope": "RECORD_LOCAL",
+        "governance_context": "STATUS.yaml@sha256:9ddb4c4f974389b7a8539e3b2e0d3d7e0cb4a020356cb994fea3505210fad9ae + contracts/phases.json@sha256:05a27e136ce4a3edfc0036147d3e255604e79bb045e5ec05e43b15112eab483d",
+        "node_session_id": "session_48f90d7743ff43a2",
+        "oral_history_used": false,
+        "phase_state": "phase:1-5",
+        "principal_id": "principal:claude-fable-5",
+        "record_projection_id": "urn:soveraeign:record-projection:a80edc22b4f93bc22960647d9efaf78d1a7d2322aee7837556302f9103380bf4",
+        "registry": "contracts/principals.json",
+        "required_authority": "read:registry",
+        "session_id": "fresh-e39c72b9",
+        "work_address": "custody:phase-1-5/fresh-participation"
+      },
+      "P15-Q1.2": {
+        "survives_session": true,
+        "work": {
+          "address": "custody:phase-1-5/fresh-participation",
+          "cleanup_obligations": [
+            "release lease:custody-phase-1-5-fresh-participation-fresh-e39c72b9"
+          ],
+          "closure_condition": "python scripts/sov_fresh.py selfcheck",
+          "custody_or_lease": "lease:custody-phase-1-5-fresh-participation-fresh-e39c72b9",
+          "defeating_condition": "a fresh session that needs oral history to find its principal, its work, or its authority, or a work record that dies with the session that carried it"
+        }
+      },
+      "P15-Q1.3": {
+        "cross_principal_session_mismatch": "REFUSED",
+        "identities": {
+          "grant_id": "grant_6ab7d1d0a99e419e",
+          "interface_binding_id": "urn:soveraeign:binding:node-interface:model-json-v1",
+          "principal_id": "principal:claude-fable-5",
+          "session_id": "session_48f90d7743ff43a2"
+        }
+      }
+    },
+    "other_defects": [],
+    "passed": true,
+    "principal": "principal:claude-fable-5",
+    "registry": "contracts/principals.json",
+    "root_principal": "principal:bdo",
+    "session": "fresh-e39c72b9",
+    "trace": [
+      "host session fresh-e39c72b9; principal principal:claude-fable-5 from contracts/principals.json; actor principal:claude-fable-5",
+      "phase phase:1-5 from STATUS.yaml@sha256:9ddb4c4f974389b7a8539e3b2e0d3d7e0cb4a020356cb994fea3505210fad9ae + contracts/phases.json@sha256:05a27e136ce4a3edfc0036147d3e255604e79bb045e5ec05e43b15112eab483d",
+      "work custody:phase-1-5/fresh-participation held by lease:custody-phase-1-5-fresh-participation-fresh-e39c72b9",
+      "registry.resolve as principal:claude-fable-5: COMMITTED",
+      "  foreign_session: REFUSED ACTOR_ATTRIBUTION_MISMATCH",
+      "  other_actor_on_this_session: REFUSED ACTOR_ATTRIBUTION_MISMATCH",
+      "  beyond_the_grant: REFUSED AuthorityRefused",
+      "projection urn:soveraeign:record-projection:a80edc22b4f93bc22960647d9efaf78d1a7d2322aee7837556302f9103380bf4",
+      "console session session_48f90d7743ff43a2 closed",
+      "host session ended; work survives True; cleanup ['release lease:custody-phase-1-5-fresh-participation-fresh-e39c72b9']"
+    ],
+    "variant": "positive"
+  },
+  "node_state": ".local/node-interface (gitignored runtime state; restore from journal.address to bring the node back)",
+  "note": "Builder's self-report, separated from the record it relies on: the node's journal lives at journal.address under its own head and is verified by the Record Service; this file cites entries in it by id and carries nothing the journal already carries. The head held outside the export is the witness's (witness/fresh-participation.md). Two acts opened the node's permits office under the name principal:bdo; nothing in the record authenticates who passed that name (F35). REPORTED is the executor's word.",
+  "observation_schema": "soveraeign-fresh-participation-live-node/v2",
+  "office_acts": [
+    {
+      "act": "open-office",
+      "directed_in": "claude.ai/code session_014F32VV3yNJqQMCZiCDjunn, 2026-09-06, Bdo's own words",
+      "direction": "Open the office on my behalf me and rerun it as evidence and level with me",
+      "grants": [
+        {
+          "capability": "open:session",
+          "entry_id": "entry_61baa146a275455993aa8b9845700c03",
+          "grant_id": "grant_3807e177a65746b1",
+          "granted_at": "2026-09-06T14:29:39Z",
+          "granted_by": "principal:bdo",
+          "scope": "principal:claude-fable-5"
+        },
+        {
+          "capability": "read:registry",
+          "entry_id": "entry_1da94f8e03794cd48f8fb78f5bbfb837",
+          "grant_id": "grant_6ab7d1d0a99e419e",
+          "granted_at": "2026-09-06T14:29:39Z",
+          "granted_by": "principal:bdo",
+          "scope": "registry:any"
+        }
+      ],
+      "issuer": "principal:bdo",
+      "node_state": ".local/node-interface",
+      "operator": "principal:claude-fable-5",
+      "record_head": "a127e398db974140ed209d2709c09132c0f092677e925d790e0ebf2230b167af"
+    },
+    {
+      "act": "open-office",
+      "directed_in": "claude.ai/code session_014F32VV3yNJqQMCZiCDjunn, 2026-09-06, Bdo's own words; second act adds close:session so the participant can retire its own session",
+      "direction": "Open the office on my behalf me and rerun it as evidence and level with me",
+      "grants": [
+        {
+          "capability": "open:session",
+          "entry_id": "entry_f1a27b9a963b4669862a978ed5ecbc69",
+          "grant_id": "grant_fe493262aba94438",
+          "granted_at": "2026-09-06T14:51:09Z",
+          "granted_by": "principal:bdo",
+          "scope": "principal:claude-fable-5"
+        },
+        {
+          "capability": "close:session",
+          "entry_id": "entry_7fefb7fb20934397a89dddebc6523f4e",
+          "grant_id": "grant_119ebb48269641e6",
+          "granted_at": "2026-09-06T14:51:09Z",
+          "granted_by": "principal:bdo",
+          "scope": "principal:claude-fable-5"
+        },
+        {
+          "capability": "read:registry",
+          "entry_id": "entry_4ab80594be8041879c727ae62c127b30",
+          "grant_id": "grant_1453fbad278241bb",
+          "granted_at": "2026-09-06T14:51:09Z",
+          "granted_by": "principal:bdo",
+          "scope": "registry:any"
+        }
+      ],
+      "issuer": "principal:bdo",
+      "node_state": ".local/node-interface",
+      "operator": "principal:claude-fable-5",
+      "proves": "nothing the journal does not; the journal entries above are the receipt",
+      "record_head_after": "94aafd47b1087f8fb448c86ce31595f51eb1ae192f0f2cddc2cba67c7fda8259",
+      "record_head_before": "0e357ea0b2a40200c4eb4ab714169ce2caf21556c97b0feff17a2d8673d2880c",
+      "registry": {
+        "digest": "sha256:cec549f6fd2e465399518ad8af9b9dc7d67bf64141334a01cdd622e15d2972da",
+        "path": "contracts/principals.json"
+      }
+    }
+  ],
+  "session": "session-651746",
+  "status": "REPORTED",
+  "supersedes": "reports/observations/2026-09-06-fresh-participation-live-node.json (kept as the bytes witness pass 5 read; it embedded the journal, which this file does not)"
+}

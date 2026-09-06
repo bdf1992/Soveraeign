@@ -112,6 +112,11 @@
       "why": "1647 lines of capture records over this repository's own commits, issues, pull requests and local session files. No emails, host paths or payloads survive the reader's guard; a public checkout cannot verify any of it."
     },
     {
+      "path": "nodes",
+      "surface": "JOURNAL",
+      "why": "A node's journal, exported by the Record Service under its own head so the node's history leaves a host as one chain and returns by restore. The record of what a node did, not documentation of what the system is; nodes/README.md says how to read and restore one."
+    },
+    {
       "path": "reports",
       "surface": "JOURNAL",
       "why": "Completion reports and independent observations. The record of what was done, not documentation of what the system is."

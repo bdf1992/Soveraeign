@@ -7,8 +7,9 @@ throughout. No phase state, standing field, or floor moved.
 
 ## Terminal
 
-Presented on the branch for acceptance, in five commits: the slice, the repairs each
-witness pass asked for, and the standing the fourth pass supports. Not landed on `main`: the change touches `CLAUDE.md`, which
+Presented on the branch for acceptance, in eight commits: the slice, the repairs each
+witness pass asked for, the standing the fourth pass supports, the office opened at Bdo's
+direction, and the node's journal separated from the report. Not landed on `main`: the change touches `CLAUDE.md`, which
 the ratified standing grant excludes, so `scripts/sov_land.py` is not the path and Bdo's
 review of the branch is.
 
@@ -187,6 +188,27 @@ witness split J4: if Bdo accepts this packet with his quoted words, the acceptan
 the record that the seat acted; otherwise the question is what channel authenticates the
 seat's issuance. The node state is runtime state on one host and leaves with it; the packet
 is what stays.
+
+## The journal, separated from the report
+
+Bdo asked whether the packet should be separated from the node, and then said yes to an
+operational node's journal living in this repository. The packet had been three things in
+one file: the node's journal, this session's self-report, and the head that vouches for
+the journal. They are now three artifacts.
+
+- The journal is the node's own export, `nodes/node-local/journal/23d3b48086be.json`,
+  written by `python scripts/sov_node.py export-journal` and named by the head it replays
+  to. `nodes/README.md` says how to read it and how to bring the node back on another host
+  with `restore-journal`, into an empty state, so the office is opened once and the history
+  stays one chain. `selfcheck` now proves that path: export, restore, enter as the granted
+  operator, all three predicates hold, and no grant is issued on the way; a truncated export
+  is refused as soon as the head held outside it is supplied.
+- The self-report is `reports/observations/2026-09-06-fresh-participation-live-node-2.json`.
+  It names the export by address and head and the nine entries it relies on by id, and
+  carries nothing the journal carries. The first packet is kept as the bytes pass 5 read.
+- The outside head stays the witness's. `python scripts/sov_node.py journals` runs inside
+  verify and refuses a misnamed export or a citation that does not resolve; it does not
+  and cannot detect truncation, and says so.
 
 ## Standing changes
 

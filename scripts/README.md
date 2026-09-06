@@ -42,7 +42,8 @@ Run any of them with `--help` for exact arguments.
 | `sov_service.py` | `check` `crud` `endpoints` | The declared service surface, judged. |
 | `sov_capability.py` | `show` `build` `check` `offices` `events` | Which office answers which operation, and how. |
 | `sov_kernel.py` | `table` `check` `parity` `drift` `closure` `binding-check` `selfcheck` | Shared Kernel projections and conformance. |
-| `sov_node.py` | `status` `peers` `validate` | This node's identity and the peers it has admitted. |
+| `sov_node.py` | `status` `peers` `validate` `export-journal` `restore-journal` `journals` | This node's identity, the peers it has admitted, and custody of its journal: export it under its head, restore it into an empty node, and check every export and citation under `nodes/`. |
+| `sov_fresh.py` | `run` `selfcheck` `open-office` | Fresh participation, the P15-X1 slice: enter a node as a declared principal and grade what was resolved; prove the probe can fail; open a persisted node's permits office under the registry's root at its recorded direction. |
 | `sov_owners.py` | `status` `check` | The domain owner register. |
 | `sov_interface.py` | `show` `build` `check` `invoke` `prove` | The derived Node Interface a model reader receives. |
 | `sov_surface.py` | `render` `check` `try` | The same Node Interface rendered for a person. |

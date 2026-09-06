@@ -22,4 +22,11 @@ COMMISSIONING_CHECKS = (
           "defeating variants prove the grade can fail",
           ("scripts/sov_fresh.py", "scripts/sovfresh", "conformance/commissioning.py",
            "contracts/custodies/phase-1-5.json")),
+    Check("node journal custody", [sys.executable, "scripts/sov_node.py", "journals"], ROOT,
+          "replays every journal export under nodes/ with the Record Service's own verifier, "
+          "which recomputes each entry digest from its contents, and resolves every "
+          "self-report citation into the export it names by address, head and entry id; "
+          "the head held outside an export stays the witness's, so a truncation is caught "
+          "there, not here",
+          ("nodes", "reports/observations", "scripts/sovnode/journal.py")),
 )

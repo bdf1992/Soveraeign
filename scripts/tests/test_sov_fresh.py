@@ -1,16 +1,16 @@
 """Cases for the fresh participation probe, the P15-X1 vertical slice.
 
-Every case runs against a temporary store and a temporary registry copy carrying one
-declared fixture principal, so the suite asserts nothing about which model this host
-runs. The positive run must satisfy the three P15-Q1 predicates through the independent
-instrument; each defeating variant must fail exactly the predicates it declares; and the
-probe must refuse to guess a principal.
+Every case runs against a temporary store, a temporary node, and a temporary registry copy
+carrying one declared fixture principal, so the suite asserts nothing about which model
+this host runs. The positive run must satisfy the three P15-Q1 predicates through the
+independent instrument with every value read from a product record; each defeating
+variant must fail exactly the predicates it declares; and the probe must refuse to guess
+a principal.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
-import json
 import os
 import subprocess
 import sys
@@ -19,11 +19,13 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+import sov_fresh  # noqa: E402
 from sovfresh import probe  # noqa: E402
 from sovsession import principals  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
-FIXTURE = "principal:fresh-probe"
+FIXTURE = sov_fresh.FIXTURE_PRINCIPAL
+ISSUER = sov_fresh.FIXTURE_ISSUER
 
 
 class ProbeCase(unittest.TestCase):
@@ -31,74 +33,81 @@ class ProbeCase(unittest.TestCase):
         self._temp = tempfile.TemporaryDirectory()
         self.addCleanup(self._temp.cleanup)
         self.temp = Path(self._temp.name)
-        registry, reason = principals.load(ROOT)
-        self.assertIsNotNone(registry, reason)
-        registry["principals"].append({
-            "principal_id": FIXTURE, "kind": "MODEL", "durability": "EPHEMERAL",
-            "controller": registry["root_principal"],
-            "anchor": {"kind": "fixture", "reference": __file__},
-            "crossing_class": "in-node", "model": None, "delegation": None,
-            "claim": {"claimed_at": "2026-09-06T00:00:00Z", "claim_basis": "test fixture",
-                      "verification": "UNVERIFIED"},
-            "verification_channel": {"kind": "local-file", "reference": "temporary"},
-            "revoked": None,
-        })
-        path = self.temp / "principals.json"
-        path.write_text(json.dumps(registry), encoding="utf-8")
-        self._saved = os.environ.get(principals.ENV_REGISTRY)
-        os.environ[principals.ENV_REGISTRY] = str(path)
+        self.registry = sov_fresh.fixture_registry(self.temp)
 
-    def tearDown(self) -> None:
-        if self._saved is None:
-            os.environ.pop(principals.ENV_REGISTRY, None)
-        else:
-            os.environ[principals.ENV_REGISTRY] = self._saved
-
-    def run_variant(self, variant: str = "positive", principal: str = FIXTURE) -> dict:
-        return probe.run(ROOT, self.temp / variant, principal, variant)
+    def run_variant(self, variant: str = "positive", principal: str = FIXTURE,
+                    issuer: str | None = ISSUER) -> dict:
+        return probe.run(ROOT, self.temp / variant, principal, variant,
+                         registry=self.registry, issuer=issuer)
 
 
 class PositiveRun(ProbeCase):
     def test_every_q1_predicate_holds(self) -> None:
         result = self.run_variant()
-        self.assertTrue(result["passed"], json.dumps(result["grades"], indent=1))
+        self.assertTrue(result["passed"], result["grades"])
         self.assertEqual(result["other_defects"], [])
 
-    def test_identities_are_four_distinct_values(self) -> None:
-        identities = self.run_variant()["observations"]["P15-Q1.3"]["identities"]
+    def test_identities_come_from_node_records(self) -> None:
+        result = self.run_variant()
+        identities = result["observations"]["P15-Q1.3"]["identities"]
         self.assertEqual(len(set(identities.values())), 4)
         self.assertEqual(identities["principal_id"], FIXTURE)
-        self.assertTrue(identities["session_id"].startswith("fresh-"))
-        self.assertEqual(identities["grant_id"], "grant:standing-landing-loop")
+        self.assertTrue(identities["session_id"].startswith("session_"))
+        self.assertTrue(identities["grant_id"].startswith("grant_"))
+        self.assertEqual(identities["interface_binding_id"],
+                         "urn:soveraeign:binding:node-interface:model-json-v1")
 
-    def test_work_survives_and_names_its_cleanup(self) -> None:
+    def test_the_node_refused_every_borrowed_fact_and_admitted_the_owner(self) -> None:
+        node = self.run_variant()["node"]
+        self.assertEqual(node["own"]["outcome"], "COMMITTED")
+        refusals = node["refusals"]
+        self.assertEqual(refusals["foreign_session"]["reason"], "SESSION_ATTRIBUTION_CONFLICT")
+        self.assertEqual(refusals["other_actor_on_this_session"]["diagnostic"],
+                         "ACTOR_ATTRIBUTION_MISMATCH")
+        self.assertEqual(refusals["other_actor_without_the_grant"]["diagnostic"],
+                         "AuthorityRefused")
+
+    def test_work_survives_and_cleanup_is_read_from_the_stores(self) -> None:
         work = self.run_variant()["observations"]["P15-Q1.2"]
         self.assertTrue(work["survives_session"])
-        self.assertTrue(work["work"]["custody_or_lease"].startswith("lease:"))
-        self.assertTrue(any(item.startswith("release lease:")
-                            for item in work["work"]["cleanup_obligations"]))
-        self.assertTrue(any(item.startswith("end session ")
+        lease = work["work"]["custody_or_lease"]
+        self.assertTrue(lease.startswith("lease:"))
+        self.assertIn(f"release {lease}", work["work"]["cleanup_obligations"])
+        self.assertTrue(any(item.startswith("close console session session_")
                             for item in work["work"]["cleanup_obligations"]))
 
-    def test_projection_is_derived_not_declared(self) -> None:
-        first = self.run_variant()["observations"]["P15-Q1.1"]["record_projection_id"]
-        self.assertTrue(first.startswith("urn:soveraeign:record-projection:sha256:")
-                        or first.startswith("urn:soveraeign:record-projection:"))
-        self.assertGreater(len(first.rsplit(":", 1)[-1]), 32)
+    def test_projection_is_derived_from_the_node_record(self) -> None:
+        projection_id = self.run_variant()["observations"]["P15-Q1.1"]["record_projection_id"]
+        self.assertTrue(projection_id.startswith("urn:soveraeign:record-projection:"))
+        self.assertEqual(len(projection_id.rsplit(":", 1)[-1]), 64)
 
-    def test_own_principal_holds_no_standing_grant(self) -> None:
-        trace = "\n".join(self.run_variant()["trace"])
-        self.assertIn(f"authority for '{FIXTURE}': REFUSED AUTHORITY_REFUSED", trace)
-        self.assertIn("foreign session SESSION_ATTRIBUTION_CONFLICT", trace)
+    def test_oral_history_is_earned_not_asserted(self) -> None:
+        saved = os.environ.get(principals.ENV_PRINCIPAL)
+        os.environ[principals.ENV_PRINCIPAL] = "principal:somebody-else"
+        try:
+            result = self.run_variant()
+        finally:
+            if saved is None:
+                os.environ.pop(principals.ENV_PRINCIPAL, None)
+            else:
+                os.environ[principals.ENV_PRINCIPAL] = saved
+        self.assertTrue(result["observations"]["P15-Q1.1"]["oral_history_used"])
+        self.assertIn("fresh participation required oral history", result["grades"]["P15-Q1.1"])
+        self.assertFalse(result["passed"])
 
 
 class DefeatingVariants(ProbeCase):
     def test_unregistered_principal_defeats_entry_and_separation(self) -> None:
-        result = self.run_variant("unregistered-principal", "principal:nobody")
+        result = self.run_variant("unregistered-principal")
         self.assertTrue(result["grades"]["P15-Q1.1"])
         self.assertTrue(result["grades"]["P15-Q1.3"])
         self.assertFalse(result["grades"]["P15-Q1.2"])
         self.assertIsNone(result["principal"])
+
+    def test_the_declared_principal_cannot_rescue_the_unregistered_variant(self) -> None:
+        result = self.run_variant("unregistered-principal", principal="principal:bdo")
+        self.assertIsNone(result["principal"])
+        self.assertFalse(result["passed"])
 
     def test_work_bound_to_the_session_does_not_survive_it(self) -> None:
         result = self.run_variant("work-dies-with-session")
@@ -108,14 +117,18 @@ class DefeatingVariants(ProbeCase):
         self.assertFalse(result["grades"]["P15-Q1.1"])
         self.assertFalse(result["grades"]["P15-Q1.3"])
 
-    def test_borrowed_actor_is_caught_by_the_instrument(self) -> None:
-        result = self.run_variant("borrowed-authority")
-        self.assertEqual(result["grades"]["P15-Q1.3"],
-                         ["cross-principal/session mismatch did not refuse"])
-        self.assertEqual(
-            result["observations"]["P15-Q1.3"]["cross_principal_session_mismatch"],
-            "PERMITTED")
+    def test_a_node_with_no_grant_cannot_show_identity_separation(self) -> None:
+        result = self.run_variant("no-grant")
+        self.assertIn("identity separation missing session_id", result["grades"]["P15-Q1.3"])
+        self.assertIn("identity separation missing grant_id", result["grades"]["P15-Q1.3"])
+        self.assertEqual(result["node"]["own"]["outcome"], "REFUSED")
         self.assertFalse(result["grades"]["P15-Q1.1"])
+        self.assertFalse(result["grades"]["P15-Q1.2"])
+
+    def test_no_grant_is_also_what_a_run_without_an_issuer_reads(self) -> None:
+        result = self.run_variant(issuer=None)
+        self.assertTrue(result["grades"]["P15-Q1.3"])
+        self.assertFalse(result["passed"])
 
     def test_unknown_variant_is_refused_by_name(self) -> None:
         with self.assertRaises(ValueError):
@@ -131,6 +144,13 @@ class CommandLine(unittest.TestCase):
             capture_output=True, text=True, check=False)
         self.assertEqual(completed.returncode, 2)
         self.assertIn("PRINCIPAL_REQUIRED", completed.stdout)
+
+    def test_json_is_accepted_after_the_subcommand(self) -> None:
+        completed = subprocess.run(
+            [sys.executable, "scripts/sov_fresh.py", "run", "--principal", "principal:bdo",
+             "--json"], cwd=str(ROOT), capture_output=True, text=True, check=False)
+        self.assertEqual(completed.returncode, 1, completed.stdout[-500:])
+        self.assertIn('"P15-Q1.3"', completed.stdout)
 
     def test_selfcheck_passes(self) -> None:
         completed = subprocess.run(

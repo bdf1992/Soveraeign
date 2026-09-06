@@ -54,7 +54,7 @@
           "standing": "BUILT",
           "work_state": "PRESENTED",
           "stage_observed_by": null,
-          "note": "the closed path session -> principal -> campaign -> work -> lease -> capability -> authority -> Record projection -> session end -> survival -> instrument; P15-Q1.1 to Q1.3 graded by conformance/commissioning.py on a live run, three defeating variants fail their own predicates; built and self-tested, no independent observation yet"
+          "note": "the closed path host session -> principal -> campaign -> work -> lease -> node session and grant -> one admitted crossing and three refused ones -> Record projection -> session end -> survival and cleanup read back -> instrument; P15-Q1.1 to Q1.3 graded by conformance/commissioning.py, every identity read from a node record; three defeating variants are real node states and fail their own predicates; a node with no issuer reads Q1.3 unmet, which is this node today. Witness pass 1 at d40d61f: NOT-YET, standing BUILT (witness/fresh-participation.md); findings repaired in the second commit"
         }
       ],
       "depends_on": [],

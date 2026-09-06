@@ -1,11 +1,13 @@
 """Fresh participation: prove the P15-X1 vertical slice closes, and that it can fail.
 
-`run --principal ID` is the live reading: a participant with no private history
-enters this node from the artifact as the registered principal it declares, and the
-three P15-Q1 predicates are graded on what it resolved. `selfcheck` proves the probe
-discriminates: the positive variant passes and each declared defeating variant fails
-its own predicate, against a temporary registry so the check claims no identity.
-Neither command witnesses anything; a passing run is a build claim.
+`run --principal ID` is the live reading: a participant with no private history enters
+a node of this repository's shape as the registered principal it declares, and the three
+P15-Q1 predicates are graded on what it resolved. A fresh node has recorded no grant, so
+P15-Q1.3 reads unmet until an issuer opens the node's permits office; `--issuer ID` lets
+the seat that holds that authority do so for the run. `selfcheck` proves the probe
+discriminates against a temporary registry and a fixture issuer: the positive variant
+passes and each defeating variant fails exactly the predicates it declares. Neither
+command witnesses anything; a passing run is a build claim.
 """
 
 from __future__ import annotations
@@ -25,11 +27,12 @@ from sovfresh import probe  # noqa: E402
 from sovsession import principals  # noqa: E402
 
 FIXTURE_PRINCIPAL = "principal:fresh-probe"
+FIXTURE_ISSUER = "principal:fixture-root"
 
 EXPECTED_FAILURES = {
     "unregistered-principal": {"P15-Q1.1", "P15-Q1.3"},
     "work-dies-with-session": {"P15-Q1.2"},
-    "borrowed-authority": {"P15-Q1.3"},
+    "no-grant": {"P15-Q1.3"},
 }
 """Which predicates each defeating variant must fail; every other predicate must hold.
 
@@ -46,22 +49,29 @@ def _render(result: dict) -> str:
         lines.append(f"  {predicate}: {'holds' if not defects else '; '.join(defects)}")
     for defect in result["other_defects"]:
         lines.append(f"  defect: {defect}")
+    if result["node"]["admitted"]:
+        lines.append(f"  node: {result['node']['admitted']}")
     return "\n".join(lines)
 
 
 def cmd_run(args: argparse.Namespace) -> int:
-    principal_id = args.principal or os.environ.get(principals.ENV_PRINCIPAL, "").strip()
+    declared: set[str] = set()
+    principal_id = args.principal
+    if not principal_id and os.environ.get(principals.ENV_PRINCIPAL, "").strip():
+        principal_id = os.environ[principals.ENV_PRINCIPAL].strip()
+        declared.add(principals.ENV_PRINCIPAL)
     if not principal_id:
         print("REFUSED PRINCIPAL_REQUIRED: declare the registered principal this participant "
               "speaks as with --principal or SOV_PRINCIPAL; the registry names, it does not guess")
         return 2
     with tempfile.TemporaryDirectory() as temp:
-        result = probe.run(ROOT, Path(temp), principal_id, args.variant)
+        result = probe.run(ROOT, Path(temp), principal_id, args.variant,
+                           issuer=args.issuer, declared=declared)
     print(json.dumps(result, indent=2, sort_keys=True) if args.as_json else _render(result))
     return 0 if result["passed"] else 1
 
 
-def _fixture_registry(temp: Path) -> Path:
+def fixture_registry(temp: Path) -> Path:
     """The live registry plus one declared probe principal, controlled by the root.
 
     The copy exists so the self-check never asserts which model this host runs; the
@@ -88,48 +98,47 @@ def _fixture_registry(temp: Path) -> Path:
 
 def cmd_selfcheck(args: argparse.Namespace) -> int:
     failures: list[str] = []
-    saved = os.environ.get(principals.ENV_REGISTRY)
     with tempfile.TemporaryDirectory() as temp:
-        os.environ[principals.ENV_REGISTRY] = str(_fixture_registry(Path(temp)))
-        try:
-            positive = probe.run(ROOT, Path(temp) / "positive", FIXTURE_PRINCIPAL)
-            if not positive["passed"]:
-                failures.append("positive variant failed: " + _render(positive))
-            for variant, expected in EXPECTED_FAILURES.items():
-                principal_id = ("principal:nobody" if variant == "unregistered-principal"
-                                else FIXTURE_PRINCIPAL)
-                result = probe.run(ROOT, Path(temp) / variant, principal_id, variant)
-                for predicate in probe.PREDICATES:
-                    failed = bool(result["grades"][predicate])
-                    if predicate in expected and not failed:
-                        failures.append(f"{variant}: {predicate} did not fail")
-                    if predicate not in expected and failed:
-                        failures.append(f"{variant}: {predicate} failed alongside "
-                                        f"{', '.join(sorted(expected))}: "
-                                        + "; ".join(result["grades"][predicate]))
-        finally:
-            if saved is None:
-                os.environ.pop(principals.ENV_REGISTRY, None)
-            else:
-                os.environ[principals.ENV_REGISTRY] = saved
+        registry = fixture_registry(Path(temp))
+        positive = probe.run(ROOT, Path(temp) / "positive", FIXTURE_PRINCIPAL,
+                             registry=registry, issuer=FIXTURE_ISSUER)
+        if not positive["passed"]:
+            failures.append("positive variant failed: " + _render(positive))
+        for variant, expected in EXPECTED_FAILURES.items():
+            result = probe.run(ROOT, Path(temp) / variant, FIXTURE_PRINCIPAL, variant,
+                               registry=registry, issuer=FIXTURE_ISSUER)
+            for predicate in probe.PREDICATES:
+                failed = bool(result["grades"][predicate])
+                if predicate in expected and not failed:
+                    failures.append(f"{variant}: {predicate} did not fail")
+                if predicate not in expected and failed:
+                    failures.append(f"{variant}: {predicate} failed alongside "
+                                    f"{', '.join(sorted(expected))}: "
+                                    + "; ".join(result["grades"][predicate]))
+            if result["other_defects"]:
+                failures.append(f"{variant}: " + "; ".join(result["other_defects"]))
     if failures:
         print("FAIL: fresh participation probe does not discriminate")
         print("\n".join("  " + line for line in failures))
         return 1
     print(f"PASS: fresh participation slice closes on the positive variant and "
-          f"{len(EXPECTED_FAILURES)} defeating variants each fail their own predicate")
+          f"{len(EXPECTED_FAILURES)} defeating variants each fail their own predicates")
     return 0
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--json", action="store_true", dest="as_json")
+    shared = argparse.ArgumentParser(add_help=False)
+    shared.add_argument("--json", action="store_true", dest="as_json")
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0], parents=[shared])
     sub = parser.add_subparsers(dest="command", required=True)
-    run = sub.add_parser("run", help="one live fresh-participation run as a declared principal")
+    run = sub.add_parser("run", parents=[shared],
+                         help="one live fresh-participation run as a declared principal")
     run.add_argument("--principal", help="registered principal id this participant speaks as")
+    run.add_argument("--issuer", help="the seat opening this node's permits office for the run")
     run.add_argument("--variant", default="positive", choices=sorted(probe.VARIANTS))
     run.set_defaults(func=cmd_run)
-    check = sub.add_parser("selfcheck", help="prove the probe passes and can fail, offline")
+    check = sub.add_parser("selfcheck", parents=[shared],
+                           help="prove the probe passes and can fail, offline")
     check.set_defaults(func=cmd_selfcheck)
     args = parser.parse_args(argv)
     return args.func(args)

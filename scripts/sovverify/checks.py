@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import sys
 
-from sovverify.commissioning import COMMISSIONING_CHECKS
 from sovverify.participants import PARTICIPANT_CHECKS
 from sovverify.shape import ROOT, Check
 
@@ -296,5 +295,6 @@ REPOSITORY_CHECKS = (
           ("scripts/tests", "scripts/run_tooling_tests.py")),
 )
 
-#: Every check, in print order: the repository's own, the active phase's, each participant's.
-CHECKS = REPOSITORY_CHECKS + COMMISSIONING_CHECKS + PARTICIPANT_CHECKS
+#: Repository checks then participant checks; the package `__init__` splices the
+#: integrity and commissioning groups in, so import the table through the package.
+CHECKS = REPOSITORY_CHECKS + PARTICIPANT_CHECKS

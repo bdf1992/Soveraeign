@@ -6,7 +6,8 @@ P15-Q1 predicates are graded on what it resolved. A fresh node has recorded no g
 P15-Q1.3 reads unmet until an issuer opens the node's permits office; `--issuer ID` lets
 the seat that holds that authority do so for the run. `selfcheck` proves the probe
 discriminates against a temporary registry and a fixture issuer: the positive variant
-passes and each defeating variant fails exactly the predicates it declares. Neither
+passes and each defeating variant fails exactly the predicates it declares. Naming the
+root seat as issuer shows the mechanism; it is not evidence that the seat acted. Neither
 command witnesses anything; a passing run is a build claim.
 """
 
@@ -64,25 +65,40 @@ def cmd_run(args: argparse.Namespace) -> int:
         print("REFUSED PRINCIPAL_REQUIRED: declare the registered principal this participant "
               "speaks as with --principal or SOV_PRINCIPAL; the registry names, it does not guess")
         return 2
+    registry = Path(args.registry) if args.registry else None
     with tempfile.TemporaryDirectory() as temp:
-        result = probe.run(ROOT, Path(temp), principal_id, args.variant,
+        result = probe.run(ROOT, Path(temp), principal_id, args.variant, registry=registry,
                            issuer=args.issuer, declared=declared)
     print(json.dumps(result, indent=2, sort_keys=True) if args.as_json else _render(result))
     return 0 if result["passed"] else 1
 
 
 def fixture_registry(temp: Path) -> Path:
-    """The live registry plus one declared probe principal, controlled by the root.
+    """The checked-in registry plus a fixture root and one fixture principal under it.
 
-    The copy exists so the self-check never asserts which model this host runs; the
-    fixture principal is labelled as such and lives only for the run.
+    The copy is read from the repository path directly, never from the environment, and
+    exists so the self-check never asserts which model this host runs or issues anything
+    in the real root's name. Both fixtures are labelled and live only for the run.
     """
-    registry, reason = principals.load(ROOT)
-    if registry is None:
-        raise SystemExit(f"FAIL: {reason}")
+    try:
+        registry = json.loads((ROOT / principals.REGISTRY_PATH).read_text(encoding="utf-8"))
+    except (OSError, ValueError) as failure:
+        raise SystemExit(f"FAIL: principal registry could not be read: {failure}") from None
+    registry["root_principal"] = FIXTURE_ISSUER
+    registry["principals"].append({
+        "principal_id": FIXTURE_ISSUER, "kind": "HUMAN", "durability": "EPHEMERAL",
+        "controller": None,
+        "anchor": {"kind": "fixture", "reference": "scripts/sov_fresh.py selfcheck"},
+        "crossing_class": "in-node", "model": None, "delegation": None,
+        "claim": {"claimed_at": "2026-09-06T00:00:00Z",
+                  "claim_basis": "fixture root of a temporary node; exists only for this self-check",
+                  "verification": "UNVERIFIED"},
+        "verification_channel": {"kind": "local-file", "reference": "temporary"},
+        "revoked": None,
+    })
     registry["principals"].append({
         "principal_id": FIXTURE_PRINCIPAL, "kind": "MODEL", "durability": "EPHEMERAL",
-        "controller": registry["root_principal"],
+        "controller": FIXTURE_ISSUER,
         "anchor": {"kind": "fixture", "reference": "scripts/sov_fresh.py selfcheck"},
         "crossing_class": "in-node", "model": None, "delegation": None,
         "claim": {"claimed_at": "2026-09-06T00:00:00Z",
@@ -134,7 +150,10 @@ def main(argv: list[str] | None = None) -> int:
     run = sub.add_parser("run", parents=[shared],
                          help="one live fresh-participation run as a declared principal")
     run.add_argument("--principal", help="registered principal id this participant speaks as")
-    run.add_argument("--issuer", help="the seat opening this node's permits office for the run")
+    run.add_argument("--issuer", help="the registry's root principal, opening this node's "
+                                      "permits office for the run; any other name issues nothing")
+    run.add_argument("--registry", help="principal registry to read instead of "
+                                        "contracts/principals.json")
     run.add_argument("--variant", default="positive", choices=sorted(probe.VARIANTS))
     run.set_defaults(func=cmd_run)
     check = sub.add_parser("selfcheck", parents=[shared],

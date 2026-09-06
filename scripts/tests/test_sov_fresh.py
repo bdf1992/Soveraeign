@@ -61,7 +61,9 @@ class PositiveRun(ProbeCase):
         node = self.run_variant()["node"]
         self.assertEqual(node["own"]["outcome"], "COMMITTED")
         refusals = node["refusals"]
-        self.assertEqual(refusals["foreign_session"]["reason"], "SESSION_ATTRIBUTION_CONFLICT")
+        self.assertEqual(refusals["foreign_session"]["diagnostic"], "ACTOR_ATTRIBUTION_MISMATCH")
+        self.assertEqual(refusals["foreign_session"]["stage"], "check-attribution")
+        self.assertTrue(refusals["foreign_session"]["receipt_id"])
         self.assertEqual(refusals["other_actor_on_this_session"]["diagnostic"],
                          "ACTOR_ATTRIBUTION_MISMATCH")
         self.assertEqual(refusals["other_actor_without_the_grant"]["diagnostic"],
@@ -82,8 +84,27 @@ class PositiveRun(ProbeCase):
         self.assertEqual(len(projection_id.rsplit(":", 1)[-1]), 64)
 
     def test_oral_history_is_earned_not_asserted(self) -> None:
+        saved = os.environ.get(principals.ENV_REGISTRY)
+        os.environ[principals.ENV_REGISTRY] = str(self.registry)
+        try:
+            undeclared = probe.run(ROOT, self.temp / "undeclared", FIXTURE, issuer=ISSUER)
+            declared = probe.run(ROOT, self.temp / "declared", FIXTURE, issuer=ISSUER,
+                                 registry=self.registry)
+        finally:
+            if saved is None:
+                os.environ.pop(principals.ENV_REGISTRY, None)
+            else:
+                os.environ[principals.ENV_REGISTRY] = saved
+        self.assertTrue(undeclared["observations"]["P15-Q1.1"]["oral_history_used"])
+        self.assertIn("fresh participation required oral history",
+                      undeclared["grades"]["P15-Q1.1"])
+        self.assertFalse(undeclared["passed"])
+        self.assertFalse(declared["observations"]["P15-Q1.1"]["oral_history_used"])
+        self.assertTrue(declared["passed"])
+
+    def test_an_inherited_principal_variable_does_not_reach_the_resolver(self) -> None:
         saved = os.environ.get(principals.ENV_PRINCIPAL)
-        os.environ[principals.ENV_PRINCIPAL] = "principal:somebody-else"
+        os.environ[principals.ENV_PRINCIPAL] = "principal:bdo"
         try:
             result = self.run_variant()
         finally:
@@ -91,9 +112,15 @@ class PositiveRun(ProbeCase):
                 os.environ.pop(principals.ENV_PRINCIPAL, None)
             else:
                 os.environ[principals.ENV_PRINCIPAL] = saved
-        self.assertTrue(result["observations"]["P15-Q1.1"]["oral_history_used"])
-        self.assertIn("fresh participation required oral history", result["grades"]["P15-Q1.1"])
-        self.assertFalse(result["passed"])
+        self.assertEqual(result["principal"], FIXTURE)
+        self.assertTrue(result["passed"])
+
+    def test_only_the_registry_root_may_issue(self) -> None:
+        for issuer in ("principal:nobody-at-all", "", "principal:bdo"):
+            result = self.run_variant(issuer=issuer)
+            self.assertIsNone(result["observations"]["P15-Q1.3"]["identities"]["grant_id"], issuer)
+            self.assertIn("is not the registry's root principal", result["node"]["admitted"])
+            self.assertFalse(result["passed"], issuer)
 
 
 class DefeatingVariants(ProbeCase):

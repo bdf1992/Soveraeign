@@ -12,6 +12,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator
 import argparse
+import json
 import os
 
 from sovcustody import model as custody_model
@@ -25,10 +26,25 @@ ENVIRONMENT_INPUTS = (principals.ENV_REGISTRY, principals.ENV_PRINCIPAL)
 """Host variables the resolver honours. Set and undeclared, they are oral history."""
 
 
-def undeclared_inputs(declared: set[str]) -> list[str]:
-    """Environment inputs the resolver would read that the caller did not declare."""
-    return [name for name in ENVIRONMENT_INPUTS
-            if os.environ.get(name, "").strip() and name not in declared]
+def undeclared_inputs(declared: set[str], registry_declared: bool) -> list[str]:
+    """Environment inputs the resolver will read that the caller did not declare.
+
+    The principal is always declared explicitly and overrides its variable, so only the
+    registry can reach the resolver from the environment, and only when no registry was
+    passed in.
+    """
+    if registry_declared or principals.ENV_REGISTRY in declared:
+        return []
+    return [principals.ENV_REGISTRY] if os.environ.get(principals.ENV_REGISTRY, "").strip() else []
+
+
+def root_principal(root: Path, registry: Path | None) -> str | None:
+    """The root principal the registry in force names, or None when it cannot be read."""
+    path = registry if registry is not None else root / principals.REGISTRY_PATH
+    try:
+        return json.loads(path.read_text(encoding="utf-8")).get("root_principal")
+    except (OSError, ValueError):
+        return None
 
 
 @contextmanager

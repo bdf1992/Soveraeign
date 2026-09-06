@@ -51,10 +51,10 @@ def _facts(record: Any, subject: str, actor: str, facts: list[dict[str, Any]]) -
 
 def _refusals(node: Any, document: dict[str, Any], actor: str, admitted: dict[str, Any],
               principal: str | None, issuer: str | None) -> dict[str, Any]:
-    """The crossings the node must refuse: a foreign session id, and another actor."""
+    """The crossings the node must refuse: a session it never opened, and another actor."""
     session = admitted["session"]
     foreign = nodelayer.bind(document, actor, session, principal,
-                             {**nodelayer.ARGUMENTS, "session_id": "another-session"})
+                             session_id="session_never_opened_on_this_node")
     readings = {"foreign_session": nodelayer.cross(node, foreign)}
     if issuer is not None and session is not None:
         node.console.grant(OTHER_ACTOR, nodelayer.OPEN_SESSION, OTHER_ACTOR, granted_by=issuer)
@@ -73,7 +73,7 @@ def _mismatch(readings: dict[str, Any], own: dict[str, Any]) -> str:
     A refusal for some other reason is reported as such rather than counted: the clause
     asks that a mismatch refuse, not that something somewhere refused.
     """
-    required = {"foreign_session": "SESSION_ATTRIBUTION_CONFLICT",
+    required = {"foreign_session": "ACTOR_ATTRIBUTION_MISMATCH",
                 "other_actor_on_this_session": "ACTOR_ATTRIBUTION_MISMATCH",
                 "other_actor_without_the_grant": "AuthorityRefused"}
     for name, code in required.items():
@@ -93,7 +93,8 @@ def run(root: Path, work_dir: Path, principal_id: str, variant: str = "positive"
     """Run one variant and return observations, grades, and the trace they came from."""
     if variant not in VARIANTS:
         raise ValueError(f"unknown variant {variant!r}; declared: {', '.join(VARIANTS)}")
-    undeclared = layers.undeclared_inputs(declared or set())
+    undeclared = layers.undeclared_inputs(declared or set(), registry is not None)
+    root_principal = layers.root_principal(root, registry)
     directory = work_dir / "sov-sessions"
     session = "fresh-" + uuid.uuid4().hex[:8]
     if variant == "unregistered-principal":
@@ -123,7 +124,8 @@ def run(root: Path, work_dir: Path, principal_id: str, variant: str = "positive"
         raise RuntimeError("Node Interface refused: " + "; ".join(defects))
     operation = nodelayer.reachable_operation(document)
     with nodelayer.open_node(work_dir) as node:
-        admitted = nodelayer.admit(node, issuer, actor, principal, operation["required_authority"])
+        admitted = nodelayer.admit(node, issuer, root_principal, actor, principal,
+                                   operation["required_authority"])
         own_binding = nodelayer.bind(document, actor, admitted["session"], principal)
         own = nodelayer.cross(node, own_binding)
         trace.append(f"{operation['operation_id']} as {actor}: {own['outcome']} "
@@ -160,6 +162,7 @@ def run(root: Path, work_dir: Path, principal_id: str, variant: str = "positive"
             "governance_context": phase["governance_context"],
             "record_projection_id": projected["projection"]["projection_id"],
             "oral_history_used": bool(undeclared),
+            "node_session_id": (admitted["session"] or {}).get("session_id"),
         },
         "P15-Q1.2": {
             "work": {"address": work["address"],
@@ -182,7 +185,7 @@ def run(root: Path, work_dir: Path, principal_id: str, variant: str = "positive"
     if undeclared:
         other.append("undeclared environment inputs: " + ", ".join(undeclared))
     return {"variant": variant, "session": session, "principal": principal, "actor": actor,
-            "issuer": issuer, "node": {"admitted": admitted["reason"], "own": own,
+            "issuer": issuer, "root_principal": root_principal, "node": {"admitted": admitted["reason"], "own": own,
                                        "refusals": readings},
             "observations": observations, "grades": grades, "other_defects": other,
             "passed": not any(grades.values()) and not other, "trace": trace}

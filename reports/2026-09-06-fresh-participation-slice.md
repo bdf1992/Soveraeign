@@ -7,8 +7,8 @@ throughout. No phase state, standing field, or floor moved.
 
 ## Terminal
 
-Presented on the branch for acceptance, in two commits: the slice, then the repairs the
-first witness pass asked for. Not landed on `main`: the change touches `CLAUDE.md`, which
+Presented on the branch for acceptance, in three commits: the slice, then the repairs each
+witness pass asked for. Not landed on `main`: the change touches `CLAUDE.md`, which
 the ratified standing grant excludes, so `scripts/sov_land.py` is not the path and Bdo's
 review of the branch is.
 
@@ -24,6 +24,9 @@ review of the branch is.
 | Custody board | `python scripts/sov_custody.py board custody:phase-1-5/fresh-participation` | one `ITEM` member at `VERTICAL_SLICE`, standing `BUILT`, `stage_observed_by` null |
 | Repository gate | `python scripts/verify.py`; `python scripts/lint.py` | 51 checks PASS; hygiene PASS |
 
+"Second commit" in the heading reads "third" for the rows that changed after pass 2: the
+foreign-session refusal, the issuer gate, and the environment handling below.
+
 The closed path: host session registered; principal resolved from the registry as the
 participant declares it; campaign read from `STATUS.yaml` and `contracts/phases.json` by
 digest; work read from the custody collection; a lease taken under it, held by the run's
@@ -35,13 +38,14 @@ refuse; the run's facts appended to the node's Record and projected back; the ho
 ended; the lease read back as orphaned inventory and the console session as still open; the
 three predicates graded. The last layer is a check whose result is derived from the run.
 
-What the node refuses, each read from a Gateway receipt or the binding:
+What the node refuses, each read from a Gateway receipt with its stage:
 
-- a request carrying another session's id: `SESSION_ATTRIBUTION_CONFLICT` at the binding;
+- a request bound to a session this node never opened: `ACTOR_ATTRIBUTION_MISMATCH` at the
+  attribution stage;
 - another actor presenting this actor's session: `ACTOR_ATTRIBUTION_MISMATCH` at the
-  Gateway's attribution stage;
-- another actor on its own session without the grant: `AuthorityRefused` at the Gateway's
-  authority stage.
+  attribution stage;
+- another actor on its own session without the grant: `AuthorityRefused` at the authority
+  stage.
 
 `cross_principal_session_mismatch` reads `REFUSED` only when all three refuse for the reason
 named and the owner's own crossing committed. A refusal for another reason is reported as
@@ -71,7 +75,29 @@ supported `BUILT`, unchanged. Record: `witness/fresh-participation.md`, receipt 
 7. The cross-session reading compared verdicts, not codes. Now each refusal must carry the
    reason it declares.
 
-Witness residuals recorded rather than changed: `--json` now works after the subcommand (F8);
+Pass 2 observed commit `161d559`. Verdict `NOT-YET`; standing supported `BUILT`. F1 to F7
+read repaired except one leg of F1, and four new defects, each repaired in the third commit:
+
+- F18: `selfcheck` failed when `SOV_PRINCIPAL` was inherited from the environment although
+  the run overrides it, and the fixture registry was read through the same override. Now
+  only the registry variable counts as an undeclared input, and only when no registry was
+  passed; the fixture registry is read from the repository path directly.
+- F19: the foreign-session leg was refused by the scripts-layer binding, never by the node.
+  Now the request is bound to a session the node never opened and the Gateway refuses it
+  with a receipt at its attribution stage.
+- F20: any string passed as `--issuer` opened the temporary node's permits office and made
+  itself that node's root. Now only the registry's `root_principal` may issue; any other
+  name, including an empty one (F21), issues nothing and Q1.3 reads unmet.
+
+Pass 2 residuals recorded: the committed receipt names no grant (F22); the host session and
+the node session are two sessions, so the Q1.1 observation now carries `node_session_id`
+beside `session_id` (F23); the check ran over its ceiling once under load (F24); the Console
+and Gateway commit a crossing for a null `principal_id` (F25, a product question). Pass 2's
+J4 asks whether P15-X1 may be observed against a temporary node whose root grant the run
+seeded under the registry's root name, or wants a persisted node whose office the root seat
+opened; `--issuer` shows the mechanism and is not evidence the seat acted.
+
+Pass 1 residuals recorded rather than changed: `--json` now works after the subcommand (F8);
 the declared verify/lint evidence in the old authority request is gone with that request
 (F9); `SOV_PRINCIPAL_REGISTRY` is now an explicit argument and, when set undeclared, is
 reported as oral history (F10); `survives_session` now requires the store to read the lease as
@@ -97,10 +123,11 @@ Reversible; each can be overturned in one place.
 - The check joins verify under a new group, `scripts/sovverify/commissioning.py`, spliced in
   by the package `__init__` beside the integrity checks. Named ceiling 1.5 seconds against
   0.62 measured alone.
-- `selfcheck` uses a fixture issuer, `principal:fixture-root`, to open the temporary node's
-  permits office, and a fixture principal in a temporary registry copy. Neither exists
-  outside the run. The live reading uses no fixture: `run` without `--issuer` reports what
-  a fresh node holds, and `--issuer` names the seat that opens the office for that run.
+- `selfcheck` uses a temporary registry copy whose root is a fixture, `principal:fixture-root`,
+  with one fixture principal under it, so the self-check never issues in the real root's
+  name. Neither exists outside the run. `run` without `--issuer` reports what a fresh node
+  holds; `--issuer` must name the registry's root principal, and the run then shows the
+  mechanism under that name without proving the seat acted (J4).
 - The crossing is `registry.resolve` on `sov://asset/ingest-asset`, scope `registry:any`:
   reachable, `RECORD_LOCAL`, deterministic.
 

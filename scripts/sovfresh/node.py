@@ -1,9 +1,9 @@
-"""The node layer of the fresh participation probe: sessions, grants, and one crossing.
+"""The node layer of the fresh participation probe: sessions, grants, and crossings.
 
 Everything here is read back from records the node's own services wrote: the Console
-Service opens the session and issues the grant, the Gateway refuses or admits the
-crossing, and the receipt carries the reason. The probe composes requests; it decides
-nothing about whether they are admitted.
+Service opens the session and issues the grant, the Gateway refuses or admits each
+crossing, and its receipt carries the stage and reason. The probe composes requests,
+including ones the node must refuse; it decides nothing about whether they are admitted.
 """
 
 from __future__ import annotations
@@ -35,16 +35,22 @@ def open_node(work_dir: Path) -> LocalActionPath:
     return LocalActionPath(work_dir / "node")
 
 
-def admit(node: LocalActionPath, issuer: str | None, actor: str, principal_id: str | None,
-          required_authority: str) -> dict[str, Any]:
-    """Open the participant's console session and, when an issuer exists, record its grant.
+def admit(node: LocalActionPath, issuer: str | None, root: str | None, actor: str,
+          principal_id: str | None, required_authority: str) -> dict[str, Any]:
+    """Open the participant's console session and, when the root issues, record its grant.
 
     With no issuer nothing is granted and no session opens: a node whose permits office
-    has never been opened admits nobody, which is the honest reading of a fresh node.
+    has never been opened admits nobody, which is the honest reading of a fresh node. A
+    node's first grant makes its issuer that node's root, so only the principal the
+    registry names as root may be offered here; any other name issues nothing.
     """
     if issuer is None:
         return {"session": None, "grant_id": None,
                 "reason": "no issuer: this node has recorded no grant for any actor"}
+    if not issuer or issuer != root:
+        return {"session": None, "grant_id": None,
+                "reason": f"issuer {issuer!r} is not the registry's root principal "
+                          f"{root!r}; nothing issued"}
     node.console.grant(actor, OPEN_SESSION, actor, granted_by=issuer)
     granted = node.console.grant(actor, required_authority, SCOPE, granted_by=issuer)
     session = node.console.open_session(actor, MODEL, SESSION_BINDING, principal_id)

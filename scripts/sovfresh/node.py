@@ -34,6 +34,7 @@ BEYOND_OPERATION = "asset.ingest-asset"
 BEYOND_ARGUMENTS = {"path": "/nonexistent/beyond-the-grant", "label": "beyond the grant"}
 SESSION_BINDING = "urn:soveraeign:binding:session:fresh-probe"
 OPEN_SESSION = "open:session"
+CLOSE_SESSION = "close:session"
 PROBE_ISSUER_GATE = "PROBE_ISSUER_GATE"
 """The probe's own refusal: an issuer the registry does not name as root seeds nothing."""
 
@@ -55,7 +56,8 @@ def open_office(node: LocalActionPath, issuer: str, operator: str,
     This is the act the probe otherwise refuses to perform under any name but the
     registry's root. The journal is the receipt: each grant carries `granted_by`.
     """
-    records = [node.console.grant(operator, OPEN_SESSION, operator, granted_by=issuer)]
+    records = [node.console.grant(operator, OPEN_SESSION, operator, granted_by=issuer),
+               node.console.grant(operator, CLOSE_SESSION, operator, granted_by=issuer)]
     for capability, scope in capabilities.items():
         records.append(node.console.grant(operator, capability, scope, granted_by=issuer))
     return records
@@ -79,6 +81,18 @@ def admit_persisted(node: LocalActionPath, actor: str, principal_id: str | None,
                 "reason": f"the node refused to open a session for {actor}: {refused}"}
     reason = None if grant_id else f"the node holds no live {required_authority} grant for {actor}"
     return {"session": session, "grant_id": grant_id, "refused_by": None, "reason": reason}
+
+
+def close_participant_session(node: LocalActionPath, actor: str,
+                              session_id: str | None) -> str | None:
+    """Close the participant's own console session; the reason if the node refuses."""
+    if not session_id:
+        return None
+    try:
+        node.console.close_session(actor, session_id)
+    except console_authority.AuthorityRefused as refused:
+        return str(refused)
+    return None
 
 
 def export_journal(node: LocalActionPath) -> dict[str, Any]:
@@ -106,6 +120,7 @@ def admit(node: LocalActionPath, issuer: str | None, root: str | None, actor: st
                 "reason": f"probe rule {PROBE_ISSUER_GATE}: issuer {issuer!r} is not the "
                           f"registry's root principal {root!r}; the probe seeded nothing"}
     node.console.grant(actor, OPEN_SESSION, actor, granted_by=issuer)
+    node.console.grant(actor, CLOSE_SESSION, actor, granted_by=issuer)
     granted = node.console.grant(actor, required_authority, SCOPE, granted_by=issuer)
     session = node.console.open_session(actor, MODEL, SESSION_BINDING, principal_id)
     return {"session": session, "grant_id": granted["grant_id"], "refused_by": None,

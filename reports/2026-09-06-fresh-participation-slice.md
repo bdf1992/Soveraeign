@@ -129,6 +129,21 @@ left the unit suite green. Two cases now pin them, in the fifth commit, after th
 bytes; the standing binds to `0cf5a57`. Pass 4 adds J7: the custody schema says
 `stage_observed_by` names who "settled" the stage, and a witness settles nothing.
 
+Pass 5 observed commit `219686d` and the persisted node. Verdict `REPRODUCED` for the run
+and the extended instrument; dissent from any reading that the root seat acted (F35, above).
+Four defects, each repaired in the sixth commit: the office and persisted-entry surface had
+no tests (F33); two refusals surfaced as tracebacks (F34); the office receipt was overwritten
+on repeat and named no registry (F36, now an append-only act line with the registry digest
+and the journal heads); and the custody note asserted the direction as fact (F37). The
+participant now closes its own console session, which retires F38. Residuals: the third
+refusal leg changed under the pass 4 standing (F39, it is now the actor reaching past its
+own grant, so both node modes read the same three); the packet's head sits inside the file
+it checks and the witness holds an outside head (F40); the committed receipt's subject names
+the resolved name rather than the operation (F41, product); this witness was launched from
+the session the direction names (F42). Pass 5 adds J8, whether a custody note may assert
+a direction before its acceptance, and J9, whether the packet wants a gate with an outside
+head.
+
 Pass 1 residuals recorded rather than changed: `--json` now works after the subcommand (F8);
 the declared verify/lint evidence in the old authority request is gone with that request
 (F9); `SOV_PRINCIPAL_REGISTRY` is now an explicit argument and, when set undeclared, is
@@ -146,23 +161,32 @@ still take a lease with `controller_principal: null` (F17, a lease-contract ques
 After the fourth pass Bdo directed, in his own words in this session: "Open the office on my
 behalf me and rerun it as evidence and level with me." This session performed the act with
 `python scripts/sov_fresh.py open-office` against the node whose stores live at
-`.local/node-interface` on this host: the first grant seated `principal:bdo` as that node's
-root issuer, and two grants to `principal:claude-fable-5` followed, `open:session` and
-`read:registry`, each carrying `granted_by: principal:bdo` in the node's journal. The command
-refuses any issuer but the registry's root, and a receipt naming the direction and where it
-was given sits beside the state.
+`.local/node-interface` on this host, twice under the same direction: the first act seated
+`principal:bdo` as that node's root issuer and granted `principal:claude-fable-5`
+`open:session` and `read:registry`; the second added `close:session` so the participant can
+retire its own session. Every grant carries `granted_by: principal:bdo` in the node's
+journal. The command refuses any issuer but the registry's root, and an act line naming the
+registry by digest and the journal head before and after is appended beside the state.
 
 Then `python scripts/sov_fresh.py run --principal principal:claude-fable-5 --node-state
 .local/node-interface`: the participant entered that node as itself, seeded nothing, opened
 its session under the grant it held, crossed once, was refused three times for the reasons
-the node declares, and all three predicates hold. The act, the run, and the node's journal
-export are one packet, `reports/observations/2026-09-06-fresh-participation-live-node.json`,
-which a reader verifies against its record head with the Record Service. It is the builder's
-self-report until the witness reads the node.
+the node declares, closed its own console session, and all three predicates hold. The acts,
+the runs, and the node's journal export are one packet,
+`reports/observations/2026-09-06-fresh-participation-live-node.json`, which a reader
+verifies against its record head with the Record Service.
 
-Two things this does not do. The node state is runtime state on one host and leaves with
-it; the packet is what stays. And the grants are to the registry's `principal:claude-fable-5`
-while the serving model is `claude-fable-5-1`, which is the naming residual below.
+What this is and is not. Witness pass 5 reproduced the run against the node and read the
+export back entry by entry. It also read that the node's root is whatever non-empty name
+the first caller passes, that the probe's gate is a string comparison against a registry
+the caller may replace, that the registry's own `principal:bdo` entry is `UNVERIFIED`, and
+that the direction lives in a transcript and a file this session wrote. So the record shows
+the predicates holding on a persisted node whose journal names `principal:bdo` as root; it
+cannot show that the root seat acted. That is the product residual F35, and the reason the
+witness split J4: if Bdo accepts this packet with his quoted words, the acceptance is itself
+the record that the seat acted; otherwise the question is what channel authenticates the
+seat's issuance. The node state is runtime state on one host and leaves with it; the packet
+is what stays.
 
 ## Standing changes
 

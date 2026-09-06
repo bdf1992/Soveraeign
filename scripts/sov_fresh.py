@@ -18,6 +18,7 @@ node as a participant and seeds nothing. The node's journal is the receipt for b
 
 from __future__ import annotations
 
+from hashlib import sha256
 from pathlib import Path
 import argparse
 import json
@@ -69,10 +70,22 @@ def cmd_run(args: argparse.Namespace) -> int:
     registry = Path(args.registry) if args.registry else None
     node_state = Path(args.node_state) if args.node_state else None
     with tempfile.TemporaryDirectory() as temp:
-        result = probe.run(ROOT, Path(temp), principal_id, args.variant, registry=registry,
-                           issuer=args.issuer, node_state=node_state)
+        try:
+            result = probe.run(ROOT, Path(temp), principal_id, args.variant,
+                               registry=registry, issuer=args.issuer, node_state=node_state)
+        except ValueError as refusal:
+            print(f"REFUSED VARIANT_NOT_ADMITTED: {refusal}")
+            return 2
     print(json.dumps(result, indent=2, sort_keys=True) if args.as_json else _render(result))
     return 0 if result["passed"] else 1
+
+
+def _shown(path: Path) -> str:
+    """A path as the record names it: repository-relative when inside the repository."""
+    try:
+        return path.resolve().relative_to(ROOT.resolve()).as_posix()
+    except ValueError:
+        return path.as_posix()
 
 
 def cmd_open_office(args: argparse.Namespace) -> int:
@@ -80,10 +93,11 @@ def cmd_open_office(args: argparse.Namespace) -> int:
 
     The act is the issuer's; this command performs it at the issuer's recorded direction
     and refuses any other name by the probe's own rule. Every grant lands in the node's
-    journal with `granted_by`, and the direction is written beside the state as a receipt
-    the journal cannot carry.
+    journal with `granted_by`, which is the receipt. The act line appended beside the
+    state names the registry in force by digest and the journal head before and after;
+    it proves nothing the journal does not, and says so.
     """
-    registry = Path(args.registry) if args.registry else None
+    registry = Path(args.registry) if args.registry else ROOT / principals.REGISTRY_PATH
     root = layers.root_principal(ROOT, registry)
     if not args.issuer or args.issuer != root:
         print(f"REFUSED {nodelayer.PROBE_ISSUER_GATE}: issuer {args.issuer!r} is not the "
@@ -92,18 +106,27 @@ def cmd_open_office(args: argparse.Namespace) -> int:
     state = Path(args.node_state)
     capabilities = dict(item.split("=", 1) for item in args.capability or [])
     with nodelayer.open_node_at(state) as node:
-        records = nodelayer.open_office(node, args.issuer, args.operator, capabilities)
-        head = node.record.head()
-    receipt = {
+        before = node.record.head()
+        try:
+            records = nodelayer.open_office(node, args.issuer, args.operator, capabilities)
+        except nodelayer.console_authority.AuthorityRefused as refused:
+            print(f"REFUSED AUTHORITY_REFUSED: the node refused {args.issuer}: {refused}")
+            return 2
+        after = node.record.head()
+    act = {
         "act": "open-office", "node_state": str(state), "issuer": args.issuer,
         "operator": args.operator, "direction": args.direction,
-        "directed_in": args.directed_in, "record_head": head,
+        "directed_in": args.directed_in,
+        "registry": {"path": _shown(registry),
+                     "digest": "sha256:" + sha256(registry.read_bytes()).hexdigest()},
+        "record_head_before": before, "record_head_after": after,
         "grants": [{k: r[k] for k in ("grant_id", "capability", "scope", "granted_by",
                                        "granted_at", "entry_id")} for r in records],
+        "proves": "nothing the journal does not; the journal entries above are the receipt",
     }
-    (state / "office-opened.json").write_text(json.dumps(receipt, indent=2) + "\n",
-                                              encoding="utf-8")
-    print(json.dumps(receipt, indent=2) if args.as_json else "\n".join(
+    with (state / "office-acts.ndjson").open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(act, sort_keys=True) + "\n")
+    print(json.dumps(act, indent=2, sort_keys=True) if args.as_json else "\n".join(
         [f"office opened at {state} by {args.issuer} for {args.operator}"]
         + [f"  {r['grant_id']}  {r['capability']}  {r['scope']}" for r in records]))
     return 0
@@ -148,6 +171,24 @@ def fixture_registry(temp: Path) -> Path:
     return path
 
 
+def _persisted_cases(state: Path, registry: Path) -> list[str]:
+    """A node opened once under the fixture root, then entered by two participants."""
+    failures: list[str] = []
+    with nodelayer.open_node_at(state) as node:
+        nodelayer.open_office(node, FIXTURE_ISSUER, FIXTURE_PRINCIPAL,
+                              {"read:registry": nodelayer.SCOPE})
+    granted = probe.run(ROOT, state.parent / "granted", FIXTURE_PRINCIPAL,
+                        registry=registry, node_state=state)
+    if not granted["passed"]:
+        failures.append("persisted node, granted operator: " + _render(granted))
+    ungranted = probe.run(ROOT, state.parent / "ungranted", "principal:bdo",
+                          registry=registry, node_state=state)
+    if not ungranted["grades"]["P15-Q1.3"] or ungranted["grades"]["P15-Q1.1"]:
+        failures.append("persisted node, operator with no grant: Q1.3 must fail alone: "
+                        + _render(ungranted))
+    return failures
+
+
 def cmd_selfcheck(args: argparse.Namespace) -> int:
     failures: list[str] = []
     with tempfile.TemporaryDirectory() as temp:
@@ -169,6 +210,7 @@ def cmd_selfcheck(args: argparse.Namespace) -> int:
                                     + "; ".join(result["grades"][predicate]))
             if result["other_defects"]:
                 failures.append(f"{variant}: " + "; ".join(result["other_defects"]))
+        failures.extend(_persisted_cases(Path(temp) / "persisted", registry))
     if failures:
         print("FAIL: fresh participation probe does not discriminate")
         print("\n".join("  " + line for line in failures))

@@ -3,18 +3,290 @@
 ```witness
 standing_supported  WITNESSED
 subject  fresh-participation
-revision  0cf5a573d89798db04823552660c5df967cd83b6
-pass  4
+revision  219686db5328db9d227bc9ac110779952deef5d4
+pass  5
 ```
 
-Four passes by the same role, different commits. Pass 4 (commit `0cf5a57`) is current and owns
-the declaration above. Pass 3 (commit `8fd7716`), pass 2 (commit `161d559`) and pass 1 (commit
-`d40d61f`) follow it unchanged as history.
+Five passes by the same role, different commits. Pass 5 (commit `219686d`) is current and owns
+the declaration above. Pass 4 (commit `0cf5a57`), pass 3 (commit `8fd7716`), pass 2 (commit
+`161d559`) and pass 1 (commit `d40d61f`) follow it unchanged as history.
 
 No `*_status` field in `STATUS.yaml` names this subject, so `scripts/sov_standing.py` does not
 read this file. The subject is the one `ITEM` member under
 `custody:phase-1-5/fresh-participation` in `contracts/custodies/phase-1-5.json`:
-`scripts/sov_fresh.py`, stage `VERTICAL_SLICE`, standing `BUILT`, `stage_observed_by` null.
+`scripts/sov_fresh.py`, stage `VERTICAL_SLICE`, standing `WITNESSED` since `5f3fd67`,
+`stage_observed_by` naming pass 4 at `0cf5a57`.
+
+## Pass 5: commit 219686d (2026-09-06)
+
+Verdict: **REPRODUCED** for the instrument and for the live-node run; **DISSENT** from any
+reading of the record as showing that the root seat acted.
+
+Claim under observation, as the builder states it: Bdo, occupying the root seat, directed the
+builder's session in his own words ("Open the office on my behalf me and rerun it as evidence and
+level with me"); the session ran `python scripts/sov_fresh.py open-office --node-state
+.local/node-interface --issuer principal:bdo --operator principal:claude-fable-5 --capability
+read:registry=registry:any ...`, which seated `principal:bdo` as that node's root issuer and
+recorded two grants to `principal:claude-fable-5` with `granted_by: principal:bdo`; then `run
+--principal principal:claude-fable-5 --node-state .local/node-interface` entered the node as
+that principal, seeded nothing, and P15-Q1.1 to Q1.3 hold with every identity read from the
+node's records. Builder's self-report:
+`reports/observations/2026-09-06-fresh-participation-live-node.json` (the office receipt, the
+run, and the node's journal export with its `record_head`) and the report section "The office,
+opened" in `reports/2026-09-06-fresh-participation-slice.md`. The report section was read after
+the export had been verified and the journal read; both are the executor's word and nothing
+below is taken from them.
+
+Subject frozen: commit `219686db5328db9d227bc9ac110779952deef5d4` on
+`claude/phase-2-citizen-mechanics-inrozu`, plus one piece of runtime state on this host, the node
+at `.local/node-interface` (gitignored, `.gitignore:33`). `git status --porcelain` was empty
+before and after every command and `git rev-parse HEAD` read the commit throughout. Before any
+command ran, the node state was copied byte for byte into this witness's scratch directory:
+`record/record-service.sqlite3` `18145070...`, `office-opened.json` `09ee6afe...`,
+`asset/asset-service.sqlite3` `7a55b640...`; the journal held 31 entries with head
+`032377e0284f53a817779049fca5d4a0a1cc5e637e2aa257953c93383c2d0e82`. Every journal reading below
+is from that copy or from a second copy taken after this witness's one run; the live state was
+written only by that run. The commit changes 8 files (+1122/-29): the CLI and two probe modules,
+the test file, the custody fixture's member note, the built documentation page, the report, and
+the packet. `conformance/` is unchanged since `d40d61f`. Between `0cf5a57` and this commit sits
+`5f3fd67`, which moved the member to `WITNESSED` on pass 4, raised the custody floor, and added
+the two tests that pin F31.
+
+Witness: `claude-fable-5-1/sov-witness@2026-09-06`, pass 5 by the same role, launched from the
+session named in `office-opened.json` `directed_in` (F42). This participant did not build, edit,
+stage or commit anything under the subject, read no transcript, and took the quoted direction
+only as the launcher's task text, which is not evidence. The only files it wrote are this
+section, the header block and the two paragraphs above that name the current pass, and
+`witness/observations/2026-09-06-fresh-participation-observation-5.json`, all after every
+command under `Verified` had returned. Passes 4 to 1 are carried unchanged: the bytes from
+`## Pass 4` to the end of this file are identical to `git show 219686d:witness/fresh-participation.md`
+from the same heading, and the four prior receipts digest as they do at `219686d`.
+
+### Standing supported
+
+`WITNESSED`, declared in the block above, for the instrument claim at `219686d`, with pass 4's
+scope extended by what this commit adds: `open-office` seats the registry's root name as a
+persisted node's root issuer and grants one operator, refusing any other name by the probe's own
+rule and writing nothing on refusal; `run --node-state` enters a persisted node as the declared
+principal, seeds nothing, opens its session under the `open:session` grant the journal holds,
+crosses once under the `read:registry` grant, is refused three times by the Gateway for the
+reasons the node declares, and grades P15-Q1.1 to Q1.3 on identities read from the journal. The
+builder's live run reproduces: this witness's own run against the same node read the same
+grant, the same three refusal codes and stages, all three predicates holding, and grew the
+journal by exactly the run's 23 entries with no grant among them.
+
+What this record does not support, and dissents from where the report or the custody note
+reads otherwise: that the record shows the root seat opened the office. The journal shows a
+node whose root issuer is the string `principal:bdo`, seated by the Console's genesis on the
+first `console.grant` (entries 0-3, `authority_grant_ids: []`), because the string a session
+passed as `--issuer` equalled `root_principal` in `contracts/principals.json`. Nothing in the
+node, the probe, the packet, or the direction receipt authenticates who passed it (F35, F36).
+The claim "P15-X1 has been observed to hold on a node whose office the root seat opened" is
+therefore two claims: the first half, "P15-Q1.1 to Q1.3 hold on a persisted node whose journal
+names `principal:bdo` as root issuer and grants `principal:claude-fable-5` under that name", is
+`REPORTED` by the builder and reproduced here; the second half, "whose office the root seat
+opened", has no path in the record that could distinguish it from a session typing the root's
+name, so it is unwitnessable as a record claim and goes to Bdo as J4. P15-X1 stays
+`NOT_EARNED`; no clause verdict moves on a witness reading.
+
+The words this record wants the member to carry, if the builder or lander moves it:
+`stage_observed_by` `claude-fable-5-1/sov-witness@2026-09-06 pass 5 at 219686d
+(witness/fresh-participation.md; witness/observations/2026-09-06-fresh-participation-observation-5.json)`.
+F33, F34, F36 and F37 are defects owed inside the concern; F33 and F34 change nothing this
+revision does on its positive path and are not preconditions of this standing, as F31 was not at
+pass 4. This is an observation. It ratifies nothing.
+
+### Verified
+
+Commands run from the repository root at the commit above. Exit codes are the process's own.
+`<pre>` and `<post>` are the two byte copies of `.local/node-interface`; `<tmp>` is a directory
+under the witness's scratch directory; `<other-root>` is `contracts/principals.json` with
+`root_principal` set to `principal:other-root`; `<mut>` and `<mut1>` are `git archive 219686d`
+unpacked into scratch, mutated there, never copied back.
+
+| Command | Exit | Reading |
+| --- | --- | --- |
+| `git rev-parse HEAD`; `git status --porcelain`; `git show --stat 219686d`; `git diff --stat d40d61f 219686d -- conformance/`; `git check-ignore -v .local/node-interface` | 0; 0; 0; 0; 0 | `219686db...`; empty before and after every command; 8 files +1122/-29; nothing under `conformance/`; `.gitignore:33` |
+| `cp -a .local/node-interface <pre>`; `sha256sum` over its three files; `sqlite3` read of `journal` | 0 | 31 entries, head `032377e0...`; `record-service.sqlite3` `18145070...`; `office-opened.json` `09ee6afe...` |
+| `custody.verify_export(<packet journal_export>, expected_head="032377e0...")`; `python -m soveraeign_record_service.cli verify-export --export <packet export> --expect-head 032377e0...` | 0; 0 | head `032377e0...`; `{"entries": 31, "head": "032377e0...", "verified": true}`. The office receipt's `record_head` `a127e398...` is entry 7's `entry_digest` |
+| verifier defeating cases: export truncated to 8 entries with the head held outside; entry 4 `granted_by` edited | - | `TruncatedExport: export reaches a127e398... but the head held outside it is 032377e0...`; `BrokenChain: entry 4 digest does not match its contents` |
+| packet export against `<pre>` journal, entry by entry | - | 31 of 31 `entry_id` and `entry_digest` identical in order; same head |
+| journal read from `<pre>` (`entry_id`, `kind`, `subject`, `actor`, `payload`) | - | 0-3: `principal:bdo` grants `grant:authority` and `revoke:authority` to `principal:bdo`, scope `node:local`, receipts `authority_grant_ids: []` (genesis); 4-7: `open:session` (`grant_3807e177a65746b1`) and `read:registry` scope `registry:any` (`grant_6ab7d1d0a99e419e`) to `principal:claude-fable-5`, `granted_by: principal:bdo`, receipts under `grant_a1de4eb14460415d`; 8-9: `session_9fda2bae13834739` opened by `principal:claude-fable-5`, `principal_id` the same, under `grant_3807...`; 10-16: `registry.resolve` request `gateway_request_9afad140...`, attribution `ALLOWED`, resolution, authority `ALLOWED` under `grant_6ab7...`, routing, receipt `COMMITTED` `entry_08efe9c3...` (subject `sov://asset/ingest-asset`, F41), returned; 17-19: `session_never_opened_here` refused `check-attribution` `ACTOR_ATTRIBUTION_MISMATCH`, receipt `entry_edbe9986...`; 20-22: actor `urn:soveraeign:principal:instance:another-participant` on `session_9fda...` refused the same, receipt `entry_e9c6b83a...`; 23-27: `asset.ingest-asset` attribution `ALLOWED`, authority `REFUSED` `AuthorityRefused` for `ingest:asset`, receipt `entry_3845543f...` `check-authority` `AUTHORITY_REFUSED`; 28-30: the probe's `register`, `work`, `crossing` trailer under `fresh-dd627175`. The packet's `live_run` receipt ids, `grant_id` and `session_id` all name these entries |
+| `python scripts/sov_fresh.py selfcheck` | 0 | `PASS: fresh participation slice closes on the positive variant and 3 defeating variants each fail their own predicates` |
+| `python -m unittest scripts.tests.test_sov_fresh` | 0 | `Ran 19 tests OK` |
+| `python scripts/verify.py` (stdout to a file; the verdict is the exit code and the `PASS: 51 checks` line) | 0 | `PASS: 51 checks in 16.397s wall`; `DEBT: no wall-clock grade`; `BUDGET DEBT: 8 check(s) over ceiling`; `fresh participation slice: 1.476s wall` within its 1.500s ceiling (F24). The `FAIL` lines are planted tooling self-test output |
+| `python scripts/lint.py` | 0 | `PASS: repository hygiene (1190 text files, 553 Python modules, 10 named debt)` |
+| `open-office --node-state <tmp>/n1 --issuer principal:not-root ...`; `... --issuer "" ...` | 2; 2 | `REFUSED PROBE_ISSUER_GATE: issuer 'principal:not-root' is not the registry's root principal 'principal:bdo'; nothing issued`; same for `''`; `<tmp>/n1` never created |
+| `run --principal principal:claude-fable-5 --node-state .local/node-interface --variant no-grant`; `... --issuer principal:bdo` | 1; 1 | both: uncaught `ValueError: a persisted node is what it is: no-grant and --issuer describe a node this run would open itself`, traceback (F34); live journal still 31 entries, head `032377e0...` |
+| `run --principal principal:claude-fable-5 --node-state .local/node-interface --json` (the one write to the live state); `cp -a .local/node-interface <post>` | 0; 0 | `passed: true`; `issuer: null`; `root_principal: principal:bdo`; `registry: contracts/principals.json`; `refused_by: null`; `admitted: null`; own `COMMITTED` receipt `entry_ff6c5928...`, `grant_id: null` (F22); `foreign_session` and `other_actor_on_this_session` `REFUSED` `check-attribution` `ACTOR_ATTRIBUTION_MISMATCH`; `beyond_the_grant` `REFUSED` `check-authority` `AUTHORITY_REFUSED` / `AuthorityRefused`; Q1.1 `session_id: fresh-57ae9c86`, `node_session_id: session_529955fd48d24543`, `oral_history_used: false`, `required_authority: read:registry`; Q1.3 `principal:claude-fable-5` / `session_529955fd48d24543` / `grant_6ab7d1d0a99e419e` / `urn:soveraeign:binding:node-interface:model-json-v1`, mismatch `REFUSED`; Q1.2 `survives_session: true`; all three hold; `other_defects: []` |
+| `<pre>` journal against `<post>` journal | - | 31 to 54 entries; the 31-entry prefix identical; entry 31's `prev_digest` is the old head; 23 new entries: session `session_529955...` opened under `grant_3807...` (2), four crossings (7, 3, 3, 5), the probe trailer (3); 0 `authority-grant` records; new head `0e357ea0b2a40200c4eb4ab714169ce2caf21556c97b0feff17a2d8673d2880c`; `office-opened.json` digest unchanged |
+| `open-office --node-state <tmp>/n2 --issuer principal:bdo --operator principal:claude-fable-5 --capability read:registry=registry:any --direction "first direction text" ... --json` | 0 | two grants, `granted_by: principal:bdo`; `office-opened.json` digest `b707a254...` |
+| the same on `<tmp>/n2` again, `--operator principal:someone-else --direction "SECOND direction text"` | 0 | `office-opened.json` replaced, digest `a00014e3...`, now carrying only the second direction, operator and head; `n2` journal holds 5 grants (F36) |
+| `open-office --node-state <tmp>/n3 --issuer principal:other-root --registry <other-root> ...` | 0 | `office opened at <tmp>/n3 by principal:other-root for principal:claude-fable-5`; the receipt does not name the registry (F35) |
+| `open-office --node-state <tmp>/n2 --issuer principal:other-root --registry <other-root> ...` (node already seated under `principal:bdo`) | 1 | uncaught `AuthorityRefused: principal:other-root holds no live grant:authority grant for this operation`, traceback (F34): the Console's check, not the probe's |
+| `run --principal principal:claude-fable-5 --node-state <tmp>/n2 --json` | 0 | `passed: true`; Q1.3 `grant_0ca6ca2a8cad4f78`, `session_2436a380b98e40cc` |
+| `python -m unittest discover -s services/console/tests ...`; `... gateway ...`; `... record ...` | 0; 0; 0 | `Ran 193 tests OK`; `Ran 26 tests OK`; `Ran 65 tests OK` |
+| `<mut1>`: `layers.py:48` reverted to `root / principals.REGISTRY_PATH`; `python -m unittest scripts.tests.test_sov_fresh` | 1 | `FAILED (failures=1)`: `test_the_issuer_gate_reads_the_registry_the_resolver_reads` |
+| `<mut>`: `node.py:105` `"refused_by": None` on the issuer gate; the same | 1 | `FAILED (failures=2)`, among them `test_the_issuer_gate_names_itself_as_the_probes_rule` (F31 repaired) |
+| `grep -n "open_office\|admit_persisted\|node_state\|open-office\|export_journal" scripts/tests/test_sov_fresh.py` | 1 | no match (F33) |
+| `grep -rn office-opened` over the tree; `grep -rln fresh-participation-live-node scripts contracts conformance` | 0; 0 | one writer (`sov_fresh.py:104`), no reader; the custody note only (F40) |
+| `<post>` journal: `operator-session` records and close events | - | `session_9fda2bae...` `OPEN`, `session_529955fd...` `OPEN`; no close event (F38) |
+| `python scripts/sov_custody.py selfcheck`; `... board custody:phase-1-5/fresh-participation`; `python scripts/sov_next.py --strict`; `python scripts/sov_active_phase_progress.py` | 0; 0; 0; 0 | `27/27 declared refusals reached`; member `observed by ... pass 4 at 0cf5a57`, note quoted under F37; `PASS`; no output |
+| `python scripts/sov_witness_layer.py records`; `python scripts/sov_standing.py`; `python scripts/sov_docs.py check` (before writing) | 0; 0; 0 | `PASS: 10 witness receipt(s) graded, 0 unusable, 10 stale against their subject`; `PASS: 1 standing claim(s)`; `PASS: documentation page matches 281 documents` |
+| `git show -s --format=%ci 219686d`; `granted_at` in entries 0-7 | 0 | commit `14:30:42 +0000`; grants `14:29:39Z`: the office was opened one minute before the commit that carries the packet |
+| CR bytes in the 8 changed files; `sha256sum` over 22 addresses against `git show 219686d:<path>` | 0 | 0 in each; 22 of 22 identical, recorded in the receipt's `observed_state_digests` |
+
+### Pass-4 findings, disposition at 219686d
+
+- **F31 - repaired at `5f3fd67`.** `test_the_issuer_gate_reads_the_registry_the_resolver_reads`
+  and `test_the_issuer_gate_names_itself_as_the_probes_rule` (`scripts/tests/test_sov_fresh.py`)
+  assert `root_principal`, `registry`, and `refused_by`. Measured: pass 4's two mutants now fail
+  the suite (1 and 2 failures).
+- **F32 - open, residual.** `scripts/sovsession/principals.py` is unchanged since `0cf5a57`.
+- **F22, F23 - reproduced, residual (product).** `own.grant_id` and `own.stage` are `null` on the
+  `COMMITTED` reading; Q1.1 `session_id` is the host session and Q1.3 `session_id` the node
+  session, bridged by `node_session_id`.
+- **F24 - within ceiling this run** (1.476s against 1.500s); attributed debt either way.
+- **F25 - not re-exercised**; no code on that path changed.
+
+### New findings
+
+Severity names the consequence if the claim were accepted as-is. Defects are the builder's to
+repair inside the concern; residuals are recorded and hold nothing.
+
+- **F33 - MEDIUM, defect (new surface unpinned). `scripts/tests/test_sov_fresh.py` (whole file);
+  `scripts/sov_fresh.py:78-109,151-178`; `scripts/sovfresh/node.py:51-86`;
+  `scripts/sovfresh/probe.py:99-102`.** No test names `open_office`, `admit_persisted`,
+  `export_journal`, `node_state`, or `open-office`; the commit's only test change renames the
+  third refusal leg (`test_sov_fresh.py:66-70`), and `selfcheck` never passes `node_state`. So the
+  `open-office` issuer gate, the no-seeding invariant of `admit_persisted`, the persisted-node
+  refusal of `no-grant` and `--issuer`, and the export have neither a positive nor a defeating
+  case in the suite; every reading of them in this record is direct measurement. Consequence: a
+  later commit can let `open-office` accept any issuer or let `run --node-state` seed a grant and
+  no gate turns red.
+- **F34 - MEDIUM, defect. `scripts/sovfresh/probe.py:99-102`; `scripts/sov_fresh.py:63-75,92-96`.**
+  Two refusals on the new surface are uncaught exceptions: `run --node-state` with `--variant
+  no-grant` or `--issuer` raises `ValueError` through `cmd_run` (traceback, exit 1), and
+  `open-office` against a node already seated under another root lets the Console's
+  `AuthorityRefused` escape `cmd_open_office` (traceback, exit 1). Each refusal fires and names its
+  reason, so no false pass; but neither is a named refusal through the declared surface, which
+  is what pass 3's C9 asked of the issuer gate and what `PROBE_ISSUER_GATE` now does (exit 2, no
+  traceback).
+- **F35 - HIGH, residual (product rule, the crux of the claim).
+  `services/console/src/soveraeign_console_service/permits.py:80-90,100-110`;
+  `.../authority.py:199-223`; `.../refusals.py:47-53`; `scripts/sov_fresh.py:86-91,209`;
+  `contracts/principals.json` (`principal:bdo`).** What the node verifies about `granted_by`:
+  `issue` reads `root_issuer`; when none, `_genesis` writes `grant:authority` and
+  `revoke:authority` to whatever non-empty string `granted_by` carries (`issuer_name` only strips
+  whitespace), with no admitting grant (`authority_grant_ids: []`, entries 0-3), and `require`
+  then finds the grant it just wrote. A fresh node's root is the first name offered. The grants to
+  `principal:claude-fable-5` (entries 4-7) check against that self-seated grant. The only link
+  from the string `principal:bdo` to the person is `sov_fresh.py:88`: the argv string must equal
+  `root_principal` in the registry, whose own entry for `principal:bdo` reads `verification:
+  UNVERIFIED`, `verification_channel: console-session`; and `--registry` lets the caller choose
+  the registry the gate reads, so `<tmp>/n3` was opened under `principal:other-root` with exit 0.
+  Nothing in the node, the probe, or the packet authenticates that the root seat, rather than a
+  session typing its name, issued. This is pass 3/4's F27 and J4 exercised on a persisted node; a
+  channel that would authenticate the seat is owner-held identity, so it is recorded, not
+  assigned.
+- **F36 - MEDIUM, defect. `scripts/sov_fresh.py:97-105`.** `office-opened.json` is written with
+  `write_text`: a second `open-office` on the same node replaced it (`<tmp>/n2`: the first
+  direction, operator and head are gone from the state; the first grants remain in the journal).
+  It is unchained, in no journal, digested by nothing, read by nothing, and its `direction` and
+  `directed_in` are free-text argv; it does not name the registry in force. What it proves: only
+  what the journal already proves (its `record_head` is entry 7's digest). What it does not
+  prove: that the words were said, by whom, or where. Repair inside the concern: append or refuse
+  a second opening, record the registry path and digest, and say in the file that it is the
+  operator's declaration.
+- **F37 - LOW, defect (governed note contradicts itself). `contracts/custodies/phase-1-5.json:57`;
+  `docs/documentation.html:1548`.** The member note still reads "A node whose permits office
+  nobody has opened reads Q1.3 unmet, which is this node today" and, in the same note, "On
+  2026-09-06 Bdo directed this session to open the node's permits office". The second sentence
+  also asserts the direction as fact in a governed contract before anyone but the builder has
+  attested it (J8).
+- **F38 - LOW, residual (lineage F5). `scripts/sovfresh/node.py:64-81`; `<post>` journal.** Neither
+  the packet run's `session_9fda2bae...` nor this witness's `session_529955fd...` was closed; both
+  read `lifecycle: OPEN` and the journal holds no close event. The Q1.2 cleanup obligation "close
+  console session ..." is composed and never performed; on a persisted node open sessions
+  accumulate under the operator.
+- **F39 - LOW, residual (subject moved under the standing). `scripts/sovfresh/probe.py:50-68`;
+  `scripts/tests/test_sov_fresh.py:66-70`.** The third refusal leg changed between the witnessed
+  revision and this one: `other_actor_without_the_grant` (another operator, its own session, no
+  grant) became `beyond_the_grant` (this actor, this session, `asset.ingest-asset`, refused
+  `check-authority`). The replacement no longer issues a grant to `OTHER_ACTOR` under the
+  issuer's name, which is what makes it possible on a persisted node without seeding; it is a
+  real node refusal and reads as declared here. Recorded because the pass-4 `WITNESSED` binds to
+  the earlier leg and the member note does not say the leg moved.
+- **F40 - LOW, residual. `scripts/sovverify/commissioning.py`; the packet.** No gate reads the
+  packet: `verify.py`'s `fresh participation slice` runs `selfcheck`, and the packet's name occurs
+  only in the custody note. `record_head_after_run` sits inside the same file as the export it
+  checks, so a packet truncated and re-headed would self-verify (`custody.py` docstring). The
+  head held outside the packet is the live node's, on one host; this pass holds it as the `<pre>`
+  copy's head and records it in the receipt.
+- **F41 - LOW, residual (product).** The `COMMITTED` receipt for the `registry.resolve` crossing
+  (entry 15; entry 38 in this witness's run) carries `subject: sov://asset/ingest-asset`, the
+  resolved name, while its request, attribution, resolution, authority and routing entries carry
+  `sov://registry/resolve`. Reading the four crossings by subject miscounts; by `request_id` it
+  reads correctly.
+- **F42 - LOW, residual (witness lineage).** `office-opened.json` `directed_in` names
+  `claude.ai/code session_014F32VV3yNJqQMCZiCDjunn`; this witness invocation carries the same
+  session id in its host attribution. It is a child of the session that built the change, read no
+  transcript, and holds the same relation pass 4 declared:
+  `INDEPENDENT_OF_BUILDER_DECLARED_SURFACE_ONLY`.
+
+### What a reader on another host can verify from the packet alone
+
+Can: that the 31-entry export is an unbroken chain reaching `032377e0...` (`verify-export`); that
+within it `principal:bdo` is the root issuer by genesis and issued the two grants to
+`principal:claude-fable-5`; that one session opened under `grant_3807...`; that the four
+crossings carry request, attribution, authority and receipt entries with the outcomes the
+packet's `live_run` reports, and that its receipt ids, `grant_id` and `session_id` name entries in
+the export. Cannot: that the export is the live node's journal rather than a shorter or different
+one (no head held outside the packet; this pass supplies one); that anyone but the builder's
+process typed `principal:bdo`; that Bdo said the words; that `office-opened.json` is the file
+that was written (F36); that the node still exists or was not written between the office and
+the run.
+
+### Conditions for a later pass
+
+None on this standing. F33, F34, F36 and F37 are owed inside the concern; a pass over the commit
+that repairs them reads that commit.
+
+### Judgement items (questions, not the witness's to answer)
+
+- J1 to J3 carried from pass 1; J5 and J6 from pass 3; J7 from pass 4.
+- J4, disposition as read now. The builder answered pass 4's question by producing the second
+  branch: a persisted node, opened under the root's name at his reported direction. The record
+  cannot tell that branch from the first: on both, the node's root is a typed string equal to the
+  registry's `root_principal`, and the difference is persistence plus a transcript. J4 therefore
+  moves from "temporary or real node" to "who authenticates `granted_by`", and splits: (a) may
+  P15-X1 be observed on a node whose root issuer is the registry root's name, seated by genesis at
+  the root's reported direction, when nothing in the record authenticates the direction; if Bdo
+  accepts this packet with the quoted words, that acceptance is itself the record that the seat
+  acted (`decisions/0023`), which no witness reading can substitute for; (b) if not, what channel
+  authenticates the root seat's issuance, given the registry's `verification_channel` for
+  `principal:bdo` is `console-session`, `UNVERIFIED`. Both are owner-held.
+- J8. May a governed custody note assert "Bdo directed this session" as fact before the
+  acceptance in J4(a), or should it read as reported direction until then (F37)?
+- J9. Does the clause want the live-node packet read by a gate with a head held outside it
+  (F40), or is a by-hand `verify-export` the intended reading?
+
+### Uncovered
+
+- `docs/documentation.html`: the one changed line was word-diffed against the custody note and
+  matches it; nothing else on the page was read.
+- The Console, Gateway and Record suites were run, not re-read; no service file changed.
+- Bdo's direction: no transcript was read and none is in the record.
+- The `asset/asset-service.sqlite3` in the node state was digested and not read.
+- No network, no `gh`, no ruleset query.
+
+### Landing residual
+
+As in passes 1 to 4: `scripts/sovdocs/facets.py` indexes `witness/*.md`, so after this section is
+written `documentation reader`, `repository tooling tests` and `sov_docs.py check` are expected to
+read the built page as stale. The witness may not rebuild the page; whoever lands this record runs
+`python scripts/sov_docs.py build`. The exact readings after writing are in the receipt's
+`telemetry.after_writing`.
 
 ## Pass 4: commit 0cf5a57 (2026-09-06)
 

@@ -20,7 +20,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import sov_fresh  # noqa: E402
-from sovfresh import probe  # noqa: E402
+from sovfresh import node as nodelayer, probe  # noqa: E402
 from sovsession import principals  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -75,8 +75,8 @@ class PositiveRun(ProbeCase):
         lease = work["work"]["custody_or_lease"]
         self.assertTrue(lease.startswith("lease:"))
         self.assertIn(f"release {lease}", work["work"]["cleanup_obligations"])
-        self.assertTrue(any(item.startswith("close console session session_")
-                            for item in work["work"]["cleanup_obligations"]))
+        self.assertFalse(any(item.startswith("close console session")
+                             for item in work["work"]["cleanup_obligations"]))
 
     def test_projection_is_derived_from_the_node_record(self) -> None:
         projection_id = self.run_variant()["observations"]["P15-Q1.1"]["record_projection_id"]
@@ -166,9 +166,8 @@ class DefeatingVariants(ProbeCase):
 
     def test_work_bound_to_the_session_does_not_survive_it(self) -> None:
         result = self.run_variant("work-dies-with-session")
-        self.assertEqual(result["grades"]["P15-Q1.2"],
-                         ["durable work missing custody_or_lease",
-                          "work does not survive the carrying session"])
+        self.assertIn("durable work missing custody_or_lease", result["grades"]["P15-Q1.2"])
+        self.assertIn("work does not survive the carrying session", result["grades"]["P15-Q1.2"])
         self.assertFalse(result["grades"]["P15-Q1.1"])
         self.assertFalse(result["grades"]["P15-Q1.3"])
 
@@ -217,3 +216,80 @@ class CommandLine(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PersistedNode(ProbeCase):
+    """A node opened once by the fixture root, then entered without seeding anything."""
+
+    def open_office(self, state: Path, operator: str = FIXTURE) -> list[dict]:
+        with nodelayer.open_node_at(state) as node:
+            return nodelayer.open_office(node, ISSUER, operator, {"read:registry": nodelayer.SCOPE})
+
+    def test_open_office_records_every_grant_under_the_issuer(self) -> None:
+        records = self.open_office(self.temp / "node")
+        self.assertEqual([r["capability"] for r in records],
+                         ["open:session", "close:session", "read:registry"])
+        self.assertTrue(all(r["granted_by"] == ISSUER for r in records))
+        with nodelayer.open_node_at(self.temp / "node") as node:
+            entries = node.record.reconstruct()
+            self.assertEqual(nodelayer.console_authority.root_issuer(entries, node.node_id),
+                             ISSUER)
+            export = nodelayer.export_journal(node)
+            self.assertEqual(nodelayer.record_custody.verify_export(export), export["head_digest"])
+
+    def test_a_granted_operator_enters_and_closes_its_own_session(self) -> None:
+        state = self.temp / "node"
+        self.open_office(state)
+        result = probe.run(ROOT, self.temp / "run", FIXTURE, registry=self.registry,
+                           node_state=state)
+        self.assertTrue(result["passed"], result["grades"])
+        self.assertEqual(result["actor"], FIXTURE)
+        self.assertIsNone(result["issuer"])
+        identities = result["observations"]["P15-Q1.3"]["identities"]
+        self.assertTrue(identities["grant_id"].startswith("grant_"))
+        self.assertTrue(any(step.endswith(" closed") for step in result["trace"]), result["trace"])
+        self.assertFalse(any(item.startswith("close console session")
+                             for item in result["observations"]["P15-Q1.2"]["work"]
+                             ["cleanup_obligations"]))
+
+    def test_an_operator_nobody_granted_cannot_show_identity_separation(self) -> None:
+        state = self.temp / "node"
+        self.open_office(state)
+        result = probe.run(ROOT, self.temp / "run", "principal:bdo", registry=self.registry,
+                           node_state=state)
+        self.assertIn("identity separation missing grant_id", result["grades"]["P15-Q1.3"])
+        self.assertIn("refused to open a session", result["node"]["admitted"])
+        self.assertFalse(result["grades"]["P15-Q1.1"])
+        self.assertFalse(result["grades"]["P15-Q1.2"])
+
+    def test_a_persisted_node_refuses_the_seeding_options(self) -> None:
+        state = self.temp / "node"
+        self.open_office(state)
+        for kwargs in ({"variant": "no-grant"}, {"issuer": ISSUER}):
+            with self.assertRaises(ValueError):
+                probe.run(ROOT, self.temp / "x", FIXTURE, registry=self.registry,
+                          node_state=state, **kwargs)
+
+
+class OfficeCommandLine(unittest.TestCase):
+    def test_a_non_root_issuer_writes_nothing(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            state = Path(temp) / "never"
+            completed = subprocess.run(
+                [sys.executable, "scripts/sov_fresh.py", "open-office", "--node-state",
+                 str(state), "--issuer", "principal:nobody", "--operator", "principal:x",
+                 "--direction", "x", "--directed-in", "y"],
+                cwd=str(ROOT), capture_output=True, text=True, check=False)
+            self.assertEqual(completed.returncode, 2, completed.stdout)
+            self.assertIn("PROBE_ISSUER_GATE", completed.stdout)
+            self.assertFalse(state.exists())
+
+    def test_seeding_options_on_a_persisted_node_refuse_without_a_traceback(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            completed = subprocess.run(
+                [sys.executable, "scripts/sov_fresh.py", "run", "--principal", "principal:bdo",
+                 "--node-state", str(Path(temp) / "node"), "--variant", "no-grant"],
+                cwd=str(ROOT), capture_output=True, text=True, check=False)
+            self.assertEqual(completed.returncode, 2, completed.stdout + completed.stderr)
+            self.assertIn("REFUSED VARIANT_NOT_ADMITTED", completed.stdout)
+            self.assertNotIn("Traceback", completed.stderr)

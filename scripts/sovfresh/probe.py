@@ -159,8 +159,13 @@ def run(root: Path, work_dir: Path, principal_id: str, variant: str = "positive"
         trace.append(f"projection {projected['projection']['projection_id']}")
         store.append(directory, store.SESSIONS_LOG, {"event": "end", "session": session})
         orphaned = layers.orphaned_inventory(directory)
-        console_state = nodelayer.console_session_state(
-            node, (admitted["session"] or {}).get("session_id"))
+        node_session_id = (admitted["session"] or {}).get("session_id")
+        not_closed = nodelayer.close_participant_session(node, actor, node_session_id)
+        console_state = nodelayer.console_session_state(node, node_session_id)
+        if node_session_id and not_closed:
+            trace.append(f"console session {node_session_id} left {console_state}: {not_closed}")
+        elif node_session_id:
+            trace.append(f"console session {node_session_id} closed")
     survives = bool(lease) and lease["lease_id"] in orphaned \
         and layers.bounded_work(root)["address"] == work["address"]
     cleanup = list(work["cleanup_obligations"]) + [f"release {item}" for item in orphaned]

@@ -3,19 +3,318 @@
 ```witness
 standing_supported  WITNESSED
 subject  fresh-participation
-revision  219686db5328db9d227bc9ac110779952deef5d4
-pass  5
+revision  571e936c733ad399aa0cb79d620f019302e6c045
+pass  6
 ```
 
-Five passes by the same role, different commits. Pass 5 (commit `219686d`) is current and owns
-the declaration above. Pass 4 (commit `0cf5a57`), pass 3 (commit `8fd7716`), pass 2 (commit
-`161d559`) and pass 1 (commit `d40d61f`) follow it unchanged as history.
+Six passes by the same role, different commits. Pass 6 (commit `571e936`) is current and owns
+the declaration above. Pass 5 (commit `219686d`), pass 4 (commit `0cf5a57`), pass 3 (commit
+`8fd7716`), pass 2 (commit `161d559`) and pass 1 (commit `d40d61f`) follow it unchanged as
+history.
 
 No `*_status` field in `STATUS.yaml` names this subject, so `scripts/sov_standing.py` does not
 read this file. The subject is the one `ITEM` member under
 `custody:phase-1-5/fresh-participation` in `contracts/custodies/phase-1-5.json`:
 `scripts/sov_fresh.py`, stage `VERTICAL_SLICE`, standing `WITNESSED` since `5f3fd67`,
 `stage_observed_by` naming pass 4 at `0cf5a57`.
+
+## Pass 6: commit 571e936 (2026-09-06)
+
+Verdict: **REPRODUCED** for the journal's custody: the committed export is the live node's
+journal to the head this witness holds outside it, it restores into an empty node that then
+admits the granted operator without issuing a grant, and a truncated copy is refused once that
+head is supplied. **DISSENT** from the claim that the first packet is kept as the bytes pass 5
+read: it was rewritten at `ed6a4f4`, still embeds the whole journal, and still holds its own
+head. The gate `sov_node.py journals` checks what it says it checks and no more; where it reads
+a declaration it could have measured is recorded below (F44, F45).
+
+Scope: journal custody only, at the launcher's direction. The office and the run were witnessed
+at pass 5; what `ed6a4f4` changed on that surface is read here only where a pass-5 finding's
+disposition depends on it.
+
+Claim under observation, as the builder states it (`reports/2026-09-06-fresh-participation-slice.md`,
+"The journal, separated from the report"): the packet is three artifacts. The node's journal is
+the Record Service's own export at `nodes/node-local/journal/23d3b48086be.json`, written by
+`python scripts/sov_node.py export-journal`, named by the head it replays to, and brought back
+into an empty node by `restore-journal` so the office is opened once and the history stays one
+chain. The self-report `reports/observations/2026-09-06-fresh-participation-live-node-2.json`
+cites the export by address, head and nine entry ids and embeds no journal; the first packet is
+kept as the bytes pass 5 read. The outside head is the witness's; `python scripts/sov_node.py
+journals` runs inside verify as check 52, refuses a misnamed export or an unresolved citation,
+and cannot detect truncation. `selfcheck` proves export, restore, entry as the granted operator
+with no grant issued, and refusal of a truncated export once an outside head is supplied. The
+report section was read before any command ran, because the launcher quoted it; nothing below
+is taken from it.
+
+Subject frozen: commit `571e936c733ad399aa0cb79d620f019302e6c045` on
+`claude/phase-2-citizen-mechanics-inrozu`, plus the node at `.local/node-interface` (gitignored,
+`.gitignore:33`). `git status --porcelain` was empty before and after every command and `git
+rev-parse HEAD` read the commit throughout. Before any command ran, the node state was copied
+byte for byte into this witness's scratch directory: `record/record-service.sqlite3`
+`565d3be8cf65e878dcfa38e08e36906714dd9856a4201a59025011ed94a0c822`, `office-acts.ndjson`
+`653f73a7...`, `office-opened.json` `09ee6afe...` (unchanged since pass 5),
+`asset/asset-service.sqlite3` `7a55b640...` (unchanged since pass 5). No command in this pass
+wrote to the live node; its four files digest the same after the last command as before the
+first. Every run that needed a node ran against a restored copy under scratch. The commit
+changes 15 files (+2843/-18); `conformance/` and `services/` are unchanged since `219686d`.
+Between `219686d` and this commit sits `ed6a4f4`, which no witness pass has read; it is inside
+the frozen subject and is named below wherever a reading depends on it.
+
+Witness: `claude-fable-5-1/sov-witness@2026-09-06`, pass 6 by the same role, launched from the
+session named in `office-acts.ndjson` `directed_in` (F42 holds). This participant did not
+build, edit, stage or commit anything under the subject and read no transcript. The only files
+it wrote are this section, the header block and the paragraph above that name the current pass,
+and `witness/observations/2026-09-06-fresh-participation-observation-6.json`, all after every
+command under `Verified` had returned. Passes 5 to 1 are carried unchanged: the bytes from
+`## Pass 5` to the end of this file are identical to `git show 571e936:witness/fresh-participation.md`
+from the same heading (sha256 `93c4224c...` over that span), and the five prior receipts
+digest as they do at `571e936`.
+
+### The head held outside the export
+
+Read from the byte copy of the live node, by `sqlite3` over the `journal` table ordered by
+`seq`, independently of every file under `nodes/` and `reports/`:
+
+- entries: 85; `prev_digest` chain continuous from `0000...` with every row on
+  `soveraeign-record-chain/v3`;
+- head (the last row's `entry_digest`):
+  `23d3b48086becd541d6054d78185f730e41a10054848ad4f654191315f87b342`.
+
+The committed export reaches exactly that head. `verify-export --expect-head <that head>` exits
+0 with 85 entries; every one of the 85 entries is identical to the copy's row in `entry_id`,
+`kind`, `subject`, `actor`, `payload`, `recorded_at`, `prev_digest` and `entry_digest`; and
+`export-journal` run against a second byte copy writes a file whose sha256
+(`b8805d23ce21ee352b7f0ea5796d7c5bb4ea8fdee5eb4e38ab1f194bcd5cfa1e`) equals the committed
+export's. Against pass 5's post-run head `0e357ea0...` (entry 54) the verifier refuses.
+
+What "outside" means here: outside the export file and outside every committed file, not
+outside the host or the builder's session. The head was read from a gitignored SQLite file on
+the same machine the builder's session writes; a session that rewrote the node and the export
+together would present a consistent pair to a later witness. The head is now written in this
+record and its receipt, which are on the same branch the builder commits to.
+
+### Standing supported
+
+`WITNESSED`, declared in the block above, for the member at `571e936`, with pass 5's scope
+extended by what this commit adds and this pass measured: `export-journal` writes the Record
+Service's export of a node's journal under the head it replays to; `restore-journal` refuses a
+populated store and a truncated export once an outside head is given, and into an empty store
+carries the office so that `run --node-state` on the restored node admits the granted operator,
+is refused three times for the reasons the node declares, grades P15-Q1.1 to Q1.3 as holding on
+identities read from the restored journal, and issues no grant (7 `authority-grant` entries
+before and after); `journals` replays every export under `nodes/` and refuses a misnamed export,
+an edited count, a citation of a wrong head, of an absent entry, or of a file outside `nodes/`;
+`selfcheck` and the eight new tests fail when the verifier stops honouring the outside head or
+the gate stops comparing heads (two mutants).
+
+For the journal-custody claim as the builder states it: two of its three artifacts are as
+described. The export is the live node's journal to the outside head; the second self-report
+cites it by address, head and nine ids that resolve to the entries it says they are, and embeds
+nothing. The third statement, that the first packet is kept as the bytes pass 5 read, is false
+(F43), and with it the claim that the journal has left the report: the journal is committed
+twice, once as the export and once inside the first packet with its head beside it.
+
+What this record does not support is unchanged from pass 5: nothing in the node, the export,
+the gate, or either receipt file authenticates who passed the name `principal:bdo`. The export
+carries seven grants with `granted_by: principal:bdo`, issued by two acts (14:29:39Z and
+14:51:09Z); the gate reads none of them and verifies only that each entry's digest matches its
+own contents. P15-X1 stays `NOT_EARNED`; no clause verdict moves on a witness reading.
+
+The words this record wants the member to carry, if the builder or lander moves it:
+`stage_observed_by` `claude-fable-5-1/sov-witness@2026-09-06 pass 6 at 571e936
+(witness/fresh-participation.md; witness/observations/2026-09-06-fresh-participation-observation-6.json)`.
+F43 to F48 are defects owed inside the concern; none changes what the positive path does, and
+none is a precondition of this standing. This is an observation. It ratifies nothing.
+
+### Verified
+
+Commands run from the repository root at the commit above. Exit codes are the process's own.
+`<copy>` and `<copy2>` are byte copies of `.local/node-interface` under scratch; `<x>` is a
+directory under scratch; `<mut>` is `git archive 571e936` unpacked into scratch, mutated there,
+never copied back; `H` is the outside head above; `E` is
+`nodes/node-local/journal/23d3b48086be.json`.
+
+| Command | Exit | Reading |
+| --- | --- | --- |
+| `git rev-parse HEAD`; `git status --porcelain`; `git show --stat 571e936`; `git diff --stat 219686d HEAD -- conformance/ services/`; `git check-ignore -v .local/node-interface` | 0; 0; 0; 0; 0 | `571e936c...`; empty before and after every command; 15 files +2843/-18; nothing under either; `.gitignore:33` |
+| `cp -a .local/node-interface <copy>`; `sha256sum` over its four files; `sqlite3` read of `journal` | 0 | 85 entries, head `23d3b480...`; digests as above; entries 55-60 are three grants issued at `14:51:09Z` under `principal:bdo` (`open:session`, `close:session`, `read:registry`) that pass 5's 54-entry post-copy did not hold; entries 84-85 close `session_48f90d77...` under `grant_119ebb48...` |
+| `python scripts/sov_node.py journals` | 0 | `PASS: 1 node journal export(s) replay to their heads and every citation resolves` |
+| `python -m soveraeign_record_service.cli verify-export --export E`; `... --expect-head H`; `... --expect-head 0e357ea0...` | 0; 0; 2 | 85 entries, head `23d3b480...`, `verified: true`; the same; `REFUSED` "export reaches 23d3b480... but the head held outside it is 0e357ea0...; entries are missing from the end", `reason_code: MISSING_PRECONDITION` (F49) |
+| export E against `<copy>` journal, entry by entry; `sov_node.py export-journal --node-state <copy2> --out-dir <x>` | -; 0 | 85 of 85 identical in every field; the re-export is byte-identical to E (`b8805d23...`) |
+| E: `authority-grant` entries and their `granted_by`; `node_id` values; top-level keys | - | 7 grants, all `granted_by: principal:bdo`; every payload `node_id` is `node:local`; keys `entries`, `entry_count`, `export_schema`, `head_digest` and no node field (F47) |
+| the second self-report's nine `cited_entries` read out of E | - | seq 5 `grant_3807...` `open:session` and seq 7 `grant_6ab7...` `read:registry`, the first act; seq 55 `grant_fe49...` `open:session`, seq 57 `grant_119e...` `close:session`, seq 59 `grant_1453...` `read:registry`, the second act, all `granted_by: principal:bdo`; seq 68 `registry.resolve` `COMMITTED` receipt (subject `sov://asset/ingest-asset`, F41); seq 80 `gateway.refuse-request` `check-authority` `AUTHORITY_REFUSED`; seq 72 and 75 `gateway.refuse-request` `check-attribution` `ACTOR_ATTRIBUTION_MISMATCH` (own session with a foreign session id; `another-participant` on the own session). The `live_run` receipt ids and Q1.3 `grant_6ab7...` are all among the nine |
+| `sha256sum` of `reports/observations/2026-09-06-fresh-participation-live-node.json` at `219686d`, `ed6a4f4`, `571e936`; its top-level keys at `219686d` and `571e936` | 0 | `1882e38c...`; `3c9b8407...`; `3c9b8407...`. Rewritten at `ed6a4f4` (+1685/-113): `office_opened` became `office_acts`, `earlier_live_run_at_219686d` added, `journal_export` now 85 entries with `record_head_after_run` `23d3b480...` inside the same file (F43) |
+| `sov_node.py restore-journal --export E --node-state <x>/restored --expect-head H` | 0 | `restored 85 entries`; 7 grants; head `23d3b480...` |
+| `sov_fresh.py run --principal principal:claude-fable-5 --node-state <x>/restored --json` | 0 | `passed: true`; `issuer: null`; `root_principal: principal:bdo`; own `COMMITTED`; `beyond_the_grant` `check-authority` `AUTHORITY_REFUSED`; `foreign_session` and `other_actor_on_this_session` `check-attribution` `ACTOR_ATTRIBUTION_MISMATCH`; Q1.3 `grant_6ab7d1d0a99e419e` / `session_78e9b5d7...`; Q1.2 `survives_session: true`; trace `console session ... closed`; journal 85 to 110 entries, grants 7 before and 7 after |
+| E truncated to 60 entries (head `94aafd47...`, the second act's last receipt); `restore-journal ... --node-state <x>/trunc --expect-head H`; `find <x>/trunc` | 1 | `REFUSED TruncatedExport: export reaches 94aafd47... but the head held outside it is 23d3b480...; entries are missing from the end`; `<x>/trunc/record/record-service.sqlite3` exists, 24576 bytes, 0 entries, head genesis (F48) |
+| the same truncated copy without `--expect-head` | 0 | `restored 60 entries`: a truncation restores when no outside head is given, as declared |
+| `restore-journal --export E --node-state <x>/wrong --expect-head 0e357ea0...` | 1 | `TruncatedExport ... entries are missing from the end`, though the export is longer than the head asked for (F49); empty store left behind (F48) |
+| `restore-journal --export E --node-state <x>/restored --expect-head H` (populated) | 1 | `REFUSED RestoreRefused: .../restored/record already holds a journal`; journal unchanged at 110 |
+| `python -m soveraeign_record_service.cli restore-journal --export <trunc> --expect-head H` | 2 | `unrecognized arguments: --expect-head`: the Record CLI's own restore takes no outside head (F49) |
+| `python scripts/sov_fresh.py selfcheck` | 0 | `PASS: ... 3 defeating variants each fail their own predicates, and the office carries across an export and restore` |
+| `python -m unittest scripts.tests.test_sov_node_journal scripts.tests.test_sov_fresh` | 0 | `Ran 33 tests OK` |
+| `python scripts/verify.py` (stdout to a file; the verdict is the exit code and the `PASS: 52 checks` line) | 0 | `PASS: 52 checks in 21.107s wall`; `node journal custody` PASS 0.189s; `DEBT: no wall-clock grade`; `BUDGET DEBT: 11 check(s) over ceiling`; `fresh participation slice: 3.861s over its 1.500s ceiling` (F50). The `FAIL` lines are planted tooling self-test output |
+| `python scripts/lint.py` | 0 | `PASS: repository hygiene (1196 text files, 555 Python modules, 10 named debt)` |
+| `python scripts/sov_publication.py` at `571e936`; the same at `219686d` in a scratch clone | 0; 0 | `FAIL: 58 declared path(s), 20 finding(s), 19 held by sov, 1 held by the owner`; at `219686d` `57 declared, 21 findings`. The one finding that closed is `ENTRYPOINT_UNINDEXED sov_fresh.py`; `nodes` is the added path and raises no finding; the 20 that remain (18 `ENTRYPOINT_UNINDEXED`, the owner's `README.md->LICENSE` route gap, and one more) predate the subject. The default command reports and exits 0 (`sov_publication.py:290`); `check` would exit 1 |
+| `<mut>` D1: second self-report cites head `0e357ea0...` | 1 | `cites head 0e357ea0b2a4 but ... replays to 23d3b48086be` |
+| `<mut>` D2: E renamed `0e357ea0b2a4.json` | 1 | `replays to 23d3b48086be, filename says 0e357ea0b2a4`; the citation then fails as `not a verified export under nodes/` |
+| `<mut>` D3: E's 60-entry truncation written beside it as `94aafd47b108.json`; report re-pointed at it with the cited ids it holds | 0 | `PASS: 2 node journal export(s) replay to their heads and every citation resolves` (F45) |
+| `<mut>` D4: entry 5 `granted_by` edited; D10: a fabricated 86th entry appended | 1; 1 | both: uncaught `soveraeign_record_service.errors.BrokenChain` traceback through `journals` (F46) |
+| `<mut>` D5: E copied to `nodes/node-other/journal/` | 0 | `PASS: 2 node journal export(s)` (F47) |
+| `<mut>` D6: `cited_entries` cut to one id; `live_run.node.own.receipt_id` set to `entry_not_in_export` | 0 | `PASS` (F44) |
+| `<mut>` D7: report cites a truncated copy under `reports/observations/`; D9: `entry_count` set to 84 | 1; 1 | `not a verified export under nodes/`; `declared entry count does not match the entries carried` |
+| `<mut>` D8: the report's `journal` key renamed, `cited_entries` naming an absent id | 0 | `PASS`: a report without a `journal` dict is left alone, as its test says |
+| `<mut>` m1: `custody.verify_export` skips the `expected_head` check; `selfcheck`; the journal tests | 1; 1 | `truncated export: restore with the outside head did not refuse`; `FAILED (failures=1)` `test_a_truncated_export_verifies_alone_and_refuses_against_the_outside_head` |
+| `<mut>` m4: `_grade_citation` drops the head comparison; the journal tests | 1 | `FAILED (failures=1)` `test_a_citation_of_an_unknown_export_or_wrong_head_or_missing_entry_fails` |
+| `<mut>` m5: `journal.restore` drops its own emptiness guard; the journal tests | 0 | `OK`: `custody.restore` (`custody.py:142`) refuses on its own, so the guard at `journal.py:49` is a duplicate, not an unpinned rule |
+| `sov_fresh.py run ... --node-state <x>/restored --variant no-grant`; `open-office --node-state <x>/restored --issuer principal:other ...` | 2; 2 | `REFUSED VARIANT_NOT_ADMITTED: ...` and `REFUSED PROBE_ISSUER_GATE: ...`, no traceback (F34 repaired at `ed6a4f4`) |
+| `grep -n "def test" scripts/tests/test_sov_fresh.py` | 0 | `test_open_office_records_every_grant_under_the_issuer` (:228), `test_a_persisted_node_refuses_the_seeding_options` (:265), `test_seeding_options_on_a_persisted_node_refuse_without_a_traceback` (:287) (F33 repaired at `ed6a4f4`; not mutated this pass) |
+| CR bytes in the 21 files changed since `219686d`; live node digests after the last command | 0 | 0 in each; the four files digest as the pre-copy |
+
+### Pass-5 findings, disposition at 571e936
+
+- **F33 - repaired at `ed6a4f4`.** Three tests name `open_office` and the persisted-node
+  refusals, and `selfcheck` runs `_persisted_cases` and now `_custody_cases`. Present, not
+  mutated this pass.
+- **F34 - repaired at `ed6a4f4`.** `VARIANT_NOT_ADMITTED` and `PROBE_ISSUER_GATE` are named
+  refusals with exit 2; the `AuthorityRefused` catch in `cmd_open_office` is in the diff and was
+  not reached this pass (the issuer gate fires first).
+- **F35 - reproduced, residual (product).** Seven grants now, two acts, all `granted_by` the
+  string `principal:bdo`; nothing new authenticates it.
+- **F36 - repaired in shape at `ed6a4f4`, residual.** `office-acts.ndjson` is appended, names
+  the registry by path and digest and the journal head before and after, and says it proves
+  nothing the journal does not. The pass-5 `office-opened.json` still sits beside it; both are
+  free text digested by nothing; the act line records the registry by host-absolute path.
+- **F37 - repaired at `ed6a4f4`.** The member note no longer says "which is this node today"
+  and calls the direction "a claim of the session's transcript, not of the record" (J8).
+- **F38 - repaired at `ed6a4f4`.** The participant closes its own session under `close:session`
+  (entries 84-85; the restored run's trace reads `closed`). The two earlier sessions stay
+  `OPEN` in the history, as history does.
+- **F39, F41, F42 - unchanged, residual.**
+- **F40 - moved, not closed.** The design answers it: the gate says it cannot detect
+  truncation, and the outside head is held here. But the file pass 5 named still holds the
+  journal and its own head (F43), and the gate accepts two heads for one node (F45).
+
+### New findings
+
+Severity names the consequence if the claim were accepted as-is. Defects are the builder's to
+repair inside the concern; residuals are recorded and hold nothing.
+
+- **F43 - MEDIUM, defect (a statement about evidence is false).
+  `reports/2026-09-06-fresh-participation-slice.md` ("The first packet is kept as the bytes
+  pass 5 read"); `reports/observations/2026-09-06-fresh-participation-live-node-2.json`
+  `supersedes`; the commit message of `571e936`;
+  `reports/observations/2026-09-06-fresh-participation-live-node.json` (whole file).** The
+  first packet digests `3c9b8407...` at `571e936` and `1882e38c...` at `219686d`; `ed6a4f4`
+  rewrote it (+1685/-113) with `office_acts`, `earlier_live_run_at_219686d`, and a
+  `journal_export` of all 85 entries beside `record_head_after_run` `23d3b480...`. So the
+  journal is committed twice, and the shape pass 5 called F40 (the head inside the file it
+  vouches for) persists in the file this commit says it kept. Repair: either restore the
+  `219686d` bytes if "kept" is meant, or say the packet was rewritten at `ed6a4f4` and strip
+  its embedded journal so the export is the one committed copy.
+- **F44 - MEDIUM, defect (the gate grades a declared list). `scripts/sovnode/journal.py:94-99`.**
+  Only `cited_entries` is resolved. The ids the report actually leans on
+  (`live_run.node.own.receipt_id`, the three refusal `receipt_id`s, Q1.3 `grant_id` and
+  `session_id`, `office_acts[*].grants[*].entry_id`) and `journal.entries` are not read: D6
+  sets `own.receipt_id` to an id that is in no export and passes. Today the nine cited ids
+  cover every id the report leans on (measured); the gate does not know that. Repair: resolve
+  every `entry_*`, `grant_*` and `session_*` id the report carries, or at least assert the
+  cited set covers them.
+- **F45 - MEDIUM, defect (README claims one file per node; the gate accepts any number).
+  `scripts/sovnode/journal.py:64-65,103-111`; `nodes/README.md:4`.** Every `*/journal/*.json`
+  is graded alone. D3: a 60-entry truncation of E named by its own head sits beside E, both
+  pass, and a report re-pointed at the short one passes. A reader of `nodes/node-local/journal/`
+  then finds two heads for one node with nothing saying which is current, and check 52 prints
+  both as `PASS`. The builder's limit ("cannot detect truncation") is about one file; two
+  files of one node are a case the gate could decide (refuse a second head, or require the
+  shorter to be an exact prefix of the longer) and does not.
+- **F46 - LOW, defect (refusal by traceback). `scripts/sovnode/journal.py:72`;
+  `services/record/src/soveraeign_record_service/errors.py:21`.** `_grade_export` catches
+  `OSError`, `ValueError` and `RestoreRefused`; `BrokenChain` is a `RuntimeError`, so an edited
+  entry or a fabricated one appended under `nodes/` (D4, D10) escapes `journals` as an uncaught
+  traceback with exit 1. The check refuses, not through its declared surface; the same shape as
+  F34 was.
+- **F47 - LOW, defect. `scripts/sovnode/journal.py:64-65`;
+  `services/record/src/soveraeign_record_service/custody.py:75-80`.** The export carries no
+  node identity at the top level; the directory name `node-local` is compared to nothing, not
+  to the `node_id` every payload carries (`node:local`) nor to `self_node` in
+  `contracts/fixtures/node-registry.reference.json`. D5: E under `nodes/node-other/journal/`
+  passes. Repair inside the concern: derive or check the directory from the entries' `node_id`;
+  the product half (a node field in the export) is the Record Service's.
+- **F48 - LOW, defect. `scripts/sovnode/journal.py:47-50`;
+  `services/record/src/soveraeign_record_service/core.py:63,72`;
+  `scripts/tests/test_sov_node_journal.py:72-74`.** `restore` constructs the `RecordService`
+  before it checks for a journal, and the constructor creates `record/record-service.sqlite3`
+  with its schema. After a refused truncated restore, an empty store (24576 bytes, head genesis)
+  is left at the target; the test is written to accept that (`assertFalse(exists and head !=
+  GENESIS)`). A second restore into it succeeds, so nothing is lost; but "refuses into an empty
+  state" leaves a state.
+- **F49 - LOW, residual (product, predates the subject).
+  `services/record/src/soveraeign_record_service/cli.py:271-276,236-237`;
+  `.../custody.py:129-131`.** `except (ExportRefused, RestoreRefused)` precedes `except
+  TruncatedExport`, its subclass, so a head mismatch on `verify-export` returns
+  `MISSING_PRECONDITION` and the `DIGEST_MISMATCH` branch is unreachable. The message "entries
+  are missing from the end" is emitted for any mismatch, including an export longer than the
+  head asked for. The Record CLI's own `restore-journal` takes no `--expect-head`; only
+  `sov_node.py restore-journal` does, which `nodes/README.md` correctly names.
+- **F50 - LOW, residual (budget, F24 lineage).** `fresh participation slice` reads 3.861s
+  against a 1.500s ceiling, up from 1.476s at pass 5, because `selfcheck` now exports,
+  restores and runs a third probe. Attributed debt; the total run has no wall-clock grade.
+- **F51 - LOW, residual (observation reach). `scripts/sovverify/commissioning.py:32`.** Check
+  52 declares that it observes `nodes`, `reports/observations` and `scripts/sovnode/journal.py`;
+  the verifier that replays the chain (`custody.py`) and `sov_node.py` are not in the set, so
+  the observation record for the check digests neither. The gate's reach is right; the
+  observation's declared reach is narrower than what the check reads.
+- **F52 - LOW, residual (record).** Entries 55-60 are a second `open-office` act at
+  `14:51:09Z`, between pass 5 and `ed6a4f4`, issuing `open:session`, `close:session` and
+  `read:registry` under `principal:bdo`; its act line quotes the first act's direction with
+  "second act adds close:session" appended. The node now holds duplicate `open:session` and
+  `read:registry` grants (`held` picks the first, `grant_6ab7...`, for Q1.3). Whether a second
+  direction was given is, like the first, a transcript claim (F35, J4).
+
+### What a reader on another host can verify from the export alone
+
+Can: that the 85-entry export is an unbroken chain reaching `23d3b480...`; that within it
+`principal:bdo` is root issuer by genesis and issued seven grants to `principal:claude-fable-5`
+in two acts; that three sessions opened under `open:session` grants and one closed; that the
+crossings carry request, attribution, authority and receipt entries with the outcomes the second
+self-report names, and that its nine cited ids are those entries; that `restore-journal` with
+the head written here brings the node back and admits the operator without a grant. Cannot:
+that the export is complete without the head written here; that this record's head was not
+written by the same hand as the export (both live on one branch); that anyone but the builder's
+process typed `principal:bdo`; that either direction was given.
+
+### Conditions for a later pass
+
+None on this standing. F43 to F48 are owed inside the concern; a pass over the commit that
+repairs them reads that commit and, for F43, compares the first packet to `219686d` again.
+
+### Judgement items (questions, not the witness's to answer)
+
+- J1 to J3 carried from pass 1; J5 and J6 from pass 3; J7 from pass 4; J4 as pass 5 split it.
+- J8, disposition: repaired at `ed6a4f4` (F37); no question remains.
+- J9, disposition: answered in design. The gate reads the export and refuses a misnamed file or
+  an unresolved citation, and names truncation as what it cannot see; the outside head is the
+  witness's and is written here. What remains is narrower and is J10.
+- J10. The head that vouches for the export is now held in `witness/`, on the branch the
+  builder commits to, read from a gitignored file on the builder's host. Is "outside the
+  export" the custody the clause wants, or does the outside head need a holder the builder's
+  session cannot write (an owner-held note, another host, or a signed receipt)? This is a
+  custody question the witness cannot settle by reading.
+- J11. `contracts/publication-surface.json` now classifies `nodes/` as `JOURNAL`, and the
+  builder reports that Bdo said yes to an operational node's journal living in the repository.
+  That yes is a transcript claim until accepted; acceptance of this packet is what makes an
+  export carrying `principal:bdo` grants publishable under the surface policy.
+
+### Uncovered
+
+- `ed6a4f4`'s changes to `scripts/sovfresh/node.py`, `probe.py` and `test_sov_fresh.py` were
+  read in diff and exercised only where a pass-5 disposition needed them; the Console, Gateway
+  and Record suites were not rerun (no service file changed since `219686d`; verify ran them).
+- `docs/documentation.html`: `sov_docs.py check` passed inside verify; the page was not read.
+- The `asset/asset-service.sqlite3` and `console/` in the node state were digested, not read.
+- Bdo's direction, for either act: no transcript was read and none is in the record.
+- No network, no `gh`, no ruleset query.
 
 ## Pass 5: commit 219686d (2026-09-06)
 

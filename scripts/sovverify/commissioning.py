@@ -28,5 +28,6 @@ COMMISSIONING_CHECKS = (
           "self-report citation into the export it names by address, head and entry id; "
           "the head held outside an export stays the witness's, so a truncation is caught "
           "there, not here",
-          ("nodes", "reports/observations", "scripts/sovnode/journal.py")),
+          ("nodes", "reports/observations", "scripts/sovnode/journal.py", "scripts/sov_node.py",
+           "services/record/src/soveraeign_record_service/custody.py")),
 )

@@ -69,9 +69,7 @@ class ExportAndRestore(JournalCase):
         self.assertNotEqual(journal.custody.verify_export(document), self.exported["head"])
         with self.assertRaises(journal.custody.TruncatedExport):
             journal.restore(truncated, self.temp / "never", self.exported["head"])
-        self.assertFalse((self.temp / "never" / "record").exists()
-                         and journal.RecordService(self.temp / "never" / "record").head()
-                         != journal.GENESIS)
+        self.assertFalse((self.temp / "never" / "record").exists())
 
 
 class CitationGate(JournalCase):
@@ -109,7 +107,47 @@ class CitationGate(JournalCase):
         self.assertEqual(len(defects), 3, defects)
         self.assertTrue(any("not a verified export" in item for item in defects))
         self.assertTrue(any("cites head" in item for item in defects))
-        self.assertTrue(any("cites entries absent" in item for item in defects))
+        self.assertTrue(any("names entries absent" in item for item in defects))
+
+    def test_every_entry_or_receipt_id_a_report_mentions_must_resolve(self) -> None:
+        self.report("deep", journal={"address": self.address(), "head": self.exported["head"]},
+                    live_run={"node": {"own": {"receipt_id": "entry_never_written"}}})
+        defects, _ = self.grade()
+        self.assertEqual(len(defects), 1, defects)
+        self.assertIn("entry_never_written", defects[0])
+
+    def test_a_cited_entry_count_must_match_the_export(self) -> None:
+        self.report("count", journal={"address": self.address(), "head": self.exported["head"],
+                                      "entries": 999})
+        defects, _ = self.grade()
+        self.assertTrue(any("cites 999 entries" in item for item in defects), defects)
+
+    def test_a_node_has_one_head(self) -> None:
+        second = self.exported["path"].with_name("aaaaaaaaaaaa.json")
+        document = json.loads(self.exported["path"].read_text(encoding="utf-8"))
+        second.write_text(json.dumps(document), encoding="utf-8")
+        defects, _ = self.grade()
+        self.assertTrue(any("a node has one head; found 2 exports" in item for item in defects),
+                        defects)
+
+    def test_an_edited_entry_is_a_defect_not_a_traceback(self) -> None:
+        document = json.loads(self.exported["path"].read_text(encoding="utf-8"))
+        document["entries"][2]["payload"]["granted_by"] = "principal:somebody-else"
+        self.exported["path"].write_text(json.dumps(document), encoding="utf-8")
+        defects, heads = self.grade()
+        self.assertEqual(heads, {})
+        self.assertTrue(any("digest does not match" in item for item in defects), defects)
+
+    def test_the_directory_must_name_the_node_the_entries_name(self) -> None:
+        moved = self.temp / "nodes" / "node-other" / "journal"
+        moved.mkdir(parents=True)
+        self.exported["path"].rename(moved / self.exported["path"].name)
+        (self.temp / "nodes" / "node-local" / "journal").rmdir()
+        defects, _ = self.grade()
+        self.assertTrue(any("entries name node node:local, the directory names node:other"
+                            in item for item in defects), defects)
+        self.assertTrue(any("node:other is not in the node registry" in item
+                            for item in defects), defects)
 
     def test_a_report_without_a_journal_field_is_left_alone(self) -> None:
         self.report("plain", observation_schema="something-else", verdict="CONFIRMED")

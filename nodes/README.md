@@ -2,7 +2,9 @@
 
 A node's journal is the node's record. This directory holds it as the Record Service's
 own export, one file per node under `nodes/<node>/journal/<head>.json`, named by the first
-twelve characters of the head it replays to. The file is self-verifying: every entry's
+twelve characters of the head it replays to. A node has one head, so one export sits
+under each node; replacing it is how the node's history advances here. The file is
+self-verifying: every entry's
 digest is recomputed from its contents and chained to the one before, so an edited entry
 or a broken chain refuses to replay. What the file cannot prove by itself is that it is
 complete, because a shorter journal is a valid journal. The head held outside it belongs

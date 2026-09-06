@@ -7,7 +7,7 @@ throughout. No phase state, standing field, or floor moved.
 
 ## Terminal
 
-Presented on the branch for acceptance, in eight commits: the slice, the repairs each
+Presented on the branch for acceptance, in nine commits: the slice, the repairs each
 witness pass asked for, the standing the fourth pass supports, the office opened at Bdo's
 direction, and the node's journal separated from the report. Not landed on `main`: the change touches `CLAUDE.md`, which
 the ratified standing grant excludes, so `scripts/sov_land.py` is not the path and Bdo's
@@ -209,6 +209,26 @@ the journal. They are now three artifacts.
 - The outside head stays the witness's. `python scripts/sov_node.py journals` runs inside
   verify and refuses a misnamed export or a citation that does not resolve; it does not
   and cannot detect truncation, and says so.
+
+Pass 6 observed commit `571e936` and the node, scoped to journal custody. Verdict
+`REPRODUCED`. The witness read the node's head with sqlite from its own byte copy of the
+store, independently of every committed file, and the committed export replays to exactly
+that head; it recorded that head as the outside head, and refused pass 5's older head
+against the same export. It dissented on one of the three artifacts and found six defects,
+each repaired in the ninth commit: the first packet had been rewritten at `ed6a4f4` and
+still embedded the journal, so it is restored to the bytes pass 5 read (F43); the gate read
+only `cited_entries`, and now every `entry_id` or `receipt_id` a self-report mentions must
+resolve, as must its cited entry count (F44); two exports of one node both passed, and now
+a node has one head (F45); a fabricated entry crashed the gate rather than failing it
+(F46); nothing tied the directory to the node the entries name or to the node registry
+(F47); a refused restore left an empty store behind (F48). Residuals: the Record CLI's own
+restore has no outside-head option and one of its refusal branches is unreachable (F49,
+product); the slice check runs over its ceiling now that it restores a node (F50, ceiling
+reset from measurement); the second office act reused the first act's quoted direction and
+left duplicate grants in the journal (F52). Pass 6 adds J10, whether a head held in
+`witness/` on the builder's branch and read from the builder's host is the custody the
+clause wants, and J11, whether accepting the packet also accepts `nodes/` on the
+publication surface.
 
 ## Standing changes
 

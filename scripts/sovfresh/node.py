@@ -23,11 +23,15 @@ for _service in ("console", "record"):
     if str(_src) not in sys.path:
         sys.path.insert(0, str(_src))
 
+from soveraeign_console_service import authority as console_authority  # noqa: E402
 from soveraeign_console_service import reads as console_reads  # noqa: E402
+from soveraeign_record_service import custody as record_custody  # noqa: E402
 
 OPERATION = "registry.resolve"
 SCOPE = "registry:any"
 ARGUMENTS = {"name": "sov://asset/ingest-asset"}
+BEYOND_OPERATION = "asset.ingest-asset"
+BEYOND_ARGUMENTS = {"path": "/nonexistent/beyond-the-grant", "label": "beyond the grant"}
 SESSION_BINDING = "urn:soveraeign:binding:session:fresh-probe"
 OPEN_SESSION = "open:session"
 PROBE_ISSUER_GATE = "PROBE_ISSUER_GATE"
@@ -37,6 +41,49 @@ PROBE_ISSUER_GATE = "PROBE_ISSUER_GATE"
 def open_node(work_dir: Path) -> LocalActionPath:
     """A node of this repository's declared shape, with empty stores under `work_dir`."""
     return LocalActionPath(work_dir / "node")
+
+
+def open_node_at(state: Path) -> LocalActionPath:
+    """The node whose stores live at `state`: opened once, its journal continues."""
+    return LocalActionPath(state)
+
+
+def open_office(node: LocalActionPath, issuer: str, operator: str,
+                capabilities: dict[str, str]) -> list[dict[str, Any]]:
+    """Record the issuer's grants to one operator; the first grant seats the issuer as root.
+
+    This is the act the probe otherwise refuses to perform under any name but the
+    registry's root. The journal is the receipt: each grant carries `granted_by`.
+    """
+    records = [node.console.grant(operator, OPEN_SESSION, operator, granted_by=issuer)]
+    for capability, scope in capabilities.items():
+        records.append(node.console.grant(operator, capability, scope, granted_by=issuer))
+    return records
+
+
+def admit_persisted(node: LocalActionPath, actor: str, principal_id: str | None,
+                    required_authority: str) -> dict[str, Any]:
+    """Open the actor's session on a node whose office someone else opened; issue nothing.
+
+    The grant is whichever live grant the journal holds for this actor and capability;
+    the session opens only if the actor holds `open:session`, which the Console decides.
+    """
+    entries = node.record.reconstruct()
+    held = [record for record in console_authority.held(entries, actor, node.node_id)
+            if record["capability"] == required_authority]
+    grant_id = held[-1]["grant_id"] if held else None
+    try:
+        session = node.console.open_session(actor, MODEL, SESSION_BINDING, principal_id)
+    except console_authority.AuthorityRefused as refused:
+        return {"session": None, "grant_id": grant_id, "refused_by": None,
+                "reason": f"the node refused to open a session for {actor}: {refused}"}
+    reason = None if grant_id else f"the node holds no live {required_authority} grant for {actor}"
+    return {"session": session, "grant_id": grant_id, "refused_by": None, "reason": reason}
+
+
+def export_journal(node: LocalActionPath) -> dict[str, Any]:
+    """The node's journal as the Record Service exports it, verifiable by its head."""
+    return record_custody.export_document(node.record)
 
 
 def admit(node: LocalActionPath, issuer: str | None, root: str | None, actor: str,
@@ -75,11 +122,11 @@ def reachable_operation(document: dict[str, Any]) -> dict[str, Any]:
 
 def bind(document: dict[str, Any], actor: str, session: dict[str, Any] | None,
          principal_id: str | None, arguments: dict[str, Any] | None = None,
-         session_id: str | None = None) -> dict[str, Any]:
+         session_id: str | None = None, operation: str = OPERATION) -> dict[str, Any]:
     """Bind one invocation to a session; a refusal is returned, not raised."""
     try:
         request = invocation_request(
-            document, OPERATION, MODEL, actor, SCOPE, dict(arguments or ARGUMENTS),
+            document, operation, MODEL, actor, SCOPE, dict(arguments or ARGUMENTS),
             session_id=session_id or (session or {}).get("session_id") or "",
             session_binding_id=(session or {}).get("binding_id") or SESSION_BINDING,
             principal_id=principal_id)

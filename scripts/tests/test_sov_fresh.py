@@ -66,8 +66,8 @@ class PositiveRun(ProbeCase):
         self.assertTrue(refusals["foreign_session"]["receipt_id"])
         self.assertEqual(refusals["other_actor_on_this_session"]["diagnostic"],
                          "ACTOR_ATTRIBUTION_MISMATCH")
-        self.assertEqual(refusals["other_actor_without_the_grant"]["diagnostic"],
-                         "AuthorityRefused")
+        self.assertEqual(refusals["beyond_the_grant"]["diagnostic"], "AuthorityRefused")
+        self.assertEqual(refusals["beyond_the_grant"]["stage"], "check-authority")
 
     def test_work_survives_and_cleanup_is_read_from_the_stores(self) -> None:
         work = self.run_variant()["observations"]["P15-Q1.2"]

@@ -141,6 +141,29 @@ declarations nothing ties together (F14, same as every other custody); the work 
 participant accepts is the custody that lists the probe (F16); an `UNIDENTIFIED` principal can
 still take a lease with `controller_principal: null` (F17, a lease-contract question).
 
+## The office, opened
+
+After the fourth pass Bdo directed, in his own words in this session: "Open the office on my
+behalf me and rerun it as evidence and level with me." This session performed the act with
+`python scripts/sov_fresh.py open-office` against the node whose stores live at
+`.local/node-interface` on this host: the first grant seated `principal:bdo` as that node's
+root issuer, and two grants to `principal:claude-fable-5` followed, `open:session` and
+`read:registry`, each carrying `granted_by: principal:bdo` in the node's journal. The command
+refuses any issuer but the registry's root, and a receipt naming the direction and where it
+was given sits beside the state.
+
+Then `python scripts/sov_fresh.py run --principal principal:claude-fable-5 --node-state
+.local/node-interface`: the participant entered that node as itself, seeded nothing, opened
+its session under the grant it held, crossed once, was refused three times for the reasons
+the node declares, and all three predicates hold. The act, the run, and the node's journal
+export are one packet, `reports/observations/2026-09-06-fresh-participation-live-node.json`,
+which a reader verifies against its record head with the Record Service. It is the builder's
+self-report until the witness reads the node.
+
+Two things this does not do. The node state is runtime state on one host and leaves with
+it; the packet is what stays. And the grants are to the registry's `principal:claude-fable-5`
+while the serving model is `claude-fable-5-1`, which is the naming residual below.
+
 ## Standing changes
 
 - `custody:phase-1-5/fresh-participation` member `scripts/sov_fresh.py`: `BUILT` to

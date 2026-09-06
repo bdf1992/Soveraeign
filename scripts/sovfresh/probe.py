@@ -50,21 +50,19 @@ def _facts(record: Any, subject: str, actor: str, facts: list[dict[str, Any]]) -
 
 
 def _refusals(node: Any, document: dict[str, Any], actor: str, admitted: dict[str, Any],
-              principal: str | None, issuer: str | None) -> dict[str, Any]:
-    """The crossings the node must refuse: a session it never opened, and another actor."""
+              principal: str | None) -> dict[str, Any]:
+    """The crossings the node must refuse: a session it never opened, another actor on
+    this session, and this actor reaching past the grant it holds."""
     session = admitted["session"]
-    foreign = nodelayer.bind(document, actor, session, principal,
-                             session_id="session_never_opened_on_this_node")
-    readings = {"foreign_session": nodelayer.cross(node, foreign)}
-    if issuer is not None and session is not None:
-        node.console.grant(OTHER_ACTOR, nodelayer.OPEN_SESSION, OTHER_ACTOR, granted_by=issuer)
-        other = node.console.open_session(OTHER_ACTOR, "MODEL", nodelayer.SESSION_BINDING,
-                                          "principal:another-participant")
-        readings["other_actor_on_this_session"] = nodelayer.cross(
-            node, nodelayer.bind(document, OTHER_ACTOR, session, principal))
-        readings["other_actor_without_the_grant"] = nodelayer.cross(
-            node, nodelayer.bind(document, OTHER_ACTOR, other, "principal:another-participant"))
-    return readings
+    return {
+        "foreign_session": nodelayer.cross(node, nodelayer.bind(
+            document, actor, session, principal, session_id="session_never_opened_here")),
+        "other_actor_on_this_session": nodelayer.cross(node, nodelayer.bind(
+            document, OTHER_ACTOR, session, principal)),
+        "beyond_the_grant": nodelayer.cross(node, nodelayer.bind(
+            document, actor, session, principal, nodelayer.BEYOND_ARGUMENTS,
+            operation=nodelayer.BEYOND_OPERATION)),
+    }
 
 
 def _mismatch(readings: dict[str, Any], own: dict[str, Any]) -> str:
@@ -75,7 +73,7 @@ def _mismatch(readings: dict[str, Any], own: dict[str, Any]) -> str:
     """
     required = {"foreign_session": "ACTOR_ATTRIBUTION_MISMATCH",
                 "other_actor_on_this_session": "ACTOR_ATTRIBUTION_MISMATCH",
-                "other_actor_without_the_grant": "AuthorityRefused"}
+                "beyond_the_grant": "AuthorityRefused"}
     for name, code in required.items():
         reading = readings.get(name)
         if reading is None:
@@ -89,10 +87,19 @@ def _mismatch(readings: dict[str, Any], own: dict[str, Any]) -> str:
 
 
 def run(root: Path, work_dir: Path, principal_id: str, variant: str = "positive", *,
-        registry: Path | None = None, issuer: str | None = None) -> dict[str, Any]:
-    """Run one variant and return observations, grades, and the trace they came from."""
+        registry: Path | None = None, issuer: str | None = None,
+        node_state: Path | None = None) -> dict[str, Any]:
+    """Run one variant and return observations, grades, and the trace they came from.
+
+    With `node_state`, the run enters the node whose stores live there, seeds nothing,
+    and acts as the declared principal itself, since a grant on a persisted node names
+    a durable operator rather than one run's instance.
+    """
     if variant not in VARIANTS:
         raise ValueError(f"unknown variant {variant!r}; declared: {', '.join(VARIANTS)}")
+    if node_state is not None and (variant == "no-grant" or issuer is not None):
+        raise ValueError("a persisted node is what it is: no-grant and --issuer describe a "
+                         "node this run would open itself")
     undeclared = layers.undeclared_inputs(registry is not None)
     root_principal = layers.root_principal(root, registry)
     directory = work_dir / "sov-sessions"
@@ -107,6 +114,8 @@ def run(root: Path, work_dir: Path, principal_id: str, variant: str = "positive"
     principal = entry["principal"]["principal"]
     registry_read = entry["principal"].get("registry")
     actor = lease_store.principal_id(session)
+    if node_state is not None:
+        actor = principal or principal_id
     trace.append(f"host session {session}; principal {principal or 'UNIDENTIFIED'} "
                  f"from {registry_read}; actor {actor}")
     phase = layers.campaign(root)
@@ -125,14 +134,20 @@ def run(root: Path, work_dir: Path, principal_id: str, variant: str = "positive"
     if defects:
         raise RuntimeError("Node Interface refused: " + "; ".join(defects))
     operation = nodelayer.reachable_operation(document)
-    with nodelayer.open_node(work_dir) as node:
-        admitted = nodelayer.admit(node, issuer, root_principal, actor, principal,
-                                   operation["required_authority"])
+    opened = (nodelayer.open_node_at(node_state) if node_state is not None
+              else nodelayer.open_node(work_dir))
+    with opened as node:
+        if node_state is not None:
+            admitted = nodelayer.admit_persisted(node, actor, principal,
+                                                 operation["required_authority"])
+        else:
+            admitted = nodelayer.admit(node, issuer, root_principal, actor, principal,
+                                       operation["required_authority"])
         own_binding = nodelayer.bind(document, actor, admitted["session"], principal)
         own = nodelayer.cross(node, own_binding)
         trace.append(f"{operation['operation_id']} as {actor}: {own['outcome']} "
                      f"{own.get('reason') or own.get('grant_id') or ''}".rstrip())
-        readings = _refusals(node, document, actor, admitted, principal, issuer)
+        readings = _refusals(node, document, actor, admitted, principal)
         for name, reading in readings.items():
             trace.append(f"  {name}: {reading['outcome']} "
                          f"{reading.get('diagnostic') or reading.get('reason')}")
@@ -190,6 +205,7 @@ def run(root: Path, work_dir: Path, principal_id: str, variant: str = "positive"
     return {
         "variant": variant, "session": session, "principal": principal, "actor": actor,
         "issuer": issuer, "root_principal": root_principal, "registry": registry_read,
+        "node_state": str(node_state) if node_state is not None else None,
         "node": {"admitted": admitted["reason"], "refused_by": admitted["refused_by"],
                  "own": own, "refusals": readings},
         "observations": observations, "grades": grades, "other_defects": other,

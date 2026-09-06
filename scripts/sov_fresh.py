@@ -10,6 +10,10 @@ discriminates against a temporary registry and a fixture issuer: the positive va
 passes and each defeating variant fails exactly the predicates it declares. Naming the
 root seat as issuer shows the mechanism; it is not evidence that the seat acted. Neither
 command witnesses anything; a passing run is a build claim.
+
+`open-office` is the act itself, performed on a persisted node under the registry's root
+principal at that principal's recorded direction; `run --node-state` then enters that
+node as a participant and seeds nothing. The node's journal is the receipt for both.
 """
 
 from __future__ import annotations
@@ -25,7 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
-from sovfresh import probe  # noqa: E402
+from sovfresh import layers, node as nodelayer, probe  # noqa: E402
 from sovsession import principals  # noqa: E402
 
 FIXTURE_PRINCIPAL = "principal:fresh-probe"
@@ -63,11 +67,46 @@ def cmd_run(args: argparse.Namespace) -> int:
               "speaks as with --principal or SOV_PRINCIPAL; the registry names, it does not guess")
         return 2
     registry = Path(args.registry) if args.registry else None
+    node_state = Path(args.node_state) if args.node_state else None
     with tempfile.TemporaryDirectory() as temp:
         result = probe.run(ROOT, Path(temp), principal_id, args.variant, registry=registry,
-                           issuer=args.issuer)
+                           issuer=args.issuer, node_state=node_state)
     print(json.dumps(result, indent=2, sort_keys=True) if args.as_json else _render(result))
     return 0 if result["passed"] else 1
+
+
+def cmd_open_office(args: argparse.Namespace) -> int:
+    """Seat the registry's root as this node's root issuer and grant one operator.
+
+    The act is the issuer's; this command performs it at the issuer's recorded direction
+    and refuses any other name by the probe's own rule. Every grant lands in the node's
+    journal with `granted_by`, and the direction is written beside the state as a receipt
+    the journal cannot carry.
+    """
+    registry = Path(args.registry) if args.registry else None
+    root = layers.root_principal(ROOT, registry)
+    if not args.issuer or args.issuer != root:
+        print(f"REFUSED {nodelayer.PROBE_ISSUER_GATE}: issuer {args.issuer!r} is not the "
+              f"registry's root principal {root!r}; nothing issued")
+        return 2
+    state = Path(args.node_state)
+    capabilities = dict(item.split("=", 1) for item in args.capability or [])
+    with nodelayer.open_node_at(state) as node:
+        records = nodelayer.open_office(node, args.issuer, args.operator, capabilities)
+        head = node.record.head()
+    receipt = {
+        "act": "open-office", "node_state": str(state), "issuer": args.issuer,
+        "operator": args.operator, "direction": args.direction,
+        "directed_in": args.directed_in, "record_head": head,
+        "grants": [{k: r[k] for k in ("grant_id", "capability", "scope", "granted_by",
+                                       "granted_at", "entry_id")} for r in records],
+    }
+    (state / "office-opened.json").write_text(json.dumps(receipt, indent=2) + "\n",
+                                              encoding="utf-8")
+    print(json.dumps(receipt, indent=2) if args.as_json else "\n".join(
+        [f"office opened at {state} by {args.issuer} for {args.operator}"]
+        + [f"  {r['grant_id']}  {r['capability']}  {r['scope']}" for r in records]))
+    return 0
 
 
 def fixture_registry(temp: Path) -> Path:
@@ -152,7 +191,23 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--registry", help="principal registry to read instead of "
                                         "contracts/principals.json")
     run.add_argument("--variant", default="positive", choices=sorted(probe.VARIANTS))
+    run.add_argument("--node-state", help="enter the persisted node whose stores live "
+                                          "here instead of opening a temporary one")
     run.set_defaults(func=cmd_run)
+    office = sub.add_parser("open-office", parents=[shared],
+                            help="seat the registry root as a persisted node's issuer and "
+                                 "grant one operator, at the root's recorded direction")
+    office.add_argument("--node-state", required=True)
+    office.add_argument("--issuer", required=True, help="must be the registry's root principal")
+    office.add_argument("--operator", required=True, help="the durable principal granted")
+    office.add_argument("--capability", action="append", metavar="CAPABILITY=SCOPE",
+                        help="a grant beyond open:session, repeatable")
+    office.add_argument("--direction", required=True,
+                        help="the issuer's own words directing this act")
+    office.add_argument("--directed-in", required=True,
+                        help="where those words are recorded, for example a session id")
+    office.add_argument("--registry")
+    office.set_defaults(func=cmd_open_office)
     check = sub.add_parser("selfcheck", parents=[shared],
                            help="prove the probe passes and can fail, offline")
     check.set_defaults(func=cmd_selfcheck)

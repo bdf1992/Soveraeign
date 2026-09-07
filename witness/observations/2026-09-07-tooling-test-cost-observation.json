@@ -1,0 +1,103 @@
+{
+  "case_id": "WITNESS-2026-09-07-TOOLING-TEST-COST-1",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07-tooling-cost",
+  "artifact_revision": "479ac74becae9fbb05b22ed4079379f116f5fcf8",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "tooling-test-cost: scripts/tests/test_sov_fresh.py shares probe runs per (variant, principal, issuer), drops the selfcheck subprocess case, moves the unittest.main guard to the end; PR #222, base aeecc605c05c7a6f74e80ee4bd49e0b6f2ea19d9",
+    "record": "witness/tooling-test-cost.md",
+    "pass": 1,
+    "verdict": "NOT_CONFIRMED",
+    "standing_supported": "none",
+    "standing_note": "Supports BUILT for the commit's claim as stated; withholds WITNESSED on F1. This is an observation and settles nothing.",
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07-tooling-cost",
+    "observer_independence_basis": "This participant built nothing and edited no file outside witness/tooling-test-cost.md, this receipt, and .local/observations/2026-09-07-tooling-test-cost-landing.json. The builder's commit message located the subject and was not taken as evidence. Measurements ran in full-history clones of the main checkout at 479ac74 and aeecc60 with empty porcelain, and in the feat/tooling-test-cost worktree, which stayed empty in git status --porcelain until the deposits were written.",
+    "observer_relation": "INDEPENDENT_OF_BUILDER",
+    "observed_at": "2026-09-07T12:19:21Z",
+    "candidate_commit": "479ac74becae9fbb05b22ed4079379f116f5fcf8",
+    "candidate_tree": "632eec12a481419cedb063a101ea728a1b68bf04",
+    "base_commit": "aeecc605c05c7a6f74e80ee4bd49e0b6f2ea19d9",
+    "observed_state_addresses": [
+      "scripts/tests/test_sov_fresh.py",
+      "scripts/sovfresh/probe.py",
+      "scripts/sovfresh/layers.py",
+      "scripts/sov_fresh.py",
+      "scripts/sovsession/principals.py",
+      "scripts/sovverify/commissioning.py",
+      "scripts/sovverify/checks.py",
+      "scripts/run_tooling_tests.py",
+      "scripts/sovland/candidates.py",
+      "contracts/verification-budget.json",
+      "contracts/participant-observation.schema.json",
+      "AGENTS.md",
+      "CLAUDE.md"
+    ],
+    "observed_state_digests": [
+      "sha256:38ca68e43fd19467ecd3e110bb9f3baa102719635f1c19cc200a25611be1bcde",
+      "sha256:76a7ae50f0d79bf815cdd113088793e136b2d1943c8c66a5714c379c9c54234f",
+      "sha256:afc7e7578e47fe3e8b4d0a7daf4ea4fa80d631c0ae02551096fe8b0f9cf5ac44",
+      "sha256:026d2db3f50b48c3da5147bc52eeca116de5417670162bd6d1e75656c0727a01",
+      "sha256:324aeb103e342d475aa1b6d5f2b0624b941ee3fa6f4c0db2396a524b107c9409",
+      "sha256:a124a998d5a7554908a5bba74b0d803814268188a9b2d4374f1db28a769e6a37",
+      "sha256:c061b9477a973a8bb89f038a8a3987ad5a3a7265d4f2937cd9dd422a5486f3f6",
+      "sha256:182540039f3206d65681cbb99928620a35dd200b4a14f2506119ef25fbf30871",
+      "sha256:c274140a69a42afdd0ec87f386348eea4fb6f40219d88fd3aebf3e52fdc991f3",
+      "sha256:c535b1fa069472425a0c6c308c4d531f99d31ef9a73ce2d9c191530f68051644",
+      "sha256:8292b477342d1b30cf3eaeacfbd05c6eacdf7c0abed228e2fc81a67ed8d05945",
+      "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
+      "sha256:de1d5ab3bea42df1812c313e4ec17a67678baaafcb0e27a340fcbdfe0b3aa4e1"
+    ],
+    "base_state": {
+      "scripts/tests/test_sov_fresh.py@aeecc60": "sha256:96cdbbd5612e78199a45952294217aa8967b6478d5c73a636672ffd39c4ece45"
+    },
+    "commands": {
+      "tree": {"command": "git status --porcelain (worktree); git rev-parse HEAD", "exit": "0; 0", "excerpt": "empty; 479ac74becae9fbb05b22ed4079379f116f5fcf8"},
+      "clones": {"command": "git clone --no-checkout <main checkout> <scratch>/clone-{head,base}; checkout 479ac74 / aeecc60", "exit": "0; 0", "excerpt": "porcelain empty in both; 968 and 967 commits; test_sov_fresh.py digests match git show at each commit"},
+      "unittest_timing": {"command": "perf_counter around python -m unittest scripts.tests.test_sov_fresh, three runs each, sequential, alone", "exit": "0 x6", "excerpt": "479ac74: 24 cases, 3.881 / 3.880 / 3.989 s; aeecc60: 25 cases, 6.866 / 7.106 / 6.937 s"},
+      "case_names": {"command": "python -m unittest -v ... | grep ^test_ | sort; diff", "exit": "0", "excerpt": "only difference: test_selfcheck_passes present at aeecc60, absent at 479ac74"},
+      "reverse_order": {"command": "custom TestLoader, cases reversed then forward, worktree", "exit": "0; 0", "excerpt": "24 ok both orders; 3.513 s reversed, 3.576 s forward"},
+      "mutation_grep": {"command": "grep for assignments/del/.update/.pop/.append into result dicts in scripts/tests/test_sov_fresh.py", "exit": "0", "excerpt": "only os.environ.pop at lines 125, 142, 159"},
+      "selfcheck": {"command": "python scripts/sov_fresh.py selfcheck", "exit": 0, "excerpt": "PASS: fresh participation slice closes on the positive variant, 3 defeating variants each fail their own predicates, and the office carries across an export and restore"},
+      "lint": {"command": "python scripts/lint.py", "exit": 0, "excerpt": "PASS: repository hygiene (1204 text files, 562 Python modules, 10 named debt)"},
+      "tooling_head_1": {"command": "scripts/run_tooling_tests.py via a wrapper timing _run, clone 479ac74", "exit": 0, "excerpt": "shards 11.70 / 11.75 / 12.96 (holds test_sov_fresh) / 13.25 s; wall 13.25 s; PASS 111 modules 4 shards"},
+      "tooling_head_2": {"command": "same, clone 479ac74", "exit": 0, "excerpt": "shards 11.99 / 12.10 / 13.59 (holds test_sov_fresh) / 14.67 s; wall 14.67 s"},
+      "tooling_base": {"command": "same, clone aeecc60", "exit": 0, "excerpt": "shards 12.29 / 12.72 / 14.53 / 16.71 (holds test_sov_fresh) s; wall 16.72 s"},
+      "verify": {"command": "python scripts/verify.py, clone 479ac74, full history", "exit": 1, "excerpt": "FAIL: orientation snapshot (FAIL commits: page says 942, record holds 968 (tolerance 25)); PASS: fresh participation slice 4.757 s; PASS: repository tooling tests 19.479 s pooled, no catastrophic rerun; 52 checks in 20.536 s wall; no other check fails"},
+      "mutant_inherited_variable_wins": {"command": "scratch copies; layers.py:63 -> os.environ.get(ENV_PRINCIPAL) or principal_id; suite in loader order and reverse; SOV_PRINCIPAL unset", "exit": "479ac74: 1 / 0; aeecc60: 1 / 1", "excerpt": "479ac74 reverse order: 24 ok, exit 0, test_an_inherited_principal_variable_does_not_reach_the_resolver passes against the mutant; loader order: that case and test_identities_come_from_node_records fail"},
+      "resource_warning": {"command": "python -W always -m unittest scripts.tests.test_sov_fresh", "exit": "0; 0", "excerpt": "479ac74: 2 lines 'ResourceWarning: Implicitly cleaning up <TemporaryDirectory ...>'; aeecc60: 0"}
+    },
+    "findings": {
+      "F1": {"severity": "MATERIAL", "held": false, "detail": "test_an_inherited_principal_variable_does_not_reach_the_resolver reads shared_run('positive', FIXTURE, ISSUER); the key omits the environment, so the case runs its own probe only while it is the first requester. Mutant passes at 479ac74 in reverse order (exit 0) and fails at aeecc60 in both orders. Docstring line 38 claims every environment-changing case runs its own probe; false for this one."},
+      "F2": {"severity": "MINOR", "held": false, "detail": "_SHARED['temp'] TemporaryDirectory is never released; 2 ResourceWarning lines at 479ac74, 0 at aeecc60."},
+      "F3": {"severity": "MINOR", "held": true, "detail": "MODULE_WEIGHTS['test_sov_fresh.py'] = 51 is stale by the table's own rule (3.9 s measured, 39); a scheduling hint, recorded not failed."}
+    },
+    "reproduced": [
+      "25 cases to 24; removed case is test_selfcheck_passes",
+      "suite time falls: 6.9 s to 3.9 s here (builder: 10.1 s to 4.0 s)",
+      "shared_run keys on (variant, principal, issuer) with one mkdtemp per key and one registry copy; no case writes into a result",
+      "same 24 verdicts in reverse order",
+      "verify's 'fresh participation slice' runs sov_fresh.py selfcheck and grades exit_code == 0 (scripts/verify.py:97); selfcheck exit 0; check PASS",
+      "unittest.main guard at end of file; one file changed; no assertion weakened other than the deleted case",
+      "lint PASS; tooling runner exit 0 three times; verify fails only on the orientation snapshot"
+    ],
+    "dissented": [
+      "docstring line 38: the inherited-principal case does not run its own probe",
+      "every reading is of a run the case asked for: not in the environment dimension for that case"
+    ],
+    "residuals": [
+      "R1 orientation snapshot commit count fails at 479ac74 (page 942, record 968, tolerance 25), same class as #221",
+      "R2 builder's 10.1 s base reading not reproduced on this host (6.9 s); head reading matches",
+      "R3 scratchpad held a prior session's base/ worktree pointer and .local/, removed by this participant to rebuild base as a clean clone; git worktree list shows no entry for it"
+    ],
+    "judgement_items": [
+      "J1 Does the orientation-snapshot commit count, outside the standing grant's scope, wait on Bdo for every branch off aeecc60 as #221 recorded, or is it a repair Bdo would accept as a packet?"
+    ],
+    "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-07-tooling-cost pass 1 at 479ac74, NOT_CONFIRMED on F1 (witness/tooling-test-cost.md; witness/observations/2026-09-07-tooling-test-cost-observation.json)"
+  },
+  "telemetry": {
+    "host": "Linux, Python 3.11, a worktree of the main checkout on feat/tooling-test-cost",
+    "principal": "SOV_PRINCIPAL=principal:claude-fable-5-1 for every command except the four mutant runs, which unset it deliberately",
+    "tree_state": "git status --porcelain empty at HEAD 479ac74 before and after every command until the three deposits were written",
+    "probe_location": "timing, reverse-order and tooling wrappers were scratch scripts outside the repository; none imports participant implementation code beyond the test module under witness and the unchanged runner"
+  }
+}

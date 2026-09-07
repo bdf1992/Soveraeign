@@ -1,0 +1,119 @@
+{
+  "case_id": "P15-X3-DISCOVERY-AND-REUSE-WITNESS-PASS-3",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07",
+  "artifact_revision": "ea01dcced56b345c7946b25d9dcd1a4419b4f9a1",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "discovery-and-reuse",
+    "record": "witness/discovery-and-reuse.md",
+    "record_section": "Pass 3: commit ea01dcc (2026-09-07)",
+    "pass": 3,
+    "prior_receipts": [
+      "witness/observations/2026-09-07-discovery-and-reuse-observation.json",
+      "witness/observations/2026-09-07-discovery-and-reuse-observation-2.json"
+    ],
+    "verdict": "RATIFIABLE",
+    "standing_supported": "WITNESSED",
+    "standing_binds": "scripts/sov_reuse.py at ea01dcced56b345c7946b25d9dcd1a4419b4f9a1 and the instrument claim: the probe is what it says and grades what it says, on this host and on a clean clone; nine defeating variants each fail on a real state. First supported at pass 2, b0c013c; the instrument bytes are identical.",
+    "standing_note": "Supports BUILT -> WITNESSED for the instrument and confirms the candidate for landing. Says nothing about P15-X3 holding for this node: both live predicates read unmet, truly.",
+    "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-07 pass 3 at ea01dcc, clean-clone gates and instrument commands (witness/discovery-and-reuse.md; witness/observations/2026-09-07-discovery-and-reuse-observation-3.json); first supported at pass 2, b0c013c",
+    "candidate_commit": "ea01dcced56b345c7946b25d9dcd1a4419b4f9a1",
+    "candidate_tree": "ada2d664818ea23001edfde8b9bed4e3a9990381",
+    "base_commit": "ee6080153c64938f43377617e1c4c1f231ddd00a",
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07",
+    "observer_relation": "INDEPENDENT_OF_BUILDER_DECLARED_SURFACE_ONLY",
+    "observer_independence_basis": "Separate launched witness session that did not build, edit, stage, or commit the change; readings came through git plumbing, the repository gates on a clean clone of the candidate, and the instrument's declared surface on the frozen shared tree. The candidate record, the builder's note, reports/2026-09-07-discovery-and-reuse-slice.md, acceptance/A24.json, and the other session's uncommitted fresh-participation deposits were not read as evidence.",
+    "observed_at": "2026-09-07",
+    "tree_state": "git rev-parse HEAD == ea01dcc before and after every command; shared working tree carried, besides this witness's own files, uncommitted files not in the candidate (witness/fresh-participation.md M, witness/observations/2026-09-07-fresh-participation-observation-7.json, reports/2026-09-07-discovery-and-reuse-slice.md, acceptance/A24.json); origin/main == main == base_commit; clean clone porcelain empty",
+    "observed_state_addresses": [
+      "contracts/custodies/phase-1-5.json",
+      "docs/documentation.html",
+      "scripts/sov_reuse.py",
+      "scripts/sovreuse/__init__.py",
+      "scripts/sovreuse/discover.py",
+      "scripts/sovreuse/fixture.py",
+      "scripts/sovreuse/reuse.py",
+      "scripts/sovreuse/settle.py",
+      "scripts/tests/test_sov_reuse.py"
+    ],
+    "observed_state_digests": [
+      "sha256:9b6041e9182f9bc4a969336f1ca5285ea86e66b220f64453c0297ccf08260602",
+      "sha256:f5fb005e05f6f32c7719f5ff58c8c9cb14c9d8840ef5aee1092591c3f5cada1d",
+      "sha256:0073fed70c01dde967ca806f754029b4a69da90534b82bcdf2ee27194dc42100",
+      "sha256:92d910507ca4697c7deb2af1dfa0c2cc6efe06e2fde7195520d981c15a105b22",
+      "sha256:753841e412bc89923e98bf0a182745bc682b6b0a22add5d182fc1afe1971c200",
+      "sha256:86b3da23c8236228c034337054c53ccb29425e65e61343071b810f665f4d44ff",
+      "sha256:0d364258e8e6c8213ed8155410e32ad57e53f28ad873682d847a7089acbed2a4",
+      "sha256:d2a0542d64c030dc42a988a0605ef51f19a8adc5c05aad9a152c4cb615cb60f1",
+      "sha256:e64a0da723acf81329a821304697cb0105d20f4ab027d2fbc42d4f27b75a5cab"
+    ],
+    "environment": {
+      "SOV_PRINCIPAL": "principal:claude-fable-5-1",
+      "SOV_PRINCIPAL_REGISTRY": "unset"
+    },
+    "commands": {
+      "instrument_identity": "git rev-parse b0c013c:<path> == ea01dcc:<path> for the eight instrument paths; git diff-tree -r b0c013c ea01dcc --name-status -> M docs/documentation.html only",
+      "clone": "git clone --no-hardlinks of the candidate; HEAD ea01dcc; porcelain empty",
+      "docs_check_clone": "python scripts/sov_docs.py check -> exit 0; PASS: documentation page matches 282 documents",
+      "lint_clone": "python scripts/lint.py -> exit 0; PASS: repository hygiene (1204 text files, 562 Python modules, 10 named debt)",
+      "rebuild_clone": "python scripts/sov_docs.py build -> exit 0; git status --porcelain empty afterwards (committed page byte-identical to a fresh render); clone restored",
+      "verify_clone": "python scripts/verify.py -> exit 0; == documentation reader == PASS: documentation page matches 282 documents; PASS: repository tooling tests (111 modules, 4 shards)",
+      "selfcheck": "python scripts/sov_reuse.py selfcheck (frozen shared tree) -> exit 0; 9 defeating variants each fail with exactly the defects they declare",
+      "live": "python scripts/sov_reuse.py run --principal principal:claude-fable-5-1 (frozen shared tree) -> exit 1; Q3.1 settlement was not against current state; Q3.2 fresh participant did not use the accepted result",
+      "page_grep": "git show ea01dcc:docs/documentation.html: 282 documents; zero occurrences of discovery-and-reuse, pass 7, fresh-participation-observation-7, 2026-09-07-discovery-and-reuse-slice"
+    },
+    "predicate_results": {
+      "C1_page_indexes_committed_documents_only": {
+        "held": true,
+        "detail": "282 documents; rebuild in clean clone is a no-op; no uncommitted-document text"
+      },
+      "verify_passes_on_clean_checkout_of_candidate": {
+        "held": true,
+        "detail": "exit 0; documentation reader PASS; tooling tests PASS"
+      },
+      "lint_passes_on_clean_checkout": {
+        "held": true,
+        "detail": "exit 0"
+      },
+      "instrument_bytes_identical_to_b0c013c": {
+        "held": true,
+        "detail": "eight blob ids equal"
+      },
+      "selfcheck_passes_on_frozen_candidate": {
+        "held": true,
+        "detail": "exit 0; nine variants"
+      },
+      "live_reading_fails_on_exactly_two_true_facts": {
+        "held": true,
+        "detail": "unchanged from passes 1 and 2"
+      },
+      "F5_closure_check_expression_executed": {
+        "held": false,
+        "detail": "residual as recorded"
+      },
+      "F7_inventory_excludes_checked_out_branch": {
+        "held": false,
+        "detail": "residual as recorded; by design"
+      }
+    },
+    "findings": [
+      "F9 discharged",
+      "F1 F2 F3 F4 F6 F8 remain discharged (identical bytes)",
+      "F5 residual",
+      "F7 residual"
+    ],
+    "judgement_items": [
+      "J1 which reading of 'settlement follows current state' P15-Q3.1 owns",
+      "J2 whether a grant to principal:claude-fable-5-1 on the live node is Bdo's to issue and the intended route, or the control reading as principal:claude-fable-5 is the reuse the clause asks for"
+    ],
+    "residuals": [
+      "no clarity review for witness/discovery-and-reuse.md",
+      "mutants and unit suite not re-run this pass; identical bytes to pass 2"
+    ]
+  },
+  "telemetry": {
+    "probe_location": "no probe file; readings came through git, the repository gates on a clean clone, and scripts/sov_reuse.py on the frozen shared tree",
+    "tree_state": "ea01dcced56b345c7946b25d9dcd1a4419b4f9a1 frozen; HEAD unchanged after every command",
+    "after_writing": "porcelain shows this witness's records and receipts as untracked plus the uncommitted files named in observed.tree_state; .local/ is gitignored"
+  }
+}

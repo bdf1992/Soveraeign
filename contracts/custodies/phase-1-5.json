@@ -53,7 +53,7 @@
           "stage": "VERTICAL_SLICE",
           "standing": "WITNESSED",
           "work_state": "LANDED",
-          "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-06 pass 6 at 571e936, instrument and custody commands (witness/fresh-participation.md; witness/observations/2026-09-06-fresh-participation-observation-6.json); first supported at pass 4, 0cf5a57",
+          "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-07 pass 7 at 26b1887 (witness/fresh-participation.md; witness/observations/2026-09-07-fresh-participation-observation-7.json)",
           "note": "the closed path host session -> principal -> campaign -> work -> lease -> node session and grant -> one admitted crossing and three the Gateway refuses -> Record projection -> session end -> survival and cleanup read back -> instrument; P15-Q1.1 to Q1.3 graded by conformance/commissioning.py, every identity read from a node record or None; three defeating variants are real node states. A node whose permits office nobody has opened reads Q1.3 unmet. Witness record: witness/fresh-participation.md (pass 1 at d40d61f NOT-YET, pass 2 at 161d559 NOT-YET, pass 3 at 8fd7716 RATIFIABLE-WITH-CONDITIONS, pass 4 at 0cf5a57 REPRODUCED, pass 5 at 219686d REPRODUCED with dissent on who acted, pass 6 at 571e936 REPRODUCED for journal custody). The witnessed standing binds to 0cf5a57 and to the instrument claim: the probe is what it says and grades what it says. It says nothing by itself about P15-X1 holding for this node. reports/observations/2026-09-06-fresh-participation-live-node-2.json is session-651746's self-report, citing the node's own journal at nodes/node-local/journal/23d3b48086be.json, of opening a persisted node's permits office under the name principal:bdo and entering it as principal:claude-fable-5 with all three predicates holding; witness pass 5 at 219686d reproduced the run and read that nothing in the record authenticates who passed that name (F35, J4). Whether the session acted at Bdo's direction is a claim of the session's transcript, not of the record"
         }
       ],
@@ -150,9 +150,9 @@
           "member_kind": "ITEM",
           "address": "scripts/sov_reuse.py",
           "stage": "VERTICAL_SLICE",
-          "standing": "BUILT",
-          "work_state": "PRESENTED",
-          "stage_observed_by": null,
+          "standing": "WITNESSED",
+          "work_state": "LANDED",
+          "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-07 pass 5 at 60d5615, clean-clone gates with timings, partition property and instrument identity (witness/discovery-and-reuse.md; witness/observations/2026-09-07-discovery-and-reuse-observation-5.json); first supported at pass 2, b0c013c",
           "note": "the closed path artifact -> custody member at WITNESSED -> witness record and receipts named in its stage_observed_by -> bytes now at every address the witness observed -> the merge that landed the address -> inventory this host can read -> journal export restored to the head the receipt holds outside it -> the node entered as the declared principal -> instrument; P15-Q3.1 and Q3.2 graded by conformance/commissioning.py on values read from the artifact and the restored node. selfcheck builds the result under a fixture root, with a second fixture principal as the reader, and proves nine defeating variants each fail with exactly the defects they declare. The live reading against this repository as principal:claude-fable-5-1 reads two facts: eight addresses the pass-6 receipt observed at 571e936 moved on the trunk before and with the PR #218 merge, so P15-Q3.1 reads not settled against current state; and the journal grants principal:claude-fable-5 and nobody else, so the node refuses this principal a session and P15-Q3.2 reads unmet until the node's root issues a grant. Composed from the fresh-participation layers, the node journal custody, the custody model and the standing gate's record reader; no new store, contract or vocabulary."
         }
       ],

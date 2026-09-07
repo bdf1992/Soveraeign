@@ -1,0 +1,216 @@
+{
+  "case_id": "P15-X3-DISCOVERY-AND-REUSE-WITNESS-PASS-5",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07",
+  "artifact_revision": "60d5615621340d5a34e85ffa618f794d39ac707f",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "discovery-and-reuse",
+    "record": "witness/discovery-and-reuse.md",
+    "record_section": "Pass 5: commit 60d5615 (2026-09-07)",
+    "pass": 5,
+    "prior_receipts": [
+      "witness/observations/2026-09-07-discovery-and-reuse-observation.json",
+      "witness/observations/2026-09-07-discovery-and-reuse-observation-2.json",
+      "witness/observations/2026-09-07-discovery-and-reuse-observation-3.json",
+      "witness/observations/2026-09-07-discovery-and-reuse-observation-4.json"
+    ],
+    "verdict": "RATIFIABLE",
+    "standing_supported": "WITNESSED",
+    "standing_binds": "scripts/sov_reuse.py at 60d5615621340d5a34e85ffa618f794d39ac707f and the instrument claim; instrument bytes identical to b0c013c (pass 2), ea01dcc (pass 3) and 57271f7 (pass 4).",
+    "standing_note": "Supports BUILT -> WITNESSED for the instrument and confirms the candidate for landing. Says nothing about P15-X3 holding for this node. Timings are this host's; what the hosted runner measures is its own evidence.",
+    "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-07 pass 5 at 60d5615, clean-clone gates with timings, partition property and instrument identity (witness/discovery-and-reuse.md; witness/observations/2026-09-07-discovery-and-reuse-observation-5.json); first supported at pass 2, b0c013c",
+    "candidate_commit": "60d5615621340d5a34e85ffa618f794d39ac707f",
+    "candidate_tree": "cb4e158c1d2167fb2cac3537be3b03d792010014",
+    "base_commit": "ee6080153c64938f43377617e1c4c1f231ddd00a",
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07",
+    "observer_relation": "INDEPENDENT_OF_BUILDER_DECLARED_SURFACE_ONLY",
+    "observer_independence_basis": "Separate launched witness session that did not build, edit, stage, or commit the change; readings came through git plumbing, the repository gates and unit suites on a clean clone of the candidate timed with time.perf_counter around subprocesses, and a scratch partition probe using run_tooling_tests and the test module's own peers/weights helpers. The candidate record was graded, not trusted; the builder's report and every uncommitted working-tree edit were not read as evidence.",
+    "observed_at": "2026-09-07",
+    "host": "Linux, Python 3, shared host; /usr/bin/time absent; nothing timed overlapped with anything else this witness started",
+    "tree_state": "git rev-parse HEAD == 60d5615 before and after every command; shared working tree carried uncommitted presented-side files not in the candidate; origin/main == main == base_commit; clean clone porcelain empty",
+    "observed_state_addresses": [
+      "contracts/custodies/phase-1-5.json",
+      "scripts/run_tooling_tests.py",
+      "scripts/sov_reuse.py",
+      "scripts/sovland/candidates.py",
+      "scripts/sovreuse/__init__.py",
+      "scripts/sovreuse/discover.py",
+      "scripts/sovreuse/fixture.py",
+      "scripts/sovreuse/reuse.py",
+      "scripts/sovreuse/settle.py",
+      "scripts/tests/test_repository_candidate_effects.py",
+      "scripts/tests/test_run_tooling_tests.py",
+      "scripts/tests/test_sov_reuse.py"
+    ],
+    "observed_state_digests": [
+      "sha256:9b6041e9182f9bc4a969336f1ca5285ea86e66b220f64453c0297ccf08260602",
+      "sha256:182540039f3206d65681cbb99928620a35dd200b4a14f2506119ef25fbf30871",
+      "sha256:0073fed70c01dde967ca806f754029b4a69da90534b82bcdf2ee27194dc42100",
+      "sha256:c274140a69a42afdd0ec87f386348eea4fb6f40219d88fd3aebf3e52fdc991f3",
+      "sha256:92d910507ca4697c7deb2af1dfa0c2cc6efe06e2fde7195520d981c15a105b22",
+      "sha256:753841e412bc89923e98bf0a182745bc682b6b0a22add5d182fc1afe1971c200",
+      "sha256:86b3da23c8236228c034337054c53ccb29425e65e61343071b810f665f4d44ff",
+      "sha256:0d364258e8e6c8213ed8155410e32ad57e53f28ad873682d847a7089acbed2a4",
+      "sha256:d2a0542d64c030dc42a988a0605ef51f19a8adc5c05aad9a152c4cb615cb60f1",
+      "sha256:6959179b8cdf79fb513ca7aaece1bf0e0df9c0458412b5807322f33bde2df4d3",
+      "sha256:ca2c8b0b3127daa27610f2cc1b094fe134605330952349cd643f8f8bffba8f44",
+      "sha256:45c339198204771a587b1bf9bbf2e111b6540b7c0e714927ddb6d192b3e3ce95"
+    ],
+    "environment": {
+      "SOV_PRINCIPAL": "principal:claude-fable-5-1",
+      "SOV_PRINCIPAL_REGISTRY": "unset"
+    },
+    "measurements": {
+      "verify_clean_clone_wall_s": 16.1,
+      "tooling_tests_check": {
+        "wall_s": 15.147,
+        "cpu_s": 33.336,
+        "shards_s": [
+          14.178,
+          10.647,
+          12.284,
+          12.117
+        ],
+        "suspect_rerun": false,
+        "catastrophic_ceiling_s": 30.0
+      },
+      "tooling_tests_check_pass1_on_this_host_at_26b1887": {
+        "wall_s": 22.797,
+        "longest_shard_s": 21.814
+      },
+      "test_sov_reuse_alone_s": [
+        2.9,
+        3.0
+      ],
+      "test_sov_reuse_alone_previous_module_s": {
+        "pass2": 5.353,
+        "pass1": 4.4
+      },
+      "heaviest_modules_alone_s": {
+        "test_sov_fresh.py": [
+          51,
+          5.38
+        ],
+        "test_sov_strand.py": [
+          36,
+          3.19
+        ],
+        "test_sov_reuse.py": [
+          30,
+          2.79
+        ],
+        "test_sov_backlog.py": [
+          25,
+          2.39
+        ],
+        "test_sov_ci_subject.py": [
+          23,
+          2.01
+        ],
+        "test_automation_control.py": [
+          17,
+          1.68
+        ],
+        "test_automation_health.py": [
+          16,
+          1.67
+        ],
+        "test_repository_candidate_effects.py": [
+          18,
+          1.65
+        ]
+      },
+      "partition": {
+        "heaviest": "test_sov_fresh.py",
+        "modules": 111,
+        "peers_weighted": 27,
+        "peers_entry_dropped": 30,
+        "synthetic_loads": [
+          100,
+          100,
+          100,
+          99
+        ],
+        "shard_sizes": [
+          27,
+          27,
+          29,
+          28
+        ]
+      }
+    },
+    "commands": {
+      "identity": "git rev-parse 57271f7:<path> == 60d5615:<path> for the eight instrument paths, scripts/sovland/candidates.py, scripts/tests/test_repository_candidate_effects.py and docs/documentation.html; git diff-tree -r 57271f7 60d5615 -> three test/runner files",
+      "changed_paths_vs_range": "git diff --name-only ee60801...60d5615 == record changed_paths (twelve paths)",
+      "lint_clone": "python scripts/lint.py -> exit 0",
+      "verify_clone": "python scripts/verify.py -> exit 0; wall 16.1s; PASS: repository tooling tests (111 modules, 4 shards); TIME: repository tooling tests: 15.147s wall, 33.336s cpu; shards Ran 704/520/441/485 tests in 14.178/10.647/12.284/12.117s; no suspect re-run; documentation reader PASS 282 documents",
+      "test_sov_reuse_alone": "python -m unittest scripts.tests.test_sov_reuse (clone) twice -> exit 0, 2.9s and 3.0s, 14 tests OK",
+      "heaviest_alone": "python -m unittest scripts.tests.<module> for the table's eight heaviest, sequential -> all exit 0; measured order matches the table for the five heaviest; positions six to eight within 0.03s",
+      "runner_tests": "python -m unittest scripts.tests.test_run_tooling_tests (clone) -> exit 0; Ran 7 tests OK",
+      "partition_probe": "property holds (27 < 30); heaviest entry dropped -> test FAILS (29 not less than 27); heaviest weight set to 1 -> FAILS (29 not less than 27); empty table -> FAILS (ValueError)"
+    },
+    "predicate_results": {
+      "instrument_and_sovland_identical_to_57271f7": {
+        "held": true,
+        "detail": "ten blob ids equal"
+      },
+      "record_changed_paths_equal_range": {
+        "held": true,
+        "detail": "twelve paths"
+      },
+      "verify_and_lint_pass_on_clean_checkout": {
+        "held": true,
+        "detail": "exit 0 and exit 0"
+      },
+      "tooling_check_under_catastrophic_ceiling_on_this_host": {
+        "held": true,
+        "detail": "15.1s pooled against 30s; longest shard 14.2s; no re-run"
+      },
+      "test_sov_reuse_alone_faster_than_before": {
+        "held": true,
+        "detail": "2.9-3.0s against 4.4-5.35s measured in passes 1-2"
+      },
+      "weight_table_orders_heaviest_modules_as_measured": {
+        "held": true,
+        "detail": "five heaviest in table order; six to eight indistinguishable within 0.03s"
+      },
+      "partition_property_fails_when_heaviest_entry_dropped": {
+        "held": true,
+        "detail": "and when flattened to 1, and when the table is empty"
+      },
+      "hosted_runner_under_ceiling": {
+        "held": null,
+        "detail": "not observable from this host; F11"
+      },
+      "F5_closure_check_expression_executed": {
+        "held": false,
+        "detail": "residual as recorded"
+      },
+      "F7_inventory_excludes_checked_out_branch": {
+        "held": false,
+        "detail": "residual as recorded; by design"
+      }
+    },
+    "findings": [
+      "F1 F2 F3 F4 F6 F8 F9 remain discharged (identical instrument bytes)",
+      "F5 residual",
+      "F7 residual",
+      "F10 observation as recorded in pass 4",
+      "F11 LOW observation: the hosted runner's timing is evidence only it can produce; this host reads the pooled check at half the ceiling"
+    ],
+    "judgement_items": [
+      "J1 which reading of 'settlement follows current state' P15-Q3.1 owns",
+      "J2 whether a grant to principal:claude-fable-5-1 on the live node is Bdo's to issue and the intended route, or the control reading as principal:claude-fable-5 is the reuse the clause asks for"
+    ],
+    "residuals": [
+      "no clarity review for witness/discovery-and-reuse.md",
+      "selfcheck, live reading and mutants not re-run this pass (identical instrument bytes to pass 4)",
+      "hosted CI not run by this witness; timings are single or double runs on a shared host"
+    ]
+  },
+  "telemetry": {
+    "probe_location": "no probe file; readings came through git, the repository gates and unit suites on a clean clone, and a scratch partition probe kept outside the repository",
+    "tree_state": "60d5615621340d5a34e85ffa618f794d39ac707f frozen; HEAD unchanged after every command",
+    "after_writing": "porcelain shows this witness's records and receipts as untracked plus the uncommitted presented-side files; .local/ is gitignored"
+  }
+}

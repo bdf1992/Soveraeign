@@ -3,20 +3,276 @@
 ```witness
 standing_supported  WITNESSED
 subject  fresh-participation
-revision  571e936c733ad399aa0cb79d620f019302e6c045
-pass  6
+revision  26b1887e84357124c8e99f42382d064ffbeccf8c
+pass  7
 ```
 
-Six passes by the same role, different commits. Pass 6 (commit `571e936`) is current and owns
-the declaration above. Pass 5 (commit `219686d`), pass 4 (commit `0cf5a57`), pass 3 (commit
-`8fd7716`), pass 2 (commit `161d559`) and pass 1 (commit `d40d61f`) follow it unchanged as
-history.
+Seven passes by the same role, different commits. Pass 7 (commit `26b1887`) is current and owns
+the declaration above. Pass 6 (commit `571e936`), pass 5 (commit `219686d`), pass 4 (commit
+`0cf5a57`), pass 3 (commit `8fd7716`), pass 2 (commit `161d559`) and pass 1 (commit `d40d61f`)
+follow it unchanged as history.
 
 No `*_status` field in `STATUS.yaml` names this subject, so `scripts/sov_standing.py` does not
 read this file. The subject is the one `ITEM` member under
 `custody:phase-1-5/fresh-participation` in `contracts/custodies/phase-1-5.json`:
 `scripts/sov_fresh.py`, stage `VERTICAL_SLICE`, standing `WITNESSED` since `5f3fd67`,
-`stage_observed_by` naming pass 4 at `0cf5a57`.
+`work_state` `LANDED` since `ed17795`, `stage_observed_by` naming pass 6 at `571e936`.
+
+## Pass 7: commit 26b1887 (2026-09-07)
+
+Verdict: **REPRODUCED** for the journal's custody at this revision: the committed export is
+byte-identical to what pass 6 read, replays to the head pass 6 held outside it, restores into
+an empty node with that head, and a truncated copy is refused once that head is supplied and
+now leaves no store behind. The gate at this revision refuses every case pass 6 said it should
+and did not (F44 to F47), and each repair is pinned by a test a mutant fails. **DISSENT** on
+the standing's binding: the member carries two revisions in one record (`0cf5a57` in its
+note, `571e936` in `stage_observed_by`), and neither is a revision whose gate bytes are the
+ones that landed; three files inside the claim changed at `ed17795` and no pass had read them
+until this one (F53). The first packet is again the bytes pass 5 read, and those bytes still
+embed a 31-entry journal beside its own head (F43, disposition below).
+
+Scope: journal custody and the standing's binding to current bytes, at the launcher's
+direction. The office and the run were witnessed at pass 5; the instrument at pass 4. The new
+member under `custody:phase-1-5/discovery-and-reuse` (`scripts/sov_reuse.py`, `BUILT`,
+`PRESENTED`) is not this subject and is not witnessed here; its reader was run once, confined
+to a scratch copy, because it measures the same drift this pass measures.
+
+Claim under observation: the standing pass 6 declared, as its receipt states it in
+`standing_binds.claim`, read against the bytes now at `26b1887`. No builder report was taken
+as evidence. `reports/2026-09-06-fresh-participation-slice.md` sits in the drift set, so its
+diff since `571e936` was seen in `git diff` before any command ran; nothing below is taken
+from it. The member's note in `contracts/custodies/phase-1-5.json` was read for its words,
+not its conclusions.
+
+Subject frozen: commit `26b1887e84357124c8e99f42382d064ffbeccf8c` on
+`claude/sovereign-phase-1-5-5uzffu`; its first parent `ee60801` is `origin/main`, the merge of
+PR #218, which carries `571e936`, `ed17795` and `358303b`. `git rev-parse HEAD` read the commit
+and `git status --porcelain` was empty before and after every command up to this pass's two
+writes. At `05:01:02Z`, after both writes and during the checks that followed them, another
+session deposited `witness/discovery-and-reuse.md` and
+`witness/observations/2026-09-07-discovery-and-reuse-observation.json`, untracked; they are the
+other custody member's, were not read, and touch nothing this pass observed (`CLAUDE.md`, trap
+T6). There is no node on this host: `.local/node-interface` does not exist (`.gitignore:33`
+still names `.local/`). `.local/` holds `candidates/` (a `FROZEN` candidate record for `26b1887`
+written at `04:46:58Z`, before this pass began), `console/`, `landing/`, `registrar/` and, from
+`04:50:00Z`, `record/` (F54).
+Every mutation ran in `git archive 26b1887` unpacked under scratch (`<mut>`); every restore ran
+into a scratch directory (`<x>`). The commit changes 8 files (+938/-3) against `ee60801`, none
+under `nodes/`, `reports/`, `witness/`, `scripts/sovnode/`, `scripts/sovfresh/` or
+`services/`.
+
+Witness: `claude-fable-5-1/sov-witness@2026-09-07`, pass 7 by the same role. `SOV_PRINCIPAL`
+was set to `principal:claude-fable-5-1` for every command; that registry entry is
+`UNVERIFIED` and grants nothing, and no command here needed a grant. This participant did not
+build, edit, stage or commit anything under the subject and read no transcript. The only files
+it wrote are this section, the header block and the two paragraphs above that name the current
+pass, and `witness/observations/2026-09-07-fresh-participation-observation-7.json`, all after
+every command under `Verified` had returned. Passes 6 to 1 are carried unchanged: the bytes
+from `## Pass 6` to the end of this file are identical to `git show 26b1887:witness/fresh-participation.md`
+from the same heading (sha256 `6b9f81b7...` over 133849 bytes), and the six prior receipts
+digest as they do at `26b1887`.
+
+### Drift from pass 6, address by address
+
+Pass 6 recorded 26 addresses with digests at `571e936`. At `26b1887`, 18 hold the same bytes
+and 8 do not. The reuse reader in the scratch copy (`sov_reuse.py run`, which reads the pass-6
+receipt and digests each address itself) names the same eight. Whether a change is inside the
+claim is read against `standing_binds.claim` in the pass-6 receipt.
+
+| Address | `571e936` | `26b1887` | Changed at | Inside the claim |
+| --- | --- | --- | --- | --- |
+| `scripts/sovnode/journal.py` | `e16de79c` | `6ef8bcc2` | `ed17795` | Yes. The gate the claim describes. Adds: one head per node, directory name against the entries' `node_id` and the node registry, every `entry_id`/`receipt_id` a report mentions must resolve, cited entry count against the export, `BrokenChain` caught as a named defect, a refused restore removes the store it created. Nothing the positive path does changed |
+| `scripts/tests/test_sov_node_journal.py` | `2c740266` | `7afcab68` | `ed17795` | Yes. "The eight journal tests" are now thirteen; the F48 assertion tightened from "no non-genesis head" to "no `record/` directory" |
+| `scripts/sovverify/commissioning.py` | `b4df3500` | `a124a998` | `ed17795` | Yes, the check's declared reach: `sov_node.py` and `custody.py` added to what check 52 observes (F51). The command is unchanged |
+| `nodes/README.md` | `f33a45ae` | `456d3dda` | `ed17795` | Yes, as prose: "a node has one head, so one export sits under each node", now what the gate enforces (F45) |
+| `contracts/custodies/phase-1-5.json` | `994dcb7a` | `3b6f0aca` | `ed17795`, `26b1887` | It is the field the standing binds (`members[0]`): `work_state` `PRESENTED` to `LANDED` and `stage_observed_by` to pass 6 words at `ed17795`; the discovery-and-reuse member added at `26b1887`. Inside the binding, outside the behavior (F53) |
+| `contracts/principals.json` | `cec549f6` | `2f672d7a` | `358303b` | No. Adds `principal:claude-fable-5-1`, `UNVERIFIED`; the probe still runs as `principal:claude-fable-5`, and the node's journal grants the new name nothing (the reuse reader's run is refused `SESSION_IDENTITY_REQUIRED` for it, as the node decides) |
+| `reports/2026-09-06-fresh-participation-slice.md` | `b13c6a16` | `90524cad` | `ed17795` | No. The builder's report; a description of the artifact, not the artifact |
+| `reports/observations/2026-09-06-fresh-participation-live-node.json` | `3c9b8407` | `1882e38c` | `ed17795` | Yes, the third artifact of the journal-custody claim: now equal to `219686d` byte for byte, so "kept as the bytes pass 5 read" is true (F43). Those bytes embed `journal_export` of 31 entries beside `record_head_after_run` `032377e0...`; the 31 are an exact prefix of the 85-entry export (entry 31's digest is `032377e0...`) |
+
+Changed since `571e936` at addresses pass 6 did not record: `contracts/verification-budget.json`
+(`fresh participation slice` ceiling 1.5s to 3.0s, F50); `docs/documentation.html` (not read);
+`scripts/sov_reuse.py`, `scripts/sovreuse/` and `scripts/tests/test_sov_reuse.py` (new, the
+other custody's member). The 18 unchanged include `scripts/sov_fresh.py`, `scripts/sov_node.py`,
+both `sovfresh` modules, `test_sov_fresh.py`, all four Record Service modules, the export, the
+node registry, the publication surface, the second self-report and the five prior receipts.
+
+### The head held outside the export
+
+On this host there is no store to read it from. The head has exactly one holder here: pass 6's
+record and receipt, whose bytes at `26b1887` are what `ed17795` committed (`git diff ed17795
+26b1887 -- witness/fresh-participation.md` empty; `observation-6.json` `7416bd3f...` at both).
+Read from them: `23d3b48086becd541d6054d78185f730e41a10054848ad4f654191315f87b342`, 85 entries.
+
+The committed export reaches exactly that head, by three paths that share no code with the
+record: `verify-export --expect-head` exits 0 with 85 entries; the journals gate prints it;
+`restore-journal --expect-head` into an empty scratch store restores 85 entries whose last row
+digests to it. Against `032377e0...` (entry 31, the first packet's embedded head) and against a
+60-entry truncation (head `94aafd47...`) the verifier refuses. The export carries 7 entries with
+`granted_by` `principal:bdo` in two acts (`recorded_at` 1788704979 and 1788706269), every
+payload `node_id` is `node:local`, and its top-level keys are still `entries`, `entry_count`,
+`export_schema`, `head_digest` (F47, product half).
+
+What "outside" means here is narrower than at pass 6: not a gitignored store on the builder's
+host, but a file on the builder's branch that this pass can only check for consistency with the
+export. A host that holds no node cannot add a second holder; it can say the two files agree,
+and they do (J12).
+
+### Standing supported
+
+`WITNESSED`, declared in the block above, for the member at `26b1887`, with the claim pass 6
+bound and this pass re-measured against the bytes now at every address inside it: the export
+is the node's journal to the head held outside it; `restore-journal` refuses a populated store
+and a truncated export once that head is given, removes the store it created on refusal, and
+into an empty store carries 85 entries and 7 grants; `journals` replays every export under
+`nodes/` and refuses a misnamed export, a second head for one node, an export whose directory
+names a node its entries do not or the registry does not, an edited count, an edited or
+fabricated entry by name rather than by traceback, a citation of a wrong head, of a wrong entry
+count, of an entry or receipt id anywhere in the report that the export does not hold, or of a
+file outside `nodes/`; `selfcheck` and the thirteen journal tests fail under six mutants
+(verifier ignoring the outside head; gate dropping the one-head rule, the whole-report id
+walk, the node-identity comparison, the `BrokenChain` catch; restore keeping its store on
+refusal).
+
+For the journal-custody claim as pass 6 stated it: all three artifacts are now as described,
+with one residual. The first packet is the bytes pass 5 read; being those bytes, it embeds a
+31-entry prefix of the journal with its own head, so the journal is still committed twice (in
+part), and the shape pass 5 called F40 persists by the builder's chosen repair rather than by
+accident. That is recorded, not held against the standing.
+
+What this record does not support is unchanged: nothing authenticates who passed the name
+`principal:bdo` (F35, F52, J4); no clause verdict moves; `custody:phase-1-5/fresh-participation`
+reads `PROPOSED` and P15-X1 stays unearned. The member's `work_state` `LANDED` is true on the
+current line: `571e936` and `ed17795` are ancestors of `origin/main` through `ee60801`.
+
+The words this record wants the member to carry, if the builder or lander moves it:
+`stage_observed_by` `claude-fable-5-1/sov-witness@2026-09-07 pass 7 at 26b1887
+(witness/fresh-participation.md; witness/observations/2026-09-07-fresh-participation-observation-7.json)`.
+F53 and F54 are defects owed inside the concern; neither is a precondition of this standing.
+This is an observation. It ratifies nothing.
+
+### Verified
+
+Commands run from the repository root at the commit above with `SOV_PRINCIPAL` set. Exit codes
+are the process's own. `<x>` is a directory under scratch; `<mut>` is `git archive 26b1887`
+unpacked under scratch, mutated there, never copied back; `H` is the head above; `E` is
+`nodes/node-local/journal/23d3b48086be.json`.
+
+| Command | Exit | Reading |
+| --- | --- | --- |
+| `git rev-parse HEAD`; `git status --porcelain`; `git rev-parse origin/main HEAD^`; `git diff --stat ee60801 26b1887`; `git check-ignore -v .local/node-interface`; `ls .local/node-interface` | 0; 0; 0; 0; 0; 2 | `26b1887e...`; empty before and after every command; both `ee608015...`; 8 files +938/-3; `.gitignore:33`; no such directory |
+| `git merge-base --is-ancestor 571e936 ee60801`; the same for `ed17795`; `git log --format='%h %p' -1 ee60801` | 0; 0; 0 | both ancestors of `origin/main`; `ee60801` is the merge of `4b0bc1d` and `358303b` |
+| sha256 of the 26 addresses in `observation-6.json` against the digests recorded there | - | 18 same, 8 drifted, as tabled above |
+| `python scripts/sov_node.py journals` | 0 | `PASS: 1 node journal export(s) replay to their heads and every citation resolves` |
+| `python -m soveraeign_record_service.cli verify-export --export E --expect-head H`; without a head; `--expect-head 032377e0...` | 0; 0; 2 | 85 entries, `verified: true`; the same; `REFUSED` "export reaches 23d3b480... but the head held outside it is 032377e0...; entries are missing from the end", `reason_code: MISSING_PRECONDITION`, though the export is longer than the head asked for (F49). Each invocation created or opened `.local/record/record-service.sqlite3` (F54) |
+| E read: entry count, head, kinds, `granted_by`, `node_id`, top-level keys; the first packet's 31 embedded entries against E | - | 85 = 85, `23d3b480...`, kinds `EVENT` 62 and `RECEIPT` 23; 7 entries carry `granted_by: principal:bdo`, at seq 1, 3, 5, 7 (first act) and 55, 57, 59 (second act); every `node_id` `node:local`; no node field; entries 1-31 identical in `entry_id` and `entry_digest`, entry 31 `032377e0...` |
+| `sov_node.py restore-journal --export E --node-state <x>/restored --expect-head H`; `sqlite3` read of the result | 0 | `restored 85 entries`; 85 rows, last `entry_digest` `23d3b480...` |
+| E truncated to 60 entries (head `94aafd47...`); `restore-journal ... --node-state <x>/trunc --expect-head H`; `find <x>/trunc` | 1 | `REFUSED TruncatedExport: export reaches 94aafd47... but the head held outside it is 23d3b480...; entries are missing from the end`; `<x>/trunc` is an empty directory, no `record/` (F48 repaired) |
+| the same truncated copy without `--expect-head`; `restore-journal --export E --node-state <x>/restored --expect-head H` (populated) | 0; 1 | `restored 60 entries`, as declared; `REFUSED RestoreRefused: .../restored/record already holds a journal` |
+| `python scripts/sov_fresh.py selfcheck` | 0 | `PASS: fresh participation slice closes on the positive variant, 3 defeating variants each fail their own predicates, and the office carries across an export and restore`; tree clean after |
+| `python -m unittest scripts.tests.test_sov_fresh scripts.tests.test_sov_node_journal` | 0 | `Ran 38 tests OK` (33 at pass 6) |
+| `python scripts/verify.py` (stdout to a file; the verdict is the exit code and the `PASS: 52 checks` line) | 0 | `PASS: 52 checks in 23.161s wall`; `fresh participation slice` PASS 2.787s under its 3.0s ceiling; `node journal custody` PASS 0.126s; `DEBT: no wall-clock grade`; `BUDGET DEBT: 9 check(s) over ceiling`, none of them this subject's. The `FAIL` lines are planted oracle-control output |
+| `python scripts/lint.py` | 0 | `PASS: repository hygiene (1204 text files, 562 Python modules, 10 named debt)` |
+| `python scripts/sov_witness_layer.py records`; `python scripts/sov_standing.py` | 0; 0 | `12 witness receipt(s) graded, 0 unusable, 12 stale against their subject`; `observation-6.json` `STALE_SUBJECT` naming the same 8 addresses; `PASS: 1 standing claim(s)` (this subject has no `STATUS.yaml` field) |
+| `python scripts/sov_active_phase_progress.py` | 0 | prints nothing: the module has no entry point and is graded as verify's `phase progress floor`, which passed |
+| `<mut>` D3: E's 60-entry truncation beside it as `94aafd47b108.json` | 1 | `nodes/node-local: a node has one head; found 2 exports` (F45 repaired) |
+| `<mut>` D6: `live_run.node.own.receipt_id` set to `entry_not_in_export` | 1 | `names entries absent from nodes/node-local/journal/23d3b48086be.json: entry_not_in_export` (F44 repaired) |
+| `<mut>` D4: entry 5 `granted_by` edited; D10: a fabricated 86th entry | 1; 1 | `entry 4 digest does not match its contents`; `entry 85 digest does not match its contents`; then the report's citation fails as `not a verified export under nodes/`; no traceback (F46 repaired) |
+| `<mut>` D5: E copied to `nodes/node-other/journal/` | 1 | `entries name node node:local, the directory names node:other`; `node:other is not in the node registry` (F47 repaired, repository half) |
+| `<mut>` D9: `entry_count` 84; D11: the report's `journal.entries` 84 | 1; 1 | `declared entry count does not match the entries carried`; `cites 84 entries, the export carries 85` |
+| `<mut>` m1: `custody.verify_export` skips `expected_head`; the journal tests; `selfcheck` | 1; 1 | `FAILED (failures=1)` the truncation test; `truncated export: restore with the outside head did not refuse` |
+| `<mut>` m6: `grade` drops the one-head rule; m7: `_grade_citation` drops `_ids_in`; m8: `restore` keeps its store on refusal; m9: `BrokenChain` no longer caught; m10: node identity not compared; each with the journal tests | 1 each | one named test fails per mutant: `test_a_node_has_one_head`; `test_every_entry_or_receipt_id_a_report_mentions_must_resolve`; `test_a_truncated_export_verifies_alone_and_refuses_against_the_outside_head`; `test_an_edited_entry_is_a_defect_not_a_traceback` (as an error); `test_the_directory_must_name_the_node_the_entries_name`. The archive's `journal.py` and `custody.py` digest as the repository's after restoring |
+| `<mut>` `python scripts/sov_reuse.py run --principal principal:claude-fable-5-1 --sessions-dir <x>/sess --json` | 1 | `drifted` names the same 8 addresses; `landing NONE` because the archive has no `.git`; the restored node refuses the principal `SESSION_IDENTITY_REQUIRED` (it holds no grant for that name). Read for its drift list only; the reader itself is not witnessed here |
+| CR bytes in the 19 files changed since `571e936`; `ls -la .local/` | 0 | 0 in each; `.local/record/record-service.sqlite3` 24576 bytes, 0 rows, created `04:50:00Z` by the Record CLI (F54); `.local/landing/ledger.ndjson` last line `04:50:57Z` (outside the subject, below) |
+
+### Pass-6 findings, disposition at 26b1887
+
+- **F43 - repaired by restoring the `219686d` bytes; residual.** The statement is now true.
+  Being those bytes, the first packet embeds 31 entries and `record_head_after_run` inside
+  the file it vouches for, the shape pass 5 named F40. The gate leaves it alone (no `journal`
+  dict). The second packet's `supersedes` text ("it embedded the journal, which this file does
+  not") is accurate.
+- **F44 - repaired.** `_ids_in` walks the whole report for `entry_id` and `receipt_id`; D6
+  refused; m7 caught. `grant_id` is not in `ID_KEYS`; the nine `cited_entries` still cover the
+  grant ids the report leans on (measured at pass 6, export unchanged).
+- **F45 - repaired.** One head per node; D3 refused; m6 caught; `nodes/README.md` says so.
+- **F46 - repaired.** `BrokenChain` is caught and named; D4 and D10 refused; m9 caught.
+- **F47 - repaired in the repository half.** Directory against the entries' `node_id` and the
+  registry; D5 refused; m10 caught. The export still has no node field (product half).
+- **F48 - repaired.** A refused restore removes the store it created; the state directory it
+  was asked for remains, empty. m8 caught.
+- **F49 - reproduced, residual (product).** `cli.py` unchanged; the `TruncatedExport` branch is
+  still unreachable and the message still says "missing from the end" for a longer export.
+- **F50 - closed by the contract, not by speed.** The ceiling moved from 1.5s to 3.0s at
+  `ed17795`; the check measured 2.787s here (3.861s at pass 6 on another host).
+- **F51 - repaired.** Check 52 declares `scripts/sov_node.py` and `custody.py`.
+- **F52 - unchanged, residual (record).** The export is byte-identical; duplicate grants stand.
+- **F35, F39, F41, F42 - unchanged, residual.**
+
+### New findings
+
+- **F53 - LOW, defect (the binding names two revisions and the wrong one).
+  `contracts/custodies/phase-1-5.json` `members[0]` `stage_observed_by` and `note`.** The
+  `note` still reads "The witnessed standing binds to 0cf5a57 and to the instrument claim"
+  while `stage_observed_by` names pass 6 at `571e936`, with words pass 6 did not ask for
+  ("instrument and custody commands"; "first supported at pass 4, 0cf5a57"). Neither revision
+  holds the gate bytes that landed: `journal.py`, its tests and `commissioning.py` changed at
+  `ed17795`, and this is the first pass to read them. A reader following the member to the
+  receipt finds digests that disagree with the tree at eight addresses, three of them inside
+  the claim, and nothing in the member saying so. Repair: one revision in the member, the one
+  the current pass read, and the note's sentence brought to it.
+- **F54 - LOW, residual (product, predates the subject; a check that writes state).
+  `services/record/src/soveraeign_record_service/cli.py:37,248`.** `main` opens
+  `RecordService(args.root)` before dispatch, default `.local/record`, for every command.
+  `verify-export` reads one file and needs no store; run from the repository root it created
+  `.local/record/record-service.sqlite3` (24576 bytes, 0 rows, sha256 `d9a182b2...`) on this
+  host at `04:50:00Z`, the same shape F48 had. `sov_node.py journals` does not share the
+  defect: it calls `custody.verify_export` on the document and opens no store. Pass 6 ran the
+  same CLI command and did not record this; whether `.local/record` already existed there is
+  not knowable from here.
+
+### Outside the subject
+
+`scripts/tests/test_sov_land.py`, run by verify's `repository tooling tests`, appends fixture
+landings (`grant:test`, `merge_commit` `c9073e51...`, which is not an object in this repository)
+to `<root>/.local/landing/ledger.ndjson`; under the scratch archive one run wrote 6 lines, and
+in the repository the live ledger's last line is stamped `04:50:57Z`, during this pass's verify
+run (48 lines now). That is the landing loop's concern, not this one's; it is recorded here for
+the launcher to route and is not a finding against this subject.
+
+### What a reader on another host can verify from the export alone
+
+As pass 6 stated, with one change: without a node store, the head written in this record and
+pass 6's is the only holder a reader on this host meets, and this pass could confirm agreement
+between it and the export, not custody of it.
+
+### Conditions for a later pass
+
+None on this standing. F53 is owed inside the concern; a pass over the commit that repairs it
+reads the member's words. A pass on a host that holds the node reads the head from the store
+again.
+
+### Judgement items (questions, not the witness's to answer)
+
+- J1 to J3 carried from pass 1; J5 and J6 from pass 3; J7 from pass 4; J4 as pass 5 split it;
+  J10 and J11 from pass 6.
+- J12. On a host with no node store, the outside head has one holder, the witness record on the
+  builder's branch, and a pass there can only show the record and the export agree. Is that a
+  custody reading the clause accepts, or does P15-X1's "survives the participant's session"
+  need a holder that is neither the export nor a file beside it on the same branch? This
+  sharpens J10; it does not answer it.
+
+### Uncovered
+
+- `ed17795`'s `docs/documentation.html`: `sov_docs.py check` passed inside verify; not read.
+- `scripts/sov_reuse.py`, `scripts/sovreuse/` and `test_sov_reuse.py`: read for what they read
+  about this subject; their own claim is another member's and was not witnessed.
+- The Console, Gateway and Record suites were not rerun outside verify (no service file
+  changed since `571e936`).
+- The office and the run: not re-exercised beyond `selfcheck` and the restored-node probe
+  inside the reuse reader; pass 5's readings stand for them.
+- Bdo's direction, for either act: no transcript was read and none is in the record.
+- No network, no `gh`, no ruleset query.
 
 ## Pass 6: commit 571e936 (2026-09-06)
 

@@ -1,0 +1,132 @@
+{
+  "case_id": "P15-X3-DISCOVERY-AND-REUSE-WITNESS-PASS-1",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07",
+  "artifact_revision": "26b1887e84357124c8e99f42382d064ffbeccf8c",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "discovery-and-reuse",
+    "record": "witness/discovery-and-reuse.md",
+    "pass": 1,
+    "verdict": "NOT-YET",
+    "standing_supported": "BUILT",
+    "standing_note": "Supports BUILT for scripts/sov_reuse.py at the candidate; does not support BUILT -> WITNESSED. Findings F1 and F2 return to the builder inside custody:phase-1-5/discovery-and-reuse.",
+    "candidate_commit": "26b1887e84357124c8e99f42382d064ffbeccf8c",
+    "candidate_tree": "511389dd9183a24f3fed37835b379e8a032fff5e",
+    "base_commit": "ee6080153c64938f43377617e1c4c1f231ddd00a",
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07",
+    "observer_relation": "INDEPENDENT_OF_BUILDER_DECLARED_SURFACE_ONLY",
+    "observer_independence_basis": "Separate launched witness session that did not build, edit, stage, or commit the change; no helper declared by the builder; every reading came through scripts/sov_reuse.py's declared surface, the sovreuse modules imported as a library from the frozen tree, git plumbing, sqlite-free JSON reads of nodes/node-local/journal/23d3b48086be.json, the repository gates, and mutants run in a git clone of the candidate under the scratch directory. The candidate record's checks and the builder's note were read to locate the subject, not as evidence. No reports/ file from this session was read.",
+    "observed_at": "2026-09-07",
+    "tree_state": "git rev-parse HEAD == candidate before and after every command; git status --porcelain empty until this record and its receipt were written; origin/main == main == base_commit; one worktree; no origin/HEAD symref on this host",
+    "observed_state_addresses": [
+      "contracts/custodies/phase-1-5.json",
+      "scripts/sov_reuse.py",
+      "scripts/sovreuse/__init__.py",
+      "scripts/sovreuse/discover.py",
+      "scripts/sovreuse/fixture.py",
+      "scripts/sovreuse/reuse.py",
+      "scripts/sovreuse/settle.py",
+      "scripts/tests/test_sov_reuse.py"
+    ],
+    "observed_state_digests": [
+      "sha256:3b6f0acae33a5dc0cc0b57166097fb73427d047f1c9a4cf5cb4d28e4d8d22bc2",
+      "sha256:06baa7020ea88b0bf0244e216f3ee82433236264eb204a4cd017675eb1f458ed",
+      "sha256:92d910507ca4697c7deb2af1dfa0c2cc6efe06e2fde7195520d981c15a105b22",
+      "sha256:753841e412bc89923e98bf0a182745bc682b6b0a22add5d182fc1afe1971c200",
+      "sha256:d8809b639e9d984318c30256dbdda49bd0022f8fb1743b4082f8c6b73c73e3cd",
+      "sha256:838cad850e26befca2cf88f5eec028fd8e433bc1f73d9c669948d65965b45a67",
+      "sha256:c498d46511e182abd7f35d399f52676fdb354e778680fd62d7363df0fc05fe17",
+      "sha256:bece9934d5864c211e89b6d6b97aec773385735944b1660fe8846ec1078d94d9"
+    ],
+    "environment": {
+      "SOV_PRINCIPAL": "principal:claude-fable-5-1",
+      "SOV_PRINCIPAL_REGISTRY": "unset"
+    },
+    "commands": {
+      "verify": "python scripts/verify.py -> exit 0; 23.7s wall; PASS: repository tooling tests (111 modules, 4 shards), shard 3 lists test_sov_reuse; PASS: 12 witness receipt(s) graded, 0 unusable, 12 stale against their subject; SUITE PASS cases=33 coverage_gaps=0",
+      "lint": "python scripts/lint.py -> exit 0; PASS: repository hygiene (1204 text files, 562 Python modules, 10 named debt)",
+      "selfcheck": "python scripts/sov_reuse.py selfcheck -> exit 0; PASS ... 8 defeating variants each fail their own predicates for the reason they declare",
+      "unit": "python -m unittest scripts.tests.test_sov_reuse -> exit 0; Ran 13 tests OK",
+      "live": "python scripts/sov_reuse.py run --principal principal:claude-fable-5-1 -> exit 1; P15-Q3.1: settlement was not against current state; P15-Q3.2: fresh participant did not use the accepted result; drifted 8 addresses; landing ee6080153c64; inventory []; REFUSED: holds no live open:session grant. --json twice: identical",
+      "control": "python scripts/sov_reuse.py run --principal principal:claude-fable-5 --json -> exit 1; used COMMITTED grant_6ab7d1d0a99e419e; P15-Q3.2 []; P15-Q3.1 [settlement was not against current state]",
+      "custody_selfcheck": "python scripts/sov_custody.py selfcheck -> exit 0; 46 case(s), 27/27 declared refusals reached; selfcheck PASS",
+      "phase_progress": "python scripts/sov_active_phase_progress.py -> exit 0; no output",
+      "next": "python scripts/sov_next.py -> exit 0; scripts/sov_fresh.py [LANDED]; scripts/sov_reuse.py [PRESENTED] under custody:phase-1-5/discovery-and-reuse",
+      "session_store": "sha256 of .git/sov-sessions/* before and after a live run: unchanged",
+      "drift_provenance": "for each of the 8 drifted addresses: sha256(git show 571e936:path) == receipt-6 digest; sha256(git show ee60801:path) != receipt-6 digest -> all drifted on the trunk before this candidate",
+      "landing_provenance": "git rev-list --merges --ancestry-path 571e936..HEAD intersect git rev-list --first-parent HEAD -> ee60801 Merge PR #218",
+      "journal_grants": "nodes/node-local/journal/23d3b48086be.json: open:session, close:session, read:registry granted to principal:claude-fable-5 by principal:bdo; no entry names principal:claude-fable-5-1",
+      "fixture_variants": "scratch script over sovreuse.fixture: every defeating variant fails on a real state (drifted scripts/sov_fresh.py; landing NONE; orphaned lease; branch feat/left-behind; no outside head; node refuses principal:bdo; SOV_PRINCIPAL_REGISTRY undeclared; record absent)",
+      "mutants": "scratch script over sovreuse.reuse against a git clone of the candidate: M0 unmutated clone -> Q3.1 fails 'closure left temporary coordination inventory' with inventory ['branch origin'] (F1); M4 tampered journal entry -> uncaught BrokenChain traceback (F2); M1,M2,M3,M5,M6,M7,M8,M9,M10,M11,M12,M13 each fail a predicate naming the changed state",
+      "live_rerun_after_tree_movement": "python scripts/sov_reuse.py run --principal principal:claude-fable-5-1 --json at 05:00:35 UTC -> exit 1; grades and other_defects identical to the 04:50:22 run"
+    },
+    "predicate_results": {
+      "verify_and_lint_pass_on_frozen_tree": {
+        "held": true,
+        "detail": "exit 0 and exit 0; HEAD unchanged after each"
+      },
+      "selfcheck_eight_variants_fail_for_real_states": {
+        "held": true,
+        "detail": "eight variants; each failure traced to a fixture state, none to a probe artefact; inclusion-based assertion (F8)"
+      },
+      "unit_suite_runs_under_tooling_tests": {
+        "held": true,
+        "detail": "test_sov_reuse listed in verify shard 3; 13 tests OK standalone"
+      },
+      "live_reading_fails_on_exactly_two_true_facts": {
+        "held": true,
+        "detail": "Q3.1 drift of 8 trunk-changed addresses since 571e936; Q3.2 no grant for principal:claude-fable-5-1 in the node journal; control as principal:claude-fable-5 clears Q3.2"
+      },
+      "fresh_participation_work_state_landed_corroborated": {
+        "held": true,
+        "detail": "ee60801 on first-parent line of HEAD, ancestry holds 571e936; origin/main == main == ee60801"
+      },
+      "custody_edits_grant_ratify_settle_nothing": {
+        "held": true,
+        "detail": "member BUILT with stage_observed_by null; judgement_seat unchanged; custody schema unchanged; commissioning oracle untouched; custody selfcheck and phase progress pass"
+      },
+      "fresh_participant_reads_artifact_alone_on_a_clone": {
+        "held": false,
+        "detail": "F1: unmutated clone reads Q3.1 unmet for 'branch origin', the origin/HEAD symref rendered short; settle.py:122-126; no fixture covers a remote"
+      },
+      "tampered_export_refused_with_a_graded_reason": {
+        "held": false,
+        "detail": "F2: reuse.py:39-42 catches RestoreRefused only; BrokenChain escapes as a traceback; no tampered-export variant"
+      },
+      "member_note_describes_the_artifact": {
+        "held": false,
+        "detail": "F3 six vs eight variants; F4 live reading described as grant refusal only"
+      },
+      "closure_check_expression_is_executed_by_something": {
+        "held": false,
+        "detail": "F5: nothing executes custody closure COMMAND expressions; the unit suite under verify measures instead"
+      }
+    },
+    "findings": [
+      "F1 HIGH settle.py:122-126 origin/HEAD read as leftover branch on a clone",
+      "F2 MEDIUM reuse.py:39-42 BrokenChain uncaught",
+      "F3 LOW note says six variants, code has eight",
+      "F4 LOW note omits the Q3.1 drift fact",
+      "F5 LOW closure check expression unexecuted",
+      "F6 LOW fixture reuser is the fixture builder principal",
+      "F7 LOW inventory excludes the checked-out branch",
+      "F8 LOW selfcheck asserts inclusion not exact reason set"
+    ],
+    "judgement_items": [
+      "J1 which reading of 'settlement follows current state' P15-Q3.1 owns",
+      "J2 whether a grant to principal:claude-fable-5-1 on the live node is Bdo's to issue and the intended route",
+      "J3 whether a builder principal re-entering its own node evidences another fresh participant"
+    ],
+    "residuals": [
+      "no clarity review for witness/discovery-and-reuse.md",
+      "conformance oracle not run outside verify",
+      "no Windows host",
+      "no clone with default branch main"
+    ]
+  },
+  "telemetry": {
+    "probe_location": "no probe file; readings came through scripts/sov_reuse.py, the sovreuse modules as a library, git, the repository gates, and two scratch scripts (variant facts, fourteen mutants) kept outside the repository",
+    "tree_state": "26b1887e84357124c8e99f42382d064ffbeccf8c frozen; porcelain empty before writing",
+    "after_writing": "porcelain shows witness/discovery-and-reuse.md and this receipt as untracked; .local/ is gitignored. At 04:59:20 UTC, after every command completed (last 04:54:34) and after the record was written (04:58:39), another session rewrote witness/fresh-participation.md uncommitted (pass 7 at 26b1887, block still WITNESSED); HEAD unchanged; live reading re-run at 05:00:35 gave identical grades. Readings above were taken over the frozen candidate; the mutation sandbox is a clone of the commit."
+  }
+}

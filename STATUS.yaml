@@ -236,6 +236,13 @@ accepted_repository_claims:
 open_decisions: []
 
 owner_acceptance_queue:
+  - id: A24
+    packet: acceptance/A24.json
+    presented: A fresh participant can discover, reconstruct, reach and try to use the fresh-participation result from the committed artifact alone, and the reader can fail nine ways; the one decision is whether principal:claude-fable-5-1 is granted on node:local
+    waits_on: seat:root
+    presented_by_seat: seat:session-control
+    at: 2026-09-07T00:00:00Z
+
   - id: A13
     packet: acceptance/A13.json
     presented: The automation page has working switches, and the switch cannot be reached around

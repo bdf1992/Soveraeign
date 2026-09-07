@@ -19,6 +19,7 @@ from pathlib import Path
 import argparse
 import json
 import sys
+import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -159,9 +160,11 @@ def selfcheck() -> int:
         ("no provenance block at all reads INVALID", "# just a title\n", "INVALID"),
     )
     live = digest_of(ROOT / "CONTRACT.md")
-    scratch = DIAGRAMS / ".selfcheck.md"
     failures = 0
-    try:
+    # The scratch view lives outside diagrams/ so a concurrent reader of the tree never
+    # sees a file that is about to vanish; the grader resolves sources against ROOT.
+    with tempfile.TemporaryDirectory() as temp:
+        scratch = Path(temp) / "selfcheck-view.md"
         for name, body, expected in cases:
             scratch.write_text(body.replace("{live}", live), encoding="utf-8",
                                newline=NEWLINE)
@@ -169,8 +172,6 @@ def selfcheck() -> int:
             ok = actual == expected
             failures += not ok
             print(f"{'PASS' if ok else 'FAIL'}: {name} (expected {expected}, read {actual})")
-    finally:
-        scratch.unlink(missing_ok=True)
     print(f"{'PASS' if not failures else 'FAIL'}: diagram grader selfcheck, "
           f"{len(cases) - failures}/{len(cases)} declared cases")
     return 1 if failures else 0

@@ -15,6 +15,7 @@ from __future__ import annotations
 from hashlib import sha256
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -77,8 +78,13 @@ class Grading(unittest.TestCase):
     """A verdict is derived from the bytes, never from what the view asserts."""
 
     def setUp(self):
-        self.scratch = ROOT / "diagrams" / ".test-scratch.md"
-        self.addCleanup(self.scratch.unlink, True)
+        # A scratch view under the live diagrams/ directory raced the document reader in
+        # a parallel tooling shard, which globbed it and then could not read it. The
+        # grader resolves sources against the repository root, not the view's directory,
+        # so the view can live anywhere.
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.scratch = Path(temp.name) / "scratch-view.md"
 
     def test_a_view_whose_sources_are_unchanged_reads_current(self):
         self.scratch.write_text(wrapped_view(), encoding="utf-8")
@@ -102,8 +108,13 @@ class Stamping(unittest.TestCase):
     """Stamping records a re-reading of the sources and touches nothing else."""
 
     def setUp(self):
-        self.scratch = ROOT / "diagrams" / ".test-scratch.md"
-        self.addCleanup(self.scratch.unlink, True)
+        # A scratch view under the live diagrams/ directory raced the document reader in
+        # a parallel tooling shard, which globbed it and then could not read it. The
+        # grader resolves sources against the repository root, not the view's directory,
+        # so the view can live anywhere.
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.scratch = Path(temp.name) / "scratch-view.md"
 
     def test_stamping_a_stale_view_makes_it_current(self):
         self.scratch.write_text(

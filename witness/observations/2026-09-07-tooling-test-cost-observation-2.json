@@ -1,0 +1,87 @@
+{
+  "case_id": "WITNESS-2026-09-07-TOOLING-TEST-COST-2",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07-tooling-cost",
+  "artifact_revision": "cd006b0f244f78f86c74be33180f2a537c4e9a47",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "tooling-test-cost pass 2: cd006b0 repairs pass 1's F1 (inherited-variable case runs its own probe), F2 (addModuleCleanup releases the shared TemporaryDirectory) and F3 (module weight 51 to 39); PR #222, base aeecc605c05c7a6f74e80ee4bd49e0b6f2ea19d9",
+    "record": "witness/tooling-test-cost.md",
+    "record_section": "Pass 2: commit cd006b0 (2026-09-07)",
+    "prior_receipts": ["witness/observations/2026-09-07-tooling-test-cost-observation.json"],
+    "pass": 2,
+    "verdict": "NOT_CONFIRMED",
+    "standing_supported": "none",
+    "standing_note": "Supports BUILT for the F1 and F2 repairs; withholds WITNESSED on F4. This is an observation and settles nothing.",
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07-tooling-cost",
+    "observer_independence_basis": "This participant built nothing and edited no file outside its own witness record, receipts and landing records. The commit message located the change and was not taken as evidence. Measurements ran in a full-history clone of the main checkout at cd006b0 with empty porcelain and in the feat/tooling-test-cost worktree, whose porcelain held only this participant's two untracked pass 1 deposits.",
+    "observer_relation": "INDEPENDENT_OF_BUILDER",
+    "observed_at": "2026-09-07T12:35:00Z",
+    "candidate_commit": "cd006b0f244f78f86c74be33180f2a537c4e9a47",
+    "candidate_tree": "0a78389a40e9395d84425411bde3642ef1ef5e3e",
+    "base_commit": "aeecc605c05c7a6f74e80ee4bd49e0b6f2ea19d9",
+    "observed_state_addresses": [
+      "scripts/tests/test_sov_fresh.py",
+      "scripts/run_tooling_tests.py",
+      "scripts/tests/test_run_tooling_tests.py",
+      "scripts/sovfresh/layers.py",
+      "scripts/sovfresh/probe.py",
+      "scripts/sov_fresh.py",
+      "scripts/sovverify/commissioning.py",
+      "scripts/verify.py"
+    ],
+    "observed_state_digests": [
+      "sha256:8736ae6a46d08bedeeeae71f87195f7549113c1444d9c157773181d5f09f127c",
+      "sha256:d58b12bb7e6c4e0faa1322fb038399f6a171d653421a4ffd54394d099ed36df7",
+      "sha256:ca2c8b0b3127daa27610f2cc1b094fe134605330952349cd643f8f8bffba8f44",
+      "sha256:afc7e7578e47fe3e8b4d0a7daf4ea4fa80d631c0ae02551096fe8b0f9cf5ac44",
+      "sha256:76a7ae50f0d79bf815cdd113088793e136b2d1943c8c66a5714c379c9c54234f",
+      "sha256:026d2db3f50b48c3da5147bc52eeca116de5417670162bd6d1e75656c0727a01",
+      "sha256:a124a998d5a7554908a5bba74b0d803814268188a9b2d4374f1db28a769e6a37",
+      "sha256:e5d9cb750636c3828cb7e58f007fda6b4bd4b30af242fb7fdfba8d3088384364"
+    ],
+    "commands": {
+      "tree": {"command": "git status --porcelain (worktree); git rev-parse HEAD; git diff --stat 479ac74..HEAD", "exit": "0; 0; 0", "excerpt": "two ?? pass 1 deposits only; cd006b0f244f78f86c74be33180f2a537c4e9a47; scripts/run_tooling_tests.py 1 line, scripts/tests/test_sov_fresh.py +9/-4"},
+      "clone": {"command": "git clone --no-checkout <main checkout> <scratch>/clone-head2; checkout cd006b0; diff -rq -x .git -x __pycache__ against the 479ac74 clone", "exit": "0; 0; 1", "excerpt": "969 commits, porcelain empty; only the two declared files differ"},
+      "mutant_inherited_variable_wins": {"command": "scratch copy of cd006b0; layers.py:63 -> os.environ.get(ENV_PRINCIPAL) or principal_id; suite in loader order and reverse; SOV_PRINCIPAL unset", "exit": "1 / 1", "excerpt": "1 failure in each order: test_an_inherited_principal_variable_does_not_reach_the_resolver"},
+      "reverse_order": {"command": "custom TestLoader, reversed then forward, clone cd006b0", "exit": "0; 0", "excerpt": "24 ok both; 3.797 s reversed, 4.074 s forward"},
+      "resource_warning": {"command": "python -W error::ResourceWarning -m unittest scripts.tests.test_sov_fresh", "exit": 0, "excerpt": "OK; 0 ResourceWarning lines"},
+      "module_cleanup_probe": {"command": "in-process: load module, run suite, read os.path.exists(_SHARED['temp'].name)", "exit": 0, "excerpt": "run 24 ok True; shared temp registered True; exists after suite False"},
+      "unittest_timing": {"command": "perf_counter around python -m unittest scripts.tests.test_sov_fresh, three sequential runs, alone, clone cd006b0", "exit": "0 x3", "excerpt": "24 cases; 4.002 / 4.179 / 4.204 s"},
+      "lint": {"command": "python scripts/lint.py", "exit": 0, "excerpt": "PASS: repository hygiene (1206 text files, 562 Python modules, 10 named debt)"},
+      "tooling_run_1": {"command": "scripts/run_tooling_tests.py via a wrapper timing _run, clone cd006b0", "exit": 1, "excerpt": "FAIL: repository tooling tests (111 modules, 4 shards); shards 12.21 / 12.47 / 13.82 / 15.43 (holds test_sov_fresh, 31 modules) s; wall 15.44 s; one failure: test_run_tooling_tests.ToolingPartition.test_the_declared_weight_buys_the_heaviest_module_fewer_peers, AssertionError: 31 not less than 30"},
+      "tooling_run_2": {"command": "same", "exit": 1, "excerpt": "same failure; shards 11.59 / 12.29 / 13.35 / 15.09 (holds test_sov_fresh, 31 modules) s; wall 15.09 s"},
+      "verify": {"command": "python scripts/verify.py, clone cd006b0, full history", "exit": 1, "excerpt": "FAIL: orientation snapshot, repository tooling tests; snapshot: page says 942, record holds 969 (tolerance 25); PASS: fresh participation slice 4.255 s; 52 checks in 19.643 s wall; tooling check 18.502 s pooled"}
+    },
+    "findings": {
+      "F1_pass1": {"severity": "MATERIAL", "held": true, "detail": "Repaired at cd006b0: the case calls probe.run directly under the variable; the mutant fails in both orders."},
+      "F2_pass1": {"severity": "MINOR", "held": true, "detail": "Repaired: unittest.addModuleCleanup(temp.cleanup); no ResourceWarning under -W error; directory gone after the suite."},
+      "F3_pass1": {"severity": "MINOR", "held": false, "detail": "The repair (weight 39) regressed the runner; superseded by F4."},
+      "F4": {"severity": "MATERIAL", "held": false, "detail": "MODULE_WEIGHTS['test_sov_fresh.py'] = 39 gives the heaviest module 31 shard peers where dropping the entry gives 30; test_run_tooling_tests.py:65-80 asserts weighted < unweighted and fails; run_tooling_tests.py exits 1 twice; verify fails 'repository tooling tests'. The tooling wall grew to 15.44 / 15.09 s from 13.25 / 14.67 s at 479ac74. run_tooling_tests.py:45-47 says a weight has to be measured, not reasoned; 39 was reasoned from pass 1's F3, which this participant owns naming without a packing measurement; running the runner before pushing is the builder's step and the commit calls the weight remeasured."}
+    },
+    "reproduced": [
+      "F1 repair: mutant fails in loader order and reverse at cd006b0",
+      "F2 repair: -W error::ResourceWarning exit 0, zero warnings; shared directory absent after the suite",
+      "same 24 verdicts in both orders; suite 4.00 / 4.18 / 4.20 s",
+      "only scripts/run_tooling_tests.py and scripts/tests/test_sov_fresh.py differ between 479ac74 and cd006b0",
+      "lint PASS; fresh participation slice PASS in verify"
+    ],
+    "dissented": [
+      "F3 repair: the weight was not measured; the runner's partition test fails and the tooling wall is longer than at 479ac74",
+      "commit message 'the weight is remeasured': the weight was derived from a rule, not measured against the packing"
+    ],
+    "residuals": [
+      "R1 orientation snapshot count 969 against 942, tolerance 25",
+      "R2 verify fails on two checks at cd006b0; only the snapshot is outside the builder's reach"
+    ],
+    "judgement_items": [
+      "J1 stands as recorded in pass 1"
+    ],
+    "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-07-tooling-cost pass 2 at cd006b0, NOT_CONFIRMED on F4 (witness/tooling-test-cost.md; witness/observations/2026-09-07-tooling-test-cost-observation-2.json)"
+  },
+  "telemetry": {
+    "host": "Linux, Python 3.11, a worktree of the main checkout on feat/tooling-test-cost",
+    "principal": "SOV_PRINCIPAL=principal:claude-fable-5-1 for every command except the two mutant runs, which unset it deliberately",
+    "tree_state": "worktree porcelain held only the two untracked pass 1 deposits before and after every command; HEAD cd006b0 throughout; pass 1 body of witness/tooling-test-cost.md kept byte-identical (sha256 of the body compared before and after the rewrite)",
+    "predecessors": "pass 1 receipt left intact"
+  }
+}

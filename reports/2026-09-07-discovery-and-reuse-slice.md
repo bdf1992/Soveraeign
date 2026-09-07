@@ -237,7 +237,12 @@ After this concern landed, the loop selected the next work from its own findings
   30-second catastrophic ceiling on the hosted runner at #220's `d2ecb7c` on a commit that
   changed no code. The heaviest module re-ran the whole probe for each of ten readings of
   one result; it now shares runs and drops a selfcheck subprocess verify already runs. 10 to
-  4 seconds here. Branch `feat/tooling-test-cost`, PR #223.
+  4 seconds here; the check read 20 seconds on the runner against 32 before. Three witness
+  passes (`witness/tooling-test-cost.md`): the first found a case that set an environment
+  variable and then read the shared run, the second is a frozen `NOT_CONFIRMED` on an
+  intermediate head whose remeasured weight broke the shard partition, and the third is
+  `CONFIRMED` at `e08af89` apart from the snapshot count. Branch `feat/tooling-test-cost`,
+  PR #223.
 
 Both are held at the same seam, and it is the seam finding 4 named: `CLAUDE.md` says 942
 commits, `main` sits at 967, the tolerance is 25, and the grant excludes the page. Every

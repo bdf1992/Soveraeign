@@ -31,7 +31,7 @@ Two parts, two terminals.
 | A fresh participant reads the artifact alone for the result P15-X1's custody carries at `WITNESSED`, reconstructs why it stands, restores the node's journal to the head the witness holds outside the export, enters the node as the principal it declares, and grades P15-Q3.1 and Q3.2 | `python scripts/sov_reuse.py run --principal principal:claude-fable-5-1` | `FAIL` on exactly two facts, both true of the record; see the next section |
 | The reader can fail | `python scripts/sov_reuse.py selfcheck` | positive variant passes; nine defeating variants each fail with exactly the defects they declare |
 | The layers are the product's own | `scripts/sovreuse/discover.py`, `settle.py`, `reuse.py` | custody model, the standing gate's record reader, the witness receipt, git, the lease store, `sovnode.journal` restore with the outside head, and the fresh-participation probe; the grade comes from `conformance/commissioning.py`, which imports none of them |
-| Unit cases | `python -m unittest scripts.tests.test_sov_reuse` | 15 cases, run by verify's tooling-tests check |
+| Unit cases | `python -m unittest scripts.tests.test_sov_reuse` | 14 cases, run by verify's tooling-tests check |
 | Custody board | `python scripts/sov_custody.py board custody:phase-1-5/discovery-and-reuse` | one `ITEM` member at `VERTICAL_SLICE` |
 | Repository gate | `python scripts/verify.py`; `python scripts/lint.py` | PASS with attributed debt; hygiene PASS |
 
@@ -80,7 +80,7 @@ P15-X1 asks for; it is also the smallest owner decision this run leaves.
 ## Composition: what existed, what was missing
 
 The composition hypothesis held. Every layer the slice needed already existed; the slice
-is 620 lines of reading and 250 of fixture over them. What the composition exposed:
+is 546 lines of reading and 254 of fixture over them. What the composition exposed:
 
 1. A custody member's evidence lives in prose. `stage_observed_by` is free text; the reader
    extracts `witness/…` paths from it and reports `basis: prose`. The schema has no
@@ -110,7 +110,7 @@ is 620 lines of reading and 250 of fixture over them. What the composition expos
    refused the record for not describing its own range. Repaired in place: the record now
    reads the range after the commit, pinned by a test where a staged path reverts while a
    carried one stays. The gate was right to refuse; the record was wrong.
-8. One entry in `STATUS.yaml`'s acceptance queue staled 51 clarity receipts, because every
+8. One entry in `STATUS.yaml`'s acceptance queue staled 62 clarity receipts, because every
    harness file declares `STATUS.yaml` whole as its basis. Each was re-read for a
    dependence on the queue and re-recorded; none had one. This is finding 2 again in
    another contract: a basis, like a receipt, addresses a file where it means a section.
@@ -135,12 +135,13 @@ is 620 lines of reading and 250 of fixture over them. What the composition expos
 10. `sov_land.py land-candidate` records no landing in `.local/landing/ledger.ndjson`; only
     the compatibility `plan` and `land` paths write it. The candidate path, the target
     model, lands without the record the ledger exists to keep, while the landing gate's
-    own tests wrote 54 more `grant:test` rows into that ledger during this session's
-    verify runs. The ledger on this host now has 126 rows, none of them this landing.
+    own tests write `grant:test` rows into that ledger on every verify run: 72 rows with
+    60 of them fixtures when this session first read it, 138 with 115 when this sentence
+    was written, and more by the time anyone reads it. None of them is this landing.
 
 ## Independent witness
 
-Four passes on this concern by `sov-witness`, each launched from this session into a fresh
+Five passes on this concern by `sov-witness`, each launched from this session into a fresh
 context with the candidate record, the claim as the commit states it, and the commands;
 none read this report or the packet. Record: `witness/discovery-and-reuse.md`; receipts
 under `witness/observations/2026-09-07-discovery-and-reuse-observation*.json`; the
@@ -197,6 +198,17 @@ F43 to F48 read repaired at HEAD; new F53 (the member bound to two revisions, ne
 holding the landed gate bytes) and F54 (the Record CLI opens a store under `.local` on
 every command); J12 (the outside head has one holder on a host with no node store).
 
+A closing pass by a sixth launch, on the presented head `d71f153`, over the completion
+artifacts themselves: `NOT-YET`, nine findings, all inside this concern. The custody
+member words reproduced byte for byte; the packet's demo reproduced except its expected
+live reading, which described the landed candidate rather than the presenting commit;
+the orientation page's commit count had crossed its tolerance on full history, which the
+depth-one hosted checkout cannot see; and five numbers in this report were declarations
+the record contradicted. Each is repaired in the commit after `d71f153`, and one is
+recorded instead: `scripts/sovreuse/discover.py` says it reads committed files where it
+reads the tree, a docstring the next landing on that module corrects. Receipt:
+`witness/observations/2026-09-07-compression-run-closing-observation.json`.
+
 ## Standing changes
 
 - `custody:phase-1-5/discovery-and-reuse`: one `ITEM` member, `scripts/sov_reuse.py`, stage
@@ -240,7 +252,9 @@ Reversible; each can be overturned in one place.
   (below).
 - P15-X1's F35, F49, F52 and J4 to J12 are unchanged; pass 7 adds J12 (the outside head has
   one holder on a host with no node store).
-- Witness F5 and F7 are recorded, not repaired.
+- Witness F5 and F7 are recorded, not repaired; the closing pass's F9 (a docstring in
+  `discover.py` says committed where the code reads the tree) waits for the next landing
+  on that module rather than a sixth candidate for one word.
 - Composition findings 3, 4 and 5 are routed, not repaired, each outside this custody's
   service or authority: the custody contract, the orientation page, the landing gate's tests.
 
@@ -269,5 +283,5 @@ would make Q3.1 read met today. It is recorded, not chosen.
 Composition findings 2 and 8 are one operation: an address below the file, a named member,
 section or field with its own digest, that witness receipts and clarity bases can hold
 instead of the whole file. It is the one defect that keeps P15-Q3.1 from staying true once
-it reads true, it would have spared this run 51 re-records, and it sits inside
+it reads true, it would have spared this run 64 re-records, and it sits inside
 `contracts/` and `scripts/`, within the grant.

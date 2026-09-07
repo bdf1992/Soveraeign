@@ -26,7 +26,7 @@
       "python scripts/sov_custody.py board custody:phase-1-5/discovery-and-reuse"
     ],
     "shows": "selfcheck builds a result under a fixture root (a fixture builder's run, its lease released, its journal exported, a history with a merge and a remote, a fixture witness record and receipt) and proves the positive variant passes while nine defeating variants each fail with exactly the defects they declare: no witness record, a moved byte, an unknown revision, a lease or branch left behind, a head the builder kept private, a tampered export, a principal the node never granted, and a registry read from the environment. run reads this repository: it finds the fresh-participation member, its pass-6 record and receipt, the head the receipt holds outside the export, the export that replays to it and the PR #218 merge that landed the witnessed revision; restores the 85-entry journal into an empty node on this host; and is refused a session because the journal grants no capability to this principal. The board shows one member at VERTICAL_SLICE.",
-    "expect": "selfcheck: PASS, nine defeating variants; run: FAIL with P15-Q3.1 'settlement was not against current state' and P15-Q3.2 'fresh participant did not use the accepted result', eight drifted addresses named, landing ee60801, inventory empty; unittest: 15 cases OK; board: one ITEM at VERTICAL_SLICE."
+    "expect": "selfcheck: PASS, nine defeating variants; run at the commit that presents this packet: FAIL with P15-Q3.1 'settlement was not against current state' and P15-Q3.2 'fresh participant did not use the accepted result', revision 26b1887 (the pass-7 words the member now carries), landing aeecc60 (PR #219), inventory empty, four drifted addresses (the custody collection and three instrument files pass 7 digested at 26b1887 before b0c013c changed them); at the landed candidate 60d5615 the same two predicates fail with revision 571e936, landing ee60801 and eight drifted addresses; unittest: 14 cases OK; board: one ITEM at VERTICAL_SLICE."
   },
   "evidence": [
     {
@@ -70,7 +70,7 @@
     "the pass-7 receipt for P15-X1 digests the custody collection; recording pass-7 words in that member drifts it again (composition finding 2 in the report)",
     "nothing executes a custody's closure COMMAND; the unit suite is what measures the reader (witness F5, P15-X1's F14)",
     "the orientation page pins the verify check count, so the standing grant cannot add a check; this slice runs under the tooling-tests check for that reason (composition finding 4)",
-    "scripts/tests/test_sov_land.py writes fixture landings into the live .local/landing/ledger.ndjson under verify; 60 of 72 rows on this host are grant:test (composition finding 5, routed to the verification domain)",
+    "scripts/tests/test_sov_land.py writes fixture landings into the live .local/landing/ledger.ndjson under verify; the rows are mostly grant:test fixtures and grow with every verify run (composition finding 5, routed to the verification domain)",
     "whether P15-Q3.1 owns 'no observed byte moved' or 'the exact revision landed' is the witness's J1; the reader implements the first",
     "scripts/sov_land.py land-candidate writes no row to the landing ledger; the candidate landing of 60d5615 (local settlement 90275ae, remote merge aeecc60 by PR #219) is recorded in the report and nowhere the ledger reads (composition finding 10)",
     "the tooling-tests shard weights were remeasured at 111 modules; nothing enforces remeasurement when the population changes (composition finding 9)"

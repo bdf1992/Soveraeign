@@ -3,10 +3,23 @@
 Running this module prints that grading. It did not until 2026-09-07: it held only
 functions, so `python scripts/sov_active_phase_progress.py` exited 0 and printed
 nothing while CLAUDE.md and decisions/0102 both told a fresh participant to run it.
-Seven witness passes recorded the silence -- three of them as "pass-1 residual
+Eight witness passes recorded the silence -- six in witness/fresh-participation.md
+and two in witness/discovery-and-reuse.md, two of them phrased "pass-1 residual
 reproduced" -- and none could refuse it, because a module with no entry point has
 no behaviour to defeat. That is the discoverability defect the active phase's own
 P15-X1 names, standing in the instrument meant to report it.
+
+The counts above were seven and three when this was written. An independent witness
+recounted them and both were wrong in the change's own favour; corrected here rather
+than left as a false citation in shipped source.
+
+Running this refuses its own empty reading, so silence is a non-zero exit rather than
+a green one. That matters because verify still does not execute this file as a program:
+`scripts/sovverify/checks.py` binds `phase progress floor` to sov_phase_progress.py,
+which imports grade_active_phase as a function. That binding is the structural reason
+the silence survived eight recorded observations, and changing it is not this concern's
+to settle -- registering a check moves the repository's check count, which lives in
+CLAUDE.md, outside grant:standing-landing-loop. Routed to the root seat.
 """
 
 from __future__ import annotations
@@ -148,10 +161,14 @@ def main(argv: list[str] | None = None) -> int:
     records = list(custody_model.custodies(phase_id)) if phase_id else []
     defects = ([] if not phase_id or phase_id.upper() == "NONE_ACTIVE"
                else grade_active_phase(phase_id, phase, profile, records))
+    lines = report(phase_id, phase, profile, records)
+    if not [line for line in lines if line.strip()]:
+        print("FAIL: the active-phase reader produced no reading")
+        return 1
     if args.json:
-        print(json.dumps({"phase": phase_id, "defects": defects}, indent=2))
+        print(json.dumps({"phase": phase_id, "reading": lines, "defects": defects}, indent=2))
         return 1 if defects else 0
-    for line in report(phase_id, phase, profile, records):
+    for line in lines:
         print(line)
     for defect in defects:
         print(f"  {defect['code']}: {defect['detail']}")

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from unittest import mock
 import subprocess
 import sys
 import unittest
@@ -85,8 +86,9 @@ class TheReaderCanBeRun(unittest.TestCase):
 
     It held only functions until 2026-09-07, so running it printed nothing and
     exited 0 while CLAUDE.md and decisions/0102 both named it as the thing that
-    grades the active phase. Seven witness passes recorded the silence and none
-    could refuse it: a module with no entry point has no behaviour to defeat.
+    grades the active phase. Eight witness passes recorded the silence -- six in
+    witness/fresh-participation.md, two in witness/discovery-and-reuse.md -- and
+    none could refuse it: a module with no entry point has no behaviour to defeat.
     These cases are that behaviour.
     """
 
@@ -106,11 +108,18 @@ class TheReaderCanBeRun(unittest.TestCase):
     PROFILE = {"exit_custody_floors": {"custody:test/carried": "ROOT_POINT",
                                        "custody:test/empty": "ROOT_POINT"}}
 
-    def test_the_module_has_an_entry_point(self) -> None:
-        """The defect itself: `python scripts/sov_active_phase_progress.py` did nothing."""
-        source = (ROOT / "scripts" / "sov_active_phase_progress.py").read_text(encoding="utf-8")
-        self.assertIn('if __name__ == "__main__":', source)
-        self.assertTrue(callable(getattr(active, "main", None)))
+    def test_an_empty_reading_refuses_rather_than_exiting_zero(self) -> None:
+        """The defect's shape, not its spelling.
+
+        This replaced a case that asserted the source text contains
+        `if __name__ == "__main__":`. A witness defeated that one by putting the
+        literal in a comment: it passed against a module that printed nothing and
+        exited 0, which is the exact original defect. It read a declaration where
+        it could measure. Silence is now a refusal, so the behaviour is testable.
+        """
+        with mock.patch.object(active, "report", return_value=["", "   "]):
+            code = active.main([])
+        self.assertEqual(code, 1)
 
     def test_running_it_against_the_live_repository_prints_and_names_the_phase(self) -> None:
         result = subprocess.run(

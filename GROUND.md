@@ -19,7 +19,7 @@ decoration. A claim whose answer is "we would build it differently" belongs in
 `CONTRACT.md`, `PRD.md`, `SPEC.md`, `ENGINEERING.md` or an implementation, not here.
 
 Ground is not minted per service, feature, operation or requirement. Sixteen claims carry
-102 declared operations. That ratio is the point.
+135 declared operations. That ratio is the point.
 
 ## What Ground is and is not
 

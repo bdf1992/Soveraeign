@@ -1,6 +1,6 @@
 # Command surface
 
-Thirty-seven `sov_*.py` entrypoints plus the two verification commands. This is the
+Sixty `sov_*.py` entrypoints plus the two verification commands. This is the
 whole of how the node is operated from a terminal, and it is the index
 `contracts/publication-surface.json` requires: an entrypoint absent from this
 page is unreachable by anyone who did not write it.
@@ -67,6 +67,7 @@ Run any of them with `--help` for exact arguments.
 | `sov_publication.py` | `audit` `check` `queue` `selfcheck` | Which surface each tracked path occupies, and where the tree and the declaration disagree. |
 | `sov_diagrams.py` | `grade` `stamp` `selfcheck` | Whether each diagram still reads the source bytes it claims to have read. |
 | `sov_snapshot.py` | `check` `selfcheck` | Whether the orientation snapshot in `CLAUDE.md` still matches the record. |
+| `sov_counts.py` | `check` `debt` `populations` `selfcheck` | Whether every hand-written count in live prose still matches the population its wording names, and which count-shaped sentences no population declares. |
 | `sov_docs.py` | `ingest` `build` `check` | The node's own documentation reader, with each document's custody shown beside it. |
 | `sov_baseline.py` | — | Holds the Asset Service to its recorded conformance baseline. |
 | `sov_mutate.py` | `sites` `run` `selfcheck` | How much the test suite actually asserts, by mutating what it tests. |

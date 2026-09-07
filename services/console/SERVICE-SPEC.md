@@ -58,7 +58,7 @@ ON_LOOP  the operation proceeds; the human watches and may counter through retra
 
 ## Legal transitions
 
-Twenty-one declared operations (`contracts/service.json`). Standing below is
+Twenty-six declared operations (`contracts/service.json`). Standing below is
 the manifest's own per-operation `standing` field, read 2026-08-27; it is not
 inferred from `CHARTER.md` prose. `kernel_transition` is named only where the
 manifest declares it explicitly.

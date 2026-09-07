@@ -168,7 +168,7 @@ The Door (`#17`), The Inspectorate (`#9`).
 own word; then a settlement, which is someone else's.
 **Today:** this story already runs, but in the harness, not in the product.
 Controller, Orchestrator, Worker, and Witness exist as `.claude/` plumbing;
-twenty workflows and a scheduled-run tick exist; every shipped schedule is
+twenty-three workflows and a scheduled-run tick exist; every shipped schedule is
 disabled. `contracts/work-lease.schema.json` types the lease and fixtures grade
 it, which is why `#18` is now `chartered` rather than `open`; `workers/` is still
 a README. The Record Service now keeps an append-preserving journal, and it is
@@ -233,7 +233,7 @@ validate every boundary record.
 **Today:** the ledger largely exists now. `#6` and `#7` are both closed and
 graded `built and self-tested`: `contracts/kernel-transitions.json` is the
 compiled transition contract and `python scripts/sov_kernel.py parity` passes
-with seven correspondences; all eleven declared Record operations are `BUILT`.
+with seven correspondences; all thirteen declared Record operations are `BUILT`.
 The Asset Service (`#8`) has all seventeen. Shared contracts (`#25`) hold
 forty-nine documents, which moved it from `proposed` to `built and self-tested`.
 The Graph Service (`#10`) has no artifact. The journal is not the kernel's: the

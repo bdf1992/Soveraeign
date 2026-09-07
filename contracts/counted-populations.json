@@ -1,0 +1,264 @@
+{
+  "contract": "counted-populations",
+  "version": "1.0.0",
+  "purpose": "Declare the repository populations that prose counts, and the deterministic derivation each count must agree with. A number written by hand into a governing document is a claim about the record; this contract says which claims can be settled and how.",
+  "settles": "Whether a stated number matches the population it names. Nothing else: no standing, no correctness of the surrounding prose, no claim that an ungraded number is right.",
+  "frozen_paths": {
+    "paths": [
+      "decisions/",
+      "reports/",
+      "archives/",
+      "lineage/",
+      "acceptance/",
+      "witness/",
+      "experiments/"
+    ],
+    "reason": "AGENTS.md's directory table makes each of these an append-preserving record. A count there is a dated observation that was true when it was written, and correcting it would rewrite evidence rather than repair a claim. Prose outside these paths describes current state and is graded."
+  },
+  "derivations": {
+    "files": "count of paths matching a glob, relative to the repository root",
+    "dirs": "count of directories matching a glob",
+    "json_array": "length of the array at a named key in a JSON document",
+    "python_length": "length of a named module-level sequence, imported from scripts/"
+  },
+  "populations": [
+    {
+      "id": "harness-workflows",
+      "counts": "executable workflows shipped under .claude/workflows/",
+      "derivation": {
+        "kind": "files",
+        "glob": ".claude/workflows/*.js"
+      },
+      "anchors": [
+        "executable workflows",
+        "workflows"
+      ]
+    },
+    {
+      "id": "harness-skills",
+      "counts": "skill directories under .claude/skills/",
+      "derivation": {
+        "kind": "dirs",
+        "glob": ".claude/skills/*"
+      },
+      "anchors": [
+        "skills sit under"
+      ],
+      "scoped_anchors": [
+        "skills"
+      ],
+      "scope": [
+        "CLAUDE.md",
+        ".claude/README.md",
+        "ROADMAP.md"
+      ]
+    },
+    {
+      "id": "harness-agents",
+      "counts": "agent definitions under .claude/agents/",
+      "derivation": {
+        "kind": "files",
+        "glob": ".claude/agents/*.md"
+      },
+      "anchors": [
+        "agent definitions"
+      ]
+    },
+    {
+      "id": "service-manifests",
+      "counts": "bounded services, one contracts/service.json each",
+      "derivation": {
+        "kind": "files",
+        "glob": "services/*/contracts/service.json"
+      },
+      "anchors": [
+        "service manifests",
+        "service boundaries",
+        "bounded services"
+      ]
+    },
+    {
+      "id": "decision-records",
+      "counts": "numbered decision records",
+      "derivation": {
+        "kind": "files",
+        "glob": "decisions/[0-9]*.md"
+      },
+      "anchors": [],
+      "scoped_anchors": [
+        "decision records"
+      ],
+      "scope": [
+        "CLAUDE.md",
+        "LESSONS.md",
+        "STATUS.yaml"
+      ]
+    },
+    {
+      "id": "reports",
+      "counts": "completion reports under reports/",
+      "derivation": {
+        "kind": "files",
+        "glob": "reports/*.md"
+      },
+      "anchors": [],
+      "scope": [
+        "CLAUDE.md"
+      ],
+      "scoped_anchors": [
+        "reports"
+      ],
+      "reason": "'reports' is an ordinary English plural and an illustration in a skill used it for a fictional organisation's dashboards. Scoped to the one page that counts the directory."
+    },
+    {
+      "id": "verification-checks",
+      "counts": "checks in the table scripts/verify.py runs",
+      "derivation": {
+        "kind": "python_length",
+        "module": "sovverify.checks",
+        "name": "CHECKS"
+      },
+      "anchors": [
+        "verification checks"
+      ]
+    },
+    {
+      "id": "declared-operations",
+      "counts": "operations declared across every service manifest",
+      "derivation": {
+        "kind": "json_array",
+        "path": "contracts/fixtures/capability-map.reference.json",
+        "key": "capabilities"
+      },
+      "anchors": [
+        "declared operations across"
+      ],
+      "scoped_anchors": [
+        "declared operations"
+      ],
+      "scope": [
+        "CLAUDE.md",
+        "GROUND.md",
+        "PRD.md",
+        "docs/"
+      ],
+      "reason": "'declared operations' means three different populations in this repository: every manifest's operations, one service's, or a named subset of one service's. The unscoped anchor carries 'across', which only the repository-wide reading uses. The bare anchor binds here only in the four places where the whole-repository reading is the only available one."
+    },
+    {
+      "id": "diagram-views",
+      "counts": "graded views under diagrams/, excluding the README",
+      "derivation": {
+        "kind": "files",
+        "glob": "diagrams/*.md",
+        "exclude": [
+          "diagrams/README.md"
+        ]
+      },
+      "anchors": [],
+      "scope": [
+        "diagrams/",
+        "CLAUDE.md"
+      ],
+      "scoped_anchors": [
+        "views"
+      ]
+    },
+    {
+      "id": "command-entrypoints",
+      "counts": "sov_*.py entrypoints under scripts/",
+      "derivation": {
+        "kind": "files",
+        "glob": "scripts/sov_*.py"
+      },
+      "anchors": [
+        "`sov_*.py` entrypoints"
+      ],
+      "reason": "scripts/README.md is the index contracts/publication-surface.json requires, and states its own size. It said thirty-seven against sixty, so the page that exists to make every command reachable had lost track of twenty-three of them."
+    }
+  ],
+  "templates": [
+    {
+      "id": "service-operations",
+      "counts": "operations declared by one service manifest",
+      "over": {
+        "kind": "dirs",
+        "glob": "services/*"
+      },
+      "derivation": {
+        "kind": "json_array",
+        "path": "services/{name}/contracts/service.json",
+        "key": "operations"
+      },
+      "anchors": [
+        "declared {Name} operations"
+      ],
+      "scoped_anchors": [
+        "declared operations"
+      ],
+      "scope": [
+        "services/{name}/"
+      ],
+      "reason": "Only the wording that asserts a manifest total binds. A bare 'N operations' inside a service directory is as often a journey's step count, a finding's population, or a subset with a cited basis - four of them were, and grading them against the manifest reported four correct sentences as drift. Those now appear in `debt` instead, where a reader can see them ungraded."
+    }
+  ],
+  "not_settled": [
+    "A bare count with no declared anchor. 'none of its eleven operations' names a subset with a cited basis, not a population, and grading it would report a correct sentence as wrong. These are listed by `debt` and never failed.",
+    "Whether an ungraded number is right. Silence here is coverage, never confirmation.",
+    "Counts inside frozen_paths, which are dated observations rather than current claims.",
+    "Wall-clock timings, percentages, version numbers, and identifiers that happen to be numeric.",
+    "Whether a graded claim means what its sentence means. This reads a number and a noun; it does not read the clause around them. The subset guard above is the whole defence against that, and it is a word list."
+  ],
+  "subset_qualifiers": {
+    "words": [
+      "other",
+      "another",
+      "further",
+      "remaining",
+      "its",
+      "only",
+      "same",
+      "first",
+      "last",
+      "of its",
+      "of these",
+      "of those",
+      "of the"
+    ],
+    "reason": "A number preceded by one of these counts part of a population, not the population. 'The other fifteen declared operations' is a correct sentence about a subset of seventeen, and grading it against the manifest total would report correct prose as drift. The guard is a declared list and can go short; a claim it misses is graded and may be reported wrongly, which is why the list lives here where it can be read and extended rather than inside the checker."
+  },
+  "historical_claims": {
+    "reason": "A live document may state what the record held on a past date. That number is correct and must not be repaired. Each exemption pins the stated value, so editing the sentence stops the exemption matching and the claim is graded again; a line number would drift and silently exempt whatever moved into its place.",
+    "claims": [
+      {
+        "path": "CLAUDE.md",
+        "anchor": "decision records",
+        "stated": 17,
+        "reason": "'At the end of day two the record held 26 commits, 17 decision records and 8 reports' - a dated statement of past state, checked by scripts/sov_snapshot.py as history."
+      },
+      {
+        "path": "CLAUDE.md",
+        "anchor": "reports",
+        "stated": 8,
+        "reason": "The same day-two sentence."
+      },
+      {
+        "path": "LESSONS.md",
+        "anchor": "decision records",
+        "stated": 17,
+        "reason": "L-0001 quotes the stale snapshot it is a lesson about. Repairing the quotation would delete the evidence."
+      },
+      {
+        "path": "LESSONS.md",
+        "anchor": "decision records",
+        "stated": 78,
+        "reason": "A dated reading recorded when the lesson was written."
+      },
+      {
+        "path": "diagrams/README.md",
+        "anchor": "views",
+        "stated": 4,
+        "reason": "'When the check was first executed all eight views were stale: ... and four views still cited retired O<n> identifiers' - a dated reading of a past run, and a subset of it."
+      }
+    ]
+  }
+}

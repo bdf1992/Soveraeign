@@ -99,6 +99,30 @@ class CandidateEffects(unittest.TestCase):
             self.assertEqual(candidate["state"], "FROZEN")
             self.assertTrue(candidate_file.exists())
 
+    def test_freeze_records_the_range_it_lands_not_the_paths_it_staged(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self.make_repo(Path(tmp))
+
+            def git(*args):
+                return subprocess.run(["git", *args], cwd=root, check=True,
+                                      capture_output=True, text=True).stdout.strip()
+
+            (root / "x.py").write_text("moved\n", encoding="utf-8")
+            (root / "z.py").write_text("carried\n", encoding="utf-8")
+            git("add", "x.py", "z.py")
+            git("commit", "-q", "-m", "carried change")
+            (root / "x.py").write_text("base\n", encoding="utf-8")
+            with (
+                mock.patch.object(repo, "ROOT", root),
+                mock.patch.object(tree, "_held_elsewhere", return_value=[]),
+                mock.patch.object(tree, "gather_checks",
+                                  return_value=({"verify": "PASS", "lint": "PASS"}, {})),
+                mock.patch.object(authority, "evaluate", return_value=self.permitted()),
+            ):
+                candidate, _result, _reading = candidates.freeze(self.freeze_args(), [])
+                candidates._candidate_integrity(candidate)
+            self.assertEqual(candidate["changed_paths"], ["z.py"])
+
     def test_land_candidate_preserves_frozen_sha_as_merge_parent(self):
         with tempfile.TemporaryDirectory() as tmp:
             parent = Path(tmp)

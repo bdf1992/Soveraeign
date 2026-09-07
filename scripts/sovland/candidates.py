@@ -92,6 +92,11 @@ def freeze(args: Any, grants: list[dict]) -> tuple[dict, dict, dict]:
     candidate_tree = repo.commit_tree("HEAD")
     if candidate_commit is None or candidate_tree is None:
         raise CandidateRefused("git committed the candidate but its commit/tree cannot be resolved")
+    # The record describes the exact base...commit range, read after the commit. The
+    # graded set above is read before it and can be wider: a staged path whose bytes
+    # return to the base's leaves the range, and a record that still named it was
+    # refused at landing for not describing its own range (2026-09-07, ea01dcc).
+    landed_paths = sorted(repo.carried_paths(args.target, branch))
 
     candidate = {
         "candidate_schema": "soveraeign-repository-candidate/v1",
@@ -103,7 +108,7 @@ def freeze(args: Any, grants: list[dict]) -> tuple[dict, dict, dict]:
         "base_commit": base_commit,
         "candidate_commit": candidate_commit,
         "candidate_tree": candidate_tree,
-        "changed_paths": graded_paths,
+        "changed_paths": landed_paths,
         "checks": checks,
         "frozen_at": datetime.now(timezone.utc).isoformat(),
     }

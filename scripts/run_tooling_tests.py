@@ -53,8 +53,27 @@ DEFAULT_WORKERS = 4
 # instead of 32 unweighted, 32 gives test_sov_branch 8 instead of 30, and 3 gives
 # test_verify_clocks 36 instead of 38. The resulting synthetic loads are
 # 39/38/38/38. These remain scheduling hints, never evidence or budget changes.
-MODULE_WEIGHTS = {"test_sov_docs.py": 24, "test_verify_clocks.py": 3,
-                  "test_sov_branch.py": 32}
+#
+# Remeasured 2026-09-07 at 111 modules on Linux, every module alone, after the
+# discovery-and-reuse suite arrived and the hosted tooling check crossed the 30s
+# catastrophic ceiling (31.2s and 36.8s alone on two runners at ea01dcc). The 97-module
+# table had inverted: test_sov_docs measured 1.4s and test_sov_branch 1.2s, so weights of
+# 24 and 32 isolated two modules that no longer needed it, while test_sov_fresh at 5.1s,
+# test_sov_strand at 3.6s, test_sov_reuse at 3.0s, test_sov_backlog at 2.5s and
+# test_sov_ci_subject at 2.3s all packed at ordinary weight into one shard, which
+# measured 18.6s against 4.5s, 10.4s and 5.3s for the other three. Weights below are
+# the measured seconds times ten for every module at or above one second; a bounded
+# module measures 0.05s to 0.1s. Resulting synthetic loads 100/100/100/99 and measured
+# shards 12.1s, 9.6s, 11.0s and 9.8s, a 12.6s wall against 18.9s before. Still
+# scheduling hints, never evidence or budget.
+MODULE_WEIGHTS = {
+    "test_sov_fresh.py": 51, "test_sov_strand.py": 36, "test_sov_reuse.py": 30,
+    "test_sov_backlog.py": 25, "test_sov_ci_subject.py": 23,
+    "test_repository_candidate_effects.py": 18, "test_automation_control.py": 17,
+    "test_automation_health.py": 16, "test_lint.py": 15, "test_sov_docs.py": 14,
+    "test_sov_surface.py": 12, "test_sov_branch.py": 12, "test_sov_snapshot.py": 11,
+    "test_sov_land.py": 11, "test_sov_facets.py": 10, "test_verify_clocks.py": 3,
+}
 
 
 def test_modules() -> tuple[Path, ...]:

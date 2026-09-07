@@ -60,17 +60,21 @@ class ToolingPartition(unittest.TestCase):
         self.assertEqual(run_tooling_tests.module_weight(Path("test_a.py")), 1)
         self.assertGreater(run_tooling_tests.module_weight(Path("test_sov_branch.py")), 1)
 
-    def test_the_declared_weight_buys_the_git_driving_module_fewer_peers(self):
+    def test_the_declared_weight_buys_the_heaviest_module_fewer_peers(self):
         """Dropping the entry is the defeat: the weight has to change the packing.
 
         Asserting only that the two slow readers land in different shards proves
         nothing — longest-weight-first separates the first two modules whenever
         there are at least two workers, whatever their weights are. What the
-        declared value buys is a shorter shard, so that is what is asserted.
+        declared value buys is a shorter shard, so that is what is asserted, for
+        whichever module the table currently weights heaviest: naming one module
+        here pinned test_sov_branch after it had stopped being slow.
         """
-        weighted = self.peers("test_sov_branch.py")
-        with self.weights(test_sov_branch__py=None):
-            unweighted = self.peers("test_sov_branch.py")
+        heaviest = max(run_tooling_tests.MODULE_WEIGHTS,
+                       key=lambda name: (run_tooling_tests.MODULE_WEIGHTS[name], name))
+        weighted = self.peers(heaviest)
+        with self.weights(**{heaviest.replace(".", "__"): None}):
+            unweighted = self.peers(heaviest)
         self.assertLess(weighted, unweighted)
 
     def test_a_weight_changes_placement_and_never_the_population(self):

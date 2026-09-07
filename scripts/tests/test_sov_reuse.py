@@ -10,6 +10,7 @@ fail exactly the predicates it declares; and the layers must read what they clai
 from __future__ import annotations
 
 from pathlib import Path
+import hashlib
 import json
 import os
 import subprocess
@@ -119,6 +120,20 @@ class Layers(unittest.TestCase):
             self.assertEqual(settle.current_state(root, receipts, "same"),
                              {"matching": ["same"], "drifted": ["moved"], "missing": ["gone"],
                               "covers_result": True})
+
+    def test_current_state_reads_an_address_below_the_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "c.json").write_text(
+                json.dumps({"m": [{"a": "x", "n": 1}, {"a": "y", "n": 2}]}), encoding="utf-8")
+            address = "c.json#/m[a=x]"
+            digest = "sha256:" + hashlib.sha256(b'{"a":"x","n":1}').hexdigest()
+            receipts = [{"observed": {address: digest, "c.json#/m[a=z]": digest,
+                                      "c.json#/m[a=y]": digest}}]
+            state = settle.current_state(root, receipts, "c.json")
+            self.assertEqual(state["matching"], [address])
+            self.assertEqual(state["missing"], ["c.json#/m[a=z]"])
+            self.assertEqual(state["drifted"], ["c.json#/m[a=y]"])
 
     def test_independence_needs_a_record_and_an_independent_receipt(self) -> None:
         receipt = {"exists": True, "standing_supported": "WITNESSED",

@@ -18,6 +18,7 @@ from typing import Any
 import json
 
 from sovkernel.jsonschema import validate
+import sovaddress
 
 SCHEMA_PATH = Path("contracts") / "participant-observation.schema.json"
 # One slot, filled on first read: None means the schema is not in this tree.
@@ -137,7 +138,11 @@ def _pairs(document: Any) -> list[tuple[str, str]]:
 
 
 def resolve_address(address: str, root: Path) -> Path:
-    """Resolve an address inside the repository, refusing anything that escapes it.
+    """Resolve an address's path inside the repository, refusing anything that escapes it.
+
+    An address may carry a fragment after `#` (`sovaddress`); only the path half is
+    contained here, and the returned Path is that half. The fragment is resolved by
+    whoever digests, against the file this returns.
 
     A receipt that reaches outside the tree is not gradeable evidence about the
     tree, so containment is checked before any byte is read. Windows normalisation
@@ -145,6 +150,7 @@ def resolve_address(address: str, root: Path) -> Path:
     Win32, so the file opened would not be the address the receipt recorded, and
     the same receipt would grade differently on Linux.
     """
+    address, _fragment = sovaddress.split(address)
     if address.startswith("/") or address.startswith("\\") or ":" in address:
         raise ReceiptError(f"address is not repository-relative: {address!r}")
     if "\\" in address:

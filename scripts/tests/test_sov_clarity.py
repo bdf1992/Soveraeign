@@ -100,5 +100,15 @@ class ClarityCoverageTests(unittest.TestCase):
         self.assertEqual({"UNCHECKED"}, non_exempt)
 
 
+
+class BasisAddresses(unittest.TestCase):
+    def test_a_basis_may_address_a_part_of_a_file(self) -> None:
+        whole = sov_clarity.basis_digest(sov_clarity.ROOT, "STATUS.yaml")
+        part = sov_clarity.basis_digest(sov_clarity.ROOT, "STATUS.yaml#owner_holds")
+        self.assertTrue(whole and part and whole != part)
+        self.assertIsNone(sov_clarity.basis_digest(sov_clarity.ROOT, "STATUS.yaml#no_such_key"))
+        self.assertIsNone(sov_clarity.basis_digest(sov_clarity.ROOT, "NO-SUCH-FILE.md"))
+
+
 if __name__ == "__main__":
     unittest.main()

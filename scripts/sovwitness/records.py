@@ -44,6 +44,7 @@ import json
 
 from sovwitness.shape import (
     DIGEST_PREFIX, ReceiptError, resolve_address, verify_shape)
+import sovaddress
 
 # The first path segment that marks an address as the witness's own machinery.
 WITNESS_SEGMENT = "witness"
@@ -104,15 +105,24 @@ def grade(path: Path, root: Path) -> dict[str, Any]:
             result["moved"].append(f"{address}: gone from the tree")
         else:
             try:
-                live = digest_of(target)
+                live = sovaddress.digest(root, address)
+            except sovaddress.AddressError as refused:
+                # A fragment that no longer resolves is the subject moving, the same
+                # reading as a file that is gone; a fragment that cannot be read at all
+                # is a receipt nobody can grade.
+                if refused.code != "FRAGMENT_NOT_FOUND":
+                    return invalid(f"{address}: {refused}")
+                result["moved"].append(f"{address}: gone from the tree ({refused})")
+                live = None
             except (OSError, ValueError) as broken:
                 return invalid(f"{address} could not be read: {broken}")
-            result["graded"] += 1
-            if live == recorded:
-                continue
-            result["moved"].append(
-                f"{address}: recorded {recorded[len(DIGEST_PREFIX):][:16]}, "
-                f"tree reads {live[len(DIGEST_PREFIX):][:16]}")
+            if live is not None:
+                result["graded"] += 1
+                if live == recorded:
+                    continue
+                result["moved"].append(
+                    f"{address}: recorded {recorded[len(DIGEST_PREFIX):][:16]}, "
+                    f"tree reads {live[len(DIGEST_PREFIX):][:16]}")
         probe_drift = probe_drift or is_witness_owned
         subject_drift = subject_drift or not is_witness_owned
 

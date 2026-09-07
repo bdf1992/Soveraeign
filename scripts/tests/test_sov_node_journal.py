@@ -242,15 +242,21 @@ class CitationGate(JournalCase):
         self.report("wrongnode", journal=self.stale(address=bad))
         self.advanced()
         defects, _ = self.grade()
-        self.assertTrue(any("whose node is not the node:local it declares" in item
+        self.assertTrue(any("names /" in item or "names nodes/" in item
                             for item in defects), defects)
 
     def test_a_declared_node_must_equal_the_nodes_name_and_not_merely_contain_it(self) -> None:
-        """`CLAUDE.md` trap T3: a substring reading takes node:loc for node:local."""
+        """`CLAUDE.md` trap T3, in the direction that bites.
+
+        The harmless reading asks whether the real node contains the declared one and
+        refuses either way. The reading that lets a citation through is the containment
+        run the other way, so the declared name must be a proper prefix of a real node's:
+        `node:loc` against this fixture's `node:local`, with an address that is otherwise
+        exactly right, so nothing but the node comparison can refuse it.
+        """
         self.report("substring", journal=self.stale(node="node:loc"))
-        self.advanced()
         defects, _ = self.grade()
-        self.assertTrue(any("whose node is not the node:loc it declares" in item
+        self.assertTrue(any("names node node:loc, which has no export" in item
                             for item in defects), defects)
 
     def test_naming_a_node_does_not_excuse_a_missing_address(self) -> None:
@@ -259,7 +265,8 @@ class CitationGate(JournalCase):
         self.report("noaddress", journal=journal)
         self.advanced()
         defects, _ = self.grade()
-        self.assertTrue(any("and no address" in item for item in defects), defects)
+        self.assertTrue(any("cites (no address), where node node:local" in item
+                            for item in defects), defects)
 
     def test_an_address_must_be_named_by_the_head_it_declares(self) -> None:
         """A superseded address still names its own head; a fabricated one does not."""
@@ -267,7 +274,18 @@ class CitationGate(JournalCase):
         self.report("invented", journal=self.stale(address=invented))
         self.advanced()
         defects, _ = self.grade()
-        self.assertTrue(any("is not named by the head" in item for item in defects), defects)
+        self.assertTrue(any("where node node:local at head" in item for item in defects),
+                        defects)
+
+    def test_an_address_may_not_reach_the_node_directory_from_anywhere(self) -> None:
+        """Everything above the node directory is part of the address, not decoration."""
+        tail = self.address().rsplit("/", 3)[-3:]
+        self.report("traversal", journal=self.stale(
+            address=self.address().rsplit("/", 4)[0] + "/elsewhere/" + "/".join(tail)))
+        self.advanced()
+        defects, _ = self.grade()
+        self.assertTrue(any("where node node:local at head" in item for item in defects),
+                        defects)
 
     def test_a_truncated_head_does_not_resolve_by_prefix(self) -> None:
         self.report("prefix", journal=self.stale(head=self.exported["head"][:20]))

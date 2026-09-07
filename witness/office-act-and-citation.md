@@ -3,8 +3,211 @@
 ```witness
 standing_supported  BUILT -> WITNESSED (citation-gate repair; the recorded act and reading as journal facts)
 subject             office-act-and-citation
-revision            575d65f5efb32036183ffdc9ed4bbf557677c103
-pass                2
+revision            d03772afac294084c62d2ed68f20d0c90d768d13
+pass                3
+```
+
+## Pass 3: commit d03772a (2026-09-07)
+
+**Verdict: RATIFIABLE-WITH-CONDITIONS.** All four of pass 2's findings are answered
+and three are closed. G3, the serious one, is closed by a pin I would not have thought
+of and which is better than what I asked for: the address must be named by the head it
+declares, which distinguishes a superseded address from a fabricated one without
+needing to know whether the file was ever written. What holds this pass short is G4,
+where the commit states that one comparison is beyond reach of any case. It is not. I
+built the case, and I built the one-word variant of your own T3 case that kills the
+other mutant. Both are below, ready to take.
+
+- **Commit witnessed:** `d03772afac294084c62d2ed68f20d0c90d768d13`, HEAD of
+  `claude/sovereign-phase-1-5-5uzffu`; tree `e062edc9eec0d50a470dfc2bee0ee3437fb26118`;
+  base `6498fc7b3172476df54882d7b65c47f52366c8c8`; trunk at witness time `b1448ee`,
+  attestable on the reading pass 2 recorded and unchanged since.
+- **Working tree witnessed against:** the worktree at `d03772a`, porcelain empty before
+  every measurement and holding only this pass's deposits after. Measurements ran in a
+  clean full-history clone at the same commit.
+- **Observed:** 2026-09-07T19:05Z (UTC).
+- **Receipt:** `witness/observations/2026-09-07-office-act-and-citation-observation-3.json`.
+- **Landing record:** `.local/observations/2026-09-07-office-act-and-citation-landing-3.json`.
+- **Absorbing these deposits:** they stale `docs/documentation.html` and nothing else;
+  the committing step rebuilds it. `sov_surface.py check` exits 0 either way.
+
+### Dispositions, re-derived
+
+**G1 — closed, wider than the case.** A non-numeric count is a clean defect again, and
+I checked past the shipped fixture: `entries` as a string, as `null`, as a list and as a
+dict all produce `cites ... entries, but its head is entry N of ...` with no exception.
+The mutant that swallows the failure and accepts the count silently dies on your case.
+
+**G2 — closed.** `test_a_truncated_head_does_not_resolve_by_prefix` kills the
+`startswith` mutant on the cited-head lookup. That is the mutant pass 1 named and pass 2
+found still alive. It is dead.
+
+**G3 — closed for everything pass 2 raised, and I checked the 2026-09-06 report the way
+you asked rather than by reading the code.** Calling `_cited_export` on the real report
+at this commit: its `address` is not in `heads`, it declares `node:local`, its filename
+`23d3b48086be.json` equals its own `head[:12]`, and the function returns the current
+export with no refusal. So it is legitimately resolved, by the superseded path, for the
+reason the code gives. Your reading was right. The address still names a file that is
+not in the tree — but that is now a recognised and disclosed state pinned to the
+report's own head, rather than an unmeasured one, and `address_note` and the repointed
+`verify` say so. That is the right resolution of pass 1's F1.
+
+**G4 — partly, and the coverage claim is falsified.** The collapse is a good shape:
+after the address-node comparison the two values are provably equal, so one comparison
+is better than two, and saying so beats claiming coverage. But the second comparison is
+not gone — it moved from node ids to directory names — and both containment mutants are
+reachable. See H1 and H2.
+
+### Findings
+
+**H1 — the T3 case is still written in the harmless direction.**
+`test_a_declared_node_must_equal_the_nodes_name_and_not_merely_contain_it` declares
+`node:loc` against a `node:local` export. Under the mutant
+`_node_id_of(_export_node(address)) not in node`, `"node:local"` is not in `"node:loc"`,
+so the mutant refuses too and the case still passes: **it survives the shipped suite**.
+The killing direction is a declared node that *contains* the real one. Changing
+`node:loc` to `node:local-2` in that same case kills it — one word, no second node.
+This is the second pass running where a coverage claim ran ahead of the fixture, and it
+is the same direction error the commit message says was caught and rerun.
+
+**H2 — the remaining comparison is reachable, and the commit says it is not.** The node
+layer pins `node_id` to the registry's single `SELF`, which is why building a second
+node through `open_node_at` fails — that part of your reading is right. Build it one
+level below instead, with `RecordService` and a `ConsoleService` told a second node id:
+the chain is the service's own, so the export replays, and pointing
+`journal.NODE_REGISTRY` at a two-node registry puts both exports in `heads`. Naming
+decides whether it bites: the wrong candidate must sort first under a containment
+reading, so the nodes must be `node:loc` and `node:local`, not `node:local` and
+`node:local-2`. Control passes unmutated; the mutant
+`_export_node(path) in _export_node(address)` resolves the `node:local` citation to
+`node:loc`'s export and the case fails. The two cases, as run:
+
+```python
+def test_a_declared_node_that_contains_the_real_one_is_refused(self):
+    """H1: the killing direction. A declared node that contains the real one."""
+    self.report("wider", journal=self.stale(node="node:local-2"))
+    self.advanced()
+    defects, _ = self.grade()
+    self.assertTrue(any("whose node is not the node:local-2 it declares" in item
+                        for item in defects), defects)
+
+class TwoRegisteredNodes(unittest.TestCase):
+    """H2: the node layer pins node_id, so the second node is built one level below it."""
+
+    def registry_with(self, temp, *node_ids):
+        base = json.loads((ROOT / "contracts" / "fixtures"
+                           / "node-registry.reference.json").read_text(encoding="utf-8"))
+        first = base["nodes"][0]
+        nodes = [first]
+        for node_id in node_ids:
+            extra = dict(first)
+            extra.update({"node_id": node_id, "display_name": node_id, "relation": "PEER",
+                          "admitted_by": "seat:root", "known_since": "2026-09-07T00:00:00Z"})
+            nodes.append(extra)
+        base["nodes"] = nodes
+        path = temp / "registry.json"
+        path.write_text(json.dumps(base), encoding="utf-8")
+        return path
+
+    def node(self, temp, dirname, node_id, operator):
+        state = temp / ("state-" + dirname)
+        record = RecordService(state / "record")
+        console = ConsoleService(record, state / "console", node_id)
+        try:
+            console.grant(operator, "open:session", operator, granted_by=ISSUER)
+            console.grant(operator, "read:registry", "registry:any", granted_by=ISSUER)
+        finally:
+            record.close()
+        return state, journal.export(state, temp / "nodes" / dirname / "journal")
+
+    def test_a_citation_resolves_to_its_own_node_when_another_name_contains_it(self):
+        held = journal.NODE_REGISTRY
+        with tempfile.TemporaryDirectory() as raw:
+            temp = Path(raw)
+            journal.NODE_REGISTRY = self.registry_with(temp, "node:loc")
+            try:
+                self.node(temp, "node-loc", "node:loc", "principal:fixture-a")
+                state, export = self.node(temp, "node-local", "node:local",
+                                          "principal:fixture-b")
+                document = json.loads(export["path"].read_text(encoding="utf-8"))
+                address, head = export["path"].resolve().as_posix(), export["head"]
+                record = RecordService(state / "record")
+                ConsoleService(record, state / "console", "node:local").grant(
+                    "principal:fixture-c", "read:registry", "registry:any", granted_by=ISSUER)
+                record.close()
+                export["path"].unlink()
+                journal.export(state, temp / "nodes" / "node-local" / "journal")
+                reports = temp / "reports"
+                reports.mkdir()
+                (reports / "two.json").write_text(json.dumps(
+                    {"journal": {"address": address, "node": "node:local", "head": head,
+                                 "entries": document["entry_count"]}}), encoding="utf-8")
+                defects, heads = journal.grade(temp / "nodes", temp / "reports")
+                self.assertEqual(len(heads), 2, heads)
+                self.assertEqual(defects, [], defects)
+            finally:
+                journal.NODE_REGISTRY = held
+```
+
+**H3 — the filename check is pinned in one direction only.** The mutant comparing the
+address by `endswith` instead of by exact basename survives the shipped suite and both
+my cases. An address whose basename is `xx<head12>.json` passes under it. The shipped
+code is right; nothing holds it there. One case with a prefixed basename closes it.
+
+**H4 — a live address may still contradict its declared node.** The early return on
+`address in heads` happens before any node comparison, so a report naming the current
+export while declaring a node with no export passes with no defect. Carried unchanged
+from pass 2. Nothing is misdirected, because the address is correct and authoritative;
+what passes unremarked is a false `node` field, which is the one field whose entire
+purpose is to be checked.
+
+**H5 — everything above the node directory in an address is unread.** `_export_node`
+reads only the second-to-last directory, so `node-local/journal/<head12>.json` and
+`../../elsewhere/node-local/journal/<head12>.json` both resolve. A reader following
+either lands nowhere. Worth saying: after this repair the address is *fully derivable*
+from `node` and `head`, so one equality against
+`nodes/<node dir>/journal/<head[:12]>.json` would replace three comparisons and close
+H4 and H5 together. The fixtures use absolute addresses, so that shape would need them
+moved to repository-relative ones — your call whether that trade is worth it.
+
+### The limit I am not calling a defect
+
+An address whose filename is the cited head's prefix but which was never exported cannot
+be told from a genuinely superseded export, because the gate cannot know at which heads
+a node was exported. I constructed one and it passes. That is the honest boundary of the
+pin, and the pin is still what stops a fabricated address from naming any head the node
+never reached.
+
+### The F5 boundary reading
+
+Sound. `open_office` records grants through `ConsoleService.grant`, whose payload
+`authority.grant_payload` owns, so putting the direction there changes a shape the
+Console Service records. The alternative — appending a separate entry from the node
+layer — does not clearly avoid the crossing either, because a new `record_kind` is
+vocabulary `CLASSIFICATION.md` owns. Naming it and not taking it is right, and the
+report now says so in the object it concerns.
+
+### A hazard in my own reading, recorded
+
+One command this pass was issued without an explicit repository path and ran against the
+sibling worktree at another HEAD, carrying another session's uncommitted work. I caught
+it on the next command and nothing from it entered this record. `CLAUDE.md` T6 is about
+the tree moving under the reader; this is its neighbour, the reader moving off the tree.
+Every measurement here names its repository explicitly.
+
+### Commands
+
+```
+git -C <this worktree> rev-parse HEAD                            d03772a, tree e062edc9, clean
+python3 scripts/verify.py                                        exit 0  PASS: 52 checks in 14.222s
+python3 scripts/lint.py                                          exit 0
+python3 scripts/sov_node.py journals                             exit 0
+python3 -m unittest scripts.tests.test_sov_node_journal          exit 0  29 tests
+sov_witness_layer records / clarity check / diagrams / surface   exit 0
+journal._cited_export over both real reports                     2026-09-06 resolves superseded, no refusal
+eleven adversarial citation cases                                8 as expected, 3 admitted (H4, H5, the limit)
+seven mutants, shipped suite                                     4 killed, 3 survived (H1, H2, H3)
+the same seven, shipped suite + my two cases                     6 killed, 1 survived (H3); control exits 0
 ```
 
 ## Pass 2: commit 575d65f (2026-09-07)

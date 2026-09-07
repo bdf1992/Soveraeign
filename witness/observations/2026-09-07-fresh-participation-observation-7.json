@@ -1,0 +1,232 @@
+{
+  "case_id": "WITNESS-2026-09-07-FRESH-PARTICIPATION-VERTICAL-SLICE-7",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07",
+  "artifact_revision": "26b1887e84357124c8e99f42382d064ffbeccf8c",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "custody:phase-1-5/fresh-participation member scripts/sov_fresh.py at stage VERTICAL_SLICE, standing WITNESSED, work_state LANDED, stage_observed_by naming pass 6 at 571e936 (with words pass 6 did not ask for) and a note still binding to 0cf5a57. Pass 7 is scoped to journal custody and the standing's binding to the bytes at 26b1887, the current HEAD of claude/sovereign-phase-1-5-5uzffu whose first parent ee60801 is origin/main. Since 571e936: ed17795 repaired F43-F48 and F51 and moved the ceiling for F50; 358303b added principal:claude-fable-5-1; ee60801 merged PR #218; 26b1887 edited the custody file (member LANDED; a new member under discovery-and-reuse). No node exists on this host (.local/node-interface absent). The claim under observation is standing_binds.claim of observation-6, re-measured against the bytes now at every address inside it",
+    "record": "witness/fresh-participation.md",
+    "record_section": "Pass 7: commit 26b1887 (2026-09-07)",
+    "prior_receipts": [
+      "witness/observations/2026-09-06-fresh-participation-observation.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-2.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-3.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-4.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-5.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-6.json"
+    ],
+    "verdict": "REPRODUCED",
+    "verdict_scope": "REPRODUCED for the journal's custody at 26b1887: the export is byte-identical to pass 6's reading and replays to the head pass 6 held outside it (85 entries, 23d3b480...), restore-journal with that head into an empty scratch store restores 85 entries to that head, a 60-entry truncation is refused once the head is supplied and leaves no store behind, and the gate at this revision refuses every case pass 6 recorded as passing (D3, D5, D6 and the traceback cases D4, D10) by name, each repair pinned by a test one of six mutants fails. DISSENT on the standing's binding: the member names two revisions (0cf5a57 in its note, 571e936 in stage_observed_by), neither holding the gate bytes that landed; three files inside the claim changed at ed17795 and no pass had read them until this one (F53). The first packet is again the bytes pass 5 read and, being those bytes, embeds a 31-entry prefix of the journal beside its own head (F43 residual)",
+    "standing_supported": "WITNESSED",
+    "standing_binds": {
+      "subject": "fresh-participation",
+      "field": "contracts/custodies/phase-1-5.json members[0] (scripts/sov_fresh.py)",
+      "revision": "26b1887e84357124c8e99f42382d064ffbeccf8c",
+      "claim": "pass 6's claim re-measured at 26b1887: export-journal's committed export is the node's journal to the head held outside it; restore-journal refuses a populated store and a truncated export once that head is given, removes the store it created on refusal, and into an empty store carries 85 entries and 7 grants; journals replays every export under nodes/ and refuses a misnamed export, a second head for one node, an export whose directory names a node its entries do not or the node registry does not, an edited count, an edited or fabricated entry as a named defect, a citation of a wrong head, of a wrong entry count, of any entry_id or receipt_id in the report that the export does not hold, or of a file outside nodes/; selfcheck and the thirteen journal tests fail under six mutants (verifier ignoring the outside head; gate dropping the one-head rule, the whole-report id walk, the node-identity comparison or the BrokenChain catch; restore keeping its store on refusal)",
+      "member_words": {
+        "standing": "WITNESSED",
+        "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-07 pass 7 at 26b1887 (witness/fresh-participation.md; witness/observations/2026-09-07-fresh-participation-observation-7.json)"
+      },
+      "a_moved_value_must": "bind to revision 26b1887 and to the instrument and custody claim above. It is not evidence that the root seat opened the office, that either direction was given, that anyone but the builder's process typed principal:bdo (F35, F52, J4), or that the outside head has a holder other than the witness record on the builder's branch: this host holds no node store, so this pass confirmed agreement between the record and the export, not custody (J12). The first packet still embeds a 31-entry journal prefix beside its own head (F43). P15-X1 stays unearned; custody:phase-1-5/fresh-participation reads PROPOSED. F53 and F54 are defects owed inside the concern and are not preconditions of this standing. This receipt ratifies nothing"
+    },
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07",
+    "observer_independence_basis": "This participant did not build, edit, stage or commit any file under the subject. It froze the tree at 26b1887 with git status empty before and after every command, read the pass-6 receipt's 26 digests against the bytes at HEAD itself, verified the committed export with the Record Service's verifier (CLI) with and without the head, restored the export into scratch with the head and read the restored store with sqlite3, restored a truncated copy and inspected what was left, drove seven defeat cases and six mutants in a git archive 26b1887 copy under scratch, ran the two unit suites, selfcheck, verify, lint, the witness layer and the standing gate at the commit, and read the gate, the CLI, the custody module, the custody schema, the member's words and the new reuse reader in source. It ran the reuse reader once in the scratch copy to compare its drift list with its own. It read no transcript and took nothing from the builder's report or the member's note as evidence. SOV_PRINCIPAL was principal:claude-fable-5-1 throughout; that entry is UNVERIFIED and no command needed a grant",
+    "observer_relation": "INDEPENDENT_OF_BUILDER_DECLARED_SURFACE_ONLY",
+    "observed_at": "2026-09-07",
+    "observed_state_addresses": [
+      "scripts/sov_node.py",
+      "scripts/sovnode/journal.py",
+      "scripts/sov_fresh.py",
+      "scripts/sovfresh/node.py",
+      "scripts/sovfresh/probe.py",
+      "scripts/tests/test_sov_node_journal.py",
+      "scripts/tests/test_sov_fresh.py",
+      "scripts/sovverify/commissioning.py",
+      "services/record/src/soveraeign_record_service/custody.py",
+      "services/record/src/soveraeign_record_service/cli.py",
+      "services/record/src/soveraeign_record_service/errors.py",
+      "services/record/src/soveraeign_record_service/core.py",
+      "nodes/README.md",
+      "nodes/node-local/journal/23d3b48086be.json",
+      "contracts/custodies/phase-1-5.json",
+      "contracts/custody.schema.json",
+      "contracts/publication-surface.json",
+      "contracts/verification-budget.json",
+      "contracts/fixtures/node-registry.reference.json",
+      "contracts/principals.json",
+      "contracts/participant-observation.schema.json",
+      "scripts/sov_reuse.py",
+      "scripts/sovreuse/discover.py",
+      "scripts/sovreuse/reuse.py",
+      "scripts/sovreuse/settle.py",
+      "reports/2026-09-06-fresh-participation-slice.md",
+      "reports/observations/2026-09-06-fresh-participation-live-node-2.json",
+      "reports/observations/2026-09-06-fresh-participation-live-node.json",
+      "witness/observations/2026-09-06-fresh-participation-observation.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-2.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-3.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-4.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-5.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-6.json"
+    ],
+    "observed_state_digests": [
+      "sha256:edd580f69ae2c7364e32344df21f1129571485752e0bee5e31af4ba144b6892d",
+      "sha256:6ef8bcc2686d4ad03646f8679ffdf7e4f3345021798a15e9f78215e8c61f9eee",
+      "sha256:026d2db3f50b48c3da5147bc52eeca116de5417670162bd6d1e75656c0727a01",
+      "sha256:7f9d3d14b22ea34004ce1c812d4f784d77bea829d3b3b267bf55000233377a66",
+      "sha256:76a7ae50f0d79bf815cdd113088793e136b2d1943c8c66a5714c379c9c54234f",
+      "sha256:7afcab681d41c345f351e132208f29e7ffbdeb66cdb8ba7ce87ddb69fcfb8800",
+      "sha256:96cdbbd5612e78199a45952294217aa8967b6478d5c73a636672ffd39c4ece45",
+      "sha256:a124a998d5a7554908a5bba74b0d803814268188a9b2d4374f1db28a769e6a37",
+      "sha256:044ae9ec998bb6a217c9997be92d91db93851301db52b5486ecdc521117440d0",
+      "sha256:70b9bd4963e36e3cfe9ecfb84a9285a0f46d62e50755e9c648117498dd83b67c",
+      "sha256:bdaa537c183df69ddec76fccbefd6e83ef1696462d82914cb499762549dc9d0f",
+      "sha256:8875412534872475e158f0241ba7ee148fc0275ccc70d43171029fc6b0ddc902",
+      "sha256:456d3dda50558785a2625ece0bd5efc84dd8dc447a36c3469ba92d6949a087cd",
+      "sha256:b8805d23ce21ee352b7f0ea5796d7c5bb4ea8fdee5eb4e38ab1f194bcd5cfa1e",
+      "sha256:3b6f0acae33a5dc0cc0b57166097fb73427d047f1c9a4cf5cb4d28e4d8d22bc2",
+      "sha256:76df52375202055bd4465118e6d694813198435338a9649de4efd702a34d0ff6",
+      "sha256:c968f6ee8c91e3186cfd18ff37b33268382974e8cd1ec07eecfaf93c91c08ed3",
+      "sha256:c535b1fa069472425a0c6c308c4d531f99d31ef9a73ce2d9c191530f68051644",
+      "sha256:9c94292cca2ac136f7b0cb86926d62f3dec59e537408c1d17b5e2f552299e2da",
+      "sha256:2f672d7ab812011f28943e5e3e755ccac6ddc1d32b5f0c2147543a4987264e86",
+      "sha256:8292b477342d1b30cf3eaeacfbd05c6eacdf7c0abed228e2fc81a67ed8d05945",
+      "sha256:06baa7020ea88b0bf0244e216f3ee82433236264eb204a4cd017675eb1f458ed",
+      "sha256:753841e412bc89923e98bf0a182745bc682b6b0a22add5d182fc1afe1971c200",
+      "sha256:838cad850e26befca2cf88f5eec028fd8e433bc1f73d9c669948d65965b45a67",
+      "sha256:c498d46511e182abd7f35d399f52676fdb354e778680fd62d7363df0fc05fe17",
+      "sha256:90524cad0cbf92ae39a3cd20f492f4cf8fa015dbb7ff35d88b9c1fdae1ee8ddf",
+      "sha256:9572c05d1608cc946d525cc3292fde67218d56a2d48e8d41f5d079389617e066",
+      "sha256:1882e38ca74a47ffec24af003c26ba9c6c2309bcb2a900217cb3adcc2c3f6f3c",
+      "sha256:0dba3958b08f8a0fcf2f40082b086c29d8d1e81ca93bb40f7fd159a6b62ac9b5",
+      "sha256:fdda968af2b989b4b5512d4a2d01f7c1166fecba7bc704a0d083fefdac004d36",
+      "sha256:9c65e5169c4f04bee65afb31b46ee4fd04c81d8e2424b2f858c56c2d5789da10",
+      "sha256:610aa0a592981064c3604723990da4ce81efbe6940ac28d8915f7183242f4a2d",
+      "sha256:f9b19f1b657b2be3a845ec9d6dcb62a65690c63d7c52f77615093f45b718c4ff",
+      "sha256:7416bd3faf7f52aa0555a1d85f368daa793a53a868884aedd9c3f942f4991264"
+    ],
+    "drift_from_pass_6": {
+      "unchanged": 18,
+      "drifted": {
+        "scripts/sovnode/journal.py": "inside the claim: the gate; adds one head per node, node identity against directory and registry, whole-report id resolution, cited count, BrokenChain named, refused restore removes its store",
+        "scripts/tests/test_sov_node_journal.py": "inside the claim: 8 journal tests became 13; F48 assertion tightened",
+        "scripts/sovverify/commissioning.py": "inside the claim's declared reach: sov_node.py and custody.py added to what check 52 observes (F51)",
+        "nodes/README.md": "inside the claim as prose: one head per node, now enforced (F45)",
+        "contracts/custodies/phase-1-5.json": "the field the standing binds: work_state PRESENTED->LANDED, stage_observed_by to pass 6 words at ed17795; a discovery-and-reuse member added at 26b1887 (F53)",
+        "contracts/principals.json": "outside the claim: adds principal:claude-fable-5-1 UNVERIFIED; the probe runs as principal:claude-fable-5 and the journal grants the new name nothing",
+        "reports/2026-09-06-fresh-participation-slice.md": "outside the claim: the builder's report, not evidence",
+        "reports/observations/2026-09-06-fresh-participation-live-node.json": "inside the claim's third artifact: restored to the 219686d bytes (1882e38c...), so 'kept as the bytes pass 5 read' is true; those bytes embed 31 entries, an exact prefix of the export, beside head 032377e0... (F43 residual)"
+      },
+      "changed_outside_pass_6_set": [
+        "contracts/verification-budget.json (fresh participation slice ceiling 1.5s to 3.0s)",
+        "docs/documentation.html (not read)",
+        "scripts/sov_reuse.py, scripts/sovreuse/, scripts/tests/test_sov_reuse.py (new; another custody's member, not witnessed here)"
+      ]
+    },
+    "node_state": {
+      "path": ".local/node-interface: absent on this host (gitignored runtime state; not a repository address)",
+      "head_held_outside_the_export": "23d3b48086becd541d6054d78185f730e41a10054848ad4f654191315f87b342",
+      "head_source": "pass 6's record and receipt at 26b1887, whose bytes are those ed17795 committed (record identical to ed17795; observation-6.json sha256 7416bd3f...); no node store exists on this host, so this pass adds no independent holder of the head. The export replays to it by verify-export --expect-head (exit 0), by the journals gate, and by restore-journal --expect-head into an empty scratch store (85 rows, last entry_digest 23d3b480...)",
+      "export_reaches_outside_head": true,
+      "export_unchanged_since_pass_6": "sha256 b8805d23ce21ee352b7f0ea5796d7c5bb4ea8fdee5eb4e38ab1f194bcd5cfa1e at 571e936 and 26b1887",
+      "export_facts": "85 entries; kinds EVENT 62, RECEIPT 23; 7 entries carry granted_by principal:bdo at seq 1, 3, 5, 7 and 55, 57, 59 (two acts); every payload node_id is node:local; top-level keys entries, entry_count, export_schema, head_digest; entries 1-31 are byte-for-byte the first packet's embedded journal_export, entry 31 digest 032377e0...",
+      "host_state_written_by_checks": ".local/record/record-service.sqlite3 created 2026-09-07T04:50:00Z by the Record CLI's verify-export (24576 bytes, 0 rows, sha256 d9a182b245787547...) (F54); .local/landing/ledger.ndjson last line 04:50:57Z from verify's landing tests (outside the subject)"
+    },
+    "commands": {
+      "tree": "git rev-parse HEAD -> 26b1887e...; git status --porcelain empty before and after every command; git rev-parse origin/main and HEAD^ -> both ee608015...; git diff --stat ee60801 26b1887 -> 8 files +938/-3, none under nodes/, reports/, witness/, scripts/sovnode, scripts/sovfresh or services/; git merge-base --is-ancestor 571e936 ee60801 -> 0; the same for ed17795 -> 0; git check-ignore -v .local/node-interface -> .gitignore:33; ls .local/node-interface -> no such directory",
+      "drift": "sha256 of the 26 addresses in observation-6.json against its digests: 18 same, 8 drifted (scripts/sovnode/journal.py, scripts/tests/test_sov_node_journal.py, scripts/sovverify/commissioning.py, nodes/README.md, contracts/custodies/phase-1-5.json, contracts/principals.json, reports/2026-09-06-fresh-participation-slice.md, reports/observations/2026-09-06-fresh-participation-live-node.json); sov_witness_layer.py records names the same 8 as STALE_SUBJECT; sov_reuse.py run in the scratch copy names the same 8",
+      "journals_gate": "python scripts/sov_node.py journals -> exit 0, PASS: 1 node journal export(s) replay to their heads and every citation resolves",
+      "verify_export": "cli verify-export --export E --expect-head H -> exit 0, 85 entries, verified true; without a head -> exit 0; --expect-head 032377e0... -> exit 2 REFUSED MISSING_PRECONDITION 'entries are missing from the end' though the export is longer than the head asked for (F49); each invocation opened .local/record (F54)",
+      "restore": "sov_node.py restore-journal --export E --node-state <x>/restored --expect-head H -> exit 0 restored 85 entries; sqlite3: 85 rows, last entry_digest 23d3b480...; E truncated to 60 (head 94aafd47...) with --expect-head H -> exit 1 REFUSED TruncatedExport, <x>/trunc left as an empty directory with no record/ (F48 repaired); the same without a head -> exit 0 restored 60; E into the populated <x>/restored -> exit 1 RestoreRefused already holds a journal",
+      "selfcheck": "python scripts/sov_fresh.py selfcheck -> exit 0, PASS ... and the office carries across an export and restore; tree clean after",
+      "unittest": "python -m unittest scripts.tests.test_sov_fresh scripts.tests.test_sov_node_journal -> exit 0, Ran 38 tests OK",
+      "verify": "python scripts/verify.py -> exit 0; PASS: 52 checks in 23.161s wall; fresh participation slice PASS 2.787s (ceiling 3.0s); node journal custody PASS 0.126s; DEBT: no wall-clock grade; BUDGET DEBT: 9 check(s) over ceiling, none this subject's",
+      "lint": "python scripts/lint.py -> exit 0; PASS: repository hygiene (1204 text files, 562 Python modules, 10 named debt)",
+      "gates": "python scripts/sov_witness_layer.py records -> exit 0, 12 receipt(s) graded, 0 unusable, 12 stale; python scripts/sov_standing.py -> exit 0, PASS: 1 standing claim(s); python scripts/sov_active_phase_progress.py -> exit 0, no output (library graded by verify's phase progress floor)",
+      "defeats_in_git_archive": "D3 60-entry truncation beside E -> exit 1 'a node has one head; found 2 exports'; D6 own.receipt_id absent -> exit 1 'names entries absent from ...: entry_not_in_export'; D4 entry 5 granted_by edited -> exit 1 'entry 4 digest does not match its contents'; D10 fabricated 86th entry -> exit 1 'entry 85 digest does not match its contents'; D5 E under nodes/node-other -> exit 1 'entries name node node:local, the directory names node:other' and 'node:other is not in the node registry'; D9 entry_count 84 -> exit 1; D11 report journal.entries 84 -> exit 1 'cites 84 entries, the export carries 85'; no tracebacks",
+      "mutants": "m1 custody.verify_export ignores expected_head -> journal tests FAILED (failures=1), selfcheck exit 1 'truncated export: restore with the outside head did not refuse'; m6 one-head rule dropped -> test_a_node_has_one_head fails; m7 _ids_in dropped -> test_every_entry_or_receipt_id_a_report_mentions_must_resolve fails; m8 rmtree on refusal dropped -> test_a_truncated_export_verifies_alone_and_refuses_against_the_outside_head fails; m9 BrokenChain not caught -> test_an_edited_entry_is_a_defect_not_a_traceback errors; m10 node identity comparison dropped -> test_the_directory_must_name_the_node_the_entries_name fails; archive files restored and digest as the repository's",
+      "reuse_reader_in_archive": "sov_reuse.py run --principal principal:claude-fable-5-1 --sessions-dir <x>/sess -> exit 1; drifted = the same 8 addresses; landing NONE (archive has no .git); restored node refuses the principal SESSION_IDENTITY_REQUIRED; read for its drift list only",
+      "prior_passes_unchanged": "bytes from '## Pass 6' to the end of witness/fresh-participation.md identical before and after this pass's write (sha256 6b9f81b7... over 133849 bytes); six prior receipts digest as at 26b1887; 0 CR bytes in the 19 files changed since 571e936 and in both files this pass wrote"
+    },
+    "predicate_results": {
+      "export_unchanged_since_pass_6": {
+        "held": true,
+        "detail": "sha256 b8805d23... at both revisions"
+      },
+      "export_reaches_the_head_held_outside_it": {
+        "held": true,
+        "detail": "verify-export --expect-head exits 0; restore with the head reaches 85 rows ending 23d3b480..."
+      },
+      "outside_head_has_a_holder_other_than_the_branch": {
+        "held": false,
+        "detail": "no node store on this host; the only holder is pass 6's record and receipt on the builder's branch (J12)"
+      },
+      "restore_into_empty_state_carries_the_journal": {
+        "held": true,
+        "detail": "85 entries, 7 grants; the reuse reader's probe on the restored node ran and was refused for the undeclared principal as the node decides"
+      },
+      "truncated_export_refused_with_outside_head": {
+        "held": true,
+        "detail": "TruncatedExport, exit 1"
+      },
+      "refusal_leaves_no_state": {
+        "held": true,
+        "detail": "no record/ directory after refusal; the empty state directory remains (F48 repaired)"
+      },
+      "first_packet_kept_as_the_bytes_pass_5_read": {
+        "held": true,
+        "detail": "1882e38c... at 219686d and 26b1887"
+      },
+      "first_packet_embeds_no_journal": {
+        "held": false,
+        "detail": "31 entries and record_head_after_run 032377e0... inside it (F43 residual)"
+      },
+      "gate_resolves_every_id_the_report_leans_on": {
+        "held": true,
+        "detail": "entry_id and receipt_id anywhere in the report; D6 refused; grant_id not in ID_KEYS but covered by cited_entries (F44)"
+      },
+      "gate_holds_one_head_per_node": {
+        "held": true,
+        "detail": "D3 refused (F45)"
+      },
+      "gate_refuses_a_broken_chain_by_name": {
+        "held": true,
+        "detail": "D4, D10 named defects, no traceback (F46)"
+      },
+      "gate_checks_node_identity": {
+        "held": true,
+        "detail": "directory against entries' node_id and the registry; export still carries no node field (F47 product half)"
+      },
+      "check_reach_declares_what_it_reads": {
+        "held": true,
+        "detail": "commissioning.py names sov_node.py and custody.py (F51)"
+      },
+      "member_binds_to_one_revision_whose_bytes_were_read": {
+        "held": false,
+        "detail": "note says 0cf5a57, stage_observed_by says 571e936; the gate bytes at HEAD were first read this pass (F53)"
+      },
+      "verification_commands_write_no_host_state": {
+        "held": false,
+        "detail": "the Record CLI opens .local/record for verify-export (F54); the journals gate does not"
+      },
+      "granted_by_is_authenticated": {
+        "held": false,
+        "detail": "unchanged (F35, F52)"
+      },
+      "selfcheck_and_tests_can_fail": {
+        "held": true,
+        "detail": "six mutants each fail a named test; m1 also fails selfcheck"
+      },
+      "verify_lint_pass": {
+        "held": true,
+        "detail": "52 checks PASS with both commissioning checks inside; lint PASS"
+      }
+    },
+    "standing_note": "This is an observation. It supports WITNESSED for the instrument and custody claim at 26b1887 and declares it in the record's block; it supports no standing for the clause P15-X1, which stays unearned, no reading that the root seat acted, and no reading that the outside head has a holder beyond the witness record on this branch. It ratifies nothing; a value written into the member is the builder's or lander's act over this record."
+  },
+  "telemetry": {
+    "probe_location": "no probe file; every reading came through scripts/sov_node.py, scripts/sov_fresh.py, the Record Service CLI, sqlite3 reads of scratch stores, the unit suites, the repository gates, git, seven defeat cases and six mutants in a git archive 26b1887 copy under the witness's scratch directory, and one run of scripts/sov_reuse.py in that copy",
+    "tree_state": "git status --porcelain empty before and after every command; HEAD 26b1887e84357124c8e99f42382d064ffbeccf8c throughout; no node store exists on this host; the only writes to the repository were this receipt and the pass 7 section and header of witness/fresh-participation.md; the Record CLI wrote .local/record (gitignored) and verify's landing tests appended to .local/landing/ledger.ndjson (gitignored)",
+    "after_writing": "python scripts/lint.py: exit 0, PASS: repository hygiene (1207 text files, 562 Python modules, 10 named debt). python scripts/sov_witness_layer.py records: exit 0, PASS: 14 witness receipt(s) graded, 0 unusable, 12 stale against their subject; this receipt CURRENT, 34 digests recomputed. python scripts/sov_standing.py: exit 0, PASS: 1 standing claim(s). bytes from '## Pass 6' to the end of witness/fresh-participation.md identical to before the write (sha256 6b9f81b7a5441c61... over 133849 bytes); the six prior receipts identical to 26b1887; 0 CR bytes in both written files; HEAD 26b1887 throughout. git status --porcelain after writing: ' M witness/fresh-participation.md' and '?? witness/observations/2026-09-07-fresh-participation-observation-7.json' from this pass, plus, from 05:01:02Z (after both writes, during these checks), '?? witness/discovery-and-reuse.md' and '?? witness/observations/2026-09-07-discovery-and-reuse-observation.json' deposited by another session for the other custody member; not read by this pass and touching nothing it observed (CLAUDE.md, trap T6)"
+  }
+}

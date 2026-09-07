@@ -1,0 +1,144 @@
+{
+  "case_id": "P15-X3-DISCOVERY-AND-REUSE-WITNESS-PASS-2",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07",
+  "artifact_revision": "b0c013c4bb0b6232cb646c8f5fa8e48ed2ddf797",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "discovery-and-reuse",
+    "record": "witness/discovery-and-reuse.md",
+    "record_section": "Pass 2: commit b0c013c (2026-09-07)",
+    "pass": 2,
+    "prior_receipts": [
+      "witness/observations/2026-09-07-discovery-and-reuse-observation.json"
+    ],
+    "verdict": "RATIFIABLE-WITH-CONDITIONS",
+    "standing_supported": "WITNESSED",
+    "standing_binds": "scripts/sov_reuse.py at b0c013c4bb0b6232cb646c8f5fa8e48ed2ddf797 and the instrument claim: the probe is what it says and grades what it says, on this host and on a clean clone; nine defeating variants each fail on a real state",
+    "standing_note": "Supports BUILT -> WITNESSED for the instrument. Says nothing about P15-X3 holding for this node: both live predicates read unmet, truly. Does not confirm the candidate for landing while F9 stands (committed docs/documentation.html fails verify on a clean checkout).",
+    "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-07 pass 2 at b0c013c, instrument, selfcheck, unit suite, live reading, clean-clone and tampered-export mutants (witness/discovery-and-reuse.md; witness/observations/2026-09-07-discovery-and-reuse-observation-2.json)",
+    "candidate_commit": "b0c013c4bb0b6232cb646c8f5fa8e48ed2ddf797",
+    "candidate_tree": "224d901829f7ba2f42e854da46e0f8738a31d49b",
+    "base_commit": "ee6080153c64938f43377617e1c4c1f231ddd00a",
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07",
+    "observer_relation": "INDEPENDENT_OF_BUILDER_DECLARED_SURFACE_ONLY",
+    "observer_independence_basis": "Separate launched witness session that did not build, edit, stage, or commit the change; readings came through scripts/sov_reuse.py's declared surface, the sovreuse modules imported as a library from the frozen tree, git plumbing, the repository gates run on the shared tree and on a clean clone of the candidate, and mutants run in that clone under the scratch directory. The candidate record's checks, the builder's note and reports/2026-09-07-discovery-and-reuse-slice.md were not read as evidence; the other session's uncommitted witness/fresh-participation.md (pass 7) and observation-7 receipt were not read as evidence for this subject.",
+    "observed_at": "2026-09-07",
+    "tree_state": "git rev-parse HEAD == b0c013c before and after every command; working tree carried, besides this witness's own files, the other session's uncommitted witness/fresh-participation.md (M) and witness/observations/2026-09-07-fresh-participation-observation-7.json (??), and from mid-pass the builder's reports/2026-09-07-discovery-and-reuse-slice.md (??); none is in the candidate; origin/main == main == base_commit",
+    "observed_state_addresses": [
+      "contracts/custodies/phase-1-5.json",
+      "docs/documentation.html",
+      "scripts/sov_reuse.py",
+      "scripts/sovreuse/__init__.py",
+      "scripts/sovreuse/discover.py",
+      "scripts/sovreuse/fixture.py",
+      "scripts/sovreuse/reuse.py",
+      "scripts/sovreuse/settle.py",
+      "scripts/tests/test_sov_reuse.py"
+    ],
+    "observed_state_digests": [
+      "sha256:9b6041e9182f9bc4a969336f1ca5285ea86e66b220f64453c0297ccf08260602",
+      "sha256:1fcbdd066aab3607b2e944873cc953abfe61c038cb5338c4bdf440211a555923",
+      "sha256:0073fed70c01dde967ca806f754029b4a69da90534b82bcdf2ee27194dc42100",
+      "sha256:92d910507ca4697c7deb2af1dfa0c2cc6efe06e2fde7195520d981c15a105b22",
+      "sha256:753841e412bc89923e98bf0a182745bc682b6b0a22add5d182fc1afe1971c200",
+      "sha256:86b3da23c8236228c034337054c53ccb29425e65e61343071b810f665f4d44ff",
+      "sha256:0d364258e8e6c8213ed8155410e32ad57e53f28ad873682d847a7089acbed2a4",
+      "sha256:d2a0542d64c030dc42a988a0605ef51f19a8adc5c05aad9a152c4cb615cb60f1",
+      "sha256:e64a0da723acf81329a821304697cb0105d20f4ab027d2fbc42d4f27b75a5cab"
+    ],
+    "environment": {
+      "SOV_PRINCIPAL": "principal:claude-fable-5-1",
+      "SOV_PRINCIPAL_REGISTRY": "unset"
+    },
+    "commands": {
+      "verify_shared_tree": "python scripts/verify.py -> exit 0; 25.4s; PASS: documentation page matches 283 documents; PASS: 14 witness receipt(s) graded, 0 unusable, 14 stale against their subject",
+      "verify_clean_clone": "git clone --no-hardlinks of the candidate, HEAD b0c013c, porcelain empty; python scripts/verify.py -> exit 1; == documentation reader == FAIL: docs/documentation.html is stale; FAIL: test_the_built_page_is_current (scripts.tests.test_sov_docs.Staleness) AssertionError: 1 != 0; summary FAIL: documentation reader, repository tooling tests",
+      "docs_check": "python scripts/sov_docs.py check -> exit 0 on the shared working tree (283 documents); exit 1 on the clean clone (stale). sov_docs.py build in the clone: page becomes 282 documents; removed text includes 'subject  discovery-and-reuse' (this witness's uncommitted pass-1 record) and the pass-7 text of witness/fresh-participation.md; clone restored with git checkout",
+      "lint": "python scripts/lint.py -> exit 0; PASS: repository hygiene (1207 text files, 562 Python modules, 10 named debt)",
+      "selfcheck": "python scripts/sov_reuse.py selfcheck -> exit 0; PASS ... 9 defeating variants each fail their own predicates for exactly the defects they declare",
+      "unit": "python -m unittest scripts.tests.test_sov_reuse -> exit 0; Ran 14 tests OK",
+      "live": "python scripts/sov_reuse.py run --principal principal:claude-fable-5-1 (text and --json) -> exit 1; P15-Q3.1: settlement was not against current state (8 trunk-drifted addresses; landing ee6080153c64; inventory []); P15-Q3.2: fresh participant did not use the accepted result (holds no live open:session grant)",
+      "control": "python scripts/sov_reuse.py run --principal principal:claude-fable-5 --json -> exit 1; used True grant_6ab7d1d0a99e419e; P15-Q3.2 []; P15-Q3.1 drift only",
+      "custody_selfcheck": "python scripts/sov_custody.py selfcheck -> exit 0; 46 case(s), 27/27 declared refusals reached; selfcheck PASS",
+      "phase_progress": "python scripts/sov_active_phase_progress.py -> exit 0; no output",
+      "next": "python scripts/sov_next.py -> exit 0; scripts/sov_fresh.py [LANDED]; scripts/sov_reuse.py [PRESENTED]",
+      "mutants_clone": "scratch script over sovreuse.reuse (pass-2 code) against the clone: M0 unmutated -> inventory [], Q3.1 drift only, Q3.2 [] (F1 discharged); M4 tampered entry -> reach 'BrokenChain: entry 40 digest does not match its contents', graded, no traceback (F2 discharged); M2 record denies, M3 relation lookalike, M6 extra branch, M8 extra worktree each fail naming the changed state",
+      "fixture_variants": "scratch script over sovreuse.fixture: reader principal:fresh-reader in every variant except no-grant (principal:bdo); journal-tampered drifts the export digest and reads BrokenChain: entry 0; other variants fail on the same real states as pass 1",
+      "broken_chain_symbol": "python -c import sovnode.journal -> journal.custody.BrokenChain is soveraeign_record_service.errors.BrokenChain"
+    },
+    "predicate_results": {
+      "F1_symbolic_ref_not_read_as_branch": {
+        "held": true,
+        "detail": "settle.py:126-128 keeps only refs with empty %(symref); fixture history carries origin/HEAD; unmutated clone inventory []"
+      },
+      "F2_tampered_export_is_graded_refusal": {
+        "held": true,
+        "detail": "reuse.py:41-43 catches BrokenChain; variant journal-tampered; clone mutant M4 graded"
+      },
+      "F3_F4_member_note_describes_artifact_and_both_live_facts": {
+        "held": true,
+        "detail": "nine variants; eight trunk-drifted addresses; missing grant"
+      },
+      "F5_closure_check_expression_executed": {
+        "held": false,
+        "detail": "residual as recorded; nothing executes custody closure COMMAND expressions"
+      },
+      "F6_fixture_reader_is_a_second_principal": {
+        "held": true,
+        "detail": "principal:fresh-reader granted by principal:fixture-root; builder stays principal:fresh-probe"
+      },
+      "F7_inventory_excludes_checked_out_branch": {
+        "held": false,
+        "detail": "residual as recorded; by design"
+      },
+      "F8_selfcheck_asserts_exact_defect_lists": {
+        "held": true,
+        "detail": "sov_reuse.py:73-75 and test_sov_reuse.py:64-66 compare equality per predicate"
+      },
+      "verify_and_lint_pass_on_shared_tree": {
+        "held": true,
+        "detail": "exit 0 and exit 0"
+      },
+      "verify_passes_on_clean_checkout_of_candidate": {
+        "held": false,
+        "detail": "F9: exit 1; documentation reader and test_sov_docs staleness fail; committed page rendered over uncommitted working-tree documents"
+      },
+      "live_reading_fails_on_exactly_two_true_facts": {
+        "held": true,
+        "detail": "unchanged from pass 1; control as principal:claude-fable-5 clears Q3.2"
+      },
+      "custody_edits_grant_ratify_settle_nothing": {
+        "held": true,
+        "detail": "note text only; member BUILT, stage_observed_by null; custody selfcheck and phase progress pass"
+      }
+    },
+    "findings": [
+      "F1 discharged",
+      "F2 discharged",
+      "F3 discharged",
+      "F4 discharged",
+      "F5 residual",
+      "F6 discharged",
+      "F7 residual",
+      "F8 discharged",
+      "F9 HIGH docs/documentation.html at b0c013c rendered over uncommitted working-tree documents; clean checkout fails verify"
+    ],
+    "conditions": [
+      "C1 re-render docs/documentation.html from a tree holding exactly the committed documents; sov_docs.py check exits 0 on a clean clone of the successor; freeze a successor candidate"
+    ],
+    "judgement_items": [
+      "J1 which reading of 'settlement follows current state' P15-Q3.1 owns",
+      "J2 whether a grant to principal:claude-fable-5-1 on the live node is Bdo's to issue and the intended route, or the control reading as principal:claude-fable-5 is the reuse the clause asks for"
+    ],
+    "residuals": [
+      "no clarity review for witness/discovery-and-reuse.md",
+      "sov_docs.py build not run on the shared tree",
+      "reports/2026-09-07-discovery-and-reuse-slice.md not read"
+    ]
+  },
+  "telemetry": {
+    "probe_location": "no probe file; readings came through scripts/sov_reuse.py, the sovreuse modules as a library, git, the repository gates on the shared tree and on a clean clone, and two scratch scripts (variant facts, mutants) kept outside the repository",
+    "tree_state": "b0c013c4bb0b6232cb646c8f5fa8e48ed2ddf797 frozen; HEAD unchanged after every command",
+    "after_writing": "porcelain shows this witness's pass-1 and pass-2 record and receipts as untracked, plus the other session's and the builder's uncommitted files named in observed.tree_state; .local/ is gitignored"
+  }
+}

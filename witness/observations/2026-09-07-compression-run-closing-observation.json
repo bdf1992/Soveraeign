@@ -1,0 +1,280 @@
+{
+  "case_id": "WITNESS-2026-09-07-COMPRESSION-RUN-CLOSING",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07-closing",
+  "artifact_revision": "d71f153f40d2a676e09aa7cf467e880801b2dc8a",
+  "observed": {
+    "subject": "WORK: commit d71f153f40d2a676e09aa7cf467e880801b2dc8a, HEAD of claude/sovereign-phase-1-5-5uzffu, presented by pull request #220 to seat:root; base origin/main aeecc605c05c7a6f74e80ee4bd49e0b6f2ea19d9 (Merge PR #219, second parent 60d5615). Claim as the builder states it: the run's completion artifacts (acceptance/A24.json, the two custody members in contracts/custodies/phase-1-5.json, reports/2026-09-07-discovery-and-reuse-slice.md, the STATUS.yaml queue entry and CLAUDE.md count) are truthful projections of the record.",
+    "verdict": "NOT-YET",
+    "verdict_scope": "The claim that the completion artifacts are truthful projections of the record. The custody members' words and standing hold (item 2). The presented commit fails the repository gate on any full-history checkout (F1), the packet's visible result does not reproduce at the commit that presents it (F2), and four numbers in the packet and report are declarations the record contradicts (F3 to F6). Each repair is small and inside the concern; none needs judgement.",
+    "record_projection": "No RecordProjection identifier was supplied with this task and none is invented. Every address cited below is a repository path at artifact_revision d71f153f40d2a676e09aa7cf467e880801b2dc8a, digested from git show d71f153:<path>; runtime state under .local/ on this host is named as runtime state and not as record.",
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07-closing",
+    "observer_relation": "INDEPENDENT_OF_BUILDER_DECLARED_SURFACE_ONLY",
+    "observer_independence_basis": "Launched into a fresh context after the run; built, edited, staged or committed nothing under the subject; read no transcript, no pull request body (unreachable from this host: no gh, api.github.com answers 'GitHub access is not enabled for this session'), and no builder conclusion before the Finding froze. Every mutation ran in a git clone of the local repository pinned to d71f153 under the scratch directory (shallow at first; unshallowed for the commit-count reading) or in a git-archive copy; the shared tree was read only. git rev-parse HEAD read d71f153 and git status --porcelain was empty before and after every command until this file was written. SOV_PRINCIPAL=principal:claude-fable-5-1 for every command; that registry entry is UNVERIFIED and grants nothing; nothing here needed a grant.",
+    "observed_at": "2026-09-07T05:51:20Z",
+    "host": "Linux, Python 3, git 2.43.0, shared host; no gh; outbound GitHub API refused by the session proxy",
+    "tree_state": "d71f153 frozen; HEAD unchanged after every command; porcelain empty until the deposit of this file, which is the only untracked path afterwards",
+    "observed_state_addresses": [
+      "AGENTS.md",
+      "CLAUDE.md",
+      "STATUS.yaml",
+      "acceptance/A24.json",
+      "contracts/custodies/phase-1-5.json",
+      "contracts/participant-observation.schema.json",
+      "contracts/custody.schema.json",
+      "contracts/standing-grants.json",
+      "witness/observations/2026-09-07-discovery-and-reuse-observation-5.json",
+      "witness/observations/2026-09-07-fresh-participation-observation-7.json",
+      "reports/2026-09-07-discovery-and-reuse-slice.md",
+      ".clarity/coverage.json",
+      "diagrams/authority-typing.md",
+      "diagrams/crossing-topology.md",
+      "diagrams/requirement-lifecycle.md",
+      "diagrams/service-map.md",
+      "docs/documentation.html",
+      "scripts/sov_reuse.py",
+      "scripts/sovreuse/__init__.py",
+      "scripts/sovreuse/discover.py",
+      "scripts/sovreuse/settle.py",
+      "scripts/sovreuse/reuse.py",
+      "scripts/sovreuse/fixture.py",
+      "scripts/tests/test_sov_reuse.py",
+      "conformance/commissioning.py",
+      "scripts/run_tooling_tests.py",
+      "scripts/sov_land.py",
+      "scripts/sovcustody/board.py",
+      "scripts/tests/test_sov_land.py",
+      "scripts/sov_snapshot.py",
+      "scripts/sovsnapshot/committed.py",
+      "scripts/sovsnapshot/claims.py",
+      "scripts/sovwitness/records.py",
+      "scripts/sovwitness/shape.py",
+      "scripts/sovverify/checks.py",
+      "nodes/node-local/journal/23d3b48086be.json"
+    ],
+    "observed_state_digests": [
+      "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
+      "sha256:2ba6ad160d7732315eb47d6b67f24c1d4117a99f648fc8077edf867c18adbc96",
+      "sha256:6e3491397bf842e55408d8df126fbbc0fd842cc7e7f547d135365b801f98466e",
+      "sha256:428c83bad2689f3ed073b058127bdfe60ffeb084b738df092d24e1edae5c76f7",
+      "sha256:040c078b40874def94f71b5a73293644f576b653a021dcc6b8c2571198797e8c",
+      "sha256:8292b477342d1b30cf3eaeacfbd05c6eacdf7c0abed228e2fc81a67ed8d05945",
+      "sha256:76df52375202055bd4465118e6d694813198435338a9649de4efd702a34d0ff6",
+      "sha256:4c2c89204a1d48ee6159e2a977e9f2f6e41d72fd28342605bbff4bde8de1df08",
+      "sha256:13720352ff867dc100528f5901fab62399019dfeade5e1939fd52dfbe771c5a0",
+      "sha256:0d71b04707e7aee42655b4e0db39db46ccfa92ce5b511a9da9900094046e28d3",
+      "sha256:3fc6702bdb0078c0492707d247925dd0093cf6fe59b0f07adca7c00f5030ef5c",
+      "sha256:7d37433962812b15eaf4af48227cf0510132c6da8e9446e56285cea902f6c8b4",
+      "sha256:5a0e8ee711f6042d56225451c7db6f3ac905cba8afed3990adad9bf571f7b5a0",
+      "sha256:3e7592c8bb8667e5f244ac9ad1b6a642664f999448fcd3f99b9b70f75bfd229b",
+      "sha256:76c0eea88e70fe3a3def9fde49e32a2471e621d9b307611a34f657fb6e29c602",
+      "sha256:e2d7c0d146d948dde8cd7017d8de202e829ea72dc4281b748917107b1f333404",
+      "sha256:bdef71e6cac15dfc5571cda50e840519448690d3acf4961172d703e47dd7b905",
+      "sha256:0073fed70c01dde967ca806f754029b4a69da90534b82bcdf2ee27194dc42100",
+      "sha256:92d910507ca4697c7deb2af1dfa0c2cc6efe06e2fde7195520d981c15a105b22",
+      "sha256:753841e412bc89923e98bf0a182745bc682b6b0a22add5d182fc1afe1971c200",
+      "sha256:d2a0542d64c030dc42a988a0605ef51f19a8adc5c05aad9a152c4cb615cb60f1",
+      "sha256:0d364258e8e6c8213ed8155410e32ad57e53f28ad873682d847a7089acbed2a4",
+      "sha256:86b3da23c8236228c034337054c53ccb29425e65e61343071b810f665f4d44ff",
+      "sha256:45c339198204771a587b1bf9bbf2e111b6540b7c0e714927ddb6d192b3e3ce95",
+      "sha256:e25005a98e7a9e140d720c6e13fc4545a744fd8af7b636719ef2d1f8896bd90d",
+      "sha256:182540039f3206d65681cbb99928620a35dd200b4a14f2506119ef25fbf30871",
+      "sha256:3051399edff7c18338acc1752f856b0a520bb16e26acc15785af3e95749f4991",
+      "sha256:2f91ecd6a331ee8afb696c2018ef203a6d24804ab6ccd9b1d422e0a805aadd39",
+      "sha256:f3ca530f2bae2f546a6f614b5d0f0854eef2c36471ba86af454644e4ab78eec3",
+      "sha256:310b0f7ab2d83827c7bd8706a999f0654c1f9a8e4292b6fd1e1073f5c08f4875",
+      "sha256:bf6383240c721f6b5c5ca85a4b351879800b29f040257d2a0f7a8a0863fb74ee",
+      "sha256:dc66c6f8dae11d94d53deeeb89a49c54d4e82c1fb2c01d691a105786927c062b",
+      "sha256:712ae45cf3dd68f041310b896525fcf17d0d4a7b860cdc272db0589cb0eee3f3",
+      "sha256:d9e270d83256ad7e8d270d8261985bd4d0a424ecc87fa62fc1951374c7a7451b",
+      "sha256:c061b9477a973a8bb89f038a8a3987ad5a3a7265d4f2937cd9dd422a5486f3f6",
+      "sha256:b8805d23ce21ee352b7f0ea5796d7c5bb4ea8fdee5eb4e38ab1f194bcd5cfa1e"
+    ],
+    "observed_record_digests": {
+      "note": "The two witness records were read as evidence and are digested here rather than in the graded pair lists because scripts/sovwitness/records.py classifies every address under witness/ as the observer's own probe and voids the receipt (STALE_PROBE, a verify failure) when one moves. These two files are this observation's subject and will move on any later pass; listing them in the graded set would turn the next pass into a red build. Receipts (.json) are listed in the graded set because a receipt is not edited after deposit.",
+      "witness/discovery-and-reuse.md": "sha256:62c2ae1ba5e3bc10fcb049cd0c70c9e55f40dbabb8a25125eb3fbd3443ac2f1f",
+      "witness/fresh-participation.md": "sha256:47b7d71d7047a2c97a9dc25be1173a6789acc150b42e3a8eb77f1f6e25c2aaba"
+    },
+    "predicate_results": {
+      "1_acceptance_packet_A24": {
+        "held": false,
+        "detail": "Demo commands on the clean clone at d71f153: `python scripts/sov_reuse.py selfcheck` exit 0, 'positive variant and 9 defeating variants each fail their own predicates for exactly the defects they declare' (matches expect). `SOV_PRINCIPAL=principal:claude-fable-5-1 python scripts/sov_reuse.py run` exit 1 with P15-Q3.1 'settlement was not against current state' and P15-Q3.2 'fresh participant did not use the accepted result' (matches), but the expect line's 'eight drifted addresses named, landing ee60801, inventory empty' is the reading at the landed candidate 60d5615 (reproduced there: eight addresses, landing ee6080153c64) and not at the commit that carries the packet: at d71f153 the run reads revision 26b1887, four drifted addresses (contracts/custodies/phase-1-5.json, scripts/sov_reuse.py, scripts/sovreuse/reuse.py, scripts/sovreuse/settle.py), landing aeecc605c05c; inventory is empty on a branch checkout and lists the branch carrying 26b1887 on a detached-HEAD checkout. `python -m unittest scripts.tests.test_sov_reuse` exit 0, 'Ran 14 tests', at d71f153 and at 60d5615; expect says 15. `python scripts/sov_custody.py board custody:phase-1-5/discovery-and-reuse` exit 0, one ITEM scripts/sov_reuse.py at VERTICAL_SLICE (matches). All seven evidence addresses exist; six say what the packet says; discover.py's 'every read is of a committed file' is looser than the code, which reads working-tree bytes with Path.read_text (discover.py:28), committed only on a clean checkout (pass 4 F10 already records the shared-tree reading). subject.to_standing WITNESSED: the member reads standing WITNESSED, work_state LANDED; observation-5.json reads standing_supported WITNESSED at artifact_revision 60d5615 with stage_observed_by byte-equal to the member's; the runtime landing-gate file on this host (.local/observations/2026-09-07-discovery-and-reuse-landing-5.json) reads CONFIRMED for candidate 60d5615, tree cb4e158c, base ee60801."
+      },
+      "2_custody_members": {
+        "held": true,
+        "detail": "discovery-and-reuse member stage_observed_by is byte-equal to the words witness/discovery-and-reuse.md pass 5 declares under 'Standing supported' (line 121) and to observation-5.json observed.stage_observed_by. fresh-participation member stage_observed_by equals the words pass 7 declares (fresh-participation.md lines 149-150) with the markdown's one line-wrap newline read as a space; byte-equal to the words carried inside observation-7.json. Neither differs in any character other than that wrap. work_state LANDED: `git log --merges --first-parent origin/main` reads aeecc60 'Merge PR #219' (parents ee60801 60d5615) and ee60801 'Merge PR #218' (parents 4b0bc1d 358303b); 60d5615 is aeecc60's second parent; 571e936, ed17795 and 26b1887 are ancestors of origin/main; the reader derives work_state LANDED for the fresh-participation member. Both custodies still read status PROPOSED; no field beyond the two members' standing, work_state and stage_observed_by moved against aeecc60. Pass 7's F53 asked for one revision in the member and the note's sentence brought to it; stage_observed_by now names 26b1887 alone, while the note still reads 'The witnessed standing binds to 0cf5a57' (residual, not a defect of the words the witness asked for)."
+      },
+      "3_report_findings_and_table": {
+        "held": false,
+        "detail": "What-was-built table, read as its header says, at the landed candidate 60d5615, then at d71f153: row 1 (run FAIL on two facts) TRUE at 60d5615 (eight addresses, ee60801) and TRUE at d71f153 with four addresses and aeecc60; row 2 (selfcheck, nine variants) TRUE; row 3 (layers; conformance/commissioning.py imports none of them) TRUE, its imports are typing only, last changed d06243c before this work; row 4 '15 cases' FALSE, 14 measured at both commits, and pass 5 measured 14, while 'run by verify's tooling-tests check' TRUE (TEST_ROOT.glob('test_*.py'), weight entry test_sov_reuse.py: 30); row 5 (board, one ITEM at VERTICAL_SLICE) TRUE; row 6 (verify PASS with debt; lint PASS) TRUE at 60d5615 (966 commits) and FALSE at d71f153 on a full-history checkout (F1). Composition findings: 1 TRUE (discover.py WITNESS_PATH regex, read_from 'prose'; contracts/custody.schema.json has no evidence field). 2 TRUE (observation-7.json digests contracts/custodies/phase-1-5.json; the live reading drifts on it). 3 TRUE (only scripts/sovcustody/board.py:167 touches closure.check.expression, to print it; no subprocess under scripts/sovcustody/). 4 PARTLY: CLAUDE.md:78 pins 'runs 52 checks', standing-grants.json excludes CLAUDE.md, and the snapshot check reads the check table from the working tree, all TRUE; 'this session hit it, removed the check' REPORTED-ONLY, no commit in ee60801..60d5615 touches scripts/sovverify/. 5 TRUE in mechanism: scripts/tests/test_sov_land.py carries grant:test and one verify run on the clean clone created .local/landing/ledger.ndjson with 6 rows, 5 of them grant:test; 'two grant:test rows' is a snapshot. 6 TRUE: git 2.43.0 here; `git rev-list --first-parent --ancestry-path --merges 26b1887..origin/main` returns nothing and the same without --first-parent returns aeecc60; settle.py:84-90 implements the intersection. 7 TRUE: 57271f7 changes scripts/sovland/candidates.py and adds 24 lines to test_repository_candidate_effects.py, on the line aeecc60 merged. 8 PARTLY: the mechanism is TRUE (four diagram views restamped STATUS.yaml 9ddb4c4f to 6e349139; every changed clarity entry but two has STATUS.yaml as its only moved basis), the number is not: 62 receipts changed by the STATUS.yaml basis alone, 64 entries changed in total (plus CLAUDE.md's receipt and STATUS.yaml's own), against '51' in the report, the packet's commit message and finding 8. 9 PARTLY: run_tooling_tests.py comments 'Remeasured 2026-09-07 at 111 modules' and the tooling population check reads 111 modules, TRUE; hosted-runner timings (31 s, 37 s, 23.5 s), the shard seconds and 'passed at 57271f7 by timing alone' REPORTED-ONLY, no CI access from this host; this host reads the pooled tooling check at 15.9 s. 10 TRUE: cmd_land_candidate (sov_land.py:142-152) calls candidates.land and prints; ledger.record is called only from cmd_plan:120 and cmd_land:160; the ledger on this host holds no row naming 60d5615 or 90275ae; '126 rows' and '54 more' are snapshots (138 rows, 115 grant:test at observation time). Other statements: 'Four passes on this concern' (report line 143) contradicts the five passes it then lists and the record's 'Five passes' (F6); '620 lines of reading and 250 of fixture' reads 546 and 254 at d71f153, 545 and 210 at 26b1887 (F5); local settlement 90275ae exists as an unreferenced commit with parents ee60801 60d5615 and aeecc60 has the same parents with committer bdf1992, so the remote merge was the owner's own act (corroborated by the record, not by transcript)."
+      },
+      "4_status_snapshot_and_gates": {
+        "held": false,
+        "detail": "STATUS.yaml owner_acceptance_queue carries A24 (packet acceptance/A24.json, waits_on seat:root, presented_by_seat seat:session-control). Clean clone at d71f153: `python scripts/sov_accept.py audit` exit 0 (16 rulings, 6 presented, 1 admissible hold, 0 open questions); `python scripts/sov_clarity.py check` exit 0; `python scripts/sov_diagrams.py` exit 0 (8 graded, 0 stale); `python scripts/sov_node.py journals` exit 0 (1 export replays to head 23d3b48086be); `python scripts/sov_custody.py selfcheck` exit 0 (46 cases, 27/27 refusals); `python scripts/sov_active_phase_progress.py` exit 0, silent; `python scripts/lint.py` exit 0 (1213 text files, 562 modules, 10 named debt). CLAUDE.md report count: page says 32, `ls reports/*.md` counts 32, matches. `python scripts/sov_snapshot.py` on the shallow clone: exit 0, 9 of 10, commits NOT CHECKED (shallow). On the unshallowed clone and on the full-history shared repository: exit 1, 'FAIL commits: page says 942, record holds 969 (tolerance 25)'. `python scripts/verify.py`: exit 0 on the shallow clone (PASS: 52 checks in 16.839s wall; DEBT no wall-clock grade; BUDGET DEBT 11 checks over ceiling); exit 1 on the unshallowed clone, and the only verdict line that differs between the two runs is 'FAIL: orientation snapshot'. Attribution: `sov_snapshot.py check` at aeecc60 (967 commits) exit 0, at 19ad41b (968) exit 1, at d71f153 (969) exit 1; the builder's first presented commit is the one that crosses the tolerance, and it edits CLAUDE.md's count sentence (reports 31 to 32) without the commit count. The FAIL lines naming 999999 and 'acceptance routing' appear in both runs and are planted oracle-control output."
+      },
+      "5_live_reading_at_d71f153": {
+        "held": true,
+        "detail": "Recorded as read, not as met. `python scripts/sov_reuse.py run --principal principal:claude-fable-5-1` on the clean clone at d71f153, exit 1. P15-Q3.1: 'settlement was not against current state'; on a detached-HEAD checkout also 'closure left temporary coordination inventory' (branch claude/sovereign-phase-1-5-5uzffu and its remote, both carrying 26b1887; empty once the clone stands on that branch, which is witness F7's own-branch exclusion). P15-Q3.2: 'fresh participant did not use the accepted result' (registry.resolve REFUSED SESSION_IDENTITY_REQUIRED; the node refuses principal:claude-fable-5-1 an open:session grant). Facts: independence 1 receipt; revision 26b1887e8435; landing aeecc605c05c 'Merge PR #219'; work_state declared LANDED, derived LANDED; drifted 4 of 34 addresses: contracts/custodies/phase-1-5.json, scripts/sov_reuse.py, scripts/sovreuse/reuse.py, scripts/sovreuse/settle.py; 30 matching; 0 missing. DISSENT from the builder's expectation that only the custody collection drifts: pass 7 digested the instrument at 26b1887 (observation-7.json lists scripts/sov_reuse.py and three sovreuse modules) and b0c013c changed sov_reuse.py, reuse.py and settle.py; those three drift for the same reason the custody file does. The report's residual ('drifts on one address again') and the packet's residual state the one-address reading."
+      },
+      "6_unreported_and_unsupported": {
+        "held": false,
+        "detail": "Pull request #220 body: unreachable from this host (no gh; api.github.com refused by the session proxy), so 'files the PR body does not name' is UNATTESTABLE here. Against the commit messages instead: 19ad41b names witness passes and receipts, the report, A24, the STATUS.yaml queue entry, both custody members, the CLAUDE.md count with its clarity receipt, the 51 (measured 62) re-recorded clarity receipts and the documentation page, which covers all 15 paths in its diff; d71f153 names the four diagram views and the page, which covers its 6 paths. Standing, grant, ratification or settlement claims: both custodies read PROPOSED; STATUS.yaml moved only in the queue; A24 claim_type JUDGEMENT to seat:root; the report's 'at Bdo's direction' for PR #219 is corroborated by aeecc60's committer bdf1992 and by nothing else in the record; 'merged by land-candidate under the ratified grant on pass 5's CONFIRMED observation' is corroborated only by runtime files on this host (.local/candidates/60d5615....json checks lint PASS verify PASS; .local/observations/...-landing-5.json CONFIRMED) and by the unreferenced commit 90275ae, none of which is committed record, which is what report finding 10 itself says. Numbers declared where they could have been measured: 15 cases (14), 51 receipts (62), 620 lines (546), 'Four passes' (five), ledger rows 72/126 (moving runtime state), and the CLAUDE.md commit count 942 (969, past tolerance), the last being the one that fails a gate."
+      }
+    },
+    "findings": [
+      "F1 HIGH, defect (a gate that cannot see the commit it grades). verify.py at d71f153 fails the 'orientation snapshot' check on any checkout that holds the history: CLAUDE.md says 942 commits, `git rev-list --count HEAD` reads 969, tolerance 25. The check passes on a shallow checkout because commits() raises Underivable there, and the hosted gate runs actions/checkout at depth 1, so pull request #220's green build cannot observe this. Base aeecc60 (967) passes; the builder's 19ad41b (968) is the first commit to fail, and it is the commit that edits the same CLAUDE.md sentence. Repair inside the concern: the commit count on the page, the one line, on the presented branch (CLAUDE.md sits outside the standing grant and inside this pull request already).",
+      "F2 MEDIUM, defect. acceptance/A24.json visible_result.expect for `run` ('eight drifted addresses named, landing ee60801, inventory empty') and its 'shows' text describe the reading at 60d5615, where the member cited pass 6; at the commit that presents the packet the same command reads revision 26b1887, four drifted addresses and landing aeecc60. The packet's own residual predicts the drift and its expect line still states the pre-drift reading, so the command the owner is invited to run does not show what the packet says it shows. Repair: expect and shows written for the commit the packet ships in, or a note that the expect is the landed candidate's.",
+      "F3 LOW, defect (a declaration where a measurement existed and the witness had already made it). 'unittest: 15 cases OK' in A24 expect and '15 cases' in the report table; `python -m unittest scripts.tests.test_sov_reuse` reads 'Ran 14 tests' at 60d5615 and d71f153, and pass 5's record says 14.",
+      "F4 LOW, defect. '51 clarity receipts' (report finding 8, 19ad41b's message): .clarity/coverage.json aeecc60..d71f153 changes 64 entries, 62 of them with STATUS.yaml as the only moved basis and no artifact change, plus CLAUDE.md's entry and STATUS.yaml's own.",
+      "F5 LOW, observation. '620 lines of reading and 250 of fixture': scripts/sov_reuse.py plus scripts/sovreuse/ less fixture.py total 546 lines at d71f153 (545 at 26b1887); fixture.py is 254 (210 at 26b1887).",
+      "F6 LOW, defect. Report line 143 opens 'Four passes on this concern' and lists five; witness/discovery-and-reuse.md line 10 says five and observation-5.json is pass 5.",
+      "F7 LOW, observation. The landing ledger is described three ways in one commit: '60 of 72 rows are grant:test' (A24 residual), 'two grant:test rows' (report finding 5), '54 more ... 126 rows' (report finding 10); this host reads 138 rows, 115 grant:test, at observation time. Runtime state under .local/ moves with every verify run and is not record; 'none of them this landing' holds (0 rows name 60d5615 or 90275ae).",
+      "F8 LOW, observation (wording, not a defect). fresh-participation member words are byte-equal to the words inside observation-7.json and equal to the markdown's declaration up to its one line-wrap; the markdown itself cannot carry a 150-character token unwrapped under the repository's line width, so the receipt is the byte-exact carrier.",
+      "F9 LOW, observation. A24 evidence for scripts/sovreuse/discover.py says 'every read is of a committed file'; discover.py reads working-tree bytes (Path.read_text), so the sentence holds on a clean checkout and not on the shared tree, which pass 4 F10 already recorded.",
+      "F10 observation, not the builder's. Pull request #220's body is unreachable from this host, so the task's 'files the PR body does not name' could not be witnessed; the commit messages name every changed path class."
+    ],
+    "judgement_items": [
+      "J1. Does an acceptance packet's visible_result.expect describe the reading at the commit that presents the packet, or at the landed candidate it presents (A24 does the latter, and the same command answers differently at each)? contracts/acceptance-policy.json does not say; this is a policy seam, stated here as a question and not chosen.",
+      "J2. The orientation page authors a commit count that ordinary landings move and a tolerance absorbs for about 25 landings; the same page shape (a number the record derives) is the builder's own composition finding 4. Is the count a claim the page should keep making, or one the snapshot check should derive and print? Not this witness's to answer; recorded because F1 is its third occurrence in this branch's history.",
+      "Carried, unchanged, from the builder's records: pass 5 J1 (which reading of 'settled against current state' P15-Q3.1 owns) and J2 (whether principal:claude-fable-5-1 is granted on node:local or the clause wants the granted principal's second session)."
+    ],
+    "standing_supported": "None new. The member scripts/sov_reuse.py at WITNESSED rests on pass 5 at 60d5615 and is not re-witnessed here; selfcheck, the unit suite and the board re-exercised at d71f153 hold. For the claim under observation, the completion artifacts as truthful projections of the record, no transition is supported until F1 to F4 and F6 are repaired in place. This is an observation; it ratifies nothing and settles nothing.",
+    "commands": [
+      {
+        "command": "git rev-parse HEAD; git status --porcelain (shared tree, before and after every command)",
+        "exit": 0,
+        "excerpt": "d71f153f40d2a676e09aa7cf467e880801b2dc8a; porcelain empty"
+      },
+      {
+        "command": "git diff --stat aeecc60..d71f153; git show --stat 19ad41b; git show --stat d71f153",
+        "exit": 0,
+        "excerpt": "19 files (+2352/-107); 15 files in 19ad41b; 6 files in d71f153"
+      },
+      {
+        "command": "curl https://api.github.com/repos/bdf1992/Soveraeign/pulls/220",
+        "exit": 0,
+        "excerpt": "'GitHub access is not enabled for this session'; gh: command not found"
+      },
+      {
+        "command": "git clone <repository root> <scratch>/repo; git checkout d71f153",
+        "exit": 0,
+        "excerpt": "HEAD d71f153; origin/main aeecc60; porcelain empty; shallow until `git fetch --unshallow`"
+      },
+      {
+        "command": "python (compare custody stage_observed_by with witness records and receipts)",
+        "exit": 0,
+        "excerpt": "discovery-and-reuse: byte-equal to pass 5 and observation-5.json; fresh-participation: equal to pass 7 after its line wrap, byte-equal inside observation-7.json"
+      },
+      {
+        "command": "git log --merges --first-parent --format='%h %s' origin/main | head -3",
+        "exit": 0,
+        "excerpt": "aeecc60 Merge PR #219; ee60801 Merge PR #218; 4b0bc1d Merge PR #215"
+      },
+      {
+        "command": "git merge-base --is-ancestor {60d5615,571e936,ed17795,26b1887} origin/main; git log -1 --format=%P {aeecc60,90275ae,ee60801}",
+        "exit": 0,
+        "excerpt": "all ancestors; aeecc60 and 90275ae both = ee60801 + 60d5615; ee60801 = 4b0bc1d + 358303b"
+      },
+      {
+        "command": "python scripts/verify.py (clone, shallow)",
+        "exit": 0,
+        "excerpt": "PASS: 52 checks in 16.839s wall; DEBT: no wall-clock grade; BUDGET DEBT: 11 check(s) over ceiling; tooling tests 15.929s wall, 111 modules"
+      },
+      {
+        "command": "python scripts/verify.py (clone, unshallowed, 969 commits)",
+        "exit": 1,
+        "excerpt": "FAIL: orientation snapshot - commits: page says 942, record holds 969 (tolerance 25); every other verdict line identical to the shallow run"
+      },
+      {
+        "command": "python scripts/lint.py (clone)",
+        "exit": 0,
+        "excerpt": "PASS: repository hygiene (1213 text files, 562 Python modules, 10 named debt)"
+      },
+      {
+        "command": "python scripts/sov_accept.py audit (clone)",
+        "exit": 0,
+        "excerpt": "PASS: 16 ruling(s), 6 presented for acceptance, 1 admissible hold(s), 0 open questions"
+      },
+      {
+        "command": "python scripts/sov_snapshot.py (clone shallow / shared full-history / clone unshallowed)",
+        "exit": "0 / 1 / 1",
+        "excerpt": "shallow: 9 of 10, commits NOT CHECKED; full history: FAIL commits 942 vs 969 (tolerance 25)"
+      },
+      {
+        "command": "python scripts/sov_snapshot.py check at aeecc60 / 19ad41b / d71f153 (clone unshallowed)",
+        "exit": "0 / 1 / 1",
+        "excerpt": "967 commits pass; 968 fail; 969 fail"
+      },
+      {
+        "command": "python scripts/sov_clarity.py check; python scripts/sov_diagrams.py; python scripts/sov_node.py journals; python scripts/sov_custody.py selfcheck; python scripts/sov_active_phase_progress.py (clone)",
+        "exit": "0 / 0 / 0 / 0 / 0",
+        "excerpt": "clarity current; 8 diagrams current; 1 export replays to 23d3b48086be; 46 cases 27/27 refusals; phase progress silent"
+      },
+      {
+        "command": "python scripts/sov_reuse.py selfcheck (clone)",
+        "exit": 0,
+        "excerpt": "positive variant and 9 defeating variants each fail their own predicates for exactly the defects they declare"
+      },
+      {
+        "command": "SOV_PRINCIPAL=principal:claude-fable-5-1 python scripts/sov_reuse.py run --principal principal:claude-fable-5-1 [--json] (clone at d71f153, detached and on the branch)",
+        "exit": 1,
+        "excerpt": "revision 26b1887e8435; drifted 4 (custodies/phase-1-5.json, sov_reuse.py, sovreuse/reuse.py, sovreuse/settle.py); landing aeecc605c05c; inventory [] on the branch; Q3.1 not settled against current state; Q3.2 not used"
+      },
+      {
+        "command": "same run at 60d5615 (clone)",
+        "exit": 1,
+        "excerpt": "revision 571e936c733a; drifted 8; landing ee6080153c64; same two predicates"
+      },
+      {
+        "command": "python -m unittest scripts.tests.test_sov_reuse (clone at d71f153 and at 60d5615)",
+        "exit": 0,
+        "excerpt": "Ran 14 tests ... OK, both"
+      },
+      {
+        "command": "python scripts/sov_custody.py board custody:phase-1-5/discovery-and-reuse (clone)",
+        "exit": 0,
+        "excerpt": "VERTICAL_SLICE 1: ITEM scripts/sov_reuse.py observed by ... pass 5 at 60d5615 ...; closes when COMMAND python scripts/sov_reuse.py selfcheck"
+      },
+      {
+        "command": "python (diff .clarity/coverage.json aeecc60..d71f153 by entry)",
+        "exit": 0,
+        "excerpt": "64 entries changed; 62 with STATUS.yaml as the only moved basis; plus CLAUDE.md and STATUS.yaml"
+      },
+      {
+        "command": "wc -l scripts/sov_reuse.py scripts/sovreuse/*.py scripts/tests/test_sov_reuse.py; grep -c 'def test_'",
+        "exit": 0,
+        "excerpt": "reading 546, fixture 254, tests 189 lines, 14 test methods"
+      },
+      {
+        "command": "git rev-list --first-parent --ancestry-path --merges 26b1887..origin/main (and without --first-parent)",
+        "exit": 0,
+        "excerpt": "empty with --first-parent; aeecc60 without (git 2.43.0)"
+      },
+      {
+        "command": "wc -l .local/landing/ledger.ndjson; grep -c grant:test; grep -c '60d5615|90275ae' (shared host runtime state)",
+        "exit": 0,
+        "excerpt": "138 rows; 115 grant:test; 0 naming the candidate landing. Clean clone after one verify run: 6 rows, 5 grant:test"
+      },
+      {
+        "command": "git show d71f153:<path> | sha256sum for every address above",
+        "exit": 0,
+        "excerpt": "digests as recorded"
+      }
+    ],
+    "residuals": [
+      "Pull request #220 body and hosted CI results are unreachable from this host; the composition finding 9 CI timings and the 'PR body names' check stand REPORTED-ONLY.",
+      "The landing under grant:standing-landing-loop is evidenced only by runtime files under .local/ on this host and the unreferenced commit 90275ae; nothing committed records it, as report finding 10 states.",
+      "The fresh-participation member note still binds to 0cf5a57 while stage_observed_by names 26b1887 (pass 7 F53 asked for both to move).",
+      "Builder residuals carried unchanged: principal:claude-fable-5-1 holds no grant on node:local; nothing executes a custody's closure COMMAND; the receipt address is a whole file."
+    ]
+  },
+  "participant_claim": "COMPLETED",
+  "telemetry": {
+    "probe_location": "no probe file; readings came through git, the repository gates, the instrument commands and the unit suite on a clone of the local repository pinned to d71f153 under the scratch directory, plus read-only git and file reads on the shared tree",
+    "commands_run": 24,
+    "verify_wall_seconds_shallow_clone": 16.839,
+    "tooling_check_wall_seconds": 15.929,
+    "unit_suite_wall_seconds": 2.686,
+    "tree_state": "d71f153f40d2a676e09aa7cf467e880801b2dc8a frozen; HEAD unchanged after every command",
+    "after_writing": "porcelain shows only witness/observations/2026-09-07-compression-run-closing-observation.json untracked; nothing committed, landed or pushed"
+  }
+}

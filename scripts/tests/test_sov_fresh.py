@@ -5,7 +5,8 @@ carrying one declared fixture principal, so the suite asserts nothing about whic
 this host runs. The positive run must satisfy the three P15-Q1 predicates through the
 independent instrument with every value read from a product record; each defeating
 variant must fail exactly the predicates it declares; and the probe must refuse to guess
-a principal.
+a principal. `python scripts/sov_fresh.py selfcheck` is not repeated here: verify runs it
+as the "fresh participation slice" check, and a second run added nothing but time.
 """
 
 from __future__ import annotations
@@ -28,17 +29,48 @@ FIXTURE = sov_fresh.FIXTURE_PRINCIPAL
 ISSUER = sov_fresh.FIXTURE_ISSUER
 
 
+_SHARED: dict = {}
+"""One registry copy and one run per (variant, principal, issuer) for the whole module.
+
+A run's result is read, never edited, by the cases that ask for it, and the probe builds
+a node, a session store and a lease for every run, so repeating the positive run for each
+of ten readings cost more than every other module in the tooling suite. The key carries
+no environment, so a case that changes the environment or the registry runs its own probe
+and never reads a shared one.
+"""
+
+
+def shared_registry() -> tuple[Path, Path]:
+    if "temp" not in _SHARED:
+        temp = tempfile.TemporaryDirectory()
+        unittest.addModuleCleanup(temp.cleanup)
+        _SHARED["temp"] = temp
+        _SHARED["root"] = Path(temp.name)
+        _SHARED["registry"] = sov_fresh.fixture_registry(_SHARED["root"])
+        _SHARED["runs"] = {}
+    return _SHARED["root"], _SHARED["registry"]
+
+
+def shared_run(variant: str, principal: str, issuer: str | None) -> dict:
+    root, registry = shared_registry()
+    key = (variant, principal, issuer)
+    if key not in _SHARED["runs"]:
+        work = Path(tempfile.mkdtemp(prefix=f"{variant}-", dir=root))
+        _SHARED["runs"][key] = probe.run(ROOT, work, principal, variant,
+                                         registry=registry, issuer=issuer)
+    return _SHARED["runs"][key]
+
+
 class ProbeCase(unittest.TestCase):
     def setUp(self) -> None:
         self._temp = tempfile.TemporaryDirectory()
         self.addCleanup(self._temp.cleanup)
         self.temp = Path(self._temp.name)
-        self.registry = sov_fresh.fixture_registry(self.temp)
+        self.registry = shared_registry()[1]
 
     def run_variant(self, variant: str = "positive", principal: str = FIXTURE,
                     issuer: str | None = ISSUER) -> dict:
-        return probe.run(ROOT, self.temp / variant, principal, variant,
-                         registry=self.registry, issuer=issuer)
+        return shared_run(variant, principal, issuer)
 
 
 class PositiveRun(ProbeCase):
@@ -106,7 +138,10 @@ class PositiveRun(ProbeCase):
         saved = os.environ.get(principals.ENV_PRINCIPAL)
         os.environ[principals.ENV_PRINCIPAL] = "principal:bdo"
         try:
-            result = self.run_variant()
+            # Its own probe: the shared run's key does not carry the environment, and a
+            # cached result would say nothing about what the resolver read here.
+            result = probe.run(ROOT, self.temp / "inherited", FIXTURE,
+                               registry=self.registry, issuer=ISSUER)
         finally:
             if saved is None:
                 os.environ.pop(principals.ENV_PRINCIPAL, None)
@@ -206,16 +241,6 @@ class CommandLine(unittest.TestCase):
         self.assertEqual(completed.returncode, 1, completed.stdout[-500:])
         self.assertIn('"P15-Q1.3"', completed.stdout)
 
-    def test_selfcheck_passes(self) -> None:
-        completed = subprocess.run(
-            [sys.executable, "scripts/sov_fresh.py", "selfcheck"], cwd=str(ROOT),
-            capture_output=True, text=True, check=False)
-        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
-        self.assertIn("PASS", completed.stdout)
-
-
-if __name__ == "__main__":
-    unittest.main()
 
 
 class PersistedNode(ProbeCase):
@@ -293,3 +318,7 @@ class OfficeCommandLine(unittest.TestCase):
             self.assertEqual(completed.returncode, 2, completed.stdout + completed.stderr)
             self.assertIn("REFUSED VARIANT_NOT_ADMITTED", completed.stdout)
             self.assertNotIn("Traceback", completed.stderr)
+
+
+if __name__ == "__main__":
+    unittest.main()

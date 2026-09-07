@@ -66,13 +66,18 @@ DEFAULT_WORKERS = 4
 # module measures 0.05s to 0.1s. Resulting synthetic loads 100/100/100/99 and measured
 # shards 12.1s, 9.6s, 11.0s and 9.8s, a 12.6s wall against 18.9s before. Still
 # scheduling hints, never evidence or budget.
+# Remeasured 2026-09-07 at 111 modules on Linux, every module alone, after
+# test_sov_fresh stopped re-running its probe per reading: 4.1s, then test_sov_strand
+# 3.7s, test_sov_reuse 3.6s, test_sov_backlog 2.8s, test_sov_ci_subject 2.5s. Every module
+# at or above one second carries its measured seconds times ten. Still scheduling hints,
+# never evidence or budget.
 MODULE_WEIGHTS = {
-    "test_sov_fresh.py": 51, "test_sov_strand.py": 36, "test_sov_reuse.py": 30,
-    "test_sov_backlog.py": 25, "test_sov_ci_subject.py": 23,
-    "test_repository_candidate_effects.py": 18, "test_automation_control.py": 17,
-    "test_automation_health.py": 16, "test_lint.py": 15, "test_sov_docs.py": 14,
-    "test_sov_surface.py": 12, "test_sov_branch.py": 12, "test_sov_snapshot.py": 11,
-    "test_sov_land.py": 11, "test_sov_facets.py": 10, "test_verify_clocks.py": 3,
+    "test_sov_fresh.py": 41, "test_sov_strand.py": 37, "test_sov_reuse.py": 36,
+    "test_sov_backlog.py": 28, "test_sov_ci_subject.py": 25, "test_automation_health.py": 21,
+    "test_repository_candidate_effects.py": 19, "test_automation_control.py": 17,
+    "test_sov_docs.py": 17, "test_sov_surface.py": 17, "test_lint.py": 16, "test_sov_land.py": 15,
+    "test_sov_facets.py": 13, "test_sov_composed_surface.py": 12, "test_sov_node_journal.py": 12,
+    "test_sov_snapshot.py": 12, "test_console_horizontal.py": 11, "test_node_interface.py": 11,
 }
 
 

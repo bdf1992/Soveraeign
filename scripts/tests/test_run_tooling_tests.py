@@ -58,7 +58,9 @@ class ToolingPartition(unittest.TestCase):
 
     def test_a_module_with_no_declared_weight_counts_as_one(self):
         self.assertEqual(run_tooling_tests.module_weight(Path("test_a.py")), 1)
-        self.assertGreater(run_tooling_tests.module_weight(Path("test_sov_branch.py")), 1)
+        heaviest = max(run_tooling_tests.MODULE_WEIGHTS,
+                       key=lambda name: (run_tooling_tests.MODULE_WEIGHTS[name], name))
+        self.assertGreater(run_tooling_tests.module_weight(Path(heaviest)), 1)
 
     def test_the_declared_weight_buys_the_heaviest_module_fewer_peers(self):
         """Dropping the entry is the defeat: the weight has to change the packing.
@@ -78,9 +80,13 @@ class ToolingPartition(unittest.TestCase):
         self.assertLess(weighted, unweighted)
 
     def test_a_weight_changes_placement_and_never_the_population(self):
+        """Read against whichever module the table weights heaviest, never a name: the
+        module this case once named measured under one second and left the table."""
         modules = run_tooling_tests.test_modules()
         heavy = run_tooling_tests.partition(modules, 4)
-        with self.weights(test_sov_branch__py=None):
+        heaviest = max(run_tooling_tests.MODULE_WEIGHTS,
+                       key=lambda name: (run_tooling_tests.MODULE_WEIGHTS[name], name))
+        with self.weights(**{heaviest.replace(".", "__"): None}):
             light = run_tooling_tests.partition(modules, 4)
         self.assertNotEqual(heavy, light, "the weight must change some assignment")
         self.assertEqual(

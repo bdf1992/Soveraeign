@@ -24,6 +24,66 @@ federation-crossing and node-identity contracts already exist experimentally.
 The name crosswalk is carried forward below, re-keyed onto this ladder;
 `archives/ROADMAP-F0-F6.md` holds its original keying.
 
+## Product milestone scenarios · 2026-09-07
+
+Prepared at Bdo's request. These are assistant planning hypotheses for review,
+not measured delivery forecasts or owner-accepted commitments. The baseline is
+`main` at `aeecc60` and schematically `dev` at `30b9edf`; schematically's
+[logic and memory runner PR #33](https://github.com/bdf1992/schematically/pull/33)
+is a tested draft proposal, not a merged capability of either baseline.
+
+The windows below start on **2026-09-07** and overlap; do not add them together.
+They assume Bdo continues the recent development intensity with AI assistance,
+keeps one initial workflow stable, and reserves time for integration, observation,
+and repair. Weekly effort and delivered-product velocity have not been measured.
+The older P0–P9 percentages below remain historical estimates, not new evidence.
+
+| Product result | Planning window from baseline | Candidate roadmap coverage | Evidence needed before calling it delivered |
+| --- | --- | --- | --- |
+| Personally useful SOV node | 2–4 months | P1, P2, P5 | Bdo repeatedly completes one useful work loop through existing authority and custody, with durable records, failure recovery, and independently observed results. |
+| Combined SOV + schematically pilot | 4–8 months | P2, P3, P4, P5, P6 | A pilot user authors a workflow, executes bounded work through SOV, inspects memory and receipts, resumes after interruption, and shares a reproducible result. |
+| Dependable small-team product | 6–12+ months | P5, P6, P8 | A small team operates the chosen workflow with clear permissions, onboarding, recovery, support ownership, and evidence from repeated use. |
+| Broader enterprise and federation offering | 12–24+ months | P7, P8, P9 | Multiple organizations demonstrate governed crossings, isolation, upgrade/recovery procedures, and an operating support model under agreed customer requirements. |
+
+The plus sign leaves the upper horizon open. A product pilot does not demonstrate
+all of P6, and these mappings do not promote any P-level to complete. Product
+phase **P2 is not Phase II Citizenship**. Calendar dates neither open Phase II
+nor satisfy Phase 1.5 exit custodies; `STATUS.yaml` and `contracts/phases.json`
+continue to govern those decisions.
+
+### Shared delivery dependencies
+
+Schematically owns diagram authoring, model validation, deterministic local
+execution, and inspectable saved runs. Its [product milestones](https://github.com/bdf1992/schematically/blob/dev/ROADMAP.md)
+own the private-alpha and focused-product forecasts. SOV owns the governed work
+request, authority, custody, execution record, independent findings, and settlement.
+The [prepared horizon](contracts/phase-1-5-phase-ii-horizon.md) explains the
+commissioning and citizenship boundary.
+
+Before the combined pilot, the two projects need a versioned adapter contract:
+which diagram and rule revision was requested, which actor and grant authorize
+execution, which inputs and memory may cross the boundary, and where resulting
+records can be inspected. Exercise refusal, retry, interrupted execution, and
+resume without repeating an external effect. A local simulation trace is input
+to this work; it is not SOV authority, independent evidence, or settlement.
+Schematically is a candidate interface/provider, not a required Phase 1.5 exit.
+
+### Forecast review and estimate ownership
+
+Review these scenarios on **2026-10-05**, or sooner when the first external-user
+trial finishes, the runner is merged or materially changed, or a dependency fails.
+Bdo owns product scope and acceptance; the author of each revised estimate must
+record its date, source revisions, range, assumptions, dependencies, observable
+completion condition, next review trigger, and links to actual outcomes.
+
+Use completed end-to-end work and observed rework to revise the range. Commit
+counts, tool counts, and specification volume do not establish delivery pace.
+These month windows are product scenarios, not lease-level `COMMITTED_RANGE`
+estimates. Once work is decomposed, use the existing maturity and range rules in
+[`contracts/estimation.json`](contracts/estimation.json); keep estimates distinct
+from observed actuals and their independent comparison. No new aggregate velocity
+score or parallel estimation schema is introduced here.
+
 ## What a phase is here
 
 A phase is an increasingly complete operating environment, not an implementation

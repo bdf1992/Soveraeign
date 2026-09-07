@@ -139,6 +139,17 @@ REPOSITORY_CHECKS = STALENESS_CHECKS + (
           ("GROUND.md", "CANON.md", "contracts/product-ground.json",
            "contracts/product-canon.json",
            "contracts/fixtures/capability-map.reference.json")),
+    Check("capability map against the manifests",
+          [sys.executable, "scripts/sov_capability.py", "check"], ROOT,
+          "rebuilds the projection from the service manifests at check time and compares it "
+          "against the checked-in file, so the map cannot claim a capability no manifest "
+          "declares and cannot go stale behind a manifest that moved. It was already "
+          "executable and already passing, and only `events` was gated; the count it holds "
+          "is now written into GROUND.md, an owner-accepted document, by way of the "
+          "counted-populations check, so a number a reader takes as current rested on a "
+          "projection nothing re-derived. An independent witness named that gap",
+          ("contracts/fixtures/capability-map.reference.json", "services",
+           "scripts/sov_capability.py")),
     Check("receipt event vocabulary",
           [sys.executable, "scripts/sov_capability.py", "events"], ROOT,
           "parses each service's own modules and reads the event names its source passes to "

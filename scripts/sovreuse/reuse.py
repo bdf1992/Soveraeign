@@ -38,8 +38,9 @@ def reach(root: Path, result: dict[str, Any], work_dir: Path) -> dict[str, Any]:
     state = work_dir / "node"
     try:
         entries = journal.restore(root / export["address"], state, head)
-    except journal.custody.RestoreRefused as refused:
-        return {"restored": None, "capability": None, "reason": str(refused)}
+    except (journal.custody.RestoreRefused, journal.custody.BrokenChain) as refused:
+        return {"restored": None, "capability": None,
+                "reason": f"{type(refused).__name__}: {refused}"}
     return {
         "restored": state, "reason": None, "entries": entries,
         "capability": (f"restore-journal {export['address']} to {head[:12]}, then "

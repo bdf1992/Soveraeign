@@ -70,19 +70,16 @@ def cmd_selfcheck(args: argparse.Namespace) -> int:
             result = fixture.run_variant(built, variant, Path(temp))
             for predicate in reuse.PREDICATES:
                 defects = result["grades"][predicate]
-                if predicate in expected and expected[predicate] not in defects:
-                    failures.append(f"{variant}: {predicate} did not fail with "
-                                    f"{expected[predicate]!r}: {defects}")
-                if predicate not in expected and defects:
-                    failures.append(f"{variant}: {predicate} failed alongside "
-                                    f"{', '.join(sorted(expected))}: " + "; ".join(defects))
+                if defects != expected.get(predicate, []):
+                    failures.append(f"{variant}: {predicate} read {defects}; declared "
+                                    f"{expected.get(predicate, [])}")
     if failures:
         print("FAIL: discovery and reuse probe does not discriminate")
         print("\n".join("  " + line for line in failures))
         return 1
     print(f"PASS: discovery and reuse slice closes on the positive variant and "
           f"{len(fixture.EXPECTED_FAILURES)} defeating variants each fail their own predicates for "
-          "the reason they declare")
+          "exactly the defects they declare")
     return 0
 
 

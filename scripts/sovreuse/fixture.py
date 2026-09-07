@@ -30,25 +30,36 @@ ROOT = Path(__file__).resolve().parents[2]
 FIXTURE_RECORD = "witness/fresh-participation.md"
 FIXTURE_RECEIPT = "witness/observations/fixture-observation.json"
 FIXTURE_SUBJECT = "scripts/sov_fresh.py"
+FIXTURE_READER = "principal:fresh-reader"
+"""The fixture principal that discovers and reuses the result; not the one that built it."""
 
 EXPECTED_FAILURES = {
-    "no-witness": {"P15-Q3.1": "settlement lacks required independent observation",
-                   "P15-Q3.2": "fresh reuse missing standing"},
-    "bytes-moved": {"P15-Q3.1": "settlement was not against current state"},
-    "revision-unknown": {"P15-Q3.1": "closure lacks receipt"},
-    "lease-left-behind": {"P15-Q3.1": "closure left temporary coordination inventory"},
-    "branch-left-behind": {"P15-Q3.1": "closure left temporary coordination inventory"},
-    "head-private": {"P15-Q3.2": "fresh reuse missing capability"},
-    "no-grant": {"P15-Q3.2": "fresh participant did not use the accepted result"},
-    "oral-history": {"P15-Q3.2": "reuse required builder or prior-session oral history"},
+    "no-witness": {"P15-Q3.1": ["settlement lacks required independent observation",
+                                "settlement was not against current state"],
+                   "P15-Q3.2": ["fresh reuse missing standing", "fresh reuse missing basis"]},
+    "bytes-moved": {"P15-Q3.1": ["settlement was not against current state"]},
+    "revision-unknown": {"P15-Q3.1": ["settlement was not against current state",
+                                      "closure lacks receipt"]},
+    "lease-left-behind": {"P15-Q3.1": ["closure left temporary coordination inventory"]},
+    "branch-left-behind": {"P15-Q3.1": ["closure left temporary coordination inventory"]},
+    "head-private": {"P15-Q3.2": ["fresh reuse missing capability",
+                                  "fresh participant did not use the accepted result"]},
+    "journal-tampered": {"P15-Q3.1": ["settlement was not against current state"],
+                         "P15-Q3.2": ["fresh reuse missing capability",
+                                      "fresh participant did not use the accepted result"]},
+    "no-grant": {"P15-Q3.2": ["fresh participant did not use the accepted result"]},
+    "oral-history": {"P15-Q3.2": ["reuse required builder or prior-session oral history"]},
 }
-"""Which predicates each defeating variant must fail, and the reason each must give; every
-other predicate must hold.
+"""Which predicates each defeating variant must fail, with the exact defects each must
+give; every other predicate must hold.
 
-A result with no witness record fails both: nothing settled it and there is no standing
-to discover. A head the builder kept private leaves the journal unreachable, which is
-the clause's own defeating condition read literally. A revision the trunk does not
-descend from has no landing receipt, whatever the member declares.
+A result whose witness record is gone fails both: nothing settled it and there is no
+standing to discover, while its receipt still reaches the journal, which is read as it is.
+A tampered export moves a digest the receipt holds and is refused by the Record Service's
+own chain check, so it fails both clauses too. A head the builder kept private leaves the
+journal unreachable, which is the clause's own defeating condition read literally. A
+revision the trunk does not descend from has no landing receipt, whatever the member
+declares.
 """
 
 
@@ -64,7 +75,8 @@ def _git(repo: Path, *args: str) -> str:
 def _fixture_history(artifact: Path) -> str:
     """A history in which the witnessed revision landed by a merge, as the trunk records one.
 
-    Returns the witnessed revision: the branch commit whose bytes the merge carries.
+    Returns the witnessed revision: the branch commit whose bytes the merge carries. The
+    history has a remote with `origin/HEAD` set, the shape a clone of this repository has.
     """
     subject = artifact / FIXTURE_SUBJECT
     subject.parent.mkdir(parents=True, exist_ok=True)
@@ -80,6 +92,11 @@ def _fixture_history(artifact: Path) -> str:
     _git(artifact, "checkout", "-q", "main")
     _git(artifact, "merge", "-q", "--no-ff", "feat/fixture", "-m", "merge: fixture landing")
     _git(artifact, "branch", "-q", "-D", "feat/fixture")
+    origin = artifact.parent / "origin.git"
+    _git(artifact, "clone", "-q", "--bare", str(artifact), str(origin))
+    _git(artifact, "remote", "add", "origin", str(origin))
+    _git(artifact, "fetch", "-q", "origin")
+    _git(artifact, "remote", "set-head", "origin", "main")
     return revision
 
 
@@ -129,17 +146,34 @@ def _fixture_artifact(temp: Path, export_head: str, export_address: str) -> Path
     return artifact
 
 
+def _registry_with_reader(temp: Path) -> Path:
+    """The self-check registry plus a second fixture principal under the fixture root."""
+    path = sov_fresh.fixture_registry(temp)
+    registry = json.loads(path.read_text(encoding="utf-8"))
+    reader = dict(next(p for p in registry["principals"]
+                       if p["principal_id"] == sov_fresh.FIXTURE_PRINCIPAL))
+    reader["principal_id"] = FIXTURE_READER
+    reader["claim"] = dict(reader["claim"], claim_basis="fixture reader; exists only for "
+                                                        "this self-check")
+    registry["principals"].append(reader)
+    path.write_text(json.dumps(registry), encoding="utf-8")
+    return path
+
+
 def build(temp: Path) -> dict[str, Any]:
     """A result built by a fixture principal under a fixture root, then settled and cleaned.
 
     The builder's run is the fresh-participation probe itself against a persisted fixture
-    node; its lease is released afterwards, and the store as it stood before the release
-    is kept for the variant that leaves it behind.
+    node whose office the fixture root opened for the builder and for a second principal,
+    the reader; the builder's lease is released afterwards, and the store as it stood
+    before the release is kept for the variant that leaves it behind.
     """
-    registry = sov_fresh.fixture_registry(temp)
+    registry = _registry_with_reader(temp)
     state = temp / "builder-node"
     with nodelayer.open_node_at(state) as node:
         nodelayer.open_office(node, sov_fresh.FIXTURE_ISSUER, sov_fresh.FIXTURE_PRINCIPAL,
+                              {"read:registry": nodelayer.SCOPE})
+        nodelayer.open_office(node, sov_fresh.FIXTURE_ISSUER, FIXTURE_READER,
                               {"read:registry": nodelayer.SCOPE})
     builder = probe.run(ROOT, temp / "builder", sov_fresh.FIXTURE_PRINCIPAL,
                         registry=registry, node_state=state)
@@ -173,13 +207,21 @@ def _mutate_receipt(artifact: Path, variant: str) -> None:
     path.write_text(json.dumps(receipt), encoding="utf-8")
 
 
+def _tamper_journal(artifact: Path) -> None:
+    """Change one entry's payload so the export's chain no longer verifies."""
+    path = next((artifact / "nodes").glob("*/journal/*.json"))
+    document = json.loads(path.read_text(encoding="utf-8"))
+    document["entries"][0]["payload"] = {"tampered": True}
+    path.write_text(json.dumps(document), encoding="utf-8")
+
+
 def run_variant(fixture: dict[str, Any], variant: str, temp: Path) -> dict[str, Any]:
     """One variant against its own copy of the fixture artifact."""
     work = Path(tempfile.mkdtemp(prefix=f"{variant}-", dir=temp))
     artifact = work / "artifact"
     shutil.copytree(fixture["artifact"], artifact)
     sessions = fixture["sessions"]
-    principal = sov_fresh.FIXTURE_PRINCIPAL
+    principal = FIXTURE_READER
     registry: Path | None = fixture["registry"]
     environment = dict(os.environ)
     if variant == "no-witness":
@@ -190,6 +232,8 @@ def run_variant(fixture: dict[str, Any], variant: str, temp: Path) -> dict[str, 
         sessions = fixture["unreleased"]
     elif variant == "branch-left-behind":
         _git(artifact, "branch", "-q", "feat/left-behind", fixture["revision"])
+    elif variant == "journal-tampered":
+        _tamper_journal(artifact)
     elif variant == "no-grant":
         principal = "principal:bdo"
     elif variant == "oral-history":

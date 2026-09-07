@@ -61,17 +61,23 @@ class DefeatingVariants(FixtureCase):
     def test_each_variant_fails_its_predicates_for_its_reason(self) -> None:
         for variant, expected in fixture.EXPECTED_FAILURES.items():
             result = fixture.run_variant(self.fixture, variant, self.temp)
-            failed = {p for p, defects in result["grades"].items() if defects}
-            self.assertEqual(failed, set(expected), f"{variant}: {result['grades']}")
-            for predicate, reason in expected.items():
-                self.assertIn(reason, result["grades"][predicate], variant)
+            for predicate in result["grades"]:
+                self.assertEqual(result["grades"][predicate], expected.get(predicate, []),
+                                 variant)
 
     def test_no_grant_reaches_the_node_and_is_refused_by_it(self) -> None:
         result = fixture.run_variant(self.fixture, "positive", self.temp)
         self.assertIsNotNone(result["reached"]["capability"])
+        self.assertEqual(result["principal"], fixture.FIXTURE_READER)
+        self.assertNotEqual(result["principal"], fixture.sov_fresh.FIXTURE_PRINCIPAL)
         result = fixture.run_variant(self.fixture, "no-grant", self.temp)
         self.assertFalse(result["used"]["used"])
         self.assertIn("principal:bdo", result["used"]["reason"])
+
+    def test_tampered_export_is_refused_not_raised(self) -> None:
+        result = fixture.run_variant(self.fixture, "journal-tampered", self.temp)
+        self.assertIsNone(result["reached"]["capability"])
+        self.assertIn("BrokenChain", result["reached"]["reason"])
 
     def test_head_private_never_restores(self) -> None:
         result = fixture.run_variant(self.fixture, "head-private", self.temp)
@@ -117,6 +123,8 @@ class Layers(unittest.TestCase):
             self.assertEqual(landed["subject"], "merge: fixture landing")
             self.assertEqual(settle.landing(artifact, "0" * 40), {"commit": None, "subject": None})
             self.assertEqual(settle.temporary_inventory(artifact, None, None, revision), [])
+            refs = settle.git(artifact, "branch", "-a", "--format=%(refname:short)|%(symref)")
+            self.assertIn("origin|refs/remotes/origin/main", refs)
             fixture._git(artifact, "branch", "-q", "feat/left", revision)
             self.assertEqual(settle.temporary_inventory(artifact, None, None, revision),
                              ["branch feat/left"])

@@ -109,6 +109,8 @@ def temporary_inventory(repo: Path, sessions_dir: Path | None, custody_id: str |
     Leases are the custody's own, still held by a session that is not live. Branches and
     worktrees are those still carrying the witnessed revision other than the trunk and
     the line HEAD is on: work that landed and was not cleaned up, or never landed at all.
+    A symbolic ref such as `origin/HEAD`, which git lists as the bare remote name, is not
+    a branch and is skipped.
     """
     found: list[str] = []
     if sessions_dir is not None and sessions_dir.is_dir():
@@ -121,8 +123,9 @@ def temporary_inventory(repo: Path, sessions_dir: Path | None, custody_id: str |
         return found
     current = git(repo, "rev-parse", "--abbrev-ref", "HEAD") or ""
     keep = {"main", "origin/main", "origin/HEAD", current, f"origin/{current}"}
-    branches = (git(repo, "branch", "-a", "--contains", revision,
-                    "--format=%(refname:short)") or "").split()
+    listed = (git(repo, "branch", "-a", "--contains", revision,
+                  "--format=%(refname:short)|%(symref)") or "").splitlines()
+    branches = [line.split("|", 1)[0] for line in listed if line.endswith("|")]
     found += [f"branch {name}" for name in branches if name not in keep]
     for block in (git(repo, "worktree", "list", "--porcelain") or "").split("\n\n")[1:]:
         lines = block.splitlines()

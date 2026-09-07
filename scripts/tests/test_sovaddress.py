@@ -210,5 +210,59 @@ class MarkdownSections(Case):
         self.assertEqual(refused.exception.code, "SELECTOR_AMBIGUOUS")
 
 
+class FencesAndTheRefusalsNothingReached(unittest.TestCase):
+    """Three refusal sites were live and untested, and one fence kind was invisible.
+
+    A witness on ca472b0 found both. The fence one is the worse class: a `~~~`
+    block was not recognised, so a `#` inside it read as a heading and a fragment
+    naming it resolved to code-block bytes. A grader that digests the wrong thing
+    is worse than one that refuses, so the case below asserts the refusal and the
+    case beside it asserts the surrounding heading still swallows the block.
+    """
+
+    def setUp(self) -> None:
+        self.root = Path(tempfile.mkdtemp())
+
+    def write(self, name: str, body: str) -> None:
+        (self.root / name).write_text(body, encoding="utf-8", newline="\n")
+
+    def test_a_heading_inside_a_tilde_fence_is_not_a_heading(self) -> None:
+        self.write("f.md", "# Real\nbody\n\n~~~\n# Decoy\ncode\n~~~\n\n# After\ntail\n")
+        with self.assertRaises(sovaddress.AddressError) as refused:
+            sovaddress.resolve(self.root, "f.md#Decoy")
+        self.assertEqual(refused.exception.code, "FRAGMENT_NOT_FOUND")
+
+    def test_a_section_still_carries_a_tilde_fence_inside_it(self) -> None:
+        """The defeat of the case above: the fence must be skipped, not deleted."""
+        self.write("f.md", "# Real\nbody\n\n~~~\n# Decoy\ncode\n~~~\n\n# After\ntail\n")
+        self.assertIn(b"# Decoy", sovaddress.resolve(self.root, "f.md#Real"))
+        self.assertEqual(b"# After\ntail\n", sovaddress.resolve(self.root, "f.md#After"))
+
+    def test_the_two_fence_kinds_do_not_close_each_other(self) -> None:
+        self.write("f.md", "# Real\n```\n~~~\n# Decoy\n```\n\n# After\ntail\n")
+        with self.assertRaises(sovaddress.AddressError) as refused:
+            sovaddress.resolve(self.root, "f.md#Decoy")
+        self.assertEqual(refused.exception.code, "FRAGMENT_NOT_FOUND")
+
+    def test_a_selector_on_something_that_is_not_a_list_refuses(self) -> None:
+        self.write("d.json", '{"a": {"b": 1}}')
+        with self.assertRaises(sovaddress.AddressError) as refused:
+            sovaddress.resolve(self.root, "d.json#/a[b=1]")
+        self.assertEqual(refused.exception.code, "FRAGMENT_NOT_FOUND")
+
+    def test_a_step_below_a_scalar_refuses(self) -> None:
+        self.write("d.json", '{"a": 1}')
+        with self.assertRaises(sovaddress.AddressError) as refused:
+            sovaddress.resolve(self.root, "d.json#/a/b")
+        self.assertEqual(refused.exception.code, "FRAGMENT_NOT_FOUND")
+
+    def test_a_json_file_that_is_not_json_refuses_by_name(self) -> None:
+        """The ordinary way a basis stops being readable, and it had no case."""
+        self.write("d.json", "{not json at all")
+        with self.assertRaises(sovaddress.AddressError) as refused:
+            sovaddress.resolve(self.root, "d.json#/a")
+        self.assertEqual(refused.exception.code, "FRAGMENT_MALFORMED")
+
+
 if __name__ == "__main__":
     unittest.main()

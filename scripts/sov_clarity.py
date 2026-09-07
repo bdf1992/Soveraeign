@@ -52,7 +52,12 @@ def review_state(path: str, review: dict | None) -> str:
     if not artifact.is_file() or digest(artifact) != review.get("artifact_digest"):
         return "TEXT_STALE"
     for basis in review.get("basis", []):
-        if basis_digest(ROOT, basis["path"]) != basis.get("digest"):
+        # Unreadable is stale before it is compared: `basis_digest` returns None,
+        # a receipt entry recording no digest reads None too, and a bare `!=`
+        # collapses to None != None and calls it CURRENT. The expression this
+        # replaced short-circuited on `not source.is_file()` and could not.
+        found = basis_digest(ROOT, basis["path"])
+        if found is None or found != basis.get("digest"):
             return "BASIS_STALE"
     return "CURRENT"
 

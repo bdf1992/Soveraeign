@@ -161,13 +161,23 @@ def markdown_section(text: str, heading: str) -> bytes:
 
 
 def _headings(lines: list[str]) -> list[tuple[int, int, str]]:
-    """Every heading outside a fenced code block, as (line index, level, text)."""
+    """Every heading outside a fenced code block, as (line index, level, text).
+
+    CommonMark opens a fence with either backticks or tildes. Recognising only
+    backticks made a `~~~` block invisible, so a `#` inside one read as a heading
+    and a fragment naming it resolved to code-block bytes -- a grader digesting
+    the wrong thing rather than refusing, which is worse than either. A fence
+    closes only on its own character, so the two kinds do not cancel each other.
+    """
     found: list[tuple[int, int, str]] = []
-    fenced = False
+    fence = ""
     for index, line in enumerate(lines):
-        if line.lstrip().startswith("```"):
-            fenced = not fenced
+        stripped = line.lstrip()
+        opener = next((mark for mark in ("```", "~~~") if stripped.startswith(mark)), "")
+        if opener and (not fence or opener == fence):
+            fence = "" if fence else opener
             continue
+        fenced = bool(fence)
         if fenced:
             continue
         match = HEADING.match(line)

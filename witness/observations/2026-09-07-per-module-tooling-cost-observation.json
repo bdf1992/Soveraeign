@@ -1,0 +1,205 @@
+{
+ "case_id": "WITNESS-2026-09-07-PER-MODULE-TOOLING-COST-1",
+ "participant_id": "claude-opus-5/sov-witness@2026-09-07-per-module-tooling-cost",
+ "artifact_revision": "bd94865ed3f1d451281be7a97e9c233f6ba3423e",
+ "participant_claim": "COMPLETED",
+ "observed": {
+  "subject": "per-module-tooling-cost: scripts/sovtooling/driver.py runs a shard's modules in one process and times each; scripts/run_tooling_tests.py reports per-module cost and derives MODULE_WEIGHTS under --weights; branch feat/per-module-tooling-cost, base b1448eeb458afa4a8c60b57c1cb46906246af7f7 (origin/main)",
+  "pass": 1,
+  "verdict": "RATIFIABLE_WITH_RESIDUALS",
+  "standing_supported": "OPEN -> BUILT",
+  "standing_note": "Supports BUILT. WITHHOLDS BUILT -> WITNESSED on F2 and F3, both MATERIAL and both inside the concern this change owns. This is an observation. It settles nothing and ratifies nothing; only Bdo ratifies a judgement-typed claim.",
+  "observer_id": "claude-opus-5/sov-witness@2026-09-07-per-module-tooling-cost",
+  "observer_independence_basis": "This participant built nothing, edited no repository file, and launched no helper. The only file written is this receipt. Every measurement ran in two detached git worktrees frozen at bd94865 and b1448ee under the session scratchpad, and every probe tree was a scratch temporary directory; the repository working tree was empty in git status --porcelain at bd94865 before the first measurement, between runs, and immediately before this receipt was written. The builder's commit message located the subject and was not taken as evidence: every number below was re-derived.",
+  "observer_relation": "INDEPENDENT_OF_BUILDER",
+  "observed_at": "2026-09-07T00:00:00Z",
+  "candidate_commit": "bd94865ed3f1d451281be7a97e9c233f6ba3423e",
+  "candidate_tree": "482de94ed773b0d924909ac4970bdde86af000c3",
+  "base_commit": "b1448eeb458afa4a8c60b57c1cb46906246af7f7",
+  "observed_state_addresses": [
+   "scripts/run_tooling_tests.py",
+   "scripts/sovtooling/driver.py",
+   "scripts/sov_tooling_verdict.py",
+   "scripts/sovverify/checks.py",
+   "scripts/sovverify/integrity.py",
+   "scripts/tests/test_run_tooling_tests.py",
+   "contracts/verification-budget.json"
+  ],
+  "observed_state_digests": [
+   "sha256:f256e9b01ab3deb0e24eb158e4073a960b28043243da23e5f86ac10c4e520a8e",
+   "sha256:79289e5bfb4dbf44c43e4713316eff35d86a183e04aed1073c558cc9c82080d8",
+   "sha256:1d42cc101e8f9eb238669171619350cf4e79cd1b879412246ceda226c93590e8",
+   "sha256:c105b60b49e018f17a4036e8cb174cb413ee089bfd0639b7d3ffcb21bb0454f1",
+   "sha256:f63e5cdea6422069582f627e644ee03cd5a6abe5082af48d11cb352d7dcadfb5",
+   "sha256:f87f146d6fdbcea4c74ec44ed974d3b6da71ee56bb5423d19ea9fa0b67bf970e",
+   "sha256:c535b1fa069472425a0c6c308c4d531f99d31ef9a73ce2d9c191530f68051644"
+  ],
+  "base_state": {
+   "MODULE_WEIGHTS block @b1448ee": "sha256:a1e866b3371048426179efedf8bca6e23407c750b5f347807f2e5940cbef7123",
+   "MODULE_WEIGHTS block @bd94865": "sha256:a1e866b3371048426179efedf8bca6e23407c750b5f347807f2e5940cbef7123"
+  },
+  "commands": {
+   "freeze": {
+    "command": "git status --porcelain; git rev-parse HEAD; git worktree add <scratch>/wt-cand bd94865 --detach; git worktree add <scratch>/wt-base b1448ee --detach",
+    "exit": "0",
+    "excerpt": "porcelain empty before and after every measurement; HEAD bd94865, tree 482de94; both worktrees created clean (trap T6 discharged by measuring in frozen worktrees, not the shared branch)"
+   },
+   "weights_bytes": {
+    "command": "git show <rev>:scripts/run_tooling_tests.py | extract MODULE_WEIGHTS block | sha256",
+    "exit": "0",
+    "excerpt": "a1e866b3371048426179efedf8bca6e23407c750b5f347807f2e5940cbef7123 at BOTH b1448ee and bd94865; 8 lines, 16 entries; claim 3 confirmed byte-for-byte"
+   },
+   "test_count_base": {
+    "command": "for each of the 4 shards: python -m unittest scripts.tests.<27-29 modules> in wt-base; sum 'Ran N tests'",
+    "exit": "0 x4",
+    "excerpt": "704 + 520 + 441 + 485 = 2150 tests; all shards OK (shard 2 OK (skipped=4))"
+   },
+   "test_count_cand": {
+    "command": "drive every shard through the artifact's own driver.run_module, in the driver's order, 4 shards concurrent; parse 'Ran N tests' from the stream run_module returns",
+    "exit": "0",
+    "excerpt": "111 modules, 2158 tests, 0 failed, 0 modules without a count"
+   },
+   "count_diff": {
+    "command": "per-module static loadTestsFromName countTestCases at b1448ee vs per-module executed count at bd94865",
+    "exit": "0",
+    "excerpt": "module set identical (111); exactly ONE module differs: test_run_tooling_tests 7 -> 15 (+8); all other 110 modules identical; total 2150 -> 2158, delta +8 = exactly the 8 new PerModuleCost cases. No test dropped."
+   },
+   "peer_counts": {
+    "command": "re-derive measured_weights from own measurement, then partition(111 modules, 4) under the committed table and under the derived table; locate test_sov_fresh.py's bucket",
+    "exit": "0",
+    "excerpt": "committed table: bucket 27 (26 peers), all sizes [27,27,29,28]. derived table: bucket 31 (30 peers), all sizes [31,26,26,28]. The commit message's '29' matches NO value for test_sov_fresh under the committed table; 29 is the largest bucket in that partition, which is a different module's bucket."
+   },
+   "wall_time_of_the_two_tables": {
+    "command": "sum own per-module measured seconds per bucket under each table",
+    "exit": "0",
+    "excerpt": "committed [12.33, 9.79, 10.37, 9.74] max 12.33s; derived [9.49, 10.23, 10.29, 12.21] max 12.21s. 'buys no wall time' reproduced (0.12s, noise)."
+   },
+   "oracle_probe": {
+    "command": "own miniature-tree probe (scratch only), 12 cases, run identically against wt-base and wt-cand",
+    "exit": "0",
+    "excerpt": "candidate refuses (rc=1) and names the module for: failing test among 5 passing; failing module sorted first; raised exception; syntax error; import error; and refuses an empty tree. Passes a clean tree and a zero-test module. DELIBERATE-MARKER text reaches stdout in every assertion/exception case. Oracle preserved."
+   },
+   "failfast_case": {
+    "command": "same probe, args ('--failfast',), a passing and a failing module",
+    "exit": "base 1; candidate 2",
+    "excerpt": "base rc=1, failure marker present, runner ran. candidate rc=2, 'run_tooling_tests.py: error: unrecognized arguments: --failfast', no module executed, no marker. Finding F2."
+   },
+   "systemexit_probe": {
+    "command": "lone module doing sys.exit(0) at import while defining a failing test; and the same module ahead of a failing peer",
+    "exit": "0 / 1 at both revisions",
+    "excerpt": "IDENTICAL at base and candidate: lone case PASSes with the failing test hidden (rc=0); peer case refuses. Pre-existing hazard, NOT introduced by this change. Residual R1."
+   },
+   "cost_population_mismatch": {
+    "command": "12 modules, one of which sys.exit(0)s its shard; candidate runner",
+    "exit": "0",
+    "excerpt": "'== tooling cost: 9 modules, 4 shards ==' printed directly above 'PASS: repository tooling tests (12 modules, 4 shards)', exit 0. Three modules never ran; both numbers are on screen and neither is compared. Finding F3."
+   },
+   "loader_residue": {
+    "command": "check 'loadTestsFromName' in vars(unittest.defaultTestLoader) before and after running test_run_tooling_tests, then class-patch unittest.TestLoader.loadTestsFromName and read it through defaultTestLoader",
+    "exit": "0",
+    "excerpt": "before False, after True (holds the correct bound method). A later class-level patch reads back False (shadowed) where it would read True before. 14 modules run after this one in shard 4 and all pass. Finding F5."
+   },
+   "verify_candidate": {
+    "command": "python scripts/verify.py in wt-cand, run twice (AGENTS.md step 6b)",
+    "exit": "0; 0",
+    "excerpt": "run 1: PASS 52 checks in 16.311s, tooling check 15.327s wall / 33.637s cpu. run 2: PASS 52 checks in 17.294s, tooling check 16.348s. Both DEBT (no wall-clock grade), no check FAIL. 46 '^FAIL' lines are the conformance oracle's declared defeating fixtures, count identical at base."
+   },
+   "verify_base": {
+    "command": "python scripts/verify.py in wt-base",
+    "exit": "0",
+    "excerpt": "tooling check 16.041s wall / 35.193s cpu; candidate is FASTER in-verify on this host, not slower"
+   },
+   "isolated_timing": {
+    "command": "perf_counter around python scripts/run_tooling_tests.py, 6 runs per revision, ALTERNATING order to cancel host drift",
+    "exit": "0 x12",
+    "excerpt": "base [12.830,12.685,13.250,12.853,12.715,12.880] mean 12.869 min 12.685; cand [12.880,12.583,12.693,12.578,12.854,13.000] mean 12.765 min 12.578. Delta mean -0.104s, delta min -0.107s: the candidate is at or below base while running 8 more tests. The claimed +0.398s regression is not reproduced."
+   },
+   "lint": {
+    "command": "python scripts/lint.py in wt-cand",
+    "exit": "0",
+    "excerpt": "PASS: repository hygiene (1225 text files, 563 Python modules, 10 named debt); driver.py 55 lines, runner 226 lines, both under the 300-line ceiling"
+   },
+   "verdict_integrity": {
+    "command": "python scripts/sov_tooling_verdict.py in wt-cand",
+    "exit": "0",
+    "excerpt": "PASS: tooling verdict (broken trees refuse, clean tree passes, empty tree refuses, check identity bound) -- but see F2: one of its four cases is now vacuous"
+   },
+   "cost_distribution": {
+    "command": "own per-module measurement, 111 modules",
+    "exit": "0",
+    "excerpt": "42.23s total module cost; top 14 modules hold 69.2%; test_sov_fresh 5.437s. The commit's '69% in 14 of 111, led by test_sov_fresh at 5.4s' reproduces exactly."
+   }
+  },
+  "findings": {
+   "F1": {
+    "severity": "MINOR",
+    "held": false,
+    "detail": "The commit message's rejection rationale does not re-derive. It says the derived table 'pack[s] the heaviest module into 31 peers where the current entry gives 29'. Under the committed MODULE_WEIGHTS the heaviest module test_sov_fresh.py lands in a bucket of 27 (26 peers), deterministically and independent of any measurement; 29 is merely the largest bucket in that partition and belongs to a different module. The derived side reproduces at 31 (30 peers). The true comparison is 31 vs 27, so the derived table is worse than the record says and the decision not to adopt survives, but the number entered in the permanent record is wrong."
+   },
+   "F2": {
+    "severity": "MATERIAL",
+    "held": false,
+    "detail": "The --failfast case in sov_tooling_verdict.verdict_defects is now vacuous. At b1448ee the runner parsed no argv, so --failfast was ignored, the miniature tree really ran, the failing module really refused, and the case observed exit 1 from the runner's own verdict path. At bd94865 the new argparse rejects the unknown flag with exit 2 before a single module is loaded; the case still sees non-zero, still passes, and now grades argparse's usage error instead of the runner's verdict. Proven: candidate rc=2, stderr 'unrecognized arguments: --failfast', no module executed, failure marker absent; base rc=1 with the marker present. This is the repository's named defect class -- a check that no longer reads the bytes it grades -- introduced by this commit and not reported in it. The other three cases still genuinely grade the runner, so the check would still catch a runner that swallowed shard failures."
+   },
+   "F3": {
+    "severity": "MATERIAL",
+    "held": false,
+    "detail": "The new cost reading is never compared against the module population it is a reading of. run_tooling_tests.main now holds both len(modules) and len(costs) and prints both lines adjacent to each other, and grades neither. Demonstrated with 12 modules where one exits its shard process with status 0 at import: the runner prints '== tooling cost: 9 modules, 4 shards ==' immediately above 'PASS: repository tooling tests (12 modules, 4 shards)' and exits 0, with three modules never run. The swallow itself is pre-existing and identical at base (R1); what is new is that this change is the first to hold the evidence that would refuse it and chooses to declare rather than measure. A single equality between the two counts would convert a silent PASS into a refusal."
+   },
+   "F4": {
+    "severity": "MINOR",
+    "held": false,
+    "detail": "The driver computes and prints a per-module PASS/FAIL token on every COST_MODULE line, and no consumer ever reads it. module_costs reads only parts[1] and parts[2]; main filters every COST_MODULE-prefixed line out of the shard log before printing. The per-module verdict is therefore serialised and discarded, and the cost report lists a failing module's seconds indistinguishably from a passing one's -- confirmed in the 'one failing among five passing' probe, whose cost section reads only '0.006s (6 module(s) under 1.000s)'. A token that looks authoritative in a log and is read by nobody is the shape the repository's own history warns about."
+   },
+   "F5": {
+    "severity": "MINOR",
+    "held": false,
+    "detail": "test_a_loader_that_raises_refuses_one_module_and_not_the_whole_shard restores behaviour but leaks state. It assigns and restores an INSTANCE attribute on the process-wide unittest.defaultTestLoader singleton. Before the module runs, 'loadTestsFromName' is not in vars(unittest.defaultTestLoader); after it runs, it is, holding the correct bound method. Calls behave identically, and the 14 modules that run after it in shard 4 all pass, so there is no live consequence. The consequence that exists is silent shadowing: a later class-level patch of unittest.TestLoader.loadTestsFromName is invisible through defaultTestLoader after this test has run -- proven to read False where it reads True beforehand. unittest.mock.patch.object restores by deleting the attribute and does not leave the residue."
+   },
+   "F6": {
+    "severity": "MINOR",
+    "held": false,
+    "detail": "The 'preserves the existing isolation' claim needs one qualifier. Process isolation is preserved exactly: still one subprocess per shard, still all of a shard's modules in one interpreter. Load-order isolation is not identical. python -m unittest a b c imports every named module before running any test; the driver imports module N+1 only after module N's tests have finished, so import-time state (cwd, environment, sys.modules) is now exposed to the preceding module's test side effects in a way it was not. No module among the 111 is affected today -- all pass, and per-module counts are identical for all 110 unchanged modules -- so the claim holds empirically. The wording is stronger than what was measured."
+   },
+   "F7": {
+    "severity": "MINOR",
+    "held": false,
+    "detail": "Two of the eight new cases call driver.run_module('test_sov_kernel'), so test_sov_kernel's 23 tests execute three times per suite run: once as its own module and twice nested inside test_run_tooling_tests. The nested runtime is attributed to test_run_tooling_tests by the very instrument this change adds. The amount is small here (test_sov_kernel measures 0.004s) but the cost reader's own module is the one that misattributes, which is the defect the change exists to remove."
+   },
+   "F8": {
+    "severity": "MINOR",
+    "held": false,
+    "detail": "The commit message says 'Three tests here named test_sov_branch directly'. The diff shows three hardcodes removed, but only two named test_sov_branch.py; the third, in test_full_corpus_reader_gets_fewer_peers_than_default_modules, named test_sov_docs.py. The count is right and the repair is right; the module named in the record is not."
+   }
+  },
+  "reproduced": [
+   "MODULE_WEIGHTS is byte-identical at b1448ee and bd94865 (sha256 a1e866b3...7123 over the whole 8-line block, 16 entries)",
+   "no test is dropped: 2150 -> 2158 tests, module set identical at 111, exactly one module's count changes (test_run_tooling_tests 7 -> 15), delta +8 equals the 8 new cases",
+   "no module's verdict changes: all 111 modules pass under the per-module driver; all 4 shards passed at base",
+   "the driver preserves the oracle: assertion failure, raised exception, syntax error, import error and an empty tree all refuse with a non-zero exit, and the failing module and its message reach stdout",
+   "python scripts/sov_tooling_verdict.py exits 0 and its remaining three cases genuinely grade the runner's verdict path",
+   "python scripts/verify.py exits 0 at bd94865, twice; python scripts/lint.py exits 0",
+   "15 cases in scripts/tests/test_run_tooling_tests.py",
+   "'buys no wall time': predicted max bucket 12.33s under the committed table vs 12.21s under the derived table on own measurements",
+   "'69% of the cost in 14 of 111 modules, led by test_sov_fresh at 5.4s': measured 69.2%, 14 modules, 5.437s",
+   "the runner's failure verdict comes from the shard subprocess exit code, not from parsing PASS/FAIL out of stdout; only the cost reporting reads the text stream"
+  ],
+  "dissented": [
+   "claim 6, the cost figures: '15.490s against a 15.092s base' is not reproduced. Alternating 6 isolated runs per revision, the candidate is 0.104s FASTER on the mean (12.765s vs 12.869s) while running 8 more tests, and in-verify it reads 15.327s / 16.348s against a 16.041s base. The instrument's overhead is below this host's noise floor. The claimed regression is real in neither direction here; the claim is conservative, not inflated.",
+   "the commit message's peer-count rationale: 31 vs 27, not 31 vs 29 (F1)",
+   "the commit message's 'three tests named test_sov_branch': two did, one named test_sov_docs (F8)",
+   "'preserves the existing isolation' is true of process isolation and not of load-order isolation (F6)"
+  ],
+  "residuals": [
+   "R1 a module that calls sys.exit(0) at import silently removes itself and the rest of its shard from the run while the suite reports PASS. IDENTICAL at b1448ee and bd94865, so pre-existing and not this change's regression. F3 is the finding that this change now holds the evidence to refuse it.",
+   "R2 MODULE_WEIGHTS is stale by its own stated rule on this host's measurements: test_sov_clarity.py measures 2.011s and carries no entry, while test_sov_snapshot.py (weight 11, measures 0.960s), test_sov_branch.py (weight 12, measures 0.875s) and test_verify_clocks.py (weight 3, measures 0.427s) carry entries below the table's own 1.0s threshold. The commit knowingly declines to regenerate and documents why; recorded, not failed.",
+   "R3 the builder's host readings (15.490s / 15.092s) cannot be reproduced or falsified off that host; only the delta was independently testable, and it does not hold here.",
+   "R4 trap T2 applies: verify exit 0 is not conformance. 46 declared conformance defeating fixtures report FAIL at both revisions, an identical count; this change touches none of them.",
+   "R5 the tooling check runs at 15.3-16.3s pooled inside verify and 12.6-12.9s isolated on this host, so it remains below the 30.000s catastrophic ceiling in contracts/verification-budget.json by a wide margin, and this change does not move it toward that ceiling. It remains the largest single budget overrun in the suite at both revisions.",
+   "R6 no defeating fixture exists for the cost reading itself. The new tests grade the parser (module_costs), the derivation (measured_weights) and the loader guard, but nothing proves a reported number corresponds to real elapsed work: the two behavioural cases assert only seconds >= 0.0 and seconds > 0.0. The cost report is therefore reported-but-unwitnessed output, which is admissible for a scheduling hint and would not be for a gate."
+  ],
+  "judgement_items": [
+   "None requiring Bdo. F1 through F8 are ordinary engineering repairs inside the concern that owns them and are returned to the builder, not filed as tickets (AGENTS.md, Closure ownership). No external-world effect, secret, naming, publication, irreversible effect or resource commitment is reached by this change."
+  ]
+ }
+}

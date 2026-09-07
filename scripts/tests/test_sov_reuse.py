@@ -24,28 +24,42 @@ from sovreuse import discover, fixture, settle  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 
 
+_SHARED: dict = {}
+
+
+def shared_fixture() -> tuple[dict, Path]:
+    """One fixture for the whole module: the builder's run costs more than every reading."""
+    if "fixture" not in _SHARED:
+        temp = tempfile.TemporaryDirectory()
+        _SHARED["temp"] = temp
+        _SHARED["root"] = Path(temp.name)
+        _SHARED["fixture"] = fixture.build(_SHARED["root"])
+        _SHARED["runs"] = {}
+        unittest.addModuleCleanup(temp.cleanup)
+    return _SHARED["fixture"], _SHARED["root"]
+
+
+def variant(name: str) -> dict:
+    """Each variant runs once per module; every case reads the same result."""
+    built, root = shared_fixture()
+    if name not in _SHARED["runs"]:
+        _SHARED["runs"][name] = fixture.run_variant(built, name, root)
+    return _SHARED["runs"][name]
+
+
 class FixtureCase(unittest.TestCase):
-    """One fixture per class: the builder's run costs more than every reading of it."""
-
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls._temp = tempfile.TemporaryDirectory()
-        cls.temp = Path(cls._temp.name)
-        cls.fixture = fixture.build(cls.temp)
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        cls._temp.cleanup()
+    def setUp(self) -> None:
+        self.fixture, self.temp = shared_fixture()
 
 
 class PositiveRun(FixtureCase):
     def test_both_q3_predicates_hold(self) -> None:
-        result = fixture.run_variant(self.fixture, "positive", self.temp)
+        result = variant("positive")
         self.assertTrue(result["passed"], result["grades"])
         self.assertEqual(result["other_defects"], [])
 
     def test_every_reading_comes_from_the_artifact(self) -> None:
-        result = fixture.run_variant(self.fixture, "positive", self.temp)
+        result = variant("positive")
         q32 = result["observations"]["P15-Q3.2"]
         self.assertEqual(q32["result_address"], fixture.FIXTURE_SUBJECT)
         self.assertEqual(q32["standing"], "WITNESSED")
@@ -59,28 +73,28 @@ class PositiveRun(FixtureCase):
 
 class DefeatingVariants(FixtureCase):
     def test_each_variant_fails_its_predicates_for_its_reason(self) -> None:
-        for variant, expected in fixture.EXPECTED_FAILURES.items():
-            result = fixture.run_variant(self.fixture, variant, self.temp)
+        for name, expected in fixture.EXPECTED_FAILURES.items():
+            result = variant(name)
             for predicate in result["grades"]:
                 self.assertEqual(result["grades"][predicate], expected.get(predicate, []),
-                                 variant)
+                                 name)
 
     def test_no_grant_reaches_the_node_and_is_refused_by_it(self) -> None:
-        result = fixture.run_variant(self.fixture, "positive", self.temp)
+        result = variant("positive")
         self.assertIsNotNone(result["reached"]["capability"])
         self.assertEqual(result["principal"], fixture.FIXTURE_READER)
         self.assertNotEqual(result["principal"], fixture.sov_fresh.FIXTURE_PRINCIPAL)
-        result = fixture.run_variant(self.fixture, "no-grant", self.temp)
+        result = variant("no-grant")
         self.assertFalse(result["used"]["used"])
         self.assertIn("principal:bdo", result["used"]["reason"])
 
     def test_tampered_export_is_refused_not_raised(self) -> None:
-        result = fixture.run_variant(self.fixture, "journal-tampered", self.temp)
+        result = variant("journal-tampered")
         self.assertIsNone(result["reached"]["capability"])
         self.assertIn("BrokenChain", result["reached"]["reason"])
 
     def test_head_private_never_restores(self) -> None:
-        result = fixture.run_variant(self.fixture, "head-private", self.temp)
+        result = variant("head-private")
         self.assertIsNone(result["reached"]["capability"])
         self.assertIn("outside the export", result["reached"]["reason"])
         self.assertFalse(result["used"]["used"])
@@ -168,10 +182,7 @@ class Refusals(unittest.TestCase):
         self.assertIn("PRINCIPAL_REQUIRED", done.stdout)
 
     def test_json_output_is_machine_readable(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
-            built = fixture.build(Path(temp))
-            result = fixture.run_variant(built, "positive", Path(temp))
-        json.dumps(result, default=str)
+        json.dumps(variant("positive"), default=str)
 
 
 if __name__ == "__main__":

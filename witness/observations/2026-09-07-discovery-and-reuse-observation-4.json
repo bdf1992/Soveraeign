@@ -1,0 +1,132 @@
+{
+  "case_id": "P15-X3-DISCOVERY-AND-REUSE-WITNESS-PASS-4",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07",
+  "artifact_revision": "57271f727b88032d2c1be908cf7ba819dae066d3",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "discovery-and-reuse",
+    "record": "witness/discovery-and-reuse.md",
+    "record_section": "Pass 4: commit 57271f7 (2026-09-07)",
+    "pass": 4,
+    "prior_receipts": [
+      "witness/observations/2026-09-07-discovery-and-reuse-observation.json",
+      "witness/observations/2026-09-07-discovery-and-reuse-observation-2.json",
+      "witness/observations/2026-09-07-discovery-and-reuse-observation-3.json"
+    ],
+    "verdict": "RATIFIABLE",
+    "standing_supported": "WITNESSED",
+    "standing_binds": "scripts/sov_reuse.py at 57271f727b88032d2c1be908cf7ba819dae066d3 and the instrument claim: the probe is what it says and grades what it says, on this host and on a clean clone; nine defeating variants each fail on a real state. First supported at pass 2, b0c013c; the instrument bytes are identical.",
+    "standing_note": "Supports BUILT -> WITNESSED for the instrument and confirms the candidate for landing. Says nothing about P15-X3 holding for this node: both live predicates read unmet, truly.",
+    "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-07 pass 4 at 57271f7, clean-clone gates, candidate integrity and instrument commands (witness/discovery-and-reuse.md; witness/observations/2026-09-07-discovery-and-reuse-observation-4.json); first supported at pass 2, b0c013c",
+    "candidate_commit": "57271f727b88032d2c1be908cf7ba819dae066d3",
+    "candidate_tree": "fad1d5256c36567ee62f2823cd07d502be93b212",
+    "base_commit": "ee6080153c64938f43377617e1c4c1f231ddd00a",
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07",
+    "observer_relation": "INDEPENDENT_OF_BUILDER_DECLARED_SURFACE_ONLY",
+    "observer_independence_basis": "Separate launched witness session that did not build, edit, stage, or commit the change; readings came through git plumbing, the repository gates, the candidate tests and sovland.candidates._candidate_integrity on a clean clone of the candidate, and the instrument's declared surface on that clone and on the frozen shared tree. The candidate record was read to locate the subject and graded, not trusted; the builder's note, reports/2026-09-07-discovery-and-reuse-slice.md, acceptance/A24.json, and every uncommitted working-tree edit (STATUS.yaml, CLAUDE.md, .clarity/coverage.json, contracts/custodies/phase-1-5.json, witness/fresh-participation.md pass 7, observation-7) were not read as evidence.",
+    "observed_at": "2026-09-07",
+    "tree_state": "git rev-parse HEAD == 57271f7 before and after every command; shared working tree carried uncommitted files not in the candidate (M: .clarity/coverage.json, CLAUDE.md, STATUS.yaml, contracts/custodies/phase-1-5.json, witness/fresh-participation.md; ??: acceptance/A24.json, reports/2026-09-07-discovery-and-reuse-slice.md, observation-7) besides this witness's own; origin/main == main == base_commit; clean clone porcelain empty",
+    "observed_state_addresses": [
+      "contracts/custodies/phase-1-5.json",
+      "scripts/sov_reuse.py",
+      "scripts/sovland/candidates.py",
+      "scripts/sovreuse/__init__.py",
+      "scripts/sovreuse/discover.py",
+      "scripts/sovreuse/fixture.py",
+      "scripts/sovreuse/reuse.py",
+      "scripts/sovreuse/settle.py",
+      "scripts/tests/test_repository_candidate_effects.py",
+      "scripts/tests/test_sov_reuse.py"
+    ],
+    "observed_state_digests": [
+      "sha256:9b6041e9182f9bc4a969336f1ca5285ea86e66b220f64453c0297ccf08260602",
+      "sha256:0073fed70c01dde967ca806f754029b4a69da90534b82bcdf2ee27194dc42100",
+      "sha256:c274140a69a42afdd0ec87f386348eea4fb6f40219d88fd3aebf3e52fdc991f3",
+      "sha256:92d910507ca4697c7deb2af1dfa0c2cc6efe06e2fde7195520d981c15a105b22",
+      "sha256:753841e412bc89923e98bf0a182745bc682b6b0a22add5d182fc1afe1971c200",
+      "sha256:86b3da23c8236228c034337054c53ccb29425e65e61343071b810f665f4d44ff",
+      "sha256:0d364258e8e6c8213ed8155410e32ad57e53f28ad873682d847a7089acbed2a4",
+      "sha256:d2a0542d64c030dc42a988a0605ef51f19a8adc5c05aad9a152c4cb615cb60f1",
+      "sha256:6959179b8cdf79fb513ca7aaece1bf0e0df9c0458412b5807322f33bde2df4d3",
+      "sha256:e64a0da723acf81329a821304697cb0105d20f4ab027d2fbc42d4f27b75a5cab"
+    ],
+    "environment": {
+      "SOV_PRINCIPAL": "principal:claude-fable-5-1",
+      "SOV_PRINCIPAL_REGISTRY": "unset"
+    },
+    "commands": {
+      "changed_paths_vs_range": "git diff --name-only ee60801...57271f7 == record changed_paths (ten paths); git diff --stat ee60801 57271f7 -- docs/documentation.html empty",
+      "instrument_identity": "git rev-parse ea01dcc:<path> == 57271f7:<path> for the eight instrument paths and docs/documentation.html; git diff-tree -r ea01dcc 57271f7 -> M scripts/sovland/candidates.py, M scripts/tests/test_repository_candidate_effects.py",
+      "clone": "git clone --no-hardlinks of the candidate; HEAD 57271f7; porcelain empty; record copied into the clone's .local/candidates/",
+      "lint_clone": "python scripts/lint.py -> exit 0; PASS: repository hygiene (1204 text files, 562 Python modules, 10 named debt)",
+      "candidate_tests_clone": "python -m unittest scripts.tests.test_repository_candidate_effects scripts.tests.test_repository_candidate scripts.tests.test_sov_land -> exit 0; Ran 41 tests OK",
+      "candidate_integrity_clone": "candidates._candidate_integrity(record) -> OK; on a copy widened with docs/documentation.html -> CandidateRefused: candidate changed_paths do not describe its exact base...commit range",
+      "verify_clone": "python scripts/verify.py -> exit 0; documentation reader PASS (282 documents); repository tooling tests PASS (111 modules, 4 shards)",
+      "selfcheck": "python scripts/sov_reuse.py selfcheck (frozen shared tree) -> exit 0; nine variants, exact defects",
+      "live_clone": "python scripts/sov_reuse.py run --principal principal:claude-fable-5-1 (clean clone) -> exit 1; revision 571e936; eight trunk-drifted addresses; landing ee60801; inventory []; Q3.1 settlement was not against current state; Q3.2 fresh participant did not use the accepted result",
+      "live_shared_tree": "same command on the shared working tree -> exit 1, same two predicates, but revision 26b1887 and drift on the instrument's own paths: it read other sessions' uncommitted contracts/custodies/phase-1-5.json and witness/fresh-participation.md (pass 7); recorded as the shared tree's behaviour, not as evidence about the candidate"
+    },
+    "predicate_results": {
+      "record_changed_paths_equal_base_commit_range": {
+        "held": true,
+        "detail": "ten paths identical to git diff --name-only ee60801...57271f7"
+      },
+      "candidate_integrity_accepts_record_and_refuses_widened_copy": {
+        "held": true,
+        "detail": "OK; widened copy refused with the landing gate's own message"
+      },
+      "freeze_and_integrity_read_one_range": {
+        "held": true,
+        "detail": "both call repo.carried_paths -> git diff --name-only target...branch; graded request is a superset of the recorded range"
+      },
+      "verify_and_lint_pass_on_clean_checkout": {
+        "held": true,
+        "detail": "exit 0 and exit 0"
+      },
+      "candidate_tests_pass_on_clean_checkout": {
+        "held": true,
+        "detail": "41 tests OK including the new reverting-path case"
+      },
+      "instrument_bytes_identical_to_ea01dcc_and_b0c013c": {
+        "held": true,
+        "detail": "nine blob ids equal"
+      },
+      "selfcheck_passes_on_frozen_candidate": {
+        "held": true,
+        "detail": "exit 0; nine variants"
+      },
+      "live_reading_on_candidate_bytes_fails_on_exactly_two_true_facts": {
+        "held": true,
+        "detail": "clean clone; unchanged from passes 1-3"
+      },
+      "F5_closure_check_expression_executed": {
+        "held": false,
+        "detail": "residual as recorded"
+      },
+      "F7_inventory_excludes_checked_out_branch": {
+        "held": false,
+        "detail": "residual as recorded; by design"
+      }
+    },
+    "findings": [
+      "F1 F2 F3 F4 F6 F8 F9 remain discharged (identical bytes)",
+      "F5 residual",
+      "F7 residual",
+      "F10 LOW observation: the shared-tree live reading describes other sessions' uncommitted edits, not the candidate; attestable reading taken on the clone"
+    ],
+    "judgement_items": [
+      "J1 which reading of 'settlement follows current state' P15-Q3.1 owns",
+      "J2 whether a grant to principal:claude-fable-5-1 on the live node is Bdo's to issue and the intended route, or the control reading as principal:claude-fable-5 is the reuse the clause asks for"
+    ],
+    "residuals": [
+      "no clarity review for witness/discovery-and-reuse.md",
+      "mutants and reuse unit suite not re-run this pass; identical bytes to pass 2",
+      "sov_land.py itself not run by this witness"
+    ]
+  },
+  "telemetry": {
+    "probe_location": "no probe file; readings came through git, the repository gates, the candidate tests and sovland.candidates on a clean clone, and scripts/sov_reuse.py on the clone and the frozen shared tree",
+    "tree_state": "57271f727b88032d2c1be908cf7ba819dae066d3 frozen; HEAD unchanged after every command",
+    "after_writing": "porcelain shows this witness's records and receipts as untracked plus the uncommitted files named in observed.tree_state; .local/ is gitignored"
+  }
+}

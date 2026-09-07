@@ -1,0 +1,80 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A24",
+  "claim": "A participant with no private history can now discover, from the committed artifact alone, the result the fresh-participation custody carries at WITNESSED, reconstruct why it stands, bring the node's journal back on a host that never held it, and try to use it as the principal it declares; and the instrument that does this can fail, nine ways, each for the defect it names. Run on this repository as principal:claude-fable-5-1 it reads two true facts: the witness that supports the P15-X1 member digested files that moved before they landed, and the node grants principal:claude-fable-5 and nobody else. What needs your judgement is one thing: whether principal:claude-fable-5-1 is to be granted on node:local, which is an office act in your name, or whether the reuse P15-Q3 asks for is a second session of the principal the node already grants.",
+  "subject": {
+    "artifact": "scripts/sov_reuse.py",
+    "from_standing": "OPEN",
+    "to_standing": "WITNESSED"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": {
+    "actor_id": "urn:soveraeign:actor:sov-witness",
+    "actor_kind": "MODEL"
+  },
+  "visible_result": {
+    "demo": [
+      "python scripts/sov_reuse.py selfcheck",
+      "SOV_PRINCIPAL=principal:claude-fable-5-1 python scripts/sov_reuse.py run",
+      "python -m unittest scripts.tests.test_sov_reuse",
+      "python scripts/sov_custody.py board custody:phase-1-5/discovery-and-reuse"
+    ],
+    "shows": "selfcheck builds a result under a fixture root (a fixture builder's run, its lease released, its journal exported, a history with a merge and a remote, a fixture witness record and receipt) and proves the positive variant passes while nine defeating variants each fail with exactly the defects they declare: no witness record, a moved byte, an unknown revision, a lease or branch left behind, a head the builder kept private, a tampered export, a principal the node never granted, and a registry read from the environment. run reads this repository: it finds the fresh-participation member, its pass-6 record and receipt, the head the receipt holds outside the export, the export that replays to it and the PR #218 merge that landed the witnessed revision; restores the 85-entry journal into an empty node on this host; and is refused a session because the journal grants no capability to this principal. The board shows one member at VERTICAL_SLICE.",
+    "expect": "selfcheck: PASS, nine defeating variants; run: FAIL with P15-Q3.1 'settlement was not against current state' and P15-Q3.2 'fresh participant did not use the accepted result', eight drifted addresses named, landing ee60801, inventory empty; unittest: 15 cases OK; board: one ITEM at VERTICAL_SLICE."
+  },
+  "evidence": [
+    {
+      "address": "scripts/sovreuse/discover.py",
+      "says": "every read is of a committed file: the custody collection, the witness record through the standing gate's own reader, the receipt, the exports under nodes/; a path read out of prose is reported as prose"
+    },
+    {
+      "address": "scripts/sovreuse/settle.py",
+      "says": "P15-Q3.1 as measurement: the record and an independent receipt, the witnessed digests against the bytes now in the tree including the result's own address, the merge that carried the witnessed revision onto the trunk's first-parent line, and inventory scoped to the custody and the revision"
+    },
+    {
+      "address": "scripts/sovreuse/reuse.py",
+      "says": "P15-Q3.2 as measurement: restore refuses a truncated or tampered export, the node is entered through the P15-X1 probe, and used means the Gateway committed the crossing"
+    },
+    {
+      "address": "conformance/commissioning.py",
+      "says": "check_q31 and check_q32 grade the observations; the oracle is unchanged and imports none of the layers"
+    },
+    {
+      "address": "witness/discovery-and-reuse.md",
+      "says": "five passes by a participant that built nothing here: NOT-YET at 26b1887 with eight findings, RATIFIABLE-WITH-CONDITIONS at b0c013c with the instrument claim supported at WITNESSED and one condition on the documentation page, RATIFIABLE at ea01dcc, at 57271f7 after the landing gate refused a candidate record that misdescribed its range, and at 60d5615 after the hosted runner crossed verify's catastrophic ceiling; the fifth observation is the one the grant landing consumed"
+    },
+    {
+      "address": "witness/fresh-participation.md",
+      "says": "pass 7 at 26b1887: the eight addresses the live reading names as drifted, each placed inside or outside the P15-X1 claim, and WITNESSED re-supported for that member at that revision"
+    },
+    {
+      "address": "reports/2026-09-07-discovery-and-reuse-slice.md",
+      "says": "the closed path, the composition findings, the defaults taken, the residuals, and the one owner decision"
+    }
+  ],
+  "why_it_matters": "P15-X3 is the clause that says a result survives its builder. Until now nothing in the repository read the artifact the way a stranger would and said whether the accepted result could be found, understood and used without asking anyone. This does, and it says no twice, for reasons the record supports: a witness receipt goes stale the moment a shared file moves, and authority does not travel with a journal. Both are the product working, and both are now measured instead of assumed. The composition also held: every layer the slice needed already existed, so P15-X3 cost reading, not building.",
+  "what_could_defeat_it": [
+    "a fresh participant on another host, given only the committed artifact, who cannot reproduce the live reading's two facts",
+    "a receipt address finer than a file that makes the Q3.1 drift reading disappear without a new witness pass, which would mean the reader was measuring the receipt's granularity rather than settlement",
+    "a defeating variant that passes after a real regression in the layer it names, which would mean the variant defeats the fixture rather than the reader",
+    "the closure COMMAND on the custody being executed by something and disagreeing with the unit suite"
+  ],
+  "residuals": [
+    "principal:claude-fable-5-1 holds no grant on node:local; the office act is yours (J2 in witness/discovery-and-reuse.md)",
+    "the pass-7 receipt for P15-X1 digests the custody collection; recording pass-7 words in that member drifts it again (composition finding 2 in the report)",
+    "nothing executes a custody's closure COMMAND; the unit suite is what measures the reader (witness F5, P15-X1's F14)",
+    "the orientation page pins the verify check count, so the standing grant cannot add a check; this slice runs under the tooling-tests check for that reason (composition finding 4)",
+    "scripts/tests/test_sov_land.py writes fixture landings into the live .local/landing/ledger.ndjson under verify; 60 of 72 rows on this host are grant:test (composition finding 5, routed to the verification domain)",
+    "whether P15-Q3.1 owns 'no observed byte moved' or 'the exact revision landed' is the witness's J1; the reader implements the first",
+    "scripts/sov_land.py land-candidate writes no row to the landing ledger; the candidate landing of 60d5615 (local settlement 90275ae, remote merge aeecc60 by PR #219) is recorded in the report and nowhere the ledger reads (composition finding 10)",
+    "the tooling-tests shard weights were remeasured at 111 modules; nothing enforces remeasurement when the population changes (composition finding 9)"
+  ],
+  "on_accept": "The member scripts/sov_reuse.py stands at VERTICAL_SLICE, WITNESSED, under custody:phase-1-5/discovery-and-reuse, and the custody's floor in contracts/phase-progress.json may be raised from ROOT_POINT to VERTICAL_SLICE as the opening note reserves for a witnessed member. If you also direct the office act for principal:claude-fable-5-1, the live reading can be re-taken and P15-Q3.2 measured met on node:local; if you rule that the clause wants the granted principal's second session, the reading stands as it is and J2 closes.",
+  "on_reject": "Say which reading is wrong: that discovery may read paths out of a member's prose, that settlement is the merge carrying the witnessed revision, that inventory is scoped to the custody and revision, or that use means a committed crossing. Reverting is deleting scripts/sov_reuse.py, scripts/sovreuse/, scripts/tests/test_sov_reuse.py and the member, and restoring the custody's closure check to python scripts/sov_next.py; nothing existing was weakened and no oracle changed."
+}

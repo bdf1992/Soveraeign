@@ -52,7 +52,7 @@
           "address": "scripts/sov_fresh.py",
           "stage": "VERTICAL_SLICE",
           "standing": "WITNESSED",
-          "work_state": "PRESENTED",
+          "work_state": "LANDED",
           "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-06 pass 6 at 571e936, instrument and custody commands (witness/fresh-participation.md; witness/observations/2026-09-06-fresh-participation-observation-6.json); first supported at pass 4, 0cf5a57",
           "note": "the closed path host session -> principal -> campaign -> work -> lease -> node session and grant -> one admitted crossing and three the Gateway refuses -> Record projection -> session end -> survival and cleanup read back -> instrument; P15-Q1.1 to Q1.3 graded by conformance/commissioning.py, every identity read from a node record or None; three defeating variants are real node states. A node whose permits office nobody has opened reads Q1.3 unmet. Witness record: witness/fresh-participation.md (pass 1 at d40d61f NOT-YET, pass 2 at 161d559 NOT-YET, pass 3 at 8fd7716 RATIFIABLE-WITH-CONDITIONS, pass 4 at 0cf5a57 REPRODUCED, pass 5 at 219686d REPRODUCED with dissent on who acted, pass 6 at 571e936 REPRODUCED for journal custody). The witnessed standing binds to 0cf5a57 and to the instrument claim: the probe is what it says and grades what it says. It says nothing by itself about P15-X1 holding for this node. reports/observations/2026-09-06-fresh-participation-live-node-2.json is session-651746's self-report, citing the node's own journal at nodes/node-local/journal/23d3b48086be.json, of opening a persisted node's permits office under the name principal:bdo and entering it as principal:claude-fable-5 with all three predicates holding; witness pass 5 at 219686d reproduced the run and read that nothing in the record authenticates who passed that name (F35, J4). Whether the session acted at Bdo's direction is a claim of the session's transcript, not of the record"
         }
@@ -133,7 +133,7 @@
       "entry_stage": "ROOT_POINT",
       "target_stage": "EXPLODED_SURFACE",
       "closure": {
-        "check": {"kind": "COMMAND", "expression": "python scripts/sov_next.py"},
+        "check": {"kind": "COMMAND", "expression": "python scripts/sov_reuse.py selfcheck"},
         "judgement_seat": "seat:root",
         "defeated_by": "a settled run with a lease, branch, worktree, or projection left behind, or a result a fresh participant cannot reach without asking its builder"
       },
@@ -145,7 +145,17 @@
         "maturity": "DISCOVERY_ENVELOPE",
         "dimensions": [{"dimension_id": "grants", "low": 0, "high": 1}, {"dimension_id": "judgement_units", "low": 1, "high": 1}]
       },
-      "members": [],
+      "members": [
+        {
+          "member_kind": "ITEM",
+          "address": "scripts/sov_reuse.py",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "PRESENTED",
+          "stage_observed_by": null,
+          "note": "the closed path artifact -> custody member at WITNESSED -> witness record and receipts named in its stage_observed_by -> bytes now at every address the witness observed -> the merge that landed the address -> inventory this host can read -> journal export restored to the head the receipt holds outside it -> the node entered as the declared principal -> instrument; P15-Q3.1 and Q3.2 graded by conformance/commissioning.py on values read from the artifact and the restored node. selfcheck builds the result under a fixture root and proves six defeating variants each fail their own predicates. The live reading against this repository as principal:claude-fable-5-1 reaches the node and is refused by it: the journal grants principal:claude-fable-5 and nobody else, so P15-Q3.2 reads unmet on this node until its root issues one. Composed from the fresh-participation layers, the node journal custody, the custody model and the standing gate's record reader; no new store, contract or vocabulary."
+        }
+      ],
       "depends_on": [],
       "cleanup_obligations": []
     },

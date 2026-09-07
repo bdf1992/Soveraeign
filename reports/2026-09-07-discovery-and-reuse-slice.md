@@ -139,6 +139,16 @@ is 546 lines of reading and 254 of fixture over them. What the composition expos
     60 of them fixtures when this session first read it, 138 with 115 when this sentence
     was written, and more by the time anyone reads it. None of them is this landing.
 
+11. The candidate CI job at `77421de` failed once in the tooling tests: `test_sov_diagrams`
+    wrote its scratch view into the live `diagrams/` directory and removed it, while
+    `test_sov_facets` in a parallel shard globbed the tree, found the file, and could not
+    read it. The two modules were in parallel shards before the reweight too; the new
+    partition changed the timing, not the defect. The grader resolves sources against
+    the root, so the scratch view and the tool's own selfcheck view now live in temp
+    directories. `test_sov_docs` edits the live `docs/documentation.html` in one case
+    while verify's documentation reader may read it in the pool; same shape, recorded,
+    not repaired here.
+
 ## Independent witness
 
 Five passes on this concern by `sov-witness`, each launched from this session into a fresh

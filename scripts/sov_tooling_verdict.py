@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 ROOT = Path(__file__).resolve().parent.parent
 RUNNER = ROOT / "scripts" / "run_tooling_tests.py"
+DRIVER = ROOT / "scripts" / "sovtooling"
 GRADED_CHECK = "repository tooling tests"
 GRADED_COMMAND = "scripts/run_tooling_tests.py"
 
@@ -34,6 +35,10 @@ def miniature(root: Path, modules: dict[str, str]) -> Path:
     tests = root / "scripts" / "tests"
     tests.mkdir(parents=True)
     shutil.copy(RUNNER, root / "scripts" / "run_tooling_tests.py")
+    # The runner reads per-module costs from the driver, so a miniature tree without
+    # it grades a runner that cannot start. This copy is what makes these trees a
+    # reading of the real runner rather than of a decapitated one.
+    shutil.copytree(DRIVER, root / "scripts" / "sovtooling")
     for name, body in modules.items():
         (tests / f"{name}.py").write_text(body, encoding="utf-8", newline="\n")
     return root / "scripts" / "run_tooling_tests.py"

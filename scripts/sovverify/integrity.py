@@ -13,7 +13,8 @@ INTEGRITY_CHECKS = (
         [sys.executable, "scripts/sov_tooling_population.py"],
         ROOT,
         "lists scripts/tests independently of the tooling runner and self-checks the comparison before trusting agreement, so narrowing the runner's discovery cannot remove the guard that detects it",
-        ("scripts/tests", "scripts/run_tooling_tests.py", "scripts/sov_tooling_population.py"),
+        ("scripts/tests", "scripts/run_tooling_tests.py", "scripts/sov_tooling_population.py",
+         "scripts/sovtooling"),
     ),
     Check(
         "tooling verdict integrity",
@@ -23,6 +24,7 @@ INTEGRITY_CHECKS = (
         (
             "scripts/run_tooling_tests.py",
             "scripts/sov_tooling_verdict.py",
+            "scripts/sovtooling",
             "scripts/sovverify/checks.py",
         ),
     ),

@@ -1,0 +1,171 @@
+{
+  "case_id": "WITNESS-2026-09-07-COMPRESSION-RUN-CLOSING-3",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07-closing",
+  "artifact_revision": "e7f659df03563650be448da344f3b4fe3a80936c",
+  "observed": {
+    "subject": "WORK: commit e7f659df03563650be448da344f3b4fe3a80936c, HEAD of claude/sovereign-phase-1-5-5uzffu (pushed; origin/claude/sovereign-phase-1-5-5uzffu == e7f659d), PR #220's head, presented to seat:root; base origin/main aeecc60. Pass 3, taken on e7f659d at the coordinator's direction because no pass on 6be70fb had been started. Change since 77421de: 6be70fb moves test_sov_diagrams' scratch view and sov_diagrams' selfcheck view from the live diagrams/ directory into temp directories and records composition finding 11 in the report; e7f659d commits the pass-2 receipt and adds one residual line to A24 closing F9. CLAUDE.md, STATUS.yaml, contracts/ and both witness records are byte-identical to 77421de.",
+    "pass": 3,
+    "prior_receipts": [
+      "witness/observations/2026-09-07-compression-run-closing-observation.json",
+      "witness/observations/2026-09-07-compression-run-closing-observation-2.json"
+    ],
+    "verdict": "RATIFIABLE",
+    "verdict_scope": "The completion artifacts as truthful projections of the record at e7f659d, plus the one code change in the range (the scratch-view move). Every gate passes on a full-history clean clone; the tooling shards pass twice; A24 now carries F9 in its own residuals; the tree stays clean after the diagram suite and selfcheck. The scratch-view repair's claim about a race carries no defeating fixture and is recorded as witnessable only in its mechanism (F12). This is an observation; it ratifies nothing.",
+    "record_projection": "No RecordProjection identifier was supplied and none is invented. Every address below is a repository path at e7f659d, digested from git show e7f659d:<path>.",
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07-closing",
+    "observer_relation": "INDEPENDENT_OF_BUILDER_DECLARED_SURFACE_ONLY",
+    "observer_independence_basis": "Same participant as passes 1 and 2; built, edited, staged or committed nothing under the subject in any pass (the builder committed both prior receipts; their bytes at e7f659d equal the bytes this participant wrote: abc678d6... and 282cd661...). No transcript, no pull request body and no hosted CI log was read (unreachable from this host). Every command ran on a fresh, unshallowed git clone of the local repository under the scratch directory, standing on the branch at e7f659d, porcelain empty; the shared tree was read only. SOV_PRINCIPAL=principal:claude-fable-5-1 throughout; UNVERIFIED, grants nothing, nothing here needed a grant.",
+    "observed_at": "2026-09-07T06:20:00Z",
+    "host": "Linux, Python 3, git 2.43.0, shared host; no gh; GitHub API refused by the session proxy",
+    "tree_state": "shared tree: HEAD e7f659d on claude/sovereign-phase-1-5-5uzffu == origin; origin/main aeecc60; git status --porcelain empty before and after every measurement in this pass and empty at the moment this file was first written. At 11:29:24Z, after the deposit, another session's uncommitted work appeared in the shared tree: M scripts/sov_clarity.py, M scripts/sov_diagrams.py, M scripts/sovreuse/settle.py, M scripts/sovwitness/records.py, M scripts/sovwitness/shape.py, ?? scripts/sovaddress.py, ?? scripts/tests/test_sovaddress.py. None is this participant's and none was read as evidence. Clone: full history (972 commits), porcelain empty before and after verify, both tooling runs, the diagram suite and the diagram selfcheck.",
+    "observed_state_addresses": [
+      "acceptance/A24.json",
+      "reports/2026-09-07-discovery-and-reuse-slice.md",
+      "scripts/sov_diagrams.py",
+      "scripts/tests/test_sov_diagrams.py",
+      "scripts/tests/test_sov_docs.py",
+      "docs/documentation.html",
+      "witness/observations/2026-09-07-compression-run-closing-observation-2.json",
+      "CLAUDE.md",
+      "STATUS.yaml",
+      "contracts/custodies/phase-1-5.json",
+      "scripts/run_tooling_tests.py"
+    ],
+    "observed_state_digests": [
+      "sha256:88c652973e412169c8f4e32c1dd7693fcdeabb9880a58adf1b6596d2d73fe848",
+      "sha256:cc7227f1fe7804a220c7269a2c429606c64f8b9a426a8042e662075088388a5e",
+      "sha256:21ffec2ac865ae7f398bad3610772fe38e529195a79dfcc653c47ddbdb2c0a20",
+      "sha256:4be3b17e8b3d0f43dbf711dceb86df301315d96ba92674beda6ea3fee7f33af4",
+      "sha256:6d306768112e5172d48c5472fa771938d5d98904f43e8888663f8e93373ecd8e",
+      "sha256:60a98350e409d5506efce77311241c392b86fd90da1598a13197326f31a1923e",
+      "sha256:282cd66183f9edf1d192977ec4a86017c6efaeea3947034e778a4ec230c9b051",
+      "sha256:9b168d868154ccdfcb7df53da105952cc8e6ca733bcd2c9a5ac2d67d4a93843b",
+      "sha256:6e3491397bf842e55408d8df126fbbc0fd842cc7e7f547d135365b801f98466e",
+      "sha256:040c078b40874def94f71b5a73293644f576b653a021dcc6b8c2571198797e8c",
+      "sha256:182540039f3206d65681cbb99928620a35dd200b4a14f2506119ef25fbf30871"
+    ],
+    "observed_record_digests": {
+      "note": "Witness records digested here rather than in the graded pair lists, as in passes 1 and 2; both are byte-identical to d71f153.",
+      "witness/discovery-and-reuse.md": "sha256:62c2ae1ba5e3bc10fcb049cd0c70c9e55f40dbabb8a25125eb3fbd3443ac2f1f",
+      "witness/fresh-participation.md": "sha256:47b7d71d7047a2c97a9dc25be1173a6789acc150b42e3a8eb77f1f6e25c2aaba"
+    },
+    "predicate_results": {
+      "gates_on_full_history_clone": {
+        "held": true,
+        "detail": "`python scripts/verify.py` exit 0, 'PASS: 52 checks'; orientation snapshot PASS (CLAUDE.md 970 against 972 commits, inside the tolerance of 25); repository tooling tests 19.190s wall pooled inside verify; diagram provenance PASS 8 graded. `python scripts/lint.py` exit 0 (1215 text files, 562 modules, 10 named debt). `python scripts/sov_snapshot.py` exit 0, 10 of 10. `python scripts/sov_accept.py audit` exit 0 (16 rulings, 6 presented, 1 admissible hold, 0 open questions). `python scripts/sov_diagrams.py` exit 0. `python scripts/sov_witness_layer.py records` exit 0 (20 receipts, 0 unusable; both prior closing receipts read STALE_SUBJECT because A24, the report and the page moved after them, which is the layer ageing them). The FAIL lines inside verify's and the tooling runs' output (SELF_GRADED, stale page, 999999, planted snapshot cases) are oracle-control output present identically in every earlier run."
+      },
+      "tooling_shards_twice": {
+        "held": true,
+        "detail": "`python scripts/run_tooling_tests.py` on the clone, twice, exit 0 both: run 1 shards Ran 704/520/441/485 tests in 15.022/11.135/12.641/11.022 s; run 2 the same counts in 16.074/12.626/13.615/11.635 s; 'PASS: repository tooling tests (111 modules, 4 shards)' both; OK (skipped=4) on shard 2 both. test_sov_diagrams sits in shard 4 and test_sov_facets in shard 2, the parallel pair the report names; neither run showed a read failure. Clone porcelain empty after both runs."
+      },
+      "scratch_views_outside_diagrams": {
+        "held": true,
+        "detail": "scripts/tests/test_sov_diagrams.py Grading.setUp and Stamping.setUp create a tempfile.TemporaryDirectory and put scratch-view.md there (addCleanup on the directory); scripts/sov_diagrams.py selfcheck writes selfcheck-view.md under tempfile.TemporaryDirectory; grade() resolves every source against ROOT (sov_diagrams.py:87, 112), so the view's own directory is immaterial. `python -m unittest scripts.tests.test_sov_diagrams` Ran 13 tests OK; `python scripts/sov_diagrams.py selfcheck` PASS 6/6. `ls -a diagrams/` afterwards holds nine .md files and nothing else; `git ls-tree e7f659d diagrams/` lists the same nine. No .test-scratch.md or .selfcheck.md path remains anywhere in the two modules."
+      },
+      "composition_finding_11_and_sibling": {
+        "held": true,
+        "detail": "Report finding 11 reads true in what the artifact can show: the two writers moved to temp directories; the sibling claim that test_sov_docs edits the live docs/documentation.html is corroborated at scripts/tests/test_sov_docs.py:221-225 (PAGE.write_text of a by-hand marker, then the original restored). 'The candidate CI job at 77421de failed once' is REPORTED-ONLY: no CI log is reachable from this host and nothing committed carries it."
+      },
+      "A24_and_report_at_e7f659d": {
+        "held": true,
+        "detail": "A24 residuals now carry F9 in the packet itself ('scripts/sovreuse/discover.py's docstring says it reads committed files where the code reads the tree; corrected at the next landing on that module'), which closes pass 2's one carried residual as far as the packet is concerned. A24's expect is unchanged from 77421de and was reproduced there; the instrument bytes are unchanged (scripts/sov_reuse.py, sovreuse/, test_sov_reuse.py identical to 60d5615), so the pass-2 readings stand. The report gained finding 11 only. docs/documentation.html rebuilt: `sov_docs.py check` inside verify PASS, 284 documents. Counts: 32 reports, 90 decisions, 972 commits."
+      },
+      "unreported_or_unsupported": {
+        "held": true,
+        "detail": "6be70fb's message names both modules and the report; e7f659d's names the receipt and the A24 line; the diff d77421de..e7f659d has exactly those six paths (the page rebuild came with 6be70fb, whose message does not name it, the one path a reader would find only by diff). No standing, grant, ratification or settlement claim moved: STATUS.yaml, contracts/ and both custodies are byte-identical to d71f153."
+      }
+    },
+    "findings": [
+      "F1 to F8: as pass 2, repaired or recorded; bytes unchanged since 77421de where they live.",
+      "F9: closed for the packet at e7f659d; A24 lists the discover.py docstring residual itself. The module is unchanged and the residual waits for its next landing.",
+      "F10, F11: unchanged (PR body and CI unreachable; the report's 'nine findings' count is of the builder's own).",
+      "F12 LOW, observation, new. The scratch-view repair (6be70fb) claims that parallel readers never see a vanishing file. The race has no defeating fixture and cannot be made to fire deterministically, so that claim is unwitnessable as stated; what is witnessed is the mechanism (both writers under tempfile, sources resolved against ROOT, diagrams/ clean after the suite and selfcheck, two green tooling runs). No test asserts that the scratch path is outside diagrams/, so a future edit could move it back without a test failing. No repair asked; recorded so the claim is read at its witnessable strength.",
+      "F13 LOW, observation, new. 6be70fb rebuilt docs/documentation.html and its message does not name the page; e7f659d's message names its two paths exactly. A reader following messages alone misses one path in the range; the diff shows it.",
+      "F14 observation, not the subject's (CLAUDE.md trap T6). After this file was deposited the shared tree moved underneath it: another session's five modified and two untracked files (an address-below-the-file operation, by their names) appeared at 11:29:24Z. `python scripts/lint.py` on the shared tree then read FAIL: scripts/sov_clarity.py 309 lines exceeds the 300 limit; that file is 299 lines at e7f659d and lint on the clone at e7f659d passes (1216 text files with this receipt). The red lint is that session's working file, not the presented commit's. Every measurement in this pass was taken on the clone at e7f659d or on the shared tree while its porcelain was empty, so the verdict is over the commit and is unaffected; a verdict over the shared tree as it now stands would be unattestable and none is given."
+    ],
+    "judgement_items": [
+      "Carried from passes 1 and 2 as questions, unchanged: whether a packet's expect describes the presenting commit or the landed candidate (A24 now states both); whether the orientation page should keep authoring a commit count the record derives; the builder's J1 (which reading P15-Q3.1 owns) and J2 (whether principal:claude-fable-5-1 is granted on node:local)."
+    ],
+    "standing_supported": "None new. The member scripts/sov_reuse.py at WITNESSED rests on pass 5 at 60d5615; instrument bytes unchanged. For the claim under observation, RATIFIABLE at e7f659d; the pass-2 residual is now carried in the packet. Acceptance of A24 is seat:root's act and is not moved by this observation.",
+    "commands": [
+      {
+        "command": "git fetch origin; git rev-parse HEAD origin/claude/sovereign-phase-1-5-5uzffu origin/main; git status --porcelain; git rev-list --count (shared tree)",
+        "exit": 0,
+        "excerpt": "e7f659d / e7f659d / aeecc60; porcelain empty throughout; 972 commits"
+      },
+      {
+        "command": "git show 6be70fb and e7f659d (message, stat, diffs of sov_diagrams.py, test_sov_diagrams.py, the report, acceptance/A24.json); git diff --stat 77421de..e7f659d",
+        "exit": 0,
+        "excerpt": "6 paths, +237/-10; scratch views to tempfile; finding 11; A24 residual line for F9; receipt 2 committed"
+      },
+      {
+        "command": "git show e7f659d:witness/observations/2026-09-07-compression-run-closing-observation-2.json | sha256sum",
+        "exit": 0,
+        "excerpt": "282cd661...9b051, equal to the bytes this participant wrote in pass 2"
+      },
+      {
+        "command": "git clone <repository root> <scratch>/repo3; git fetch --unshallow; git checkout claude/sovereign-phase-1-5-5uzffu",
+        "exit": 0,
+        "excerpt": "HEAD e7f659d; is-shallow false; 972 commits; porcelain empty"
+      },
+      {
+        "command": "python scripts/verify.py (clone)",
+        "exit": 0,
+        "excerpt": "PASS: 52 checks; orientation snapshot PASS; diagram provenance PASS 8; tooling tests 19.190s wall pooled"
+      },
+      {
+        "command": "python scripts/lint.py (clone and shared tree)",
+        "exit": 0,
+        "excerpt": "PASS: repository hygiene (1215 text files, 562 Python modules, 10 named debt)"
+      },
+      {
+        "command": "python scripts/sov_snapshot.py; sov_accept.py audit; sov_diagrams.py; sov_witness_layer.py records (clone)",
+        "exit": "0 / 0 / 0 / 0",
+        "excerpt": "10 of 10; 16 rulings 6 presented 0 open; 8 current; 20 receipts 0 unusable"
+      },
+      {
+        "command": "python scripts/run_tooling_tests.py (clone), twice",
+        "exit": "0 / 0",
+        "excerpt": "704/520/441/485 tests; 15.0/11.1/12.6/11.0 s then 16.1/12.6/13.6/11.6 s; PASS 111 modules 4 shards, both"
+      },
+      {
+        "command": "python -m unittest scripts.tests.test_sov_diagrams; python scripts/sov_diagrams.py selfcheck; ls -a diagrams/; git status --porcelain (clone)",
+        "exit": "0 / 0 / 0 / 0",
+        "excerpt": "13 tests OK; selfcheck 6/6; nine .md files and nothing else; porcelain empty"
+      },
+      {
+        "command": "grep test_sov_docs.py for writes to the live page",
+        "exit": 0,
+        "excerpt": "lines 221-225: PAGE.write_text(original + '<!-- by hand -->') then original restored"
+      },
+      {
+        "command": "git show e7f659d:<path> | sha256sum for every address above",
+        "exit": 0,
+        "excerpt": "digests as recorded"
+      },
+      {
+        "command": "python scripts/lint.py (shared tree, after the deposit; re-run once), with git status --porcelain and wc -l before and after",
+        "exit": "1 / 1",
+        "excerpt": "FAIL: scripts/sov_clarity.py: 309 lines (tree) against 299 at e7f659d; porcelain lists five M and two ?? paths of another session plus this receipt; HEAD e7f659d unchanged"
+      }
+    ],
+    "residuals": [
+      "The scratch-view race claim has no defeating fixture (F12); the mechanism is witnessed, the race is not.",
+      "test_sov_docs still edits the live page during the pool, recorded by the builder and not repaired.",
+      "PR #220 body and hosted CI results remain unreachable from this host.",
+      "The discover.py docstring residual (F9) waits for that module's next landing; now stated in A24."
+    ]
+  },
+  "participant_claim": "COMPLETED",
+  "telemetry": {
+    "probe_location": "no probe file; readings came through git, the repository gates, the tooling runner, the diagram suite and selfcheck on an unshallowed clone of the local repository at e7f659d under the scratch directory, plus read-only git reads on the shared tree",
+    "commands_run": 11,
+    "verify_tooling_check_wall_seconds_pooled": 19.19,
+    "tooling_runs_longest_shard_seconds": [
+      15.022,
+      16.074
+    ],
+    "tree_state": "e7f659df03563650be448da344f3b4fe3a80936c frozen; HEAD unchanged after every command",
+    "after_writing": "porcelain showed only witness/observations/2026-09-07-compression-run-closing-observation-3.json untracked when written; by 11:29:24Z it also listed another session's five modified and two untracked files (F14). Nothing committed, landed or pushed by this participant."
+  }
+}

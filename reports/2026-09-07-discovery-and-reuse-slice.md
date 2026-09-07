@@ -114,10 +114,12 @@ is 620 lines of reading and 250 of fixture over them. What the composition expos
    harness file declares `STATUS.yaml` whole as its basis. Each was re-read for a
    dependence on the queue and re-recorded; none had one. This is finding 2 again in
    another contract: a basis, like a receipt, addresses a file where it means a section.
-   Three gates now share the shape: witness receipts digest the custody collection, clarity
-   bases digest `STATUS.yaml`, and the orientation page pins counts the record derives.
-   The missing primitive is an address below the file, a named member, section or field
-   with its own digest, that receipts and bases can hold instead of the file.
+   Four gates now share the shape: witness receipts digest the custody collection, clarity
+   bases digest `STATUS.yaml`, four diagram views declare `STATUS.yaml` whole as a source
+   and went stale on the same entry, and the orientation page pins counts the record
+   derives. The missing primitive is an address below the file, a named member, section
+   or field with its own digest, that receipts, bases and views can hold instead of the
+   file.
 9. The tooling-tests check crossed verify's 30-second catastrophic ceiling on the hosted
    runner at `ea01dcc`, and passed at `57271f7` by timing alone. Two causes, both this
    concern's to fix: the new suite built its fixture three times and ran every variant

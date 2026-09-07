@@ -3,17 +3,131 @@
 ```witness
 standing_supported  WITNESSED
 subject  sovaddress
-revision  e835205a4d0c2f99e289019cdba81d2c1af59852
-pass  2
+revision  a63b09be32d9d34824f694e26e133de4ffd3dec2
+pass  3
 ```
 
-Two passes by the same role, different commits. Pass 2 (commit `e835205`) is current and owns the
-declaration above. Pass 1 (commit `a57d736`) follows it unchanged as history. No `*_status`
-field in `STATUS.yaml` names this subject and no custody member in
-`contracts/custodies/phase-1-5.json` carries `scripts/sovaddress.py`; the work was carried under
-`custody:phase-1-5/discovery-and-reuse` (candidate record `concern_id`). The declaration binds
-to the module's claim and, at pass 2, to its four adoptions. It does not bind to the branch as a
-landable unit; see the verdict.
+Three passes by the same role, different commits. Pass 3 (commit `a63b09b`) is current and owns
+the declaration above. Pass 2 (commit `e835205`) and pass 1 (commit `a57d736`) follow it
+unchanged as history. No `*_status` field in `STATUS.yaml` names this subject and no custody
+member carries `scripts/sovaddress.py`; the work was carried under
+`custody:phase-1-5/discovery-and-reuse`. The declaration binds to the module's claim, its four
+adoptions, and the freeze ordering in `scripts/sovland/candidates.py`. It does not bind to the
+branch as a landable unit; see the verdict.
+
+## Pass 3: commit a63b09b (2026-09-07)
+
+Verdict: **RATIFIABLE-WITH-CONDITIONS**. **REPRODUCED**: the diff `e835205..a63b09b` touches
+only `scripts/sovland/candidates.py` (+8) and `scripts/tests/test_repository_candidate_effects.py`
+(+45); every instrument and adoption path is blob-identical to `e835205`. The pre-commit
+evaluation and the post-commit drift refusal are both present and each has a fixture that fails
+when it is removed. Because the two new cases mock `authority.evaluate` entirely, this witness
+also ran the kernel evaluator unmocked against the live grant: scope comes back
+`AUTHORITY_REFUSED` with no checks offered, so the freeze stops before committing; only absent
+checks come back `MISSING_PRECONDITION`. F11 and F12 are repaired. **F1 is confirmed
+unrepaired** and withholds landing on its own. **Retraction:** pass-2 F15 was wrong; see F15
+below. Landing is **NOT_CONFIRMED, for F1 alone**; apart from F1 this witness would land
+`a63b09b`.
+
+Claim under observation, as the coordinator stated it and as the commit message states it: the
+`repository.commit` grant is evaluated before the commit with no checks offered, and a refusal
+for anything but `MISSING_PRECONDITION` (scope, type, budget, time, revocation) stops the freeze
+with nothing committed; after the commit the grant is evaluated again on the committed tree with
+the checks; checks that rewrite a checked path refuse after the commit, naming it; two cases
+added. The list was read as the claim; nothing below is taken from it.
+
+Subject frozen: commit `a63b09be32d9d34824f694e26e133de4ffd3dec2`, tree `341a36969c7b9aa38b0e9aced1c60866afc755a3`, two commits past the frozen candidate `a57d736`
+on `feat/address-below-the-file`, at the same commit on `origin`; base `aeecc60` is still
+`origin/main`. `git rev-parse HEAD` read the commit before and after every command and
+`git status --porcelain` was empty until the deposits. No candidate record exists for `e835205`
+or `a63b09b`.
+
+### Findings
+
+- **F1 (high, landing) - unrepaired, confirmed.** `verify.py` exit 1 at `a63b09b`: `FAIL
+  commits: page says 942, record holds 970 (tolerance 25)`. Withholds landing by itself.
+- **F11 - repaired.** `candidates.py:67-73` evaluates the grant with `{}` checks before the
+  commit and stops on any code but `MISSING_PRECONDITION`. M14 (drop it) and M15 (let
+  `AUTHORITY_REFUSED` through) are caught. The unmocked evaluator confirms the predicate the
+  cases assume: `evaluate()` judges actor, branch, scope, budget, time and revocation
+  (`_grant_unavailable`) before the observation and precondition tests
+  (`sovkernel/authority.py:175-209`).
+- **F12 - repaired.** `test_checks_that_modify_the_checked_paths_refuse_after_the_commit`;
+  M13 is caught. M16 (drop the post-commit evaluation) is caught too.
+- **F13 (medium, record) - unchanged.** No candidate record for `e835205` or `a63b09b`;
+  `a57d736`'s still reads `FROZEN`. Follows from F1.
+- **F4, J1, J2 - unchanged.**
+- **F15 - retracted.** Pass 2 said the pass-1 deposits had been removed from the working tree by
+  something other than git. They had not: this witness's `cp` commands in passes 1 and 2 ran
+  after `cd` into its scratch clone with relative targets, so every deposit landed in the clone
+  (`ls` there shows all five; `ls` in the witnessed tree shows none). The `git status
+  --porcelain` readings those passes reported were the clone's. No other process removed
+  anything, and the T6 attribution is withdrawn. This pass writes with absolute paths into the
+  witnessed tree and reports `git -C <root> status --porcelain`.
+- **F16 (info).** A grant that required an observation for `repository.commit` would read
+  `OBSERVATION_MISSING` pre-commit and the freeze would never commit; the live grant requires none
+  for this capability, so no effect today.
+
+### Conditions
+
+- C1 (F1) and C7 (F13): unchanged from pass 2; C6 (F12) discharged.
+
+### Judgement items
+
+- J1, J2 unchanged. J4 is answered by the change as this witness framed it; nothing new is asked.
+
+### Verified
+
+Every command ran with `SOV_PRINCIPAL=principal:claude-fable-5-1`.
+
+- `git rev-parse HEAD` -> `a63b09be32d9d34824f694e26e133de4ffd3dec2` before and after every command; `git status --porcelain` ->
+  empty until the deposits; `git diff --stat e835205..a63b09b` -> 2 files, +53; `git ls-remote
+  origin` -> branch at `a63b09b`; `git rev-list --count a63b09b` -> 970.
+- Blob identity: `git rev-parse e835205:<p>` equals `a63b09b:<p>` for `scripts/sovaddress.py`,
+  `scripts/sovwitness/records.py`, `scripts/sovwitness/shape.py`, `scripts/sov_diagrams.py`,
+  `scripts/sov_clarity.py`, `scripts/sovclarity/digests.py`, `scripts/sovreuse/settle.py` and the
+  five adoption test modules: all twelve identical.
+- `python scripts/verify.py` (clone, `a63b09b`) -> **exit 1**, orientation snapshot only;
+  `COST: 52 checks in 21.514s wall`. `python scripts/lint.py` -> **exit 0**.
+- `PYTHONPATH=scripts python -m unittest scripts.tests.<m>` (clone): `test_landing_isolation` 16
+  OK; `test_landing_ledger` 15 OK; `test_repository_candidate` 4 OK;
+  `test_repository_candidate_effects` 10 OK; `test_sov_land` 31 OK.
+- Mutants (four archive copies, five sovland suites each): M13 drop the drift refusal -> caught;
+  M14 drop the pre-commit evaluation -> caught; M15 wave `AUTHORITY_REFUSED` through -> caught;
+  M16 drop the post-commit evaluation -> caught; control -> all pass.
+- Unmocked evaluator (`sovkernel.authority.evaluate`, `sov_grant.load_grants()` ->
+  `grant:standing-landing-loop`, `candidates._request(actor sov, target main,
+  repository.commit)`): `decisions/x.md` with no checks -> `AUTHORITY_REFUSED` "inside the
+  excluded prefix decisions/"; `CLAUDE.md` -> `AUTHORITY_REFUSED`; `scripts/sovaddress.py` with
+  no checks -> `MISSING_PRECONDITION` "required check 'verify' is not present"; with PASS checks
+  -> `PERMITTED`; with verify FAIL -> `MISSING_PRECONDITION`; actor `nobody` ->
+  `AUTHORITY_REFUSED`. Through the freeze's own predicate: `decisions/x.md` stops before the
+  commit; `scripts/sovaddress.py` proceeds to it.
+- After the deposits, in the witnessed tree by absolute path: `python
+  scripts/sov_witness_layer.py records` -> exit 0, 15 receipts graded, 0 unusable, this pass's
+  receipt `CURRENT`, passes 1 and 2 `STALE_SUBJECT` as receipts of earlier commits should;
+  `python scripts/sov_clarity.py check` -> exit 0; `python scripts/lint.py` -> exit 0; `python
+  scripts/sov_standing.py` -> PASS; `git -C <root> status --porcelain` -> exactly
+  `?? witness/observations/2026-09-07-sovaddress-observation-2.json`,
+  `?? witness/observations/2026-09-07-sovaddress-observation-3.json`,
+  `?? witness/observations/2026-09-07-sovaddress-observation.json`, `?? witness/sovaddress.md`.
+
+### Uncovered
+
+`sov_land.py freeze` was not executed end to end; the ordering is read from the code, its
+cases, the mutants and the unmocked evaluator. Nothing under `conformance/` or `services/`
+changed.
+
+### Standing supported
+
+`WITNESSED` for `scripts/sovaddress.py` and its four adoptions (bytes unchanged since
+`e835205`) and for the freeze ordering in `scripts/sovland/candidates.py` at `a63b09be32d9d34824f694e26e133de4ffd3dec2`.
+`stage_observed_by`, if a custody member is ever minted:
+`claude-fable-5-1/sov-witness@2026-09-07-sovaddress, pass 3 at a63b09be32d9d34824f694e26e133de4ffd3dec2`. No standing for the
+branch as a landable unit (F1). Receipt:
+`witness/observations/2026-09-07-sovaddress-observation-3.json`. Landing observation:
+`.local/observations/2026-09-07-sovaddress-landing-3.json`, `NOT_CONFIRMED` for F1 alone. This
+record is an observation; it ratifies nothing and settles nothing.
 
 ## Pass 2: commit e835205 (2026-09-07)
 

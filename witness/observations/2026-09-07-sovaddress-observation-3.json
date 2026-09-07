@@ -1,0 +1,136 @@
+{
+  "case_id": "WITNESS-2026-09-07-SOVADDRESS-3",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07-sovaddress",
+  "artifact_revision": "a63b09be32d9d34824f694e26e133de4ffd3dec2",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "scripts/sovland/candidates.py freeze at a63b09b (HEAD of feat/address-below-the-file, pushed; two commits past the frozen candidate a57d736; base aeecc60 = origin/main). Pass 3 re-verifies the coordinator's stated action on J4 and F12: the repository.commit grant is evaluated before the commit with no checks offered and a refusal for anything but MISSING_PRECONDITION stops the freeze with nothing committed; after the commit the grant is evaluated again on the committed tree with the checks; checks that rewrite a checked path refuse after the commit naming it; two cases added. The instrument (scripts/sovaddress.py) and the four adoptions are claimed byte-identical to e835205",
+    "record": "witness/sovaddress.md",
+    "record_section": "Pass 3: commit a63b09b (2026-09-07)",
+    "prior_receipts": [
+      "witness/observations/2026-09-07-sovaddress-observation.json",
+      "witness/observations/2026-09-07-sovaddress-observation-2.json"
+    ],
+    "verdict": "REPRODUCED",
+    "verdict_scope": "REPRODUCED: the diff e835205..a63b09b touches only scripts/sovland/candidates.py (+8) and scripts/tests/test_repository_candidate_effects.py (+45); every instrument and adoption path is blob-identical to e835205. The pre-commit evaluation and the post-commit drift refusal are both in place and each has a fixture that fails when it is removed (M13, M14 caught) and when scope is waved through or the post-commit evaluation is dropped (M15, M16 caught). Because the two new cases mock authority.evaluate entirely, this witness also ran the kernel evaluator unmocked against contracts/standing-grants.json: an out-of-scope path with no checks reads AUTHORITY_REFUSED (the freeze stops before committing), an in-scope path with no checks reads MISSING_PRECONDITION (the freeze proceeds to commit), an in-scope path with PASS checks reads PERMITTED. F11 and F12 are repaired. F1 confirmed unrepaired (verify exit 1: commits 970 vs page 942). RETRACTION of pass-2 F15: the pass-1 and pass-2 deposits were never in the witnessed tree; this witness's own cp commands ran with the scratch clone as cwd, so they landed in the clone. No other process removed anything. Landing NOT_CONFIRMED for F1 alone",
+    "standing_supported": "WITNESSED",
+    "standing_binds": {
+      "subject": "sovaddress",
+      "field": "scripts/sovaddress.py and its four adoptions (blob-identical to e835205), plus scripts/sovland/candidates.py freeze ordering at a63b09b",
+      "revision": "a63b09be32d9d34824f694e26e133de4ffd3dec2",
+      "claim": "the pass-2 claim, unchanged in bytes, plus: freeze judges the repository.commit grant's scope, actor, type, budget, time and revocation before its commit with no checks offered, commits only when the sole refusal is MISSING_PRECONDITION, then judges the grant again on the committed tree with the checks, and refuses after the commit, naming it, when a check rewrote a checked path",
+      "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-07-sovaddress, pass 3 at a63b09be32d9d34824f694e26e133de4ffd3dec2",
+      "not_supported": "no standing for the branch as a landable unit while verify.py fails at its commit (F1); no candidate record exists for a63b09b (F13)"
+    },
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07-sovaddress",
+    "observer_independence_basis": "Same participant as passes 1 and 2; built, edited, staged and committed nothing. Froze the tree at a63b09b (git rev-parse HEAD before and after every command; git status --porcelain empty until the deposits), fetched the branch into its scratch clone and checked out a63b09b there, ran verify.py, lint.py and the five sovland suites in the clone, ran four freeze mutants against a git-archive copy, ran the kernel evaluator unmocked with the live grants through the freeze's pre-commit predicate, compared every instrument and adoption blob id against e835205, and read the diff in full. It read the coordinator's description as the claim, not as evidence. This pass it wrote its deposits with absolute paths into the witnessed tree and confirmed them with git -C <root> status --porcelain",
+    "observer_relation": "INDEPENDENT_OF_BUILDER",
+    "observed_at": "2026-09-07",
+    "observed_state_addresses": [
+      "scripts/sovland/candidates.py",
+      "scripts/sovkernel/authority.py",
+      "scripts/sovland/preflight.py",
+      "scripts/sovland/isolation.py",
+      "scripts/sov_land.py",
+      "scripts/sov_grant.py",
+      "contracts/standing-grants.json",
+      "scripts/tests/test_repository_candidate_effects.py",
+      "scripts/sovaddress.py",
+      "scripts/sovwitness/records.py",
+      "scripts/sovwitness/shape.py",
+      "scripts/sov_diagrams.py",
+      "scripts/sov_clarity.py",
+      "scripts/sovclarity/digests.py",
+      "scripts/sovreuse/settle.py",
+      "scripts/tests/test_sovaddress.py",
+      "scripts/tests/test_sov_witness_layer.py",
+      "scripts/tests/test_sov_clarity.py",
+      "scripts/tests/test_sov_diagrams.py",
+      "scripts/tests/test_sov_reuse.py",
+      "CLAUDE.md",
+      "contracts/participant-observation.schema.json"
+    ],
+    "observed_state_digests": [
+      "sha256:40aa12cc2fc122e4ecb8f768b077a65d8901e791e3a1b455e727a3d828258de4",
+      "sha256:4129a542687077320891d35ad8bd84070420edc4004a18a545c8209d3b4eb386",
+      "sha256:3416d0eb174d9def5ac1c860d7050737e792bd7a97241d041ef6a7d344e88b44",
+      "sha256:cd95ed31c3033fc2406e0be1858a926452da516fb21abf0788db1c2877d344ee",
+      "sha256:3051399edff7c18338acc1752f856b0a520bb16e26acc15785af3e95749f4991",
+      "sha256:0e8c0d3fb5da7b9f1622626285496e88372b0db0509a2a30cdb325a456733603",
+      "sha256:4c2c89204a1d48ee6159e2a977e9f2f6e41d72fd28342605bbff4bde8de1df08",
+      "sha256:eda5b4fb82bf572dfe58bf23f67b48876a2c499ae245e8344de8496e4b9b9d4e",
+      "sha256:91d7dfd4302638660f77832c02af10e53a1ae01dfb7afc27ce9b7252fed9c8bc",
+      "sha256:c095366bfe793ac64fb9f6041d818c8f2df648e1a3127cecc30a4d3dec1b6919",
+      "sha256:081c195ec46423a2d3ab15762f6aab6e4928c82781db726d7fbc5bcf003b37dd",
+      "sha256:5b74ab2465f5d6241505a0712c6639a6dd2fcbac3a0e9594f7ae2cbf6b037b86",
+      "sha256:c179bd1d5694c497b61a280ecb44ef067803c1b69ae14fe390c0a0d6756dfbc5",
+      "sha256:eea9cc1497682ad2b9cf31782c4a41a4e90044534692c2b74760ea69cd0d0186",
+      "sha256:4598837df9c3ff3667f0dabbd61c6a79b8eb150611deea44669b8b6bbfffaaeb",
+      "sha256:b99762013236f5df007200dbfe312b3649d5f84b3d578d18e7edcee3d0dc2087",
+      "sha256:e0ee49b52f20b4b5e43e72e363581ef525e88a638d67625fe26bb7872675131e",
+      "sha256:571cca4a7ef052d825e838c5e2b7585378c083b1a31276068f8129c6c837e9a9",
+      "sha256:1cb0c8d67fe0a71d48b953027803721708e946b7dadf094b4b50c54bd5a7ff6c",
+      "sha256:253c134afa924141ddfa66ab2f5d289fd8bee7c3e14bcf647bd7b6357e8a54b2",
+      "sha256:de1d5ab3bea42df1812c313e4ec17a67678baaafcb0e27a340fcbdfe0b3aa4e1",
+      "sha256:8292b477342d1b30cf3eaeacfbd05c6eacdf7c0abed228e2fc81a67ed8d05945"
+    ],
+    "commands": {
+      "tree": "git rev-parse HEAD -> a63b09be32d9d34824f694e26e133de4ffd3dec2 before and after every command; git status --porcelain -> empty until the deposits; git rev-parse a63b09b^{tree} -> 341a36969c7b9aa38b0e9aced1c60866afc755a3; git diff --stat e835205..a63b09b -> 2 files, +53; git ls-remote origin -> branch at a63b09b; git rev-list --count a63b09b -> 970; .local/candidates -> six records, none for e835205 or a63b09b, a57d736 still FROZEN",
+      "byte_identity": "git rev-parse e835205:<p> == a63b09b:<p> for scripts/sovaddress.py, scripts/sovwitness/records.py, scripts/sovwitness/shape.py, scripts/sov_diagrams.py, scripts/sov_clarity.py, scripts/sovclarity/digests.py, scripts/sovreuse/settle.py and the five adoption test modules -> identical, all twelve",
+      "deposits_location": "ls in the witnessed tree -> no sovaddress deposits; ls in the scratch clone -> all five present (the pass-1 and pass-2 cp commands ran after cd into the clone with relative targets); pass-2 F15 retracted",
+      "verify": "python scripts/verify.py (clone, a63b09b) -> exit 1; one failing check, orientation snapshot: 'FAIL commits: page says 942, record holds 970 (tolerance 25)'; COST 52 checks in 21.514s wall; check-name diff against aeecc60 is that verdict plus the module/text-file counts",
+      "lint": "python scripts/lint.py (clone, a63b09b) -> exit 0",
+      "suites": "PYTHONPATH=scripts python -m unittest scripts.tests.<m> (clone): test_landing_isolation 16 OK; test_landing_ledger 15 OK; test_repository_candidate 4 OK; test_repository_candidate_effects 10 OK; test_sov_land 31 OK",
+      "mutants": "four archive copies of a63b09b, five sovland suites each: M13 drop the post-commit drift refusal -> caught (test_repository_candidate_effects); M14 drop the pre-commit evaluation -> caught; M15 let AUTHORITY_REFUSED through pre-commit -> caught; M16 drop the post-commit evaluation -> caught; control -> all pass",
+      "unmocked_evaluator": "sovkernel.authority.evaluate with sov_grant.load_grants() (grant:standing-landing-loop) and candidates._request(actor sov, target main, repository.commit): ['decisions/x.md'], {} -> REFUSED AUTHORITY_REFUSED 'inside the excluded prefix decisions/'; ['CLAUDE.md'], {} -> AUTHORITY_REFUSED; ['scripts/sovaddress.py'], {} -> REFUSED MISSING_PRECONDITION 'required check verify is not present'; with verify/lint PASS -> PERMITTED; with verify FAIL -> MISSING_PRECONDITION; actor nobody -> AUTHORITY_REFUSED. evaluate() judges availability (actor, branch, scope, budget, time, revocation) before the observation and precondition tests (authority.py:175-209), so the freeze's pre-commit predicate reads the real evaluator as the two cases assume"
+    },
+    "predicate_results": {
+      "F11_grant_scope_judged_before_the_commit": {
+        "held": true,
+        "detail": "candidates.py:67-73; M14 and M15 caught; unmocked evaluator returns AUTHORITY_REFUSED for scope with no checks"
+      },
+      "F12_post_commit_drift_refusal_has_fixture": {
+        "held": true,
+        "detail": "test_checks_that_modify_the_checked_paths_refuse_after_the_commit; M13 caught"
+      },
+      "post_commit_evaluation_still_enforced": {
+        "held": true,
+        "detail": "M16 caught"
+      },
+      "instrument_and_adoptions_byte_identical_to_e835205": {
+        "held": true,
+        "detail": "twelve blob ids equal"
+      },
+      "sovland_suites_pass_on_clean_clone": {
+        "held": true,
+        "detail": "five suites, 76 tests"
+      },
+      "lint_passes": {
+        "held": true,
+        "detail": "exit 0"
+      },
+      "F1_verify_passes_at_commit": {
+        "held": false,
+        "detail": "exit 1; commits 970 vs page 942, tolerance 25; unrepaired, outside the grant"
+      },
+      "F13_candidate_record_current": {
+        "held": false,
+        "detail": "no record for e835205 or a63b09b; a57d736 still FROZEN"
+      },
+      "pass2_F15_stands": {
+        "held": false,
+        "detail": "retracted: the deposits landed in the witness's scratch clone by its own cwd error; nothing removed them"
+      },
+      "observation_required_grant_shape": {
+        "held": true,
+        "detail": "informational: a grant that required an observation for repository.commit would read OBSERVATION_MISSING pre-commit and never commit; the live grant does not require one for this capability"
+      }
+    },
+    "standing_note": "This is an observation. It supports WITNESSED for scripts/sovaddress.py and its four adoptions at a63b09b (bytes unchanged since e835205) and for the freeze ordering in scripts/sovland/candidates.py. It does not confirm the branch for landing: F1 alone withholds it; apart from F1 this witness would land a63b09b. It ratifies nothing."
+  },
+  "telemetry": {
+    "probe_location": "mutants3.sh and an inline evaluator probe in the witness's scratch directory against a git-archive copy of a63b09b; every other reading through verify.py, lint.py, unittest and git",
+    "tree_state": "git status --porcelain empty before and after every command until the deposits; HEAD a63b09be32d9d34824f694e26e133de4ffd3dec2 throughout",
+    "after_writing": "filled by the record's pass-3 Verified section"
+  }
+}

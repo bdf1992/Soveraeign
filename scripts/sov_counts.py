@@ -102,10 +102,18 @@ def cmd_check(_args=None) -> int:
 
 
 def cmd_debt(_args=None) -> int:
-    """Print the count-shaped sentences no population declares."""
-    _, candidates, _, _, _ = _read()
+    """Print the count-shaped sentences no population declares, noise suppressed.
+
+    The suppression is declared in the contract and touches this report only. A
+    word missing from it adds noise to a list that fails nothing; a word wrongly
+    in it hides a candidate from a report rather than from a grade.
+    """
+    _, candidates, _, _, declared = _read()
+    noise = set(declared.get("debt_noise", {}).get("words", ()))
+    kept = [c for c in candidates if c.noun.split()[-1] not in noise]
+    suppressed = len(candidates) - len(kept)
     by_noun: dict[str, list] = {}
-    for candidate in candidates:
+    for candidate in kept:
         by_noun.setdefault(candidate.noun, []).append(candidate)
     for noun in sorted(by_noun, key=lambda n: len(by_noun[n]), reverse=True):
         found = by_noun[noun]
@@ -114,10 +122,11 @@ def cmd_debt(_args=None) -> int:
             print(f"       {candidate.path}:{candidate.line}  {candidate.stated}")
         if len(found) > 4:
             print(f"       ... and {len(found) - 4} more")
-    print(f"\n{len(candidates)} ungraded count-shaped sentence(s) over "
-          f"{len(by_noun)} distinct nouns. Most are ordinary prose. A noun that "
-          "names a repository population and recurs is a population worth declaring "
-          "in contracts/counted-populations.json.")
+    print(f"\n{len(kept)} ungraded count-shaped sentence(s) over {len(by_noun)} "
+          f"distinct nouns; {suppressed} more suppressed as declared grammatical "
+          "noise. Most of what remains is ordinary prose. A noun that names a "
+          "repository population and recurs is a population worth declaring in "
+          "contracts/counted-populations.json.")
     return 0
 
 

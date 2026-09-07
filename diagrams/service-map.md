@@ -2,7 +2,7 @@
 
 ```text
 source          CLASSIFICATION.md · STATUS.yaml · CONTRACT.md · services/README.md
-source_digest   caf2384160b00eed · 6e3491397bf842e5 · f95acd076c4977d7 · ddece1d46bd3e136
+source_digest   caf2384160b00eed · 889363930ffe5576 · f95acd076c4977d7 · ddece1d46bd3e136
 reader          hand-authored · v3
 fidelity        LOSSY
 omissions       each service's internal components and full operation list;
@@ -72,9 +72,11 @@ flowchart TB
 
 The service row is no longer the original three-box sketch. The repository now
 carries ten service manifests, and implementation exists for Asset, Record,
-Console, Gateway, Registry, Host, and an Identity challenge component. Proofing,
-Projection, and independent Observation remain declared boundaries rather than
-completed service implementations.
+Console, Gateway, Registry, Host, an Identity challenge component, and five of
+Observation's eight operations. Proofing and Projection remain declared
+boundaries with no implementation at all. None of the ten is a completed service
+implementation, and Observation's built slice is not witnessed: the passes that
+observed it read the five-edge walk `decisions/0104` replaced.
 
 The five reachable Node operations are a narrower fact than “these services are
 built.” Reachability is derived from the exact policy-active route surface;

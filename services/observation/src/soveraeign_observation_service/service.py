@@ -137,8 +137,13 @@ class ObservationService:
             return inference
         return self._attempt("infer-relation", record.run_id, "COMMITTED", act)
 
-    def observe_run(self, record: RunRecord, observer_id: str, reader) -> dict[str, Any]:
-        """Observe with the latest inference for this observer and the latest declaration."""
+    def observe_run(self, record: RunRecord, observer_id: str, reader,
+                    submitted_by: str | None = None) -> dict[str, Any]:
+        """Observe with the latest inference for this observer and the latest declaration.
+
+        `submitted_by` names who is putting the observation into the record when that is not
+        the observer itself; an executor relaying it is refused.
+        """
         def act() -> dict[str, Any]:
             inference = next((entry for entry in reversed(self.inferences)
                               if entry["run_id"] == record.run_id
@@ -148,7 +153,7 @@ class ObservationService:
             declaration = next((entry for entry in reversed(self.declarations)
                                 if entry["run_id"] == record.run_id), None) or {}
             observation = _observe.observe_run(record, inference, declaration, observer_id,
-                                               reader, self._clock())
+                                               reader, self._clock(), submitted_by)
             self.observations.append(observation)
             return observation
         return self._attempt("observe-run", record.run_id, "COMMITTED", act)

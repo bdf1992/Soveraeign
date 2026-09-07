@@ -47,8 +47,19 @@ REQUEST_SCHEMA = json.loads(
     (SERVICE / "contracts" / "observation-request.schema.json").read_text(encoding="utf-8"))
 
 RUN = "urn:soveraeign:run:asset-ingest-1"
+SUBJECT = "urn:soveraeign:work:asset-ingest"
 OUTPUT_BYTES = b'{"asset_id": "asset-1", "standing": "RECORDED"}'
 OUTPUT_DIGEST = hashlib.sha256(OUTPUT_BYTES).hexdigest()
+
+
+def _profile(name: str) -> dict:
+    """An operating profile as the record carries it: an address and the bytes' digest."""
+    return {"address": f"profile/{name}",
+            "digest": hashlib.sha256(f"profile:{name}".encode("utf-8")).hexdigest()}
+
+
+WORKER_PROFILE = _profile("sov-worker")
+WITNESS_PROFILE = _profile("sov-witness")
 
 
 def _entry(entry_id: str, kind: str, subject: str, actor: str, payload: dict) -> dict:
@@ -58,11 +69,25 @@ def _entry(entry_id: str, kind: str, subject: str, actor: str, payload: dict) ->
 
 
 def journal(*, lease_holder="worker-a", grant_id="grant-run", output_actor="worker-a",
-            with_outputs=True, with_report=True, omit_grant_key=False) -> list[dict]:
+            with_outputs=True, with_report=True, omit_subject=False,
+            omit_context_kinds=False, witness_context=("OBJECTIVE", "ARTIFACT"),
+            witness_profile=WITNESS_PROFILE,
+            predicates_author="contract:observation") -> list[dict]:
+    """A run's journal slice: the run, its grants, the launches, and the subject's arrows.
+
+    `witness-z` is launched with subject-side context and its own profile, so it reads
+    INDEPENDENT. `helper-h` is handed the builder's reasoning, so it does not.
+    """
     lease = {"holder_id": lease_holder, "fence": 1, "expires_at": "2026-09-03T01:00:00Z"}
-    attempt = {"event": "ATTEMPTED", "operation_plan_id": "plan-1", "lease": lease}
-    if not omit_grant_key:
-        attempt["grant_id"] = grant_id
+    attempt = {"event": "ATTEMPTED", "operation_plan_id": "plan-1", "lease": lease,
+               "grant_id": grant_id, "profile": WORKER_PROFILE}
+    if not omit_subject:
+        attempt["subject_id"] = SUBJECT
+    launch_witness = {"event": "LAUNCH", "launched_actor_id": "witness-z",
+                      "launched_by": "worker-a", "profile": witness_profile,
+                      "predicates_source_actor": predicates_author}
+    if not omit_context_kinds:
+        launch_witness["context_passed"] = list(witness_context)
     entries = [
         _entry("e-grant-root", "EVENT", "grant-root", "seat:root",
                {"event": "GRANT", "holder_id": "orchestrator-o", "parent_grant_id": None}),
@@ -73,6 +98,14 @@ def journal(*, lease_holder="worker-a", grant_id="grant-run", output_actor="work
         _entry("e-grant-helper", "EVENT", "grant-helper", "worker-a",
                {"event": "GRANT", "holder_id": "helper-h", "parent_grant_id": "grant-run"}),
         _entry("e-attempt", "EVENT", RUN, "worker-a", attempt),
+        _entry("e-standing-built", "EVENT", SUBJECT, "worker-a",
+               {"event": "STANDING", "from": "OPEN", "to": "BUILT"}),
+        _entry("e-launch-witness", "EVENT", "witness-z", "worker-a", launch_witness),
+        _entry("e-launch-helper", "EVENT", "helper-h", "worker-a",
+               {"event": "LAUNCH", "launched_actor_id": "helper-h", "launched_by": "worker-a",
+                "context_passed": ["OBJECTIVE", "ARTIFACT", "REASONING"],
+                "profile": _profile("helper"),
+                "predicates_source_actor": "contract:observation"}),
     ]
     if with_outputs:
         entries.append(_entry("e-out-1", "EVENT", "out/1", output_actor,
@@ -125,7 +158,7 @@ class ThinSlice(unittest.TestCase):
         self._valid(inference, INFERENCE_SCHEMA)
         self.assertEqual("INDEPENDENT", inference["outcome"])
         self.assertEqual("worker-a", inference["executor_id"])
-        self.assertEqual(5, len(inference["edges_examined"]))
+        self.assertEqual(7, len(inference["edges_examined"]))
         observation = self.service.observe_run(self.record, "witness-z", reader)
         self._valid(observation, OBSERVATION_SCHEMA)
         self.assertEqual({"output-present": True, "output-digest": True, "asset-recorded": True},
@@ -141,7 +174,8 @@ class ThinSlice(unittest.TestCase):
         inference = self.service.infer_relation(self.record, "worker-a", "WORKER")
         self._valid(inference, INFERENCE_SCHEMA)
         self.assertEqual("DIRECT", inference["outcome"])
-        self.assertIn("SAME_ACTOR", [edge["edge"] for edge in inference["edges_found"]])
+        self.assertIn("SAME_ACTOR_VERSION",
+                      [edge["edge"] for edge in inference["edges_found"]])
         self.service.declare_predicates(RUN, PREDICATES)
         with self.assertRaises(ObserverNotIndependent):
             self.service.observe_run(self.record, "worker-a", reader)
@@ -153,11 +187,75 @@ class ThinSlice(unittest.TestCase):
         self.assertEqual([{"edge": "HOLDS_RUN_LEASE", "evidence_address": "e-attempt"}],
                          inference["edges_found"])
 
-    def test_a_grant_descending_from_the_run_is_direct(self) -> None:
+    def test_a_helper_handed_the_builders_reasoning_is_direct(self) -> None:
+        """The context axis. `helper-h` was passed REASONING, so it is inside the build."""
         inference = self.service.infer_relation(self.record, "helper-h", "MODEL")
         self.assertEqual("DIRECT", inference["outcome"])
-        self.assertEqual("GRANT_DESCENDS_FROM_RUN", inference["edges_found"][0]["edge"])
-        self.assertIn("e-grant-helper", inference["evidence_addresses"])
+        self.assertEqual([{"edge": "CONSTRUCTION_CONTEXT_INHERITED",
+                           "evidence_address": "e-launch-helper"}], inference["edges_found"])
+
+    def test_a_grant_descending_from_the_run_is_no_longer_an_edge(self) -> None:
+        """`decisions/0104`: launch lineage is not a relation.
+
+        The witness holds a grant whose parent is the run's own grant - the shape that read
+        DIRECT before this ruling - and reads INDEPENDENT, because what it was handed and what
+        it is are both clear of the build.
+        """
+        entries = journal()
+        entries.insert(3, _entry("e-grant-z", "EVENT", "grant-z", "worker-a",
+                                 {"event": "GRANT", "holder_id": "witness-z",
+                                  "parent_grant_id": "grant-run"}))
+        record = RunRecord.from_entries(RUN, entries)
+        inference = self.service.infer_relation(record, "witness-z", "MODEL")
+        self._valid(inference, INFERENCE_SCHEMA)
+        self.assertEqual("INDEPENDENT", inference["outcome"])
+
+    def test_a_version_of_the_executor_is_not_independent(self) -> None:
+        """The perspective axis. A different id loading the builder's profile is a version."""
+        entries = journal(witness_profile=WORKER_PROFILE)
+        record = RunRecord.from_entries(RUN, entries)
+        inference = self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertEqual("DIRECT", inference["outcome"])
+        self.assertEqual("SAME_ACTOR_VERSION", inference["edges_found"][0]["edge"])
+
+    def test_a_witness_graded_against_the_builders_criteria_is_not_independent(self) -> None:
+        """The rubber-stamp `decisions/0100` named as its own defeater, now a refusal."""
+        record = RunRecord.from_entries(RUN, journal(predicates_author="worker-a"))
+        inference = self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertEqual("DIRECT", inference["outcome"])
+        self.assertEqual([{"edge": "PREDICATES_SUPPLIED_BY_EXECUTOR",
+                           "evidence_address": "e-launch-witness"}], inference["edges_found"])
+
+    def test_the_builder_at_an_earlier_arrow_is_direct_at_a_later_one(self) -> None:
+        """Lifecycle scope. A per-run walk finds no edge to a run the builder did not execute."""
+        entries = journal()
+        entries.insert(6, _entry("e-standing-open", "EVENT", SUBJECT, "builder-b",
+                                 {"event": "STANDING", "from": "OPEN", "to": "BUILT"}))
+        entries.append(_entry("e-launch-b", "EVENT", "builder-b", "worker-a",
+                              {"event": "LAUNCH", "launched_actor_id": "builder-b",
+                               "launched_by": "worker-a", "context_passed": ["OBJECTIVE"],
+                               "profile": _profile("builder"),
+                               "predicates_source_actor": "contract:observation"}))
+        record = RunRecord.from_entries(RUN, entries)
+        inference = self.service.infer_relation(record, "builder-b", "MODEL")
+        self.assertEqual("DIRECT", inference["outcome"])
+        self.assertEqual([{"edge": "PRIOR_STANDING_ACTOR",
+                           "evidence_address": "e-standing-open"}], inference["edges_found"])
+
+    def test_a_run_that_names_no_subject_cannot_answer_the_lifecycle_edge(self) -> None:
+        record = RunRecord.from_entries(RUN, journal(omit_subject=True))
+        with self.assertRaises(RelationUndetermined):
+            self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertEqual(["PRIOR_STANDING_ACTOR"],
+                         self.service.inferences[-1]["unanswerable_edges"])
+
+    def test_an_executor_relaying_an_observation_is_refused(self) -> None:
+        """A finding that reaches the record through the builder is the builder's report."""
+        self.service.infer_relation(self.record, "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(ObserverNotIndependent):
+            self.service.observe_run(self.record, "witness-z", reader, submitted_by="worker-a")
+        self.assertEqual("OBSERVER_NOT_INDEPENDENT", self.service.receipts[-1]["reason_code"])
 
     def test_the_producer_of_an_output_is_direct(self) -> None:
         record = RunRecord.from_entries(RUN, journal(output_actor="producer-p"))
@@ -173,19 +271,21 @@ class ThinSlice(unittest.TestCase):
         self.assertIn("ONLY_EXECUTOR_REPORT", [edge["edge"] for edge in inference["edges_found"]])
 
     def test_an_incomplete_record_is_undetermined_not_independent(self) -> None:
-        record = RunRecord.from_entries(RUN, journal(omit_grant_key=True))
+        record = RunRecord.from_entries(RUN, journal(omit_context_kinds=True))
         with self.assertRaises(RelationUndetermined):
             self.service.infer_relation(record, "witness-z", "MODEL")
         inference = self.service.inferences[-1]
         self._valid(inference, INFERENCE_SCHEMA)
         self.assertEqual("UNDETERMINED", inference["outcome"])
-        self.assertEqual(["GRANT_DESCENDS_FROM_RUN"], inference["unanswerable_edges"])
+        self.assertEqual(["CONSTRUCTION_CONTEXT_INHERITED"],
+                         inference["unanswerable_edges"])
         self.assertEqual("RELATION_UNDETERMINED", self.service.receipts[-1]["reason_code"])
         self.service.declare_predicates(RUN, PREDICATES)
         with self.assertRaises(RelationUndetermined):
             self.service.observe_run(record, "witness-z", reader)
 
-    def test_a_candidate_whose_grant_is_not_in_the_record_is_undetermined(self) -> None:
+    def test_a_candidate_the_record_never_saw_launched_is_undetermined(self) -> None:
+        """No launch entry answers neither context edge, and no profile answers perspective."""
         with self.assertRaises(RelationUndetermined):
             self.service.infer_relation(self.record, "stranger-s", "HUMAN")
 
@@ -290,14 +390,14 @@ class WitnessFindingsOn169182f(unittest.TestCase):
                              {"event": "REPORTED", "output_record_addresses": ["out/1"]})
         record = RunRecord.from_entries(RUN, entries)
         inference = self.service.infer_relation(record, "reporter-r", "WORKER")
-        self.assertEqual([{"edge": "SAME_ACTOR", "evidence_address": "e-report"}],
+        self.assertEqual([{"edge": "SAME_ACTOR_VERSION", "evidence_address": "e-report"}],
                          inference["edges_found"])
 
     def test_a_second_attempt_names_a_second_executor(self) -> None:
         entries = journal()
         entries.insert(-1, _entry("e-attempt-2", "EVENT", RUN, "retrier-q", {
             "event": "ATTEMPTED", "operation_plan_id": "plan-1", "lease": None,
-            "grant_id": "grant-run"}))
+            "grant_id": "grant-run", "subject_id": SUBJECT}))
         record = RunRecord.from_entries(RUN, entries)
         inference = self.service.infer_relation(record, "retrier-q", "WORKER")
         self.assertEqual("DIRECT", inference["outcome"])
@@ -367,7 +467,7 @@ class WitnessResidualsOn540bc01(unittest.TestCase):
         entries.insert(-1, _entry("e-attempt-2", "EVENT", RUN, "worker-a", {
             "event": "ATTEMPTED", "operation_plan_id": "plan-1",
             "lease": {"holder_id": "lessee-two", "fence": 2, "expires_at": "2026-09-03T02:00:00Z"},
-            "grant_id": "grant-run"}))
+            "grant_id": "grant-run", "subject_id": SUBJECT}))
         record = RunRecord.from_entries(RUN, entries)
         inference = self.service.infer_relation(record, "lessee-two", "WORKER")
         self.assertEqual([{"edge": "HOLDS_RUN_LEASE", "evidence_address": "e-attempt-2"}],

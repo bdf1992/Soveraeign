@@ -1,10 +1,27 @@
-"""Infer whether a candidate observer is independent of a run, from the run's record alone.
+"""Infer whether a candidate observer is independent of a subject, from the record alone.
 
 `decisions/0041-the-observation-service.md`, Ruling 2: nobody declares their own independence.
-The walk looks for the five direct edges `CHARTER.md` names and `relation-inference.schema.json`
-enforces. One edge found is `DIRECT`. None found over a record that answered every edge is
-`INDEPENDENT`. A record that could not answer an edge is `UNDETERMINED`, which refuses: absence
-of a recorded edge is not absence of a relation.
+`decisions/0104-independence-is-context-and-perspective.md` says what independence is, on two
+axes that do not substitute for one another.
+
+**Context** is what the observer was given. An observer may hold what the run was asked to do
+and what it produced; it may not hold how the run decided, what it concluded, or what it says
+about itself. Ends, not means. That axis is removable at launch, and the launcher declares
+what it passed.
+
+**Perspective** is what the observer is. A session holding none of the prior session's
+transcript is not a stranger to it - it is a version of the prior actor, loading the same
+profile and reading the artifact the way the builder read it. Isolating context removes what
+an observer inherited, never what it is. That axis is removable only by being a different
+actor, and it is read from the operating profile rather than the actor id.
+
+The walk is scoped to the subject's standing lifecycle, not to one run. Standing moves
+`OPEN -> BUILT -> WITNESSED -> RATIFIED` and a subject collects actors along the way, so a
+per-run walk would admit a builder as its own witness one arrow later.
+
+One edge found is `DIRECT`. None found over a record that answered every edge is
+`INDEPENDENT`. A record that could not answer an edge is `UNDETERMINED`, which refuses:
+absence of a recorded edge is not absence of a relation.
 
 A found edge answers the question the inference asks, so a record that shows the candidate
 executing the run reads `DIRECT` even when another edge could not be examined. Only a record
@@ -18,14 +35,16 @@ from typing import Any
 import hashlib
 
 from .errors import ObserverNotIndependent, RelationUndetermined, RunNotTerminal, Unreadable
-from .record import RunRecord
+from .record import CONSTRUCTION_CONTEXT, RunRecord
 
 EDGES = (
-    "SAME_ACTOR",
+    "SAME_ACTOR_VERSION",
+    "PRIOR_STANDING_ACTOR",
     "HOLDS_RUN_LEASE",
-    "GRANT_DESCENDS_FROM_RUN",
     "PRODUCED_THE_OUTPUT",
     "ONLY_EXECUTOR_REPORT",
+    "CONSTRUCTION_CONTEXT_INHERITED",
+    "PREDICATES_SUPPLIED_BY_EXECUTOR",
 )
 
 
@@ -50,34 +69,76 @@ class _Walk:
                 self.read.append(entry)
 
 
-def _walk_grants(record: RunRecord, candidate: str, run_grant: str, walk: _Walk) -> None:
-    """Does any grant the candidate holds descend from the run's grant?"""
-    grants = record.grants()
-    held = [entry for entry in grants.values()
-            if entry.get("payload", {}).get("holder_id") == candidate]
-    if not held:
-        walk.cannot_answer("GRANT_DESCENDS_FROM_RUN")
+def _same_version(record: RunRecord, candidate: str, actor: str) -> bool:
+    """Is the candidate a version of this actor: the same actor, or the same loaded profile?"""
+    if candidate == actor:
+        return True
+    theirs = record.profile_of(actor)
+    return theirs is not None and theirs == record.profile_of(candidate)
+
+
+def _walk_perspective(record: RunRecord, candidate: str, walk: _Walk) -> None:
+    """Is the candidate a version of an actor that executed this run?
+
+    A profile the record does not carry for either side is a question it cannot answer. The
+    candidate being an executor outright is answerable without any profile at all.
+    """
+    executors = record.executors()
+    for actor, entry in executors.items():
+        if _same_version(record, candidate, actor):
+            walk.edge("SAME_ACTOR_VERSION", entry)
+            return
+    if record.profile_of(candidate) is None or any(
+            record.profile_of(actor) is None for actor in executors):
+        walk.cannot_answer("SAME_ACTOR_VERSION")
+
+
+def _walk_lifecycle(record: RunRecord, candidate: str, walk: _Walk) -> None:
+    """Did the candidate, or a version of it, already move this subject along an arrow?
+
+    Without a subject the run belongs to, there is no lifecycle to walk and the edge is
+    unanswerable. That is the shape a per-run inference had for every subject.
+    """
+    subject = record.subject_id()
+    if subject is None:
+        walk.cannot_answer("PRIOR_STANDING_ACTOR")
         return
-    walk.cite(*held)
-    for entry in held:
-        seen: set[str] = set()
-        current: dict[str, Any] | None = entry
-        while current is not None:
-            grant_id = str(current["subject"])
-            if grant_id in seen:
-                break
-            seen.add(grant_id)
-            if grant_id == run_grant:
-                walk.edge("GRANT_DESCENDS_FROM_RUN", entry)
-                return
-            parent = current.get("payload", {}).get("parent_grant_id")
-            if parent is None:
-                break
-            current = grants.get(str(parent))
-            if current is None:
-                walk.cannot_answer("GRANT_DESCENDS_FROM_RUN")
-                return
-            walk.cite(current)
+    arrows = record.standings(subject)
+    if not arrows:
+        walk.cannot_answer("PRIOR_STANDING_ACTOR")
+        return
+    walk.cite(*arrows)
+    for entry in arrows:
+        if _same_version(record, candidate, str(entry.get("actor") or "")):
+            walk.edge("PRIOR_STANDING_ACTOR", entry)
+            return
+
+
+def _walk_context(record: RunRecord, candidate: str, walk: _Walk) -> None:
+    """What was the candidate handed, and who wrote the criteria it grades against?
+
+    Both answers come from the launcher's own entry. The observer never declares either, and
+    a launch the record does not carry answers neither.
+    """
+    launch = record.launches().get(candidate)
+    if launch is None:
+        walk.cannot_answer("CONSTRUCTION_CONTEXT_INHERITED")
+        walk.cannot_answer("PREDICATES_SUPPLIED_BY_EXECUTOR")
+        return
+    walk.cite(launch)
+    payload = launch.get("payload") or {}
+
+    passed = payload.get("context_passed")
+    if not isinstance(passed, list):
+        walk.cannot_answer("CONSTRUCTION_CONTEXT_INHERITED")
+    elif any(str(kind) in CONSTRUCTION_CONTEXT for kind in passed):
+        walk.edge("CONSTRUCTION_CONTEXT_INHERITED", launch)
+
+    author = payload.get("predicates_source_actor")
+    if not author:
+        walk.cannot_answer("PREDICATES_SUPPLIED_BY_EXECUTOR")
+    elif any(_same_version(record, str(author), actor) for actor in record.executors()):
+        walk.edge("PREDICATES_SUPPLIED_BY_EXECUTOR", launch)
 
 
 def _walk_outputs(record: RunRecord, candidate: str, walk: _Walk) -> None:
@@ -130,14 +191,14 @@ def infer_relation(
         raise Unreadable(f"{record.run_id} has no ATTEMPTED entry, so its executor is unknown")
     executor = str(attempts[0].get("actor"))
     walk = _Walk()
-    executors = record.executors()
-    walk.cite(*attempts, *executors.values())
+    walk.cite(*attempts, *record.executors().values())
 
-    if candidate_observer_id in executors:
-        walk.edge("SAME_ACTOR", executors[candidate_observer_id])
+    _walk_perspective(record, candidate_observer_id, walk)
+    _walk_lifecycle(record, candidate_observer_id, walk)
+    _walk_context(record, candidate_observer_id, walk)
 
-    # Every attempt ran under its own lease and grant; a retry's lessee is as direct as the
-    # first attempt's, so each attempt is read, not only the earliest.
+    # Every attempt ran under its own lease; a retry's lessee is as direct as the first
+    # attempt's, so each attempt is read, not only the earliest.
     for attempt in attempts:
         payload = attempt.get("payload") or {}
         if "lease" not in payload:
@@ -146,10 +207,6 @@ def infer_relation(
             lease = payload["lease"]
             if isinstance(lease, dict) and lease.get("holder_id") == candidate_observer_id:
                 walk.edge("HOLDS_RUN_LEASE", attempt)
-        if "grant_id" not in payload:
-            walk.cannot_answer("GRANT_DESCENDS_FROM_RUN")
-        elif payload["grant_id"]:
-            _walk_grants(record, candidate_observer_id, str(payload["grant_id"]), walk)
 
     _walk_outputs(record, candidate_observer_id, walk)
 
@@ -176,6 +233,9 @@ def infer_relation(
         "evidence_digests": _digests(walk.read),
         "inferred_at": inferred_at,
     }
+    subject = record.subject_id()
+    if subject is not None:
+        inference["subject_id"] = subject
     if walk.unanswerable:
         inference["unanswerable_edges"] = list(walk.unanswerable)
     return inference

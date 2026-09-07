@@ -5,7 +5,7 @@
     "status": "PROPOSED",
     "polarity": "positive",
     "expected_validity": "VALID",
-    "description": "No edge held and the record answered all five. The observer may observe. Note what is absent: nothing here is an assertion by the observer.",
+    "description": "No edge held and the record answered all seven. The observer may observe. Note what is absent: nothing here is an assertion by the observer.",
     "record": {
       "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
       "run_id": "urn:soveraeign:run:asset-ingest-1",
@@ -13,11 +13,13 @@
       "candidate_observer_kind": "MODEL",
       "executor_id": "urn:soveraeign:actor:asset-worker",
       "edges_examined": [
-        "SAME_ACTOR",
+        "SAME_ACTOR_VERSION",
+        "PRIOR_STANDING_ACTOR",
         "HOLDS_RUN_LEASE",
-        "GRANT_DESCENDS_FROM_RUN",
         "PRODUCED_THE_OUTPUT",
-        "ONLY_EXECUTOR_REPORT"
+        "ONLY_EXECUTOR_REPORT",
+        "CONSTRUCTION_CONTEXT_INHERITED",
+        "PREDICATES_SUPPLIED_BY_EXECUTOR"
       ],
       "edges_found": [],
       "record_completeness": "COMPLETE",
@@ -47,15 +49,17 @@
       "candidate_observer_kind": "MODEL",
       "executor_id": "urn:soveraeign:actor:asset-worker",
       "edges_examined": [
-        "SAME_ACTOR",
+        "SAME_ACTOR_VERSION",
+        "PRIOR_STANDING_ACTOR",
         "HOLDS_RUN_LEASE",
-        "GRANT_DESCENDS_FROM_RUN",
         "PRODUCED_THE_OUTPUT",
-        "ONLY_EXECUTOR_REPORT"
+        "ONLY_EXECUTOR_REPORT",
+        "CONSTRUCTION_CONTEXT_INHERITED",
+        "PREDICATES_SUPPLIED_BY_EXECUTOR"
       ],
       "edges_found": [
         {
-          "edge": "SAME_ACTOR",
+          "edge": "SAME_ACTOR_VERSION",
           "evidence_address": "record/journal/entry/17#actor"
         }
       ],
@@ -86,11 +90,13 @@
       "candidate_observer_kind": "MODEL",
       "executor_id": "urn:soveraeign:actor:asset-worker",
       "edges_examined": [
-        "SAME_ACTOR",
+        "SAME_ACTOR_VERSION",
+        "PRIOR_STANDING_ACTOR",
         "HOLDS_RUN_LEASE",
-        "GRANT_DESCENDS_FROM_RUN",
         "PRODUCED_THE_OUTPUT",
-        "ONLY_EXECUTOR_REPORT"
+        "ONLY_EXECUTOR_REPORT",
+        "CONSTRUCTION_CONTEXT_INHERITED",
+        "PREDICATES_SUPPLIED_BY_EXECUTOR"
       ],
       "edges_found": [],
       "record_completeness": "INCOMPLETE",
@@ -105,7 +111,7 @@
       ],
       "inferred_at": "2026-08-24T02:10:00Z",
       "unanswerable_edges": [
-        "GRANT_DESCENDS_FROM_RUN"
+        "CONSTRUCTION_CONTEXT_INHERITED"
       ]
     }
   },
@@ -123,15 +129,17 @@
       "candidate_observer_kind": "MODEL",
       "executor_id": "urn:soveraeign:actor:asset-worker",
       "edges_examined": [
-        "SAME_ACTOR",
+        "SAME_ACTOR_VERSION",
+        "PRIOR_STANDING_ACTOR",
         "HOLDS_RUN_LEASE",
-        "GRANT_DESCENDS_FROM_RUN",
         "PRODUCED_THE_OUTPUT",
-        "ONLY_EXECUTOR_REPORT"
+        "ONLY_EXECUTOR_REPORT",
+        "CONSTRUCTION_CONTEXT_INHERITED",
+        "PREDICATES_SUPPLIED_BY_EXECUTOR"
       ],
       "edges_found": [
         {
-          "edge": "SAME_ACTOR",
+          "edge": "SAME_ACTOR_VERSION",
           "evidence_address": "record/journal/entry/17#actor"
         }
       ],
@@ -162,11 +170,13 @@
       "candidate_observer_kind": "MODEL",
       "executor_id": "urn:soveraeign:actor:asset-worker",
       "edges_examined": [
-        "SAME_ACTOR",
+        "SAME_ACTOR_VERSION",
+        "PRIOR_STANDING_ACTOR",
         "HOLDS_RUN_LEASE",
-        "GRANT_DESCENDS_FROM_RUN",
         "PRODUCED_THE_OUTPUT",
-        "ONLY_EXECUTOR_REPORT"
+        "ONLY_EXECUTOR_REPORT",
+        "CONSTRUCTION_CONTEXT_INHERITED",
+        "PREDICATES_SUPPLIED_BY_EXECUTOR"
       ],
       "edges_found": [],
       "record_completeness": "INCOMPLETE",
@@ -196,11 +206,13 @@
       "candidate_observer_kind": "MODEL",
       "executor_id": "urn:soveraeign:actor:asset-worker",
       "edges_examined": [
-        "SAME_ACTOR",
+        "SAME_ACTOR_VERSION",
+        "PRIOR_STANDING_ACTOR",
         "HOLDS_RUN_LEASE",
-        "GRANT_DESCENDS_FROM_RUN",
         "PRODUCED_THE_OUTPUT",
-        "ONLY_EXECUTOR_REPORT"
+        "ONLY_EXECUTOR_REPORT",
+        "CONSTRUCTION_CONTEXT_INHERITED",
+        "PREDICATES_SUPPLIED_BY_EXECUTOR"
       ],
       "edges_found": [],
       "record_completeness": "COMPLETE",
@@ -230,11 +242,13 @@
       "candidate_observer_kind": "MODEL",
       "executor_id": "urn:soveraeign:actor:asset-worker",
       "edges_examined": [
-        "SAME_ACTOR",
+        "SAME_ACTOR_VERSION",
+        "PRIOR_STANDING_ACTOR",
         "HOLDS_RUN_LEASE",
-        "GRANT_DESCENDS_FROM_RUN",
         "PRODUCED_THE_OUTPUT",
-        "ONLY_EXECUTOR_REPORT"
+        "ONLY_EXECUTOR_REPORT",
+        "CONSTRUCTION_CONTEXT_INHERITED",
+        "PREDICATES_SUPPLIED_BY_EXECUTOR"
       ],
       "edges_found": [],
       "record_completeness": "INCOMPLETE",
@@ -264,15 +278,17 @@
       "candidate_observer_kind": "MODEL",
       "executor_id": "urn:soveraeign:actor:asset-worker",
       "edges_examined": [
-        "SAME_ACTOR",
+        "SAME_ACTOR_VERSION",
+        "PRIOR_STANDING_ACTOR",
         "HOLDS_RUN_LEASE",
-        "GRANT_DESCENDS_FROM_RUN",
         "PRODUCED_THE_OUTPUT",
-        "ONLY_EXECUTOR_REPORT"
+        "ONLY_EXECUTOR_REPORT",
+        "CONSTRUCTION_CONTEXT_INHERITED",
+        "PREDICATES_SUPPLIED_BY_EXECUTOR"
       ],
       "edges_found": [
         {
-          "edge": "SAME_ACTOR"
+          "edge": "SAME_ACTOR_VERSION"
         }
       ],
       "record_completeness": "COMPLETE",
@@ -302,7 +318,7 @@
       "candidate_observer_kind": "MODEL",
       "executor_id": "urn:soveraeign:actor:asset-worker",
       "edges_examined": [
-        "SAME_ACTOR",
+        "SAME_ACTOR_VERSION",
         "HOLDS_RUN_LEASE"
       ],
       "edges_found": [],
@@ -333,9 +349,9 @@
       "candidate_observer_kind": "MODEL",
       "executor_id": "urn:soveraeign:actor:asset-worker",
       "edges_examined": [
-        "SAME_ACTOR",
+        "SAME_ACTOR_VERSION",
         "HOLDS_RUN_LEASE",
-        "GRANT_DESCENDS_FROM_RUN",
+        "CONSTRUCTION_CONTEXT_INHERITED",
         "PRODUCED_THE_OUTPUT",
         "ONLY_EXECUTOR_REPORT",
         "SAME_MACHINE"
@@ -368,11 +384,13 @@
       "candidate_observer_kind": "MODEL",
       "executor_id": "urn:soveraeign:actor:asset-worker",
       "edges_examined": [
-        "SAME_ACTOR",
+        "SAME_ACTOR_VERSION",
+        "PRIOR_STANDING_ACTOR",
         "HOLDS_RUN_LEASE",
-        "GRANT_DESCENDS_FROM_RUN",
         "PRODUCED_THE_OUTPUT",
-        "ONLY_EXECUTOR_REPORT"
+        "ONLY_EXECUTOR_REPORT",
+        "CONSTRUCTION_CONTEXT_INHERITED",
+        "PREDICATES_SUPPLIED_BY_EXECUTOR"
       ],
       "edges_found": [],
       "record_completeness": "COMPLETE",
@@ -401,6 +419,166 @@
       "candidate_observer_kind": "MODEL",
       "executor_id": "urn:soveraeign:actor:asset-worker",
       "edges_examined": [
+        "SAME_ACTOR_VERSION",
+        "PRIOR_STANDING_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT",
+        "CONSTRUCTION_CONTEXT_INHERITED",
+        "PREDICATES_SUPPLIED_BY_EXECUTOR"
+      ],
+      "edges_found": [],
+      "record_completeness": "COMPLETE",
+      "outcome": "INDEPENDENT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-POS-DIRECT-PRIOR-STANDING",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "description": "The candidate already moved this subject from OPEN to BUILT and now proposes to observe a later run it did not execute. Per-run scope found no edge; lifecycle scope finds this one (decisions/0104, Ruling 5).",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:asset-builder",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR_VERSION",
+        "PRIOR_STANDING_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT",
+        "CONSTRUCTION_CONTEXT_INHERITED",
+        "PREDICATES_SUPPLIED_BY_EXECUTOR"
+      ],
+      "edges_found": [
+        {
+          "edge": "PRIOR_STANDING_ACTOR",
+          "evidence_address": "record/journal/entry/9#standing"
+        }
+      ],
+      "record_completeness": "COMPLETE",
+      "outcome": "DIRECT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z",
+      "subject_id": "urn:soveraeign:work:asset-ingest"
+    }
+  },
+  {
+    "id": "OBS-RELATION-POS-DIRECT-CONTEXT-INHERITED",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "description": "The launch handed the candidate the builder's reasoning. It holds what the construction produced, so it cannot read the artifact for the first time.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:helper",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR_VERSION",
+        "PRIOR_STANDING_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT",
+        "CONSTRUCTION_CONTEXT_INHERITED",
+        "PREDICATES_SUPPLIED_BY_EXECUTOR"
+      ],
+      "edges_found": [
+        {
+          "edge": "CONSTRUCTION_CONTEXT_INHERITED",
+          "evidence_address": "record/journal/entry/21#context_passed"
+        }
+      ],
+      "record_completeness": "COMPLETE",
+      "outcome": "DIRECT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-POS-DIRECT-PREDICATES-FROM-EXECUTOR",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "description": "The candidate holds none of the builder's context and grades against criteria the builder wrote. This is the cosmetic witness decisions/0100 named as its own defeater, refused rather than discounted.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:qa-witness",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR_VERSION",
+        "PRIOR_STANDING_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT",
+        "CONSTRUCTION_CONTEXT_INHERITED",
+        "PREDICATES_SUPPLIED_BY_EXECUTOR"
+      ],
+      "edges_found": [
+        {
+          "edge": "PREDICATES_SUPPLIED_BY_EXECUTOR",
+          "evidence_address": "record/journal/entry/21#predicates_source_actor"
+        }
+      ],
+      "record_completeness": "COMPLETE",
+      "outcome": "DIRECT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-SEM-NARROWED-EXAMINATION",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "An inference that examined the old five-edge set and reached INDEPENDENT. It reaches independence by not looking, which minItems refuses: a retired edge set is not a smaller question, it is an unanswered one.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:qa-witness",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
         "SAME_ACTOR",
         "HOLDS_RUN_LEASE",
         "GRANT_DESCENDS_FROM_RUN",
@@ -419,6 +597,86 @@
         "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
       ],
       "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-SEM-RETIRED-EDGE-FOUND",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "An inference reporting the retired grant-descent edge as a finding. Launch lineage is not a relation and the enum no longer carries the name, so a record still written in that vocabulary is refused rather than silently read.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:qa-witness",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR_VERSION",
+        "PRIOR_STANDING_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT",
+        "CONSTRUCTION_CONTEXT_INHERITED",
+        "PREDICATES_SUPPLIED_BY_EXECUTOR"
+      ],
+      "edges_found": [
+        {
+          "edge": "GRANT_DESCENDS_FROM_RUN",
+          "evidence_address": "record/journal/entry/12#parent_grant_id"
+        }
+      ],
+      "record_completeness": "COMPLETE",
+      "outcome": "DIRECT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-SEM-UNDECLARED-CONTEXT-READS-INDEPENDENT",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "A launch that declared no context, reported as INDEPENDENT with the edge listed unanswerable. Under-declaring must buy a refusal, never a pass, so COMPLETE and an unanswerable edge cannot stand together.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:qa-witness",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR_VERSION",
+        "PRIOR_STANDING_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT",
+        "CONSTRUCTION_CONTEXT_INHERITED",
+        "PREDICATES_SUPPLIED_BY_EXECUTOR"
+      ],
+      "edges_found": [],
+      "record_completeness": "COMPLETE",
+      "outcome": "INDEPENDENT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z",
+      "unanswerable_edges": [
+        "CONSTRUCTION_CONTEXT_INHERITED"
+      ]
     }
   }
 ]

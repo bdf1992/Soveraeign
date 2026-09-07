@@ -168,10 +168,11 @@
       "name an unnecessary abstraction",
       "name an authority the participant assumed rather than held"
     ],
-    "witness_rule": "A helper that read or edited the change is inside the build and can never witness it. Independent witness stays a separate participant that did not contribute to the artifact.",
+    "witness_rule": "A helper that shaped the change, or watched it being shaped, is inside the build and can never witness it: it holds what the construction produced. Reading the change is not what disqualifies it - a witness reads the change too. Independent observation stays a separate participant holding neither the builder's context (its reasoning, plan, transcript or conclusion) nor the builder's frame (the same operating profile), per decisions/0104-independence-is-context-and-perspective.md.",
     "governed_by": [
       "AGENTS.md",
-      "SDLC.md"
+      "SDLC.md",
+      "decisions/0104-independence-is-context-and-perspective.md"
     ],
     "recruitment": {
       "presumptive": true,

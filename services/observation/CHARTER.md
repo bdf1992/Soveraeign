@@ -18,22 +18,58 @@ observation they emit is the one `scripts/sovkernel/transitions.py` accepts for 
 ## Independence is inferred, never declared
 
 This is the ruling the service is built around (Bdo, 2026-08-23): an observer is independent
-when no direct relation to the execution can be found in the run's own record.
+when no direct relation to the execution can be found in the record.
 
 Nobody registers as an observer and nobody asserts their own independence. A declared relation
 would be the observer vouching for itself, which is the substitution this contract refuses
 everywhere else — it is the same shape as an executor's report standing in for an observation.
-Instead `infer-relation` walks the run's record and looks for a direct edge:
 
-- `SAME_ACTOR` — the candidate observer is the actor that executed the run;
+`decisions/0104-independence-is-context-and-perspective.md` (Bdo, 2026-09-07) says what
+independence *is*, on two axes that do not substitute for one another.
+
+**Context** is what the observer was given. It may hold what the run was asked to do and what
+the run produced; it may not hold how the run decided, what it concluded, or what it says about
+itself. Ends, not means. A witness handed the route can only check that route against itself,
+and it will agree, because agreement is what shared context manufactures. This axis is
+removable at launch, and the launcher — never the observer — declares what it passed.
+
+**Perspective** is what the observer is. A session holding none of the prior session's
+transcript is not a stranger to it: it is a version of the prior actor, loading the same
+profile and reading the artifact the way the builder read it. Isolation removes what an
+observer inherited, never what it is. This axis is read from the operating profile rather than
+the actor id, because a rename defeats an id and does not defeat a frame.
+
+The walk is scoped to the subject's standing lifecycle, not to one run. Standing moves
+`OPEN -> BUILT -> WITNESSED -> RATIFIED` and a subject collects actors along the way, so a
+per-run walk would admit a builder as its own witness one arrow later.
+
+`infer-relation` looks for a direct edge on either axis:
+
+- `SAME_ACTOR_VERSION` — the candidate is an actor that executed or reported the run, or loads
+  the same operating profile one of them loaded;
+- `PRIOR_STANDING_ACTOR` — the candidate, or a version of it, already moved this subject along
+  an earlier standing arrow;
 - `HOLDS_RUN_LEASE` — the candidate holds the lease, fence, or session the run executed under;
-- `GRANT_DESCENDS_FROM_RUN` — the candidate's grant descends from the run's own grant chain;
 - `PRODUCED_THE_OUTPUT` — the candidate produced the output it proposes to observe;
-- `ONLY_EXECUTOR_REPORT` — the only evidence available to the candidate is the executor's report.
+- `ONLY_EXECUTOR_REPORT` — the only evidence available to the candidate is the executor's
+  report, which includes an observation the executor relayed rather than one the observer
+  wrote;
+- `CONSTRUCTION_CONTEXT_INHERITED` — the launch handed the candidate the run's reasoning, plan,
+  transcript, or conclusion;
+- `PREDICATES_SUPPLIED_BY_EXECUTOR` — the criteria the candidate grades against were authored
+  by an executor rather than by a contract, a fixture, or the observer itself.
 
 Find one and the answer is `OBSERVER_NOT_INDEPENDENT`. Find none and the observer may observe.
 
-Those five names are the vocabulary `relation-inference.schema.json` enforces, and
+The grant-descent edge is retired (`decisions/0104` names it exactly; this charter does not,
+because an edge name written here is one the contract must enforce). Who launched an observer
+is not what makes it dependent:
+a witness launched by the builder, handed the subject and not the builder's reasoning, and
+loading a frame the builder did not load, reaches its answer along a path the builder never
+walked. The hazard that edge stood for — a builder that can bury a finding it dislikes — is
+`ONLY_EXECUTOR_REPORT`, and `observe-run` refuses an observation an executor relays.
+
+Those seven names are the vocabulary `relation-inference.schema.json` enforces, and
 `services/observation/tests/test_contract_shapes.py` reads this list at check time to prove the
 charter and the contract have not drifted apart about what direct means.
 
@@ -44,8 +80,12 @@ thin to answer the question would otherwise read as independence, which would ma
 worthless exactly where it matters most — on runs that recorded too little.
 
 So the inference has three outcomes, not two: `DIRECT`, `INDEPENDENT`, and `UNDETERMINED`.
-`infer-relation` refuses `RELATION_UNDETERMINED` when the run's record cannot support the
-inference, and `observe-run` refuses on it as well. Silence is not a pass.
+`infer-relation` refuses `RELATION_UNDETERMINED` when the record cannot support the inference,
+and `observe-run` refuses on it as well. Silence is not a pass.
+
+This is what keeps the two new axes honest. A launch that declares no context, an actor whose
+profile the record does not carry, and a run that names no subject each leave an edge
+unanswerable, so under-declaring buys a refusal rather than a pass.
 
 ## What this service is not
 

@@ -39,16 +39,21 @@ host_service_status: BUILT_READ_HEALTH_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNES
 # Owns independent observation under decisions/0041. Logging is not its job; the
 # Record Service owns the journal and the Console Service owns the view.
 # Bdo ruled 2026-08-23 that independence is inferred from the run's record
-# when no direct relation is found, never declared by the observer. Five of the
-# eight declared operations are built and self-tested (request-observation,
-# declare-predicates, infer-relation, observe-run, read-observation): the walk
-# over the run's record finds the five direct edges or refuses UNDETERMINED, and
-# the observation it emits is the one the kernel's settle_run accepts. Three
-# independent witness passes (witness/observation-service.md) observed the thin
-# slice through its declared surface at commit 3087714 and support WITNESSED for
-# it; nothing is ratified, no binding routes any operation, and AI-NATIVE.md
-# check 3 still reads UNATTESTABLE because no service's runs are observed yet.
-observation_service_status: BUILT_THIN_SLICE_WITNESSED_REMAINDER_DECLARED
+# when no direct relation is found, never declared by the observer, and ruled
+# 2026-09-07 (decisions/0104) what independence is: context and perspective,
+# not launch lineage, walked over the subject's standing lifecycle rather than
+# one run. Five of the eight declared operations are built and self-tested
+# (request-observation, declare-predicates, infer-relation, observe-run,
+# read-observation): the walk finds the seven direct edges or refuses
+# UNDETERMINED, and the observation it emits is the one the kernel's settle_run
+# accepts. The three witness passes at commit 3087714
+# (witness/observation-service.md) observed the five-edge walk that decision
+# replaced, so they no longer cover the enforcement surface and this standing
+# is demoted to BUILT until a participant that did not build the change
+# observes the seven-edge walk. Nothing is ratified, no binding routes any
+# operation, and AI-NATIVE.md check 3 still reads UNATTESTABLE because no
+# service's runs are observed yet.
+observation_service_status: BUILT_THIN_SLICE_REMAINDER_DECLARED_NOT_WITNESSED
 # Every service operation now declares its subject, CRUD verb, logical endpoint,
 # preconditions, commit, and refusals (decisions/0040). Self-tested against one
 # admissible manifest and twenty-one defeats; not independently witnessed.

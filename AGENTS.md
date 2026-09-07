@@ -234,8 +234,12 @@ is the shortest remaining path to the result.
 - Recruit a helper model or subagent as a junior or copilot whenever a second
   reading would help, and do it without asking. Use it to challenge defects,
   missing tests, scope drift, unnecessary abstraction, and assumed authority.
-  A helper that read or edited the change is inside the build and can never
-  witness it; independent observation stays a separate participant. Launching
+  A helper that shaped the change, or watched it being shaped, is inside the
+  build and can never witness it: it holds what the construction produced.
+  Reading the change is not what disqualifies it — a witness reads the change
+  too — so what independent observation needs is a separate participant holding
+  neither the builder's context nor the builder's frame
+  (`decisions/0104-independence-is-context-and-perspective.md`). Launching
   that separate participant is the builder's own required step whenever the
   invocation can launch one. "A build cannot witness itself" is the reason to
   launch the witness, never a reason to stop at an uncommitted tree, and the

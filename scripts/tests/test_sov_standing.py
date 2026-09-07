@@ -643,12 +643,27 @@ class TheClaimSideMustNotUnderRead(unittest.TestCase):
     def test_the_live_status_file_is_read_the_same_way_by_both_paths(self):
         """A control, so this class cannot pass vacuously: the real file is read
         through the same entry point as the planted lines, and yields exactly the
-        claims a line-by-line read of it yields."""
+        claims a line-by-line read of it yields.
+
+        The control used to name the one field that claimed WITNESSED. That made
+        it depend on the repository holding such a claim, so demoting the last
+        one - which `decisions/0104` did on 2026-09-07 - failed a check about the
+        reader for a reason that had nothing to do with the reader. Zero
+        witnessed claims is a legitimate state of an honest record, and a control
+        that refuses it grades the record instead of the code.
+
+        Non-vacuity is proved where it belongs instead: the same entry point,
+        pointed at a file this test writes, still finds a claim. That holds
+        whatever STATUS.yaml says.
+        """
         live = sov_standing.read_claims()
         text = sov_standing.STATUS.read_text(encoding="utf-8")
         planted = [standing for line in text.splitlines() for standing in self._claims(line)]
         self.assertEqual([claim.standing for claim in live], planted)
-        self.assertEqual([claim.field for claim in live], ["observation_service_status"])
+        self.assertEqual([(claim.field, claim.standing) for claim in live],
+                         [(claim.field, claim.standing)
+                          for claim in sov_standing.read_claims(sov_standing.STATUS)])
+        self.assertEqual(self._claims("asset_service_status: BUILT_WITNESSED"), ["WITNESSED"])
 
 
 class TheTwoSidesFailInOppositeDirections(unittest.TestCase):

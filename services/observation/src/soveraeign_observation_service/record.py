@@ -5,8 +5,8 @@ Record Service's own shape - `entry_id`, `kind`, `subject`, `actor`, `payload`, 
 so a journal read, or a projection rebuilt from one, feeds the inference directly. Nothing here
 imports the Record Service: the boundary is the entry shape, not the code.
 
-Four payload events are read. They are the run's own words about itself, written by the
-kernel transitions `SPEC.md` names, and the inference in `relation.py` trusts nothing else:
+Six payload events are read. They are the record's own words, written by the kernel
+transitions `SPEC.md` names, and the inference in `relation.py` trusts nothing else:
 
 - `ATTEMPTED` on the run subject: `begin_run` happened. The entry's actor is the executor;
   the payload carries `lease` (an object or null) and `grant_id` (a string or null). A key that
@@ -15,8 +15,19 @@ kernel transitions `SPEC.md` names, and the inference in `relation.py` trusts no
   `output_record_addresses`, what the executor says it produced.
 - `OUTPUT` on an output address: a durable output exists. Its actor produced it and its
   payload carries the `digest` a reader can check the bytes against.
-- `GRANT` on a grant id: `holder_id` and `parent_grant_id` (null at the root), so a grant chain
-  can be walked from the record rather than from anyone's say-so.
+- `GRANT` on a grant id: `holder_id` and `parent_grant_id` (null at the root). Kept because a
+  reader may still want the chain; `decisions/0104` retired it as an independence edge.
+- `LAUNCH` on a launched actor: `launched_actor_id`, `launched_by`, `context_passed` (the
+  declared kinds of context handed over), `profile` (the operating profile the actor loaded,
+  as address and digest), and `predicates_source_actor` (who authored the criteria it grades
+  against). The launcher declares this, never the observer, so no participant vouches for
+  itself. A launch entry that omits a key is a question the record cannot answer.
+- `STANDING` on a work subject: `from` and `to`, the standing arrow this entry moved. Its
+  actor is who moved it. These are what makes the walk lifecycle-wide rather than per-run.
+
+Context kinds split in two. `CONSTRUCTION` kinds are what the run's own construction
+produced; holding any one of them is the context edge. Everything else is subject-side and
+carries no edge: an observer is meant to hold the objective and the artifact.
 
 Terminal, for observation, means the run is no longer in flight: the executor has reported,
 or a terminal receipt refused or settled it. Settlement is not required, because `settle_run`
@@ -34,6 +45,14 @@ ATTEMPTED = "ATTEMPTED"
 REPORTED = "REPORTED"
 OUTPUT = "OUTPUT"
 GRANT = "GRANT"
+LAUNCH = "LAUNCH"
+STANDING = "STANDING"
+
+#: Context kinds a run's own construction produces. Holding one is not independence.
+CONSTRUCTION_CONTEXT = frozenset({"REASONING", "PLAN", "TRANSCRIPT", "CONCLUSION"})
+
+#: Events kept regardless of subject, because the walk reads them across the lifecycle.
+CROSS_SUBJECT = (OUTPUT, GRANT, LAUNCH, STANDING)
 
 #: Receipt outcomes under which a run is no longer in flight.
 TERMINAL_OUTCOMES = frozenset({"COMMITTED", "REFUSED", "FAILED", "COUNTERED", "UNRESOLVED"})
@@ -66,7 +85,7 @@ class RunRecord:
         """Keep the run's own entries plus every output and grant entry the walk may need."""
         kept = tuple(
             dict(entry) for entry in entries
-            if entry.get("subject") == run_id or _event(entry) in (OUTPUT, GRANT)
+            if entry.get("subject") == run_id or _event(entry) in CROSS_SUBJECT
         )
         return cls(run_id=run_id, entries=kept)
 
@@ -92,6 +111,55 @@ class RunRecord:
                 return f"entry {address} carries no sha256 digest"
             if entry.get("subject") == self.run_id and not entry.get("actor"):
                 return f"entry {address} on the run names no actor"
+            if _event(entry) == STANDING and not entry.get("actor"):
+                return f"standing entry {address} names no actor"
+        return None
+
+    def subject_id(self) -> str | None:
+        """The standing subject the run declares, or None when it declares none.
+
+        The lifecycle walk needs a subject to walk. A run that does not name one leaves that
+        edge unanswerable, which refuses; it never reads as independence.
+        """
+        for attempt in self.attempts():
+            named = (attempt.get("payload") or {}).get("subject_id")
+            if named:
+                return str(named)
+        return None
+
+    def launches(self) -> dict[str, dict[str, Any]]:
+        """Launched actor -> the `LAUNCH` entry the launcher wrote about handing it context."""
+        found: dict[str, dict[str, Any]] = {}
+        for entry in self.entries:
+            if _event(entry) != LAUNCH:
+                continue
+            actor = (entry.get("payload") or {}).get("launched_actor_id")
+            if actor and str(actor) not in found:
+                found[str(actor)] = entry
+        return found
+
+    def standings(self, subject_id: str) -> list[dict[str, Any]]:
+        """Every `STANDING` arrow recorded on one subject, in append order."""
+        return [entry for entry in self.entries
+                if _event(entry) == STANDING and entry.get("subject") == subject_id]
+
+    def profile_of(self, actor: str) -> str | None:
+        """The digest of the operating profile an actor loaded, from a launch or an attempt.
+
+        Perspective is carried by the profile, not by the actor id: a rename defeats an id and
+        does not defeat a frame (`decisions/0104`, Ruling 3).
+        """
+        launch = self.launches().get(actor)
+        if launch is not None:
+            profile = (launch.get("payload") or {}).get("profile")
+            if isinstance(profile, dict) and profile.get("digest"):
+                return digest_address(profile["digest"])
+        for entry in self.attempts() + self._run_events(REPORTED):
+            if entry.get("actor") != actor:
+                continue
+            profile = (entry.get("payload") or {}).get("profile")
+            if isinstance(profile, dict) and profile.get("digest"):
+                return digest_address(profile["digest"])
         return None
 
     def attempts(self) -> list[dict[str, Any]]:
@@ -185,4 +253,5 @@ class RunRecord:
         return digest
 
 
-__all__ = ["ATTEMPTED", "GRANT", "OUTPUT", "REPORTED", "RunRecord", "digest_address"]
+__all__ = ["ATTEMPTED", "CONSTRUCTION_CONTEXT", "GRANT", "LAUNCH", "OUTPUT", "REPORTED",
+           "STANDING", "RunRecord", "digest_address"]

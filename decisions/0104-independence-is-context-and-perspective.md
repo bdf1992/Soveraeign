@@ -158,31 +158,59 @@ digests it read. An observation whose citations exceed the context its launch
 declared is evidence the declaration was false, readable by anyone holding both
 records.
 
-## What this changes
+## What changed
+
+Built on `claude/agent-independence-definition-z4crlv` at `BUILT` standing. The
+decision stays `PROPOSED`: a participant may construct what it cannot ratify,
+and nothing here reached `main`.
 
 - `services/observation/contracts/relation-inference.schema.json`: the `edge`
-  enum, `edges_examined` `minItems` from 5 to 7, and the subject scope alongside
-  `run_id`.
-- `services/observation/src/soveraeign_observation_service/relation.py`:
-  `EDGES`, `_walk_grants` removed, walks added over the launch entry, the actor
-  profile, and the subject's prior standing arrows.
-- `services/observation/src/soveraeign_observation_service/record.py`: the
-  record widens from one run's slice to the subject's lifecycle slice.
-- `services/observation/CHARTER.md` and `KNOWN-GAPS.md`: the independence
-  section and the recursion row.
-- A defeating fixture per new edge, one proving a launch with no declared
-  context reads `UNDETERMINED`, and one proving a builder admitted at
-  `BUILT -> WITNESSED` on a later run is refused by `PRIOR_STANDING_ACTOR`.
+  enum, `edges_examined` `minItems` from 5 to 7, and `subject_id`.
+- `.../src/soveraeign_observation_service/record.py`: reads two more journal
+  events, `LAUNCH` and `STANDING`, and widens from one run's slice to the
+  subject's lifecycle slice. `profile_of` reads the frame an actor loaded.
+- `.../relation.py`: `EDGES`, `_walk_grants` deleted, and three walks added —
+  perspective, lifecycle, and context.
+- `.../observe.py` and `service.py`: `observe_run` takes `submitted_by` and
+  refuses `OBSERVER_NOT_INDEPENDENT` when an executor relays another actor's
+  observation. This is where `ONLY_EXECUTOR_REPORT`'s widening landed. The edge
+  itself is unchanged: an inference runs before an observation exists, so the
+  relay cannot be seen from there.
+- `tests/test_thin_slice.py`: seven cases added, one per new edge plus the
+  lifecycle-shopping case, the relay refusal, and the case proving a grant
+  descending from the run is no longer an edge. 55 tests pass.
+- `contracts/fixtures/relation-inference.fixtures.json`: 12 entries carried onto
+  the new vocabulary, 6 added — three positive edges and three defeating cases
+  (a narrowed five-edge examination, a retired edge reported as a finding, and
+  an undeclared context read as independence).
+- `CHARTER.md`, `KNOWN-GAPS.md`, `STATUS.yaml`.
 - `AGENTS.md` Closure ownership and `contracts/closure-ownership.json`
-  `helper_policy.witness_rule`. Both currently say a helper that *read* the
-  change is inside the build. Under this definition that reason is wrong — a
-  witness reads the change too. The helper is inside the build because it holds
-  the construction context: it shaped the thing, or watched it being shaped. The
-  current wording, read literally, disqualifies every witness there is.
+  `helper_policy.witness_rule`. Both said a helper that *read* the change is
+  inside the build. That reason is wrong — a witness reads the change too — and
+  read literally it disqualified every witness there is. The helper is inside
+  the build because it shaped the thing or watched it being shaped.
 
-None of it is done here. The edge set is the entire enforcement surface of a
-built service, and one question in Bdo's queue is still open, so this record
-states the delta precisely enough to be one step from landing and stops there.
+### A gap the new fixtures found
+
+`OBS-RELATION-SEM-UNDECLARED-CONTEXT-READS-INDEPENDENT` was written to be
+invalid and validated clean. The schema's `INDEPENDENT` branch constrained
+`edges_found` and `record_completeness` and said nothing about
+`unanswerable_edges`, so a record could claim independence while naming edges
+nobody could read — the silence-as-pass `decisions/0041` built its third outcome
+to refuse. The implementation never emitted it; the contract permitted it, and a
+different participant could.
+
+Repaired by adding `unanswerable_edges: {maxItems: 0}` to that branch and to no
+other. A `DIRECT` verdict may name an unanswered edge, because a found edge
+already answers the question the inference asks. Independence may not.
+
+### Standing moved
+
+`observation_service_status` demoted from
+`BUILT_THIN_SLICE_WITNESSED_REMAINDER_DECLARED` to
+`BUILT_THIN_SLICE_REMAINDER_DECLARED_NOT_WITNESSED`. The three witness passes at
+commit `3087714` observed the five-edge walk this decision replaced. They were
+not wrong; they no longer cover what is there.
 
 ## Defaults taken
 
@@ -235,14 +263,24 @@ axis, and it widened rather than narrowed.
 
 ## Residuals
 
-- Not implemented. Schema, walks, record scope, fixtures, charter and the two
-  closure-ownership wordings are named above and unchanged in the tree.
+- Question 2 below is unanswered, and the retirement of grant-descent is built
+  on the default this record takes rather than on a ruling.
+- Both context edges read a launcher's declaration where they could not measure.
+  The cross-check named in Ruling 8 — an observation citing more than its launch
+  declared — is described and not computed by anything.
+- `contracts/transition.schema.json` still carries `observer_relation` with
+  `INDEPENDENT | SELF | DELEGATED`, declared by the observer and used nowhere
+  else in the repository. `DELEGATED` is exactly the builder-launched witness
+  this record admits, so the enum is now readable for the first time and is also
+  the self-declaration `decisions/0041` Ruling 2 refuses. Left alone: `SPEC.md`
+  owns it and it is outside this concern.
 - `contracts/standing-grants.json` requires `requires_independent_observation`
   for `repository.land` without saying which definition it means. It resolves
   through `AGENTS.md` today and would resolve through this record on acceptance;
   the grant text is not edited here because the grant excludes its own registry.
 - Lifecycle scope raises a cost this record does not price: an inference at
   `WITNESSED -> RATIFIED` reads every actor on every prior arrow, and long-lived
-  subjects accumulate them. Whether that walk stays bounded is unmeasured.
+  subjects accumulate them. Whether that walk stays bounded is unmeasured, and
+  it is a row in `KNOWN-GAPS.md`.
 - The recursion `services/observation/KNOWN-GAPS.md` records is untouched:
   whatever observes this service still cannot be this service.

@@ -18,7 +18,12 @@ from typing import Any, Callable
 import hashlib
 import json
 
-from .errors import DigestMismatch, PredicatesUndeclared, Unreadable
+from .errors import (
+    DigestMismatch,
+    ObserverNotIndependent,
+    PredicatesUndeclared,
+    Unreadable,
+)
 from .record import RunRecord, digest_address
 from .relation import require_independent
 
@@ -95,8 +100,14 @@ def observe_run(
     observer_id: str,
     reader: Reader,
     observed_at: str,
+    submitted_by: str | None = None,
 ) -> dict[str, Any]:
     """Read the run's outputs yourself and evaluate the declared predicates against them.
+
+    `submitted_by` is the actor that puts the observation into the record, which is the
+    observer unless someone relayed it. An executor relaying a finding is the executor's
+    report wearing an observer's name, so it refuses `OBSERVER_NOT_INDEPENDENT`
+    (`decisions/0104`, Ruling 6: this is the hazard retiring the grant edge left behind).
 
     Refuses `OBSERVER_NOT_INDEPENDENT` and `RELATION_UNDETERMINED` from the inference,
     `PREDICATES_UNDECLARED` when the declaration is absent, later than the looking, about
@@ -104,6 +115,10 @@ def observe_run(
     be read, and `DIGEST_MISMATCH` when the bytes disagree with the record.
     """
     require_independent(inference, observer_id)
+    submitter = observer_id if submitted_by is None else submitted_by
+    if submitter != observer_id and submitter in record.executors():
+        raise ObserverNotIndependent(
+            f"{submitter} executed this run and is relaying {observer_id}'s observation")
     if not declaration or declaration.get("run_id") != record.run_id:
         raise PredicatesUndeclared(f"no declaration for {record.run_id}")
     if _moment(declaration.get("declared_at")) >= _moment(observed_at):

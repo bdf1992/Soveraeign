@@ -15,7 +15,7 @@
       "changed": true
     },
     ".claude/agents/sov-controller.md": {
-      "artifact_digest": "sha256:a85fba75be703d59a835250dc9e7c7061e45e7d700002661b5f4a554284f6bae",
+      "artifact_digest": "sha256:eb872d51e39cd35ade5cc3bdaf5ffb33ba4b5e771b07a2e0f9c54073641b82d9",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
@@ -29,7 +29,7 @@
       "changed": false
     },
     ".claude/agents/sov-orchestrator.md": {
-      "artifact_digest": "sha256:71c37d01cd57ab6b7106aaea7c12d5feea21d72de4779ebc3c200f9aa2e3c04d",
+      "artifact_digest": "sha256:3cb82a35e5104d80921ac0befdf1b84494e17a1bf3f801f84ce8cba3adf8eaa6",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
@@ -43,7 +43,7 @@
       "changed": false
     },
     ".claude/agents/sov-witness.md": {
-      "artifact_digest": "sha256:9b8aa3f255dd39067560356199f628a5365348f0db7d168362beed0d2d854d80",
+      "artifact_digest": "sha256:8f413097de1bb7a1806f8e56654a04d0b50adebdd042da7f0329b174a2a29fe4",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
@@ -57,7 +57,7 @@
       "changed": false
     },
     ".claude/agents/sov-worker.md": {
-      "artifact_digest": "sha256:39164ed9d453d4637d9e3ba122643e45c1aed848132f198e45e7fc4f78a32c82",
+      "artifact_digest": "sha256:bc8d9f008ee3e728a126775c35c0f7a4827b1ff903b3e5704bd88c98e18b5135",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
@@ -450,6 +450,20 @@
     },
     ".claude/skills/sov-librarian/SKILL.md": {
       "artifact_digest": "sha256:2ddd82c132b276ad6eee29e699398832655e734d8bd92d1e97a17ff6b5d2083c",
+      "basis": [
+        {
+          "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
+          "path": "AGENTS.md"
+        },
+        {
+          "digest": "sha256:6e3491397bf842e55408d8df126fbbc0fd842cc7e7f547d135365b801f98466e",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": false
+    },
+    ".claude/skills/sov-lifecycle/SKILL.md": {
+      "artifact_digest": "sha256:b999ff7795eed895e9f180f373fbec50b7542af5d0e4216fa0091a1134d0b71a",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",

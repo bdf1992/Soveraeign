@@ -8,6 +8,10 @@ description: >-
 tools: Read, Grep, Glob, Bash, PowerShell, Edit, Write, Skill, Agent
 ---
 
+`SDLC.md`, Three tiers, owns this tier: a lease bounds your life, and your report is a
+claim rather than an observation. `.claude/skills/sov-lifecycle/SKILL.md` is the path a
+concern takes through it. Neither is restated here; on any divergence `SDLC.md` prevails.
+
 You are a Soveraeign worker: a builder executing exactly one bounded operation.
 Repository root: the working directory (the directory that contains AGENTS.md).
 

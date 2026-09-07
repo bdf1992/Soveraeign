@@ -3,9 +3,179 @@
 ```witness
 standing_supported  none
 subject             tooling-test-cost
-revision            e08af8930587fdc3586ac517ca7188f98cb8702c
-pass                3
+revision            d6383a5b32f5001963f0a8849d06466520c8be39
+pass                4
 ```
+
+## Pass 4: frozen candidate d6383a5 (2026-09-07)
+
+**Verdict: CONFIRMED.** This witness would land `d6383a5`. Verify and lint both
+exit 0 on a clean full-history clone of the candidate, the orientation snapshot
+included, so pass 3's single withholding is discharged by the base moving. The
+candidate carries the three paths of this concern and nothing else, and its bytes
+for those three paths are identical to the superseded `e08af89` that passes 1 to 3
+read. F6 below is a finding against the freeze mechanism, not against this subject.
+
+**Standing supported: none.** No `STATUS.yaml` field names this subject. This is an
+observation and settles nothing.
+
+- **Candidate:** `d6383a5b32f5001963f0a8849d06466520c8be39`, tree
+  `bcab54cf5fb632d633e1e7a2e35c756426887c83`, base
+  `6498fc7b3172476df54882d7b65c47f52366c8c8`, one commit ahead of the base, record
+  `.local/candidates/d6383a5b32f5001963f0a8849d06466520c8be39.json` (`FROZEN`,
+  `checks` lint PASS / verify PASS, concern `custody:phase-1-5/discovery-and-reuse`).
+- **Superseded:** `479ac74`, `cd006b0` and `e08af89` are unreachable from the
+  candidate, as a force-push over a reconciled branch makes them. Passes 1 to 3 stay
+  as evidence and are unedited.
+- **Working tree witnessed against:** `feat/tooling-test-cost` at `d6383a5`, whose
+  porcelain was empty before this pass wrote anything. Measurements ran in
+  full-history clones at `d6383a5` (978 commits) and `6498fc7` (977), both with an
+  empty porcelain.
+- **Observed:** 2026-09-07T17:40Z (UTC).
+- **Receipt:** `witness/observations/2026-09-07-tooling-test-cost-observation-4.json`.
+- **Landing record:** `.local/observations/2026-09-07-tooling-test-cost-landing-4.json`.
+- **Principal:** `SOV_PRINCIPAL=principal:claude-fable-5-1` for every command except
+  the two mutant runs, which unset it because the case under test is about it.
+
+### What the candidate carries
+
+`git diff --name-status 6498fc7..d6383a5` reads three modifications and nothing
+else: `scripts/run_tooling_tests.py`, `scripts/tests/test_run_tooling_tests.py`,
+`scripts/tests/test_sov_fresh.py`. The record's `changed_paths` names exactly those
+three. `git rev-parse` on each path gives the same blob at `d6383a5` as at
+`e08af89` (`6049859e`, `53e8b1a2`, `216c380a`), so the three readings passes 1 to 3
+made of those bytes carry to this candidate unchanged; what changed around them is
+the base.
+
+On the untracked question, for this subject: `diff -rq` between a clean clone of
+`d6383a5` and the working tree, excluding only `.git`, `__pycache__` and `.local`,
+prints nothing. The worktree holds exactly the candidate's bytes and no untracked
+file, so no check run there could have read anything the candidate lacks. The
+stronger reading is the clean clone itself: verify and lint exit 0 there, over
+committed bytes only, with no working tree to lean on.
+
+### What was reproduced
+
+| # | Claim | Read | Result |
+| --- | --- | --- | --- |
+| 1 | Verify passes | `python scripts/verify.py`, clean clone of `d6383a5` | exit 0. 52 checks, 20.297 s wall. `orientation snapshot` PASS, 10 of 10 claims. `repository tooling tests` PASS 19.445 s; `fresh participation slice` PASS 5.461 s |
+| 2 | Lint passes | `python scripts/lint.py`, same clone | exit 0, `PASS: repository hygiene (1224 text files, 562 Python modules, 10 named debt)` |
+| 3 | Partition suite | `python -m unittest scripts.tests.test_run_tooling_tests` | 7 tests, OK, exit 0 |
+| 4 | F1 repair holds | pass 1 mutant (`layers.py:63`, inherited variable wins) on a scratch copy, both orders, `SOV_PRINCIPAL` unset | exit 1 both; one failure each, the named case |
+| 5 | F2 repair holds | `python -W error::ResourceWarning -m unittest scripts.tests.test_sov_fresh`; in-process probe | exit 0, zero warnings; shared directory absent after the suite |
+| 6 | Order independence | custom loader | 24 ok reversed (2.574 s) and forward (2.565 s) |
+| 7 | Speed against the new base | three sequential runs each, alone | `d6383a5` 2.80 / 2.71 / 2.69 s, 24 cases; `6498fc7` 4.43 / 4.22 / 4.20 s, 25 cases. A 36 % reduction |
+| 8 | Tooling runner | `run_tooling_tests.py` unchanged, `_run` timed, twice at the candidate and once at the base | exit 0 all three. Candidate: shards 9.81 / 10.12 / 10.23 (holds fresh, 23 modules) / 10.93 s, wall 10.93 s; and 7.79 / 9.02 / 9.29 (holds fresh) / 10.28 s, wall 10.28 s. Base: 10.19 / 11.07 / 11.57 (holds fresh, 27 modules) / 12.18 s, wall 12.19 s |
+| 9 | Weights against this host | all 111 modules alone, twice each, minimum taken, 35.7 s total | See F7. This host now runs about 1.5x faster than the one the table was measured on, so absolute agreement cannot be judged; by ratio, 15 of 18 entries sit within a quarter of the median host factor |
+
+### Findings
+
+#### F6 · MATERIAL · against the freeze mechanism, not against this candidate: the checks grade the working directory, and the record does not say so
+
+The coordinator reported that a first freeze of the sibling concern staged only
+tracked changes, because `git diff --name-only main` omits untracked files, while
+`sov_land.py freeze` still recorded `verify: PASS` and `FROZEN`. Re-derived from the
+code rather than from that report:
+
+- `candidates.freeze` requires explicit `--path` and never derives the set itself,
+  so the omission came from the operator's path derivation. That part is not the
+  tool's.
+- `tree.gather_checks` runs `lint` through `_run_check` with `cwd=repo.ROOT`, and
+  `verify` through `isolation.verify_reading`, which runs
+  `python scripts/verify.py --observe ...` with `cwd=root`. Both read the working
+  directory. Neither reads the staged set, and neither reads the tree the commit
+  will have. This is the defect class `AGENTS.md` 6a names: a check that reads a
+  report about the artifact, here the working tree, where it could have measured
+  the artifact.
+- The graded set is `staged | carried_paths(target, branch)`. An untracked file is
+  in neither, so it is invisible to the evaluator as well as to the record.
+- `changed_paths` is read back from the commit range after the commit, so the record
+  is self-consistent: it describes its own range correctly while its `checks` field
+  reports a run over different bytes, and nothing in the record names which tree was
+  graded.
+- The machinery already reads the information that would catch this.
+  `isolation.foreign_paths` runs `git status --porcelain -z` to find uncommitted
+  paths the landing does not carry. It uses them in one direction only, to attribute
+  a failing check to another participant and turn a `FAIL` into a `PASS`
+  (`GLOBAL`). Nothing uses them to ask whether a passing check leaned on bytes the
+  candidate lacks. The guard is asymmetric, and it is asymmetric in the permissive
+  direction.
+
+Reproduced in a throwaway clone, in the shape `CLAUDE.md` warns about, a check whose
+subcommand is present but uncommitted: `git rm --cached scripts/sov_fresh.py` leaves
+the file on disk and untracked; `python scripts/sov_fresh.py selfcheck` in that
+working directory exits 0, which is what `gather_checks` would record; the commit
+that freeze then makes does not contain the file, and the same command run from a
+clone of that commit exits 2. The candidate's `changed_paths` would read
+`scripts/sov_fresh.py`, looking entirely consistent.
+
+Repair direction, for whoever owns `sov_land`: grade the candidate's own bytes, or
+refuse a freeze whose observed checks read a path that `git status --porcelain`
+reports and the candidate does not carry. The second is a few lines against data the
+module already collects. This is not this concern's work to absorb and is recorded
+here as a finding, not filed elsewhere.
+
+For this subject the question is closed by measurement rather than by argument: the
+clean clone passes both checks, and the worktree contains no untracked file.
+
+#### F7 · MINOR · the table is host-relative, and one entry is relatively under-weighted
+
+All 111 modules were timed alone, twice each, minimum taken. This host is now
+noticeably quieter than when passes 1 to 3 ran: the fresh suite reads 2.66 s here
+against 4.03 s then. Measured seconds times ten come to a median of 0.66 of the
+declared weight across the 18 entries, so the table cannot be graded on absolute
+agreement from this host. By ratio to that median, 15 entries sit within a quarter
+of it. Three do not: `test_automation_control` reads 1.64 s against a weight of 17,
+a ratio of 0.97 and about 45 % heavier than the host factor predicts, and
+`test_sov_node_journal` (0.48) and `test_sov_surface` (0.50) are about a quarter
+lighter. No module measuring a second or more is absent from the table.
+
+Pass 3's F5 dissent is withdrawn. `test_sov_branch` measured 1.22 s on the loaded
+host and is under a second here, which reproduces the commit's 0.9 s reading and
+confirms its absence from the table. The earlier disagreement was host load, not a
+defect, and saying so is the honest correction.
+
+Weights remain declared scheduling hints. The packing cases pass and the wall is
+shorter than the base's, so this is recorded and not failed.
+
+### Residuals
+
+- R1. Pass 1 to 3's orientation-snapshot residual is discharged: PR #220 moved the
+  base and the check passes at `d6383a5`.
+- R2. Carried, pre-existing and outside this concern:
+  `scripts/tests/test_sov_clarity.py` fails when run alone with
+  `ModuleNotFoundError: No module named 'sovclarity'`. It also failed alone at
+  `aeecc60` and it is the one module of 111 that does. It passes inside its shard,
+  where another module's `sys.path` insert supplies the import. Owed a route by
+  whoever holds the tooling concern.
+- R3. F6 is unrepaired at the time of writing and belongs to the sibling concern's
+  holder. The discarded candidate it was found on was never pushed or landed, which
+  this witness did not verify independently and takes as the coordinator's report.
+
+### Judgement
+
+- J1 (passes 1 to 3) is discharged by the base moving; no owner act was needed.
+- J2. Does a `checks: verify PASS` recorded against the working directory satisfy the
+  standing grant's evidence precondition in `decisions/0064`, or must the grant read
+  the candidate's own bytes? F6 shows the two can differ, and the answer sets whether
+  the landing gate needs repair before the next freeze rather than after it.
+
+### Commands and exit codes
+
+| Command | cwd | Exit |
+| --- | --- | --- |
+| `git status --porcelain`; `git diff --name-status 6498fc7..d6383a5` | worktree | 0, empty; 3 paths, all `M` |
+| `diff -rq -x .git -x __pycache__ -x .local <clone d6383a5> <worktree>` | — | 0, no output |
+| `python scripts/verify.py` | clone `d6383a5` | 0 |
+| `python scripts/lint.py` | clone `d6383a5` | 0 |
+| `python -m unittest scripts.tests.test_run_tooling_tests` | clone `d6383a5` | 0 (7 tests) |
+| mutant suite, loader order / reverse | scratch `d6383a5` | 1 / 1 |
+| custom loader, reverse / forward | clone `d6383a5` | 0 / 0 |
+| `python -W error::ResourceWarning -m unittest scripts.tests.test_sov_fresh` | clone `d6383a5` | 0, no warnings |
+| `python -m unittest scripts.tests.test_sov_fresh` x3 each | clones `d6383a5` / `6498fc7` | 0 x3 / 0 x3 |
+| `python scripts/run_tooling_tests.py` (timed wrapper) x2 / x1 | clones `d6383a5` / `6498fc7` | 0, 0 / 0 |
+| all 111 modules alone, twice | clone `d6383a5` | 110 exit 0; `test_sov_clarity` exit 1 (R2) |
+| F6 reproduction: `git rm --cached scripts/sov_fresh.py`; `sov_fresh.py selfcheck` in the working dir; then from a clone of the commit | throwaway clone | 0 then 2 |
 
 ## Pass 3: commit e08af89 (2026-09-07)
 

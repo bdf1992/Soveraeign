@@ -1,0 +1,94 @@
+{
+  "case_id": "WITNESS-2026-09-07-OFFICE-ACT-AND-CITATION",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07-office-act",
+  "artifact_revision": "a13b888f860a0b866d706f04e9eacd22fda769af",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "observed_at": "2026-09-07T17:45:00Z",
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07-office-act",
+    "observer_relation": "INDEPENDENT_REDERIVATION_FROM_THE_COMMITTED_EXPORT_AND_A_CLEAN_CLONE",
+    "observer_independence_basis": "This participant built nothing at a13b888. It edited no file under scripts/, nodes/, or reports/. Every measurement ran in a full-history clone of the subject commit at an empty porcelain, and every node run ran against this participant's own restores of the committed export, never against .local/node-interface. The three grants and the two probe outcomes were re-derived from the export's bytes and from a SQLite store this participant restored, not read out of the builder's report.",
+    "subject": "office-act-and-citation",
+    "candidate_commit": "a13b888f860a0b866d706f04e9eacd22fda769af",
+    "candidate_tree": "789c4348c497bcdccb0e8664c866f954185ff04d",
+    "base_commit": "6498fc7b3172476df54882d7b65c47f52366c8c8",
+    "verdict": "RATIFIABLE-WITH-CONDITIONS",
+    "standing_supported": "BUILT -> WITNESSED for the citation-gate repair in scripts/sovnode/journal.py and for the office act and live reading as facts of node:local's journal at a13b888. Not supported: any claim that the root seat authorized the act. Nothing in the artifact attributes the name principal:bdo to Bdo, and that is Bdo's to settle, not this observation's.",
+    "claims_reproduced": {
+      "act.grants_present": "The committed export nodes/node-local/journal/a8b989484adf.json carries grant_fdf1477d279244db (open:session), grant_e37a2885580a4e62 (close:session) and grant_553ce95769c74292 (read:registry) at entries 118, 120 and 122, with entry_ids entry_35966897a48749fe989e89164d63e040, entry_42b7681ddff4445c94bb23022bf47b4e and entry_95535bca7fc6439f87ca6aa47b16ef56, every one granted_by principal:bdo naming operator principal:claude-fable-5-1. Re-read from a SQLite store this participant restored, not from the JSON alone.",
+      "act.prefix_clean": "The 85-entry prefix ending at 23d3b48086becd541d6054d78185f730e41a10054848ad4f654191315f87b342 (entry 85 of the current chain) is byte-identical to the export deleted by this commit, as read from base 6498fc7, and contains no grant to principal:claude-fable-5-1 and no mention of that principal at all. The seven grants it does carry name principal:bdo and principal:claude-fable-5.",
+      "act.live_run": "sov_fresh.py run --principal principal:claude-fable-5-1 --node-state <restore of a8b989484adf> printed PASS, exit 0, registry.resolve COMMITTED, P15-Q1.1/1.2/1.3 all holds, with the three declared refusals. The same command as principal:claude-fable-5 also printed PASS, exit 0, all three predicates holding, because that principal holds its own grants at entries 5, 7, 55, 57 and 59.",
+      "act.counterfactual": "The defeating case the report does not run: the same command as principal:claude-fable-5-1 against a restore of the 85-entry pre-act export printed FAIL, exit 1, registry.resolve REFUSED SESSION_IDENTITY_REQUIRED, P15-Q1.3 unmet, node refusal 'principal:claude-fable-5-1 holds no live open:session grant for this operation'. The office act is what changed the outcome.",
+      "citation.repair": "The 2026-09-06 self-report cites head 23d3b48086be, which is entry 85 of the 173-entry chain; it declares 85 entries, which is that position; the nine entry ids it names are all in the prefix; python scripts/sov_node.py journals exits 0.",
+      "citation.refusals": "Independently constructed cases: a citation to a node with no export refuses; a head that is not an entry of the chain refuses, including a head the node reaches only later on an advanced twin; an entry recorded after the cited head refuses; a journal field with no head refuses; a traversal address refuses.",
+      "gates": "On a clean full-history clone at a13b888 with empty porcelain: verify.py exit 0, PASS 52 checks in 15.589s (wall-clock debt, no semantic failure); lint.py exit 0; sov_node.py journals exit 0; the journal suite 16 tests OK, run twice; sov_witness_layer.py records exit 0 (27 receipts, 0 unusable); sov_clarity.py check exit 0; sov_diagrams.py exit 0, 8 views current.",
+      "diff_scope": "git diff --name-status 6498fc7..a13b888 carries exactly the five declared paths. No secret shape, no absolute host path, no unrelated file."
+    },
+    "findings": {
+      "F1_address_unmeasured": "_cited_export resolves a citation by node directory, so journal.address no longer has to name a file that exists. An independently constructed report naming nodes/<node>/journal/dddddddddddd.json, or nodes/<node>/not-a-journal/z.json, with a true head, count and entry ids, passes the gate with no defect. This is live in the landed tree: the 2026-09-06 report's address nodes/node-local/journal/23d3b48086be.json is deleted by this very commit, and the verify command that report prints for a reader now names a file that is not there. The gate reads the head, which is a measurement, and takes the address on trust, which is a declaration it could have measured.",
+      "F2_surviving_mutants": "Nine mutants of the changed code were run against the shipped fixture set. Six die. Three survive: (a) the entry-count check weakened from != position to > position, so a report may under-declare what it read; the suite only ever over-declares; (b) node derivation weakened from the node directory to the journal directory, so the documented resolution granularity has no fixture; (c) the cited head matched by str.startswith instead of equality, which would admit the 12-character head prefix this repository uses for export filenames.",
+      "F3_ungraded_identities": "ID_KEYS is (entry_id, receipt_id), unchanged from the base. grant_id, session_id and interface_binding_id are not graded. A constructed report naming grant_never_recorded_0000 and session_never_recorded passes. In the subject report, three of about twelve record-borne identities are graded by the gate; this participant checked the rest by hand and all are true, including the authority check at entry 154 naming grant_553ce95769c74292 ALLOWED for read:registry.",
+      "F4_declared_schema_absent": "The report declares observation_schema soveraeign-fresh-participation-live-node/v3. That identifier, and v1 and v2 before it, appear nowhere in the repository except in the three reports that declare them. There is no schema document and nothing validates against one. A version number is doing the work of a contract.",
+      "F5_direction_not_in_the_record": "sov_fresh.py open-office takes --direction and --directed-in and writes them to <node-state>/office-acts.ndjson, which is gitignored runtime state. The journal entries carry granted_by and no direction. So the only surviving attribution of the act to Bdo is prose in the builder's own self-report, which is the artifact that cannot witness itself. The report says nothing authenticates who passed the name principal:bdo, which is accurate; the record cannot say even that much.",
+      "F6_model_drift_noted_not_seamed": "The report states that the host's serving model changed to Claude Opus 5 partway through the session while the session continued to declare principal:claude-fable-5-1. contracts/principals.json still describes that principal as 'the model the host reports serving this node's interactive sessions since 2026-09-06', and this commit leaves that unchanged while adding about sixty journal entries whose actor is that principal. Principal identity and naming are owner-held under contracts/acceptance-policy.json. The drift is disclosed in a JSON note field rather than presented at a named seam or carried as a counter-record in the node.",
+      "F7_narrative_incomplete_in_the_builders_favour": "The export carries 88 entries beyond the restored prefix; the report narrates the office act and one live run. Unreported: entries 86-110, a committed run as principal:claude-fable-5; entries 111-117, principal:claude-fable-5-1 refused NO_LIVE_GRANT before the act, which is the live defeating case; and entries 124-148, an earlier committed run under session_0fc948f67d3c40d8. The report names the later run, session_5bbe1d42cdd64427, which is entries 149-173 and is correct.",
+      "F8_the_witness_deposit_turns_the_tree_red": "verify.py exits 0 on a clean clone at a13b888 and exits 1 on the worktree once this witness's own two deposits exist, because sov_docs.py counts every document under witness/ and docs/documentation.html then reads stale; docs/surface.html reads stale for the same reason. Attributed by removing the two deposits and re-running sov_docs.py check, which returns to PASS: documentation page matches 286 documents. Nothing here is the builder's defect, and the failure is not the change's. It is a fact about the landing path: sov_land.py runs verify before its gate, so absorbing a witness record requires rebuilding the documentation and surface pages in the same commit, or the landing refuses for a reason unrelated to the work."
+    },
+    "residuals": [
+      "Whether Bdo directed this act is unattestable from the artifact. It is not a defect of the build; it is the limit of what a record without an authentication channel can hold.",
+      "verify.py exit 0 is 'unchanged', not 'qualified' (CLAUDE.md T2). The 19 CONF-*-DEF lines in the log are defeating fixtures failing as declared.",
+      "The restore command the report says it ran, with the witness's head as --expect-head, leaves no trace in the journal. This participant verified the chain, not the command."
+    ],
+    "judgement_items": [
+      "Does Bdo affirm that he directed the office act recorded at entries 118 to 123 of node:local, in the words quoted in office_act.direction? Nothing in the repository can answer this.",
+      "Should contracts/principals.json be amended, or a counter-record recorded in the node, now that acts attributed to principal:claude-fable-5-1 were performed by a differently-versioned serving model? Principal naming is owner-held."
+    ],
+    "commands": [
+      "git clone --no-local <this worktree> <clone>; git -C <clone> checkout a13b888 -> tree 789c4348, porcelain empty",
+      "python3 scripts/sov_node.py restore-journal --export nodes/node-local/journal/a8b989484adf.json --node-state <scratch> --expect-head a8b989484adf... -> exit 0, 173 entries",
+      "python3 scripts/sov_fresh.py run --principal principal:claude-fable-5-1 --node-state <scratch> -> exit 0, PASS",
+      "python3 scripts/sov_fresh.py run --principal principal:claude-fable-5 --node-state <scratch2> -> exit 0, PASS",
+      "python3 scripts/sov_fresh.py run --principal principal:claude-fable-5-1 --node-state <pre-act restore> -> exit 1, FAIL, P15-Q1.3 unmet",
+      "python3 scripts/verify.py -> exit 0, PASS 52 checks",
+      "python3 scripts/lint.py -> exit 0",
+      "python3 scripts/sov_node.py journals -> exit 0 (twice)",
+      "python3 -m unittest scripts.tests.test_sov_node_journal -> exit 0, 16 tests (twice)",
+      "python3 scripts/sov_witness_layer.py records -> exit 0",
+      "python3 scripts/sov_clarity.py check -> exit 0",
+      "python3 scripts/sov_diagrams.py -> exit 0",
+      "nine-mutant run over scripts/sovnode/journal.py against the journal suite -> six killed, three survived",
+      "python3 scripts/sov_docs.py check -> FAIL with this witness's deposits present, PASS: documentation page matches 286 documents with them moved aside",
+      "python3 scripts/verify.py on the worktree with deposits -> exit 1, attributed to the deposits above; the same commit in a clean clone exits 0"
+    ],
+    "observed_state_addresses": [
+      "AGENTS.md",
+      "scripts/sovnode/journal.py",
+      "scripts/tests/test_sov_node_journal.py",
+      "scripts/sov_node.py",
+      "scripts/sov_fresh.py",
+      "scripts/sovwitness/shape.py",
+      "scripts/sovwitness/records.py",
+      "nodes/node-local/journal/a8b989484adf.json",
+      "reports/observations/2026-09-07-office-act-claude-fable-5-1.json",
+      "reports/observations/2026-09-06-fresh-participation-live-node-2.json",
+      "contracts/principals.json",
+      "contracts/participant-observation.schema.json",
+      "services/record/src/soveraeign_record_service/core.py"
+    ],
+    "observed_state_digests": [
+      "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
+      "sha256:0292068ba19e2520f4ae05102a7c9ca2172c950f66586ba04ed4cafbe4b23706",
+      "sha256:b3e737721ab6ec977ca11b3f9dfa72d1289d21d848159cb55558b566a8931f12",
+      "sha256:edd580f69ae2c7364e32344df21f1129571485752e0bee5e31af4ba144b6892d",
+      "sha256:026d2db3f50b48c3da5147bc52eeca116de5417670162bd6d1e75656c0727a01",
+      "sha256:d9e270d83256ad7e8d270d8261985bd4d0a424ecc87fa62fc1951374c7a7451b",
+      "sha256:712ae45cf3dd68f041310b896525fcf17d0d4a7b860cdc272db0589cb0eee3f3",
+      "sha256:a178194104b7e6d01c8ca945ea6c32421031ec5a921819500edf86d54d47f07d",
+      "sha256:a9547773d6d21d846db361046b45cd7ecc8ae17b905c4026af55e61e64ea2031",
+      "sha256:9572c05d1608cc946d525cc3292fde67218d56a2d48e8d41f5d079389617e066",
+      "sha256:2f672d7ab812011f28943e5e3e755ccac6ddc1d32b5f0c2147543a4987264e86",
+      "sha256:8292b477342d1b30cf3eaeacfbd05c6eacdf7c0abed228e2fc81a67ed8d05945",
+      "sha256:8875412534872475e158f0241ba7ee148fc0275ccc70d43171029fc6b0ddc902"
+    ]
+  }
+}

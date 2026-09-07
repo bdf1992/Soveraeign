@@ -1,0 +1,168 @@
+{
+  "case_id": "WITNESS-2026-09-07-SOVADDRESS-4",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07-sovaddress",
+  "artifact_revision": "f957987b45e02d86341c0c348a5c8f3f90af0777",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "candidate f957987 (tree d89cedaa, base 6498fc7 = PR #220 merged into main, HEAD of feat/address-below-the-file force-pushed; record .local/candidates/f957987b45e02d86341c0c348a5c8f3f90af0777.json). The whole concern reconciled onto the new base as 14 paths, superseding the mutable commits a57d736, e835205 and a63b09b. Pass 4 re-confirms the F1-F16 dispositions against these bytes, judges the untracked-file gap the coordinator reported from the discarded candidate 434c6a5, and judges whether WITNESSED can bind to f957987 given passes 1-3 observed a63b09b",
+    "record": "witness/sovaddress.md",
+    "record_section": "Pass 4: candidate f957987 (2026-09-07)",
+    "prior_receipts": [
+      "witness/observations/2026-09-07-sovaddress-observation.json",
+      "witness/observations/2026-09-07-sovaddress-observation-2.json",
+      "witness/observations/2026-09-07-sovaddress-observation-3.json"
+    ],
+    "verdict": "REPRODUCED",
+    "verdict_scope": "REPRODUCED. All 14 declared paths are carried by the commit and equal the working tree; declared changed_paths equal the 6498fc7..f957987 range exactly; all 14 blobs are identical to a63b09b, so the reviewed bytes are unchanged and only the ancestry differs. verify exits 0 (snapshot 10 of 10) and lint exits 0 on a clean full-history clone, F1 discharged by the base moving rather than by any code change. The eleven suites pass, tooling passes twice, all sixteen mutants M1-M16 are caught and the unmutated control is green, the four readers grade f957987 with the same verdict per receipt and the same summary as 6498fc7, and 164 of 165 present committed addresses digest identically. WITNESSED binds to f957987. NEW FINDING F17, independently confirmed and stronger than reported: the discarded candidate 434c6a5's record is still on disk reading state FROZEN and checks verify PASS, its tree omits all three untracked files, and its own tooling check exits 1 when measured, so a candidate record exists whose recorded PASS is false of the tree it names. Landing CONFIRMED on the evidence, with F18 (the base has moved to b1448ee) named as the precondition the lander's own gate will test",
+    "standing_supported": "WITNESSED",
+    "standing_binds": {
+      "subject": "sovaddress",
+      "field": "scripts/sovaddress.py, its four adoptions, and the freeze ordering in scripts/sovland/candidates.py, as carried by candidate f957987",
+      "revision": "f957987b45e02d86341c0c348a5c8f3f90af0777",
+      "claim": "path#fragment resolves to the bytes it means for .json, .yaml and .md; a bare path keeps its exact bytes; every refusal names itself; the receipt grader, the diagram grader, clarity bases and the reuse settle layer each digest through it with a positive and a defeating case; and freeze judges the grant's scope before its commit and only check-bound preconditions after",
+      "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-07-sovaddress, pass 4 at f957987b45e02d86341c0c348a5c8f3f90af0777",
+      "byte_basis": "all 14 changed paths are blob-identical to a63b09b, which passes 1 to 3 observed; the code reading transfers by blob identity and the integration reading was retaken at this base",
+      "not_supported": "no standing for scripts/sovland/candidates.py freeze as a check whose PASS is true of the candidate tree (F17); no standing for any candidate record's checks field as evidence about its own tree until F17 is repaired"
+    },
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07-sovaddress",
+    "observer_independence_basis": "Same participant as passes 1 to 3; built, edited, staged and committed nothing, and did not author, stage or discard any candidate. Froze the tree at f957987 (git rev-parse HEAD before and after every command; git status --porcelain empty throughout until the deposits), fetched into its scratch clone and checked out f957987 with a worktree at 6498fc7, ran verify, lint, eleven suites, tooling twice, sixteen mutants and the four readers in those copies, reproduced the untracked-file gap through the real candidates.freeze in a throwaway repository, and measured the discarded candidate 434c6a5 from a git-archive copy of its own commit rather than from the coordinator's account of it. The coordinator's description was read as the claim, not as evidence. This receipt digests no address under witness/: a receipt that digests the record it is deposited beside declares its own probe drift, which the grader reads STALE_PROBE - observed here on a first attempt and corrected before the deposit stood",
+    "observer_relation": "INDEPENDENT_OF_BUILDER",
+    "observed_at": "2026-09-07",
+    "observed_state_addresses": [
+      "scripts/sovaddress.py",
+      "scripts/sovwitness/records.py",
+      "scripts/sovwitness/shape.py",
+      "scripts/sov_diagrams.py",
+      "scripts/sov_clarity.py",
+      "scripts/sovclarity/digests.py",
+      "scripts/sovreuse/settle.py",
+      "scripts/sovland/candidates.py",
+      "scripts/sovland/tree.py",
+      "scripts/sovland/isolation.py",
+      "scripts/sovland/repo.py",
+      "scripts/sov_candidate.py",
+      "contracts/repository-candidate-lifecycle.json",
+      "scripts/tests/test_sovaddress.py",
+      "scripts/tests/test_sov_witness_layer.py",
+      "scripts/tests/test_sov_clarity.py",
+      "scripts/tests/test_sov_diagrams.py",
+      "scripts/tests/test_sov_reuse.py",
+      "scripts/tests/test_repository_candidate_effects.py",
+      "CLAUDE.md",
+      "contracts/participant-observation.schema.json"
+    ],
+    "observed_state_digests": [
+      "sha256:91d7dfd4302638660f77832c02af10e53a1ae01dfb7afc27ce9b7252fed9c8bc",
+      "sha256:c095366bfe793ac64fb9f6041d818c8f2df648e1a3127cecc30a4d3dec1b6919",
+      "sha256:081c195ec46423a2d3ab15762f6aab6e4928c82781db726d7fbc5bcf003b37dd",
+      "sha256:5b74ab2465f5d6241505a0712c6639a6dd2fcbac3a0e9594f7ae2cbf6b037b86",
+      "sha256:c179bd1d5694c497b61a280ecb44ef067803c1b69ae14fe390c0a0d6756dfbc5",
+      "sha256:eea9cc1497682ad2b9cf31782c4a41a4e90044534692c2b74760ea69cd0d0186",
+      "sha256:4598837df9c3ff3667f0dabbd61c6a79b8eb150611deea44669b8b6bbfffaaeb",
+      "sha256:40aa12cc2fc122e4ecb8f768b077a65d8901e791e3a1b455e727a3d828258de4",
+      "sha256:dcad09b963bba024bdd0db41657c513b1c0409c46e86faf1d84d10ecab498f63",
+      "sha256:cd95ed31c3033fc2406e0be1858a926452da516fb21abf0788db1c2877d344ee",
+      "sha256:203c8d83f1b8a0ebbd1d4dbc212946ea26b24c0bab2939a341714dca9cf54bb0",
+      "sha256:d6d19870505cc07e73c58ea6f8c0f1dbfcb5e3bf05a4612cda9bd2d60707336d",
+      "sha256:7f9bdf8cda768e926d626ead42c5c9bf528f1472c94991d8bbddb08f33dc3e26",
+      "sha256:b99762013236f5df007200dbfe312b3649d5f84b3d578d18e7edcee3d0dc2087",
+      "sha256:e0ee49b52f20b4b5e43e72e363581ef525e88a638d67625fe26bb7872675131e",
+      "sha256:571cca4a7ef052d825e838c5e2b7585378c083b1a31276068f8129c6c837e9a9",
+      "sha256:1cb0c8d67fe0a71d48b953027803721708e946b7dadf094b4b50c54bd5a7ff6c",
+      "sha256:253c134afa924141ddfa66ab2f5d289fd8bee7c3e14bcf647bd7b6357e8a54b2",
+      "sha256:eda5b4fb82bf572dfe58bf23f67b48876a2c499ae245e8344de8496e4b9b9d4e",
+      "sha256:9b168d868154ccdfcb7df53da105952cc8e6ca733bcd2c9a5ac2d67d4a93843b",
+      "sha256:8292b477342d1b30cf3eaeacfbd05c6eacdf7c0abed228e2fc81a67ed8d05945"
+    ],
+    "candidate_blobs": {
+      "scripts/sov_clarity.py": "e68a66134a1ae70103c3899cd41ccbab12072241",
+      "scripts/sov_diagrams.py": "4d0feac78012f66b6851d745f134eda3df37ec5e",
+      "scripts/sovaddress.py": "41bd1878b1037f2d2482b8457c44ded8357bd733",
+      "scripts/sovclarity/digests.py": "e426405447aa183fff50913901f1c430e5a4f064",
+      "scripts/sovland/candidates.py": "b78b913b7129ecd694269ecaff34a73b8f189c7f",
+      "scripts/sovreuse/settle.py": "a11852e2f37f42bd554bebf999facf7256bbec81",
+      "scripts/sovwitness/records.py": "5a0338cb52b013ee3cdad9038753d89b2aad1650",
+      "scripts/sovwitness/shape.py": "3bc8f0b4ab270b210cfbc9c7c26be9487dcec4ef",
+      "scripts/tests/test_repository_candidate_effects.py": "8924cda67300dca18cbc6f22eddb7a273c0b3cad",
+      "scripts/tests/test_sov_clarity.py": "c9ae4fbad5a0cfdbe669defe8c505cf5c0fe4b26",
+      "scripts/tests/test_sov_diagrams.py": "d570f2593be6db106933fdc2c9ec6f0e849a9c6a",
+      "scripts/tests/test_sov_reuse.py": "c71cbd791f06621d0d3bc4add7ece587cc275e0e",
+      "scripts/tests/test_sov_witness_layer.py": "2d5f781428972a9a3d19ccb8ba67e16db0982790",
+      "scripts/tests/test_sovaddress.py": "090bf134a4ff70fc859c54bfc359f0a934e564e4"
+    },
+    "commands": {
+      "tree": "git rev-parse HEAD -> f957987b45e02d86341c0c348a5c8f3f90af0777 before and after every command; git status --porcelain -> empty until the deposits; git rev-parse f957987^{tree} -> d89cedaacd75eae4ff420f89937bfa6761eb9158; git diff --stat 6498fc7..f957987 -> 14 files, +735/-36",
+      "completeness": "record changed_paths (14) == git diff --name-only 6498fc7 f957987 (14), sorted equal; every declared path present in git ls-tree -r f957987 and byte-equal to the working tree; no declared path absent",
+      "blob_identity": "git rev-parse a63b09b:<p> == f957987:<p> for all 14 changed paths, including scripts/sovaddress.py, the four adopters, scripts/sovland/candidates.py and the six test modules",
+      "verify_lint": "clean full-history clone at f957987: python scripts/verify.py -> exit 0, 'PASS: 10 of 10 snapshot claim(s) match the record'; python scripts/lint.py -> exit 0; python scripts/run_tooling_tests.py twice -> exit 0, exit 0, '112 modules, 4 shards'",
+      "suites": "PYTHONPATH=scripts python -m unittest scripts.tests.<m> on a git-archive copy of f957987: test_sovaddress 18, test_sov_witness_layer 72, test_witness_record 14, test_sov_diagrams 16, test_sov_clarity 7, test_sov_reuse 15, test_repository_candidate_effects 10, test_repository_candidate 4, test_sov_land 31, test_landing_isolation 16, test_landing_ledger 15; all OK. test_sovaddress runs as a script; test_sov_clarity still needs PYTHONPATH=scripts, identically at 6498fc7",
+      "mutants": "sixteen archive copies, eleven suites each: M1 bracket depth, M2 trailing trim, M3 YAML duplicate, M4 trailing-# strip, M10 fence skip, M11 key-present selector, M12 decode refusal -> caught by test_sovaddress (M1 also by test_sov_diagrams); M5, M6, M7 -> caught by test_sov_witness_layer; M8 -> test_sov_reuse; M9 -> test_sov_clarity; M13, M14, M15, M16 -> test_repository_candidate_effects; unmutated control -> all eleven suites green",
+      "readers": "sov_witness_layer.py records -> exit 0 at both f957987 and 6498fc7, identical verdict per receipt and identical summary ('27 receipt(s) graded, 0 unusable, 27 stale'); which digests moved differs, as it must, because the trees differ; sov_diagrams.py and sov_clarity.py check -> exit 0 both, byte-identical output; sov_reuse.py run -> exit 1 both, identical verdict, predicates and drifted set; 165 committed addresses, 164 identical both ways, 1 absent (pre-existing), 0 containing '#'",
+      "untracked_gap": "probe_untracked.py drives the real candidates.freeze in a throwaway repository with one tracked staged file and one untracked file the change needs: the check runs at HEAD == the candidate commit (the a63b09b repair holds in time), reads a working directory in which the untracked file is present, and the record is written with checks verify PASS and changed_paths naming only the staged file while the commit tree omits the untracked one; git status after the freeze still shows it untracked",
+      "discarded_candidate": "read from the record and the object, not from the report: .local/candidates/434c6a54117749314cd2edfdc09ce184cc2cb97c.json is on disk, state FROZEN, checks verify PASS, 11 changed_paths; git cat-file on its tree shows scripts/sovaddress.py, scripts/sovclarity/digests.py and scripts/tests/test_sovaddress.py all ABSENT; a git-archive copy of 434c6a5 runs python scripts/run_tooling_tests.py -> exit 1, FAILED (failures=1, errors=1), 'FAIL: repository tooling tests (111 modules, 4 shards)'",
+      "detector_reach": "measured, not assumed: verify.py --observe at f957987 records 52 checks and 137 declared addresses; isolation._touches over the three omitted paths matches only scripts/tests/test_sovaddress.py, via 'repository tooling tests' and 'tooling population integrity', which declare the directory scripts/tests; no check declares an address covering scripts/sovaddress.py or scripts/sovclarity/digests.py. repo.dirty_paths(), already used by sov_land.py's gate path, names all three (git status --porcelain includes untracked; git diff --name-only main does not)",
+      "base_moved": "git ls-remote origin refs/heads/main -> b1448eeb458afa4a8c60b57c1cb46906246af7f7 (PR #224), while the candidate declares base 6498fc7 and the local main ref still reads 6498fc7; scripts/sov_candidate.py:83 refuses LAND when base_commit != current_base_commit",
+      "record_states": ".local/candidates holds eight records, all state FROZEN, including 434c6a5 (discarded) and a57d736 (superseded); e835205 and a63b09b have no record"
+    },
+    "predicate_results": {
+      "all_14_paths_carried": {
+        "held": true,
+        "detail": "declared == range == present in the commit tree, and each equals the working tree"
+      },
+      "bytes_unchanged_since_a63b09b": {
+        "held": true,
+        "detail": "14 of 14 blobs identical"
+      },
+      "verify_passes": {
+        "held": true,
+        "detail": "exit 0 on a clean full-history clone; snapshot 10 of 10"
+      },
+      "lint_passes": {
+        "held": true,
+        "detail": "exit 0"
+      },
+      "suites_and_tooling": {
+        "held": true,
+        "detail": "eleven suites OK; tooling exit 0 twice"
+      },
+      "all_sixteen_mutants_caught": {
+        "held": true,
+        "detail": "M1-M16 each caught; control green"
+      },
+      "readers_equivalent_to_base": {
+        "held": true,
+        "detail": "same verdict per receipt and same summary; diagrams, clarity and reuse identical"
+      },
+      "F1_discharged": {
+        "held": true,
+        "detail": "by the base moving, not by a code change: CLAUDE.md at 6498fc7 reads 970 commits and the record holds 977"
+      },
+      "F4_discharged": {
+        "held": true,
+        "detail": "the sibling's scratch-view change landed in the base via PR #220; f957987's diagram diff is the sovaddress adoption alone"
+      },
+      "F13_partly_discharged": {
+        "held": false,
+        "detail": "a record exists for f957987, but 434c6a5 and a57d736 still read FROZEN and no record supersedes them (F19)"
+      },
+      "F17_freeze_checks_read_the_committed_tree": {
+        "held": false,
+        "detail": "reproduced through the real freeze; 434c6a5's record proves a recorded PASS false of its own tree, measured at exit 1"
+      },
+      "F18_base_is_current": {
+        "held": false,
+        "detail": "origin/main is b1448ee; landing refuses a stale base by sov_candidate.py:83"
+      },
+      "witnessed_can_bind_to_f957987": {
+        "held": true,
+        "detail": "blob identity carries the code reading from a63b09b; the integration reading was retaken at this base, so both halves are observed at these bytes"
+      }
+    },
+    "standing_note": "This is an observation. It supports WITNESSED for scripts/sovaddress.py, its four adoptions and the freeze ordering as carried by f957987, and declares that in the record's block. It confirms the candidate for landing on its evidence (.local/observations/2026-09-07-sovaddress-landing-4.json reads CONFIRMED) while naming F18 as a precondition the lander's own gate tests and F17 as a defect in the freeze that this candidate does not repair and that no candidate record's checks field should be read past. It ratifies nothing and settles nothing."
+  },
+  "telemetry": {
+    "probe_location": "probe_untracked.py, probe_adversarial.py and mutants4.sh in the witness's scratch directory, against git-archive copies of f957987 and 434c6a5 and a throwaway git repository; every other reading through verify.py, lint.py, unittest, run_tooling_tests.py, the readers' CLIs and git",
+    "tree_state": "git status --porcelain empty before and after every command until the deposits; HEAD f957987b45e02d86341c0c348a5c8f3f90af0777 throughout; the pass 1 to 3 records are now tracked in the base, committed byte-identically at 25e1f7b and 64aba4b",
+    "after_writing": "filled by the record's pass-4 Verified section"
+  }
+}

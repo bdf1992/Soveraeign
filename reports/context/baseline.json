@@ -1,0 +1,784 @@
+{
+  "headline": {
+    "duplicated_facts": 12,
+    "entrypoints": 83,
+    "mean_fanout": 6.5,
+    "orientation_files": 81,
+    "orientation_lines": 14436,
+    "route_edges": 143,
+    "total_restatements": 272,
+    "unreachable_entrypoints": 28
+  },
+  "reach": {
+    "dangling": [],
+    "dangling_count": 0,
+    "entrypoints": 83,
+    "unnamed": [
+      "custody_activation.py",
+      "custody_posix.py",
+      "deployment_kubernetes.py",
+      "gateway_observe.py",
+      "gateway_witness_driver.py",
+      "infrastructure.py",
+      "roadmap_document.py",
+      "roadmap_lanes.py",
+      "sov_ainative.py",
+      "sov_asset_objects.py",
+      "sov_bench.py",
+      "sov_ci_subject.py",
+      "sov_composed_surface.py",
+      "sov_loop.py",
+      "sov_opening_readiness.py",
+      "sov_precedent.py",
+      "sov_reuse.py",
+      "sov_status_claims.py",
+      "sov_tooling_population.py",
+      "sov_tooling_verdict.py",
+      "sov_witness_layer.py",
+      "sovnext_phase.py",
+      "witness_console.py",
+      "witness_gateway.py",
+      "witness_infrastructure.py",
+      "witness_mcp.py",
+      "witness_seats.py",
+      "witness_stages.py"
+    ],
+    "unnamed_count": 28
+  },
+  "reading": "soveraeign-context-surface/v1",
+  "redundancy": {
+    "facts": [
+      {
+        "fact": "verify-command",
+        "files": [
+          ".claude/README.md",
+          ".claude/agents/sov-witness.md",
+          ".claude/agents/sov-worker.md",
+          ".claude/agents/sov.md",
+          ".claude/drafts/automation-health-and-controls-ticket.md",
+          ".claude/drafts/o2-ratification-packet.md",
+          ".claude/epic/NARRATIVE.md",
+          ".claude/epic/README.md",
+          ".claude/schedules/README.md",
+          ".claude/skills/sdlc-development/SKILL.md",
+          ".claude/skills/sdlc-qa/SKILL.md",
+          ".claude/skills/sov-asset/SKILL.md",
+          ".claude/skills/sov-backlog/SKILL.md",
+          ".claude/skills/sov-byom/SKILL.md",
+          ".claude/skills/sov-compression/SKILL.md",
+          ".claude/skills/sov-conformance/SKILL.md",
+          ".claude/skills/sov-console/SKILL.md",
+          ".claude/skills/sov-contracts/SKILL.md",
+          ".claude/skills/sov-governance/SKILL.md",
+          ".claude/skills/sov-principled-deviation/SKILL.md",
+          ".claude/skills/sov-projection/SKILL.md",
+          ".claude/skills/sov-proofing/SKILL.md",
+          ".claude/skills/sov-scribe/SKILL.md",
+          ".claude/skills/sov-trust/SKILL.md",
+          ".claude/skills/sov-verification/SKILL.md",
+          ".claude/workflows/sov-asset.js",
+          ".claude/workflows/sov-baseline.js",
+          ".claude/workflows/sov-byom.js",
+          ".claude/workflows/sov-conformance.js",
+          ".claude/workflows/sov-console.js",
+          ".claude/workflows/sov-contracts.js",
+          ".claude/workflows/sov-epic.js",
+          ".claude/workflows/sov-f2-control.js",
+          ".claude/workflows/sov-governance.js",
+          ".claude/workflows/sov-librarian.js",
+          ".claude/workflows/sov-loop.js",
+          ".claude/workflows/sov-projection.js",
+          ".claude/workflows/sov-proofing.js",
+          ".claude/workflows/sov-qa.js",
+          ".claude/workflows/sov-review.js",
+          ".claude/workflows/sov-trust.js",
+          ".claude/workflows/sov-verification.js",
+          "AGENTS.md",
+          "CLAUDE.md",
+          "CONTRIBUTING.md",
+          "LESSONS.md",
+          "PRD.md",
+          "README.md",
+          "scripts/README.md",
+          "services/identity/CHARTER.md",
+          "services/observation/KNOWN-GAPS.md"
+        ],
+        "name": "python scripts/verify.py is the required check",
+        "owner": "AGENTS.md",
+        "producers": 51,
+        "restatements": 50
+      },
+      {
+        "fact": "effect-classes",
+        "files": [
+          ".claude/drafts/history-lineage-and-lessons-brief.md",
+          ".claude/drafts/messaging-placement-ticket.md",
+          ".claude/drafts/o18-console-ratification-packet.md",
+          ".claude/drafts/o2-ratification-packet.md",
+          ".claude/drafts/recording-slice-ticket.md",
+          ".claude/drafts/story-ticket-standard.md",
+          ".claude/skills/sdlc-release/SKILL.md",
+          ".claude/skills/sdlc-worker/SKILL.md",
+          ".claude/skills/sov-asset/SKILL.md",
+          ".claude/skills/sov-byom/SKILL.md",
+          ".claude/skills/sov-conformance/SKILL.md",
+          ".claude/skills/sov-console/SKILL.md",
+          ".claude/skills/sov-contracts/SKILL.md",
+          ".claude/skills/sov-governance/SKILL.md",
+          ".claude/skills/sov-librarian/SKILL.md",
+          ".claude/skills/sov-projection/SKILL.md",
+          ".claude/skills/sov-proofing/SKILL.md",
+          ".claude/skills/sov-scribe/SKILL.md",
+          ".claude/skills/sov-trust/SKILL.md",
+          ".claude/skills/sov-verification/SKILL.md",
+          ".claude/workflows/sov-asset.js",
+          ".claude/workflows/sov-baseline.js",
+          ".claude/workflows/sov-byom.js",
+          ".claude/workflows/sov-conformance.js",
+          ".claude/workflows/sov-console.js",
+          ".claude/workflows/sov-contracts.js",
+          ".claude/workflows/sov-f2-control.js",
+          ".claude/workflows/sov-governance.js",
+          ".claude/workflows/sov-librarian.js",
+          ".claude/workflows/sov-projection.js",
+          ".claude/workflows/sov-proofing.js",
+          ".claude/workflows/sov-trust.js",
+          ".claude/workflows/sov-verification.js",
+          "AGENTS.md",
+          "CANON.md",
+          "ROADMAP.md",
+          "SDLC.md",
+          "SPEC.md",
+          "services/gateway/CHARTER.md",
+          "services/gateway/JOURNEYS.md",
+          "services/gateway/KNOWN-GAPS.md",
+          "services/host/JOURNEYS.md",
+          "services/host/SERVICE-SPEC.md",
+          "services/identity/JOURNEYS.md",
+          "services/identity/SRD.md"
+        ],
+        "name": "RECORD_LOCAL / RESOURCE_CONSUMPTION / EXTERNAL_WORLD",
+        "owner": "SPEC.md",
+        "producers": 45,
+        "restatements": 44
+      },
+      {
+        "fact": "standing-lifecycle",
+        "files": [
+          ".claude/README.md",
+          ".claude/agents/sov-controller.md",
+          ".claude/agents/sov-witness.md",
+          ".claude/agents/sov-worker.md",
+          ".claude/drafts/messaging-placement-ticket.md",
+          ".claude/drafts/o18-console-ratification-packet.md",
+          ".claude/drafts/o2-ratification-packet.md",
+          ".claude/schedules/README.md",
+          ".claude/skills/sov-asset/SKILL.md",
+          ".claude/skills/sov-byom/SKILL.md",
+          ".claude/skills/sov-conformance/SKILL.md",
+          ".claude/skills/sov-console/SKILL.md",
+          ".claude/skills/sov-contracts/SKILL.md",
+          ".claude/skills/sov-governance/SKILL.md",
+          ".claude/skills/sov-projection/SKILL.md",
+          ".claude/skills/sov-proofing/SKILL.md",
+          ".claude/skills/sov-scribe/SKILL.md",
+          ".claude/skills/sov-trust/SKILL.md",
+          ".claude/skills/sov-verification/SKILL.md",
+          ".claude/workflows/sov-console.js",
+          ".claude/workflows/sov-epic.js",
+          ".claude/workflows/sov-governance.js",
+          ".claude/workflows/sov-projection.js",
+          ".claude/workflows/sov-proofing.js",
+          ".claude/workflows/sov-trust.js",
+          ".claude/workflows/sov-witness.js",
+          "AGENTS.md",
+          "CLASSIFICATION.md",
+          "SDLC.md",
+          "services/asset/SRD.md",
+          "services/console/SRD.md",
+          "services/gateway/SRD.md",
+          "services/host/SRD.md",
+          "services/identity/SRD.md",
+          "services/record/CHARTER.md",
+          "services/registry/SRD.md"
+        ],
+        "name": "OPEN -> BUILT -> WITNESSED -> RATIFIED",
+        "owner": "AGENTS.md",
+        "producers": 36,
+        "restatements": 35
+      },
+      {
+        "fact": "live-grant",
+        "files": [
+          ".claude/agents/sov-orchestrator.md",
+          ".claude/agents/sov-worker.md",
+          ".claude/agents/sov.md",
+          ".claude/drafts/automation-health-and-controls-ticket.md",
+          ".claude/skills/sov-continuity/SKILL.md",
+          ".claude/skills/sov-principled-deviation/SKILL.md",
+          "AGENTS.md",
+          "CANON.md",
+          "CLAUDE.md",
+          "OPEN-SEAMS.md",
+          "README.md",
+          "services/asset/JOURNEYS.md",
+          "services/asset/SERVICE-SPEC.md",
+          "services/asset/SRD.md",
+          "services/console/CHARTER.md",
+          "services/console/JOURNEYS.md",
+          "services/console/KNOWN-GAPS.md",
+          "services/console/README.md",
+          "services/console/SERVICE-GROUND.md",
+          "services/console/SERVICE-SPEC.md",
+          "services/console/SRD.md",
+          "services/gateway/CHARTER.md",
+          "services/gateway/SERVICE-SPEC.md",
+          "services/gateway/SRD.md",
+          "services/host/CHARTER.md",
+          "services/host/JOURNEYS.md",
+          "services/host/SERVICE-GROUND.md",
+          "services/host/SERVICE-SPEC.md",
+          "services/host/SRD.md",
+          "services/identity/SERVICE-GROUND.md",
+          "services/registry/JOURNEYS.md"
+        ],
+        "name": "consequential transitions need a typed scoped live grant",
+        "owner": "AGENTS.md",
+        "producers": 31,
+        "restatements": 30
+      },
+      {
+        "fact": "no-self-witness",
+        "files": [
+          ".claude/agents/sov-witness.md",
+          ".claude/agents/sov-worker.md",
+          ".claude/agents/sov.md",
+          ".claude/drafts/automation-health-and-controls-ticket.md",
+          ".claude/epic/NARRATIVE.md",
+          ".claude/skills/sov-console/SKILL.md",
+          ".claude/skills/sov-projection/SKILL.md",
+          ".claude/skills/sov-proofing/SKILL.md",
+          ".claude/skills/sov-scribe/SKILL.md",
+          ".claude/skills/sov-trust/SKILL.md",
+          ".claude/workflows/sov-asset.js",
+          ".claude/workflows/sov-byom.js",
+          ".claude/workflows/sov-conformance.js",
+          ".claude/workflows/sov-contracts.js",
+          ".claude/workflows/sov-f2-control.js",
+          ".claude/workflows/sov-governance.js",
+          ".claude/workflows/sov-librarian.js",
+          ".claude/workflows/sov-trust.js",
+          ".claude/workflows/sov-verification.js",
+          ".claude/workflows/sov-witness.js",
+          "AGENTS.md",
+          "services/gateway/KNOWN-GAPS.md",
+          "services/gateway/SRD.md",
+          "services/identity/CHARTER.md",
+          "services/identity/SRD.md",
+          "services/registry/CHARTER.md",
+          "services/registry/JOURNEYS.md",
+          "services/registry/SRD.md"
+        ],
+        "name": "a build cannot witness itself",
+        "owner": "AGENTS.md",
+        "producers": 28,
+        "restatements": 27
+      },
+      {
+        "fact": "acceptance-not-approval",
+        "files": [
+          ".claude/agents/sov.md",
+          ".claude/skills/sdlc-control/SKILL.md",
+          ".claude/skills/sdlc-development/SKILL.md",
+          ".claude/skills/sdlc-feedback/SKILL.md",
+          ".claude/skills/sdlc-orchestration/SKILL.md",
+          ".claude/skills/sdlc-product/SKILL.md",
+          ".claude/skills/sdlc-qa/SKILL.md",
+          ".claude/skills/sdlc-release/SKILL.md",
+          ".claude/skills/sdlc-worker/SKILL.md",
+          ".claude/workflows/sov-asset.js",
+          ".claude/workflows/sov-byom.js",
+          ".claude/workflows/sov-conformance.js",
+          ".claude/workflows/sov-console.js",
+          ".claude/workflows/sov-contracts.js",
+          ".claude/workflows/sov-governance.js",
+          ".claude/workflows/sov-projection.js",
+          ".claude/workflows/sov-proofing.js",
+          ".claude/workflows/sov-trust.js",
+          ".claude/workflows/sov-verification.js",
+          "AGENTS.md",
+          "CLAUDE.md",
+          "CONTRIBUTING.md"
+        ],
+        "name": "the owner gate is acceptance, not permission",
+        "owner": "AGENTS.md",
+        "producers": 22,
+        "restatements": 21
+      },
+      {
+        "fact": "judgement-is-bdo",
+        "files": [
+          ".claude/README.md",
+          ".claude/agents/sov-witness.md",
+          ".claude/drafts/o2-ratification-packet.md",
+          ".claude/skills/sov-byom/SKILL.md",
+          ".claude/skills/sov-verification/SKILL.md",
+          ".claude/workflows/sov-baseline.js",
+          ".claude/workflows/sov-byom.js",
+          ".claude/workflows/sov-console.js",
+          ".claude/workflows/sov-epic.js",
+          ".claude/workflows/sov-governance.js",
+          ".claude/workflows/sov-loop.js",
+          ".claude/workflows/sov-projection.js",
+          ".claude/workflows/sov-proofing.js",
+          ".claude/workflows/sov-qa.js",
+          ".claude/workflows/sov-review.js",
+          ".claude/workflows/sov-scribe.js",
+          ".claude/workflows/sov-trust.js",
+          ".claude/workflows/sov-verification.js",
+          ".claude/workflows/sov-witness.js",
+          "AGENT-BOOTSTRAP-PROMPT.md",
+          "AI-NATIVE.md",
+          "services/identity/JOURNEYS.md"
+        ],
+        "name": "only the root seat ratifies judgement",
+        "owner": "AGENTS.md",
+        "producers": 22,
+        "restatements": 21
+      },
+      {
+        "fact": "record-is-append",
+        "files": [
+          ".claude/drafts/messaging-placement-ticket.md",
+          ".claude/drafts/o2-ratification-packet.md",
+          ".claude/drafts/recording-slice-ticket.md",
+          ".claude/epic/NARRATIVE.md",
+          "AGENTS.md",
+          "CLAUDE.md",
+          "ENGINEERING.md",
+          "PRD.md",
+          "SPEC.md",
+          "services/asset/JOURNEYS.md",
+          "services/asset/KNOWN-GAPS.md",
+          "services/asset/SRD.md",
+          "services/console/SERVICE-GROUND.md",
+          "services/console/SERVICE-SPEC.md",
+          "services/gateway/SERVICE-SPEC.md",
+          "services/host/SERVICE-SPEC.md",
+          "services/observation/CHARTER.md",
+          "services/record/CHARTER.md",
+          "services/record/JOURNEYS.md",
+          "services/record/SRD.md",
+          "services/registry/SERVICE-SPEC.md"
+        ],
+        "name": "the Record is append-preserving",
+        "owner": "SYSTEM.md",
+        "producers": 21,
+        "restatements": 20
+      },
+      {
+        "fact": "module-ceiling",
+        "files": [
+          ".claude/drafts/automation-health-and-controls-ticket.md",
+          ".claude/drafts/o2-ratification-packet.md",
+          ".claude/skills/sdlc-development/SKILL.md",
+          ".claude/skills/sov-asset/SKILL.md",
+          ".claude/skills/sov-verification/SKILL.md",
+          ".claude/workflows/sov-asset.js",
+          ".claude/workflows/sov-f2-control.js",
+          "AGENTS.md",
+          "CONTRIBUTING.md",
+          "ENGINEERING.md",
+          "PRD.md"
+        ],
+        "name": "modules stay below 300 lines",
+        "owner": "ENGINEERING.md",
+        "producers": 11,
+        "restatements": 10
+      },
+      {
+        "fact": "phase-i-closed",
+        "files": [
+          ".claude/skills/sov-compression/SKILL.md",
+          ".claude/skills/sov-governance/SKILL.md",
+          ".claude/skills/sov-verification/SKILL.md",
+          "CLAUDE.md",
+          "OPEN-SEAMS.md",
+          "README.md",
+          "ROADMAP.md",
+          "SYSTEM.md"
+        ],
+        "name": "Phase I is terminal CLOSED_INCOMPLETE",
+        "owner": "STATUS.yaml",
+        "producers": 8,
+        "restatements": 7
+      },
+      {
+        "fact": "one-concern",
+        "files": [
+          ".claude/agents/sov-controller.md",
+          ".claude/agents/sov-orchestrator.md",
+          ".claude/agents/sov.md",
+          ".claude/workflows/sov-loop.js",
+          "AGENTS.md",
+          "CONTRIBUTING.md"
+        ],
+        "name": "one session, one concern",
+        "owner": "AGENTS.md",
+        "producers": 6,
+        "restatements": 5
+      },
+      {
+        "fact": "blocked-is-proven",
+        "files": [
+          ".claude/agents/sov-controller.md",
+          "AGENTS.md",
+          "CONTRIBUTING.md"
+        ],
+        "name": "BLOCKED is a claim that must be proven",
+        "owner": "AGENTS.md",
+        "producers": 3,
+        "restatements": 2
+      }
+    ],
+    "total_restatements": 272,
+    "worst": "verify-command"
+  },
+  "routes": {
+    "by_document": [
+      {
+        "doc": "README.md",
+        "out": 17,
+        "targets": [
+          "AGENTS.md",
+          "AI-NATIVE.md",
+          "BYOM.md",
+          "CANON.md",
+          "CLASSIFICATION.md",
+          "CONTRACT.md",
+          "CONTRIBUTING.md",
+          "ENGINEERING.md",
+          "GROUND.md",
+          "OPEN-SEAMS.md",
+          "PRD.md",
+          "PUBLICATION.md",
+          "SDLC.md",
+          "SOV.md",
+          "SPEC.md",
+          "STATUS.yaml",
+          "SYSTEM.md"
+        ]
+      },
+      {
+        "doc": "AGENTS.md",
+        "out": 16,
+        "targets": [
+          "AI-NATIVE.md",
+          "CANON.md",
+          "CLASSIFICATION.md",
+          "CLAUDE.md",
+          "CONTRACT.md",
+          "CONTRIBUTING.md",
+          "ENGINEERING.md",
+          "GROUND.md",
+          "OPEN-SEAMS.md",
+          "PRD.md",
+          "README.md",
+          "SDLC.md",
+          "SOV.md",
+          "SPEC.md",
+          "STATUS.yaml",
+          "SYSTEM.md"
+        ]
+      },
+      {
+        "doc": "PRD.md",
+        "out": 14,
+        "targets": [
+          "AGENTS.md",
+          "AI-NATIVE.md",
+          "BYOM.md",
+          "CANON.md",
+          "CLASSIFICATION.md",
+          "CONTRACT.md",
+          "ENGINEERING.md",
+          "GROUND.md",
+          "OPEN-SEAMS.md",
+          "ROADMAP.md",
+          "SDLC.md",
+          "SPEC.md",
+          "STATUS.yaml",
+          "SYSTEM.md"
+        ]
+      },
+      {
+        "doc": "CLAUDE.md",
+        "out": 13,
+        "targets": [
+          "AGENTS.md",
+          "AI-NATIVE.md",
+          "CANON.md",
+          "CLASSIFICATION.md",
+          "CONTRIBUTING.md",
+          "GROUND.md",
+          "LESSONS.md",
+          "PRD.md",
+          "README.md",
+          "SDLC.md",
+          "SPEC.md",
+          "STATUS.yaml",
+          "SYSTEM.md"
+        ]
+      },
+      {
+        "doc": "CANON.md",
+        "out": 12,
+        "targets": [
+          "AGENTS.md",
+          "AI-NATIVE.md",
+          "BYOM.md",
+          "CLASSIFICATION.md",
+          "CONTRACT.md",
+          "GROUND.md",
+          "PRD.md",
+          "README.md",
+          "SDLC.md",
+          "SPEC.md",
+          "STATUS.yaml",
+          "SYSTEM.md"
+        ]
+      },
+      {
+        "doc": "ROADMAP.md",
+        "out": 12,
+        "targets": [
+          "AGENTS.md",
+          "CANON.md",
+          "CLASSIFICATION.md",
+          "CONTRACT.md",
+          "ENGINEERING.md",
+          "GROUND.md",
+          "OPEN-SEAMS.md",
+          "PRD.md",
+          "README.md",
+          "SDLC.md",
+          "SPEC.md",
+          "STATUS.yaml"
+        ]
+      },
+      {
+        "doc": "GROUND.md",
+        "out": 11,
+        "targets": [
+          "AGENTS.md",
+          "AI-NATIVE.md",
+          "BYOM.md",
+          "CLASSIFICATION.md",
+          "CONTRACT.md",
+          "ENGINEERING.md",
+          "PRD.md",
+          "SDLC.md",
+          "SPEC.md",
+          "STATUS.yaml",
+          "SYSTEM.md"
+        ]
+      },
+      {
+        "doc": "AGENT-BOOTSTRAP-PROMPT.md",
+        "out": 10,
+        "targets": [
+          "AGENTS.md",
+          "CANON.md",
+          "CONTRACT.md",
+          "GROUND.md",
+          "OPEN-SEAMS.md",
+          "PRD.md",
+          "README.md",
+          "SOV.md",
+          "STATUS.yaml",
+          "SYSTEM.md"
+        ]
+      },
+      {
+        "doc": "LESSONS.md",
+        "out": 7,
+        "targets": [
+          "AGENTS.md",
+          "AI-NATIVE.md",
+          "CLAUDE.md",
+          "PRD.md",
+          "README.md",
+          "ROADMAP.md",
+          "SPEC.md"
+        ]
+      },
+      {
+        "doc": "CONTRIBUTING.md",
+        "out": 6,
+        "targets": [
+          "AGENTS.md",
+          "CANON.md",
+          "CLASSIFICATION.md",
+          "GROUND.md",
+          "OPEN-SEAMS.md",
+          "README.md"
+        ]
+      },
+      {
+        "doc": "SDLC.md",
+        "out": 6,
+        "targets": [
+          "AGENTS.md",
+          "AI-NATIVE.md",
+          "ENGINEERING.md",
+          "OPEN-SEAMS.md",
+          "SOV.md",
+          "STATUS.yaml"
+        ]
+      },
+      {
+        "doc": "CLASSIFICATION.md",
+        "out": 4,
+        "targets": [
+          "OPEN-SEAMS.md",
+          "PRD.md",
+          "SDLC.md",
+          "SPEC.md"
+        ]
+      },
+      {
+        "doc": "SOV.md",
+        "out": 4,
+        "targets": [
+          "AGENTS.md",
+          "CANON.md",
+          "GROUND.md",
+          "STATUS.yaml"
+        ]
+      },
+      {
+        "doc": "BYOM.md",
+        "out": 3,
+        "targets": [
+          "CLASSIFICATION.md",
+          "PRD.md",
+          "SPEC.md"
+        ]
+      },
+      {
+        "doc": "ENGINEERING.md",
+        "out": 3,
+        "targets": [
+          "AGENTS.md",
+          "CONTRACT.md",
+          "SPEC.md"
+        ]
+      },
+      {
+        "doc": "SPEC.md",
+        "out": 2,
+        "targets": [
+          "CLASSIFICATION.md",
+          "PRD.md"
+        ]
+      },
+      {
+        "doc": "CONTRACT.md",
+        "out": 1,
+        "targets": [
+          "STATUS.yaml"
+        ]
+      },
+      {
+        "doc": "OPEN-SEAMS.md",
+        "out": 1,
+        "targets": [
+          "STATUS.yaml"
+        ]
+      },
+      {
+        "doc": "SYSTEM.md",
+        "out": 1,
+        "targets": [
+          "AI-NATIVE.md"
+        ]
+      },
+      {
+        "doc": "AI-NATIVE.md",
+        "out": 0,
+        "targets": []
+      },
+      {
+        "doc": "NAMING.md",
+        "out": 0,
+        "targets": []
+      },
+      {
+        "doc": "PUBLICATION.md",
+        "out": 0,
+        "targets": []
+      }
+    ],
+    "documents": 22,
+    "edges": 143,
+    "mean_fanout": 6.5
+  },
+  "volume": {
+    "orientation_files": 81,
+    "orientation_lines": 14436,
+    "surfaces": [
+      {
+        "files": 22,
+        "lines": 6283,
+        "surface": "root-docs"
+      },
+      {
+        "files": 5,
+        "lines": 657,
+        "surface": "agents"
+      },
+      {
+        "files": 31,
+        "lines": 3433,
+        "surface": "skills"
+      },
+      {
+        "files": 23,
+        "lines": 4063,
+        "surface": "workflows"
+      },
+      {
+        "files": 83,
+        "lines": 15922,
+        "surface": "scripts"
+      },
+      {
+        "files": 326,
+        "lines": 57218,
+        "surface": "script-packages"
+      },
+      {
+        "files": 90,
+        "lines": 11679,
+        "surface": "decisions"
+      },
+      {
+        "files": 49,
+        "lines": 6215,
+        "surface": "service-docs"
+      },
+      {
+        "files": 96,
+        "lines": 50065,
+        "surface": "contracts"
+      },
+      {
+        "files": 32,
+        "lines": 8411,
+        "surface": "reports"
+      }
+    ],
+    "total_files": 757,
+    "total_lines": 163946
+  }
+}

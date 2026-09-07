@@ -1223,7 +1223,11 @@
       "changed": false
     },
     "scripts/README.md": {
+<<<<<<< HEAD
       "artifact_digest": "sha256:176cc8940aa52a4fd6ae5419422a9cd2d1ab89d2ef8c6ebba83723485ac3f7d0",
+=======
+      "artifact_digest": "sha256:41f575e633e369e752979bab3174f3705eecc6b0f53583acf41dcab7d4374de6",
+>>>>>>> b897f36 (feat: measure the context surface a participant must traverse)
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",

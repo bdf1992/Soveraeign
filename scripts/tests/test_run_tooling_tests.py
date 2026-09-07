@@ -26,6 +26,8 @@ def heaviest_declared() -> str:
     return max(run_tooling_tests.MODULE_WEIGHTS,
                key=lambda name: (run_tooling_tests.MODULE_WEIGHTS[name], name))
 
+REAL_WEIGHTS = dict(run_tooling_tests.MODULE_WEIGHTS)
+
 
 class ToolingPartition(unittest.TestCase):
     def test_every_discovered_module_is_assigned_exactly_once(self):
@@ -61,15 +63,6 @@ class ToolingPartition(unittest.TestCase):
             yield
         finally:
             run_tooling_tests.MODULE_WEIGHTS = original
-
-    def peers(self, module: str) -> int:
-        """How many modules share this module's shard of the real corpus."""
-        modules = run_tooling_tests.test_modules()
-        buckets = run_tooling_tests.partition(modules, run_tooling_tests.DEFAULT_WORKERS)
-        return len(next(
-            bucket for bucket in buckets
-            if any(item.name == module for item in bucket)
-        ))
 
     def test_a_module_with_no_declared_weight_counts_as_one(self):
         self.assertEqual(run_tooling_tests.module_weight(Path("test_a.py")), 1)
@@ -118,6 +111,17 @@ class ToolingPartition(unittest.TestCase):
         """The table as a whole must buy something, not merely its heaviest entry."""
         self.assertLess(self.critical_shard(dict(run_tooling_tests.MODULE_WEIGHTS)),
                         self.critical_shard({}))
+
+    def test_ignoring_the_whole_table_is_worse_than_honouring_it(self):
+        """The table as a whole earns its place, not only its largest entry."""
+        weighted = self.makespan()
+        original = dict(run_tooling_tests.MODULE_WEIGHTS)
+        run_tooling_tests.MODULE_WEIGHTS = {}
+        try:
+            flat = self.makespan()
+        finally:
+            run_tooling_tests.MODULE_WEIGHTS = original
+        self.assertLess(weighted, flat)
 
     def test_a_weight_changes_placement_and_never_the_population(self):
         modules = run_tooling_tests.test_modules()

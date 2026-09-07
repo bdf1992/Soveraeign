@@ -68,6 +68,7 @@ Run any of them with `--help` for exact arguments.
 | `sov_diagrams.py` | `grade` `stamp` `selfcheck` | Whether each diagram still reads the source bytes it claims to have read. |
 | `sov_snapshot.py` | `check` `selfcheck` | Whether the orientation snapshot in `CLAUDE.md` still matches the record. |
 | `sov_counts.py` | `check` `debt` `populations` `selfcheck` | Whether every hand-written count in live prose still matches the population its wording names, and which count-shaped sentences no population declares. |
+| `sov_context.py` | `checkpoint` `baseline` `delta` | How much a participant must traverse before it can act: orientation lines, entrypoints no document names, facts with more than one producer, and references between governing documents. `delta` grades a compression pass against a pinned reading rather than against its own account of itself. |
 | `sov_docs.py` | `ingest` `build` `check` | The node's own documentation reader, with each document's custody shown beside it. |
 | `sov_baseline.py` | — | Holds the Asset Service to its recorded conformance baseline. |
 | `sov_mutate.py` | `sites` `run` `selfcheck` | How much the test suite actually asserts, by mutating what it tests. |

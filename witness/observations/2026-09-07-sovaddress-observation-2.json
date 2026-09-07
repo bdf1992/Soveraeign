@@ -1,0 +1,173 @@
+{
+  "case_id": "WITNESS-2026-09-07-SOVADDRESS-2",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07-sovaddress",
+  "artifact_revision": "e835205a4d0c2f99e289019cdba81d2c1af59852",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "scripts/sovaddress.py and its four adopters at e835205 (HEAD of feat/address-below-the-file, pushed, PR #221; base aeecc60 = origin/main; one commit past the frozen candidate a57d736). Pass 2 re-verifies the coordinator's stated repairs of F2-F8 and the action on J1: six receipt-grader cases in test_sov_witness_layer.AddressesBelowTheFile; no report path in the docstring; BasisAddresses above unittest.main; UnicodeDecodeError refuses FRAGMENT_MALFORMED for every kind; selector requires the key present; duplicate YAML key, trailing-mark heading and fenced-block cases; selfcheck output captured; sovland/candidates.freeze commits first, reads the range, runs the checks on the committed tree, then evaluates authority, refusing after the commit with the commit named and no record written. F1 (snapshot 942 vs the record) is declared unrepaired and outside the grant; F4 unchanged",
+    "record": "witness/sovaddress.md",
+    "record_section": "Pass 2: commit e835205 (2026-09-07)",
+    "prior_receipts": [
+      "witness/observations/2026-09-07-sovaddress-observation.json"
+    ],
+    "verdict": "REPRODUCED",
+    "verdict_scope": "REPRODUCED: every stated repair is in the diff a57d736..e835205 and each has a fixture that fails when the repair is reverted (M3, M4, M5, M6, M7, M10, M11, M12 all caught; the same M3-M7 survived at a57d736). The module's claims from pass 1 still hold, the four readers grade the tree at e835205 exactly as at aeecc60, all 113 present committed addresses digest identically, lint passes, the seven suites and five sovland suites pass, tooling passes twice. F1 is confirmed unrepaired: verify.py exits 1 at e835205 (commits 969 vs page 942, tolerance 25) and withholds landing on its own. New: the post-commit drift refusal in freeze has no fixture (M13 survives; F12); the grant for repository.commit is now evaluated after the commit is made (F11, J4); e835205 has no candidate record while a57d736's still reads FROZEN (F13). Record verdict RATIFIABLE-WITH-CONDITIONS; landing NOT_CONFIRMED for F1 alone",
+    "standing_supported": "WITNESSED",
+    "standing_binds": {
+      "subject": "sovaddress",
+      "field": "scripts/sovaddress.py and its adoption by scripts/sovwitness/{shape,records}.py, scripts/sov_diagrams.py, scripts/sovclarity/digests.py, scripts/sovreuse/settle.py (no custody member names them; concern custody:phase-1-5/discovery-and-reuse)",
+      "revision": "e835205a4d0c2f99e289019cdba81d2c1af59852",
+      "claim": "path#fragment resolves to the bytes it means for .json, .yaml and .md, a bare path keeps its exact bytes, every refusal names itself including undecodable bytes, and each of the four readers digests through it with a positive and a defeating case",
+      "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-07-sovaddress, pass 2 at e835205a4d0c2f99e289019cdba81d2c1af59852",
+      "not_supported": "no standing for the candidate as a landable unit while verify.py fails at its commit (F1); no standing for the freeze reordering beyond its two cases (F11, F12)"
+    },
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07-sovaddress",
+    "observer_independence_basis": "Same participant as pass 1; built, edited, staged and committed nothing. Froze the tree at e835205 (git rev-parse HEAD before and after every command, git status --porcelain empty throughout until the deposits), fetched the branch into its scratch clone (full history, 969 commits), checked out e835205 there with a worktree still at aeecc60, ran verify.py, lint.py, run_tooling_tests.py twice, the seven suites and the five sovland suites, ran the four readers in the clone and diffed against the pass-1 base readings, reran its own adversarial probe and nine mutants against a git-archive copy of e835205, recomputed every committed address digest both ways, and read the diff a57d736..e835205 in full. It read the coordinator's list of repairs as the claim, not as evidence",
+    "observer_relation": "INDEPENDENT_OF_BUILDER",
+    "observed_at": "2026-09-07",
+    "observed_state_addresses": [
+      "scripts/sovaddress.py",
+      "scripts/sovland/candidates.py",
+      "scripts/sovland/preflight.py",
+      "scripts/sovland/isolation.py",
+      "scripts/sovwitness/records.py",
+      "scripts/sovwitness/shape.py",
+      "scripts/sov_diagrams.py",
+      "scripts/sov_clarity.py",
+      "scripts/sovclarity/digests.py",
+      "scripts/sovreuse/settle.py",
+      "scripts/tests/test_sovaddress.py",
+      "scripts/tests/test_sov_witness_layer.py",
+      "scripts/tests/test_witness_record.py",
+      "scripts/tests/test_sov_clarity.py",
+      "scripts/tests/test_sov_diagrams.py",
+      "scripts/tests/test_sov_reuse.py",
+      "scripts/tests/test_repository_candidate_effects.py",
+      "scripts/sovsnapshot/claims.py",
+      "CLAUDE.md",
+      "STATUS.yaml",
+      "contracts/participant-observation.schema.json",
+      "contracts/custodies/phase-1-5.json",
+      ".clarity/coverage.json",
+      "diagrams/README.md",
+      "diagrams/authority-typing.md",
+      "diagrams/crossing-topology.md",
+      "diagrams/crossing-typology.md",
+      "diagrams/event-outcomes.md",
+      "diagrams/requirement-lifecycle.md",
+      "diagrams/service-map.md",
+      "diagrams/source-reader-recording.md",
+      "diagrams/standing-transition.md"
+    ],
+    "observed_state_digests": [
+      "sha256:91d7dfd4302638660f77832c02af10e53a1ae01dfb7afc27ce9b7252fed9c8bc",
+      "sha256:309f3928b3d22d2a5a580444f24eea44648f477290e96b9f975fc3dcb7043ec9",
+      "sha256:3416d0eb174d9def5ac1c860d7050737e792bd7a97241d041ef6a7d344e88b44",
+      "sha256:cd95ed31c3033fc2406e0be1858a926452da516fb21abf0788db1c2877d344ee",
+      "sha256:c095366bfe793ac64fb9f6041d818c8f2df648e1a3127cecc30a4d3dec1b6919",
+      "sha256:081c195ec46423a2d3ab15762f6aab6e4928c82781db726d7fbc5bcf003b37dd",
+      "sha256:5b74ab2465f5d6241505a0712c6639a6dd2fcbac3a0e9594f7ae2cbf6b037b86",
+      "sha256:c179bd1d5694c497b61a280ecb44ef067803c1b69ae14fe390c0a0d6756dfbc5",
+      "sha256:eea9cc1497682ad2b9cf31782c4a41a4e90044534692c2b74760ea69cd0d0186",
+      "sha256:4598837df9c3ff3667f0dabbd61c6a79b8eb150611deea44669b8b6bbfffaaeb",
+      "sha256:b99762013236f5df007200dbfe312b3649d5f84b3d578d18e7edcee3d0dc2087",
+      "sha256:e0ee49b52f20b4b5e43e72e363581ef525e88a638d67625fe26bb7872675131e",
+      "sha256:e3466a6383e979e4ac94e2a4a3a74becf3cf054759632d9ad83c083f88e864b2",
+      "sha256:571cca4a7ef052d825e838c5e2b7585378c083b1a31276068f8129c6c837e9a9",
+      "sha256:1cb0c8d67fe0a71d48b953027803721708e946b7dadf094b4b50c54bd5a7ff6c",
+      "sha256:253c134afa924141ddfa66ab2f5d289fd8bee7c3e14bcf647bd7b6357e8a54b2",
+      "sha256:5883477869787a770e35903614710d8e5051d121dd8d22dd323f6cb35c7a582b",
+      "sha256:dc66c6f8dae11d94d53deeeb89a49c54d4e82c1fb2c01d691a105786927c062b",
+      "sha256:de1d5ab3bea42df1812c313e4ec17a67678baaafcb0e27a340fcbdfe0b3aa4e1",
+      "sha256:9ddb4c4f974389b7a8539e3b2e0d3d7e0cb4a020356cb994fea3505210fad9ae",
+      "sha256:8292b477342d1b30cf3eaeacfbd05c6eacdf7c0abed228e2fc81a67ed8d05945",
+      "sha256:9b6041e9182f9bc4a969336f1ca5285ea86e66b220f64453c0297ccf08260602",
+      "sha256:1a35c6976745a78b41a89553a6e616763f260ccd120338b2d7a73da01fb9b30b",
+      "sha256:11614c06e4d6d9686b49774e920b684fbb89ecde77a66206d1cc9262bffc7a85",
+      "sha256:77fd0c21db8ad8c2ac02b260f4043d1c8afa95136162e95f87993bed537e790c",
+      "sha256:3bb877b6c3f5ef6f3454aa1eee9ed220b8373057958d1f337d076f7b75e7d868",
+      "sha256:beae2c65732f439504e5792ec8352361cdb74e24fc7fc309dcff760ef4af4455",
+      "sha256:6d57fe0eece924c9eb616544f5f7fd21f21f6aab8241db2a1856e946a688e664",
+      "sha256:548d8c1154df0e96ed0ff39cea618732d181079b11642966ddac18d490fa948d",
+      "sha256:5fed62e00796a5f8ac1ffa1b20b83d025cac486f1fe33e9bc6030e5d9bff6693",
+      "sha256:3983e1eff208e7503b3b91cce31568a0c8c001340075e035a7b106116ac934c4",
+      "sha256:b88ef19f5ff4bbb470cb5bcc75444051f473fbb7ce32a09a62a6137048aab604"
+    ],
+    "commands": {
+      "tree": "git rev-parse HEAD -> e835205a4d0c2f99e289019cdba81d2c1af59852 before and after every command; git status --porcelain -> empty until the deposits; git log a57d736..HEAD -> one commit; git ls-remote origin -> branch at e835205, main at aeecc60; git show --stat e835205 -> 7 files +192/-31; git diff --stat aeecc60..e835205 -> 14 files +702/-44, all under scripts/; .local/candidates -> no record for e835205, a57d736 still FROZEN",
+      "pass1_deposits": "witness/sovaddress.md, witness/observations/2026-09-07-sovaddress-observation.json and .local/observations/2026-09-07-sovaddress-landing.json were absent from the working tree at the start of pass 2; git log --all and git stash list hold nothing for them; byte-identical copies in the witness's scratch directory (sha256 8a2bbf97..., 39967806..., 5b12fd84...) were re-deposited unchanged",
+      "verify": "python scripts/verify.py (clone, e835205) -> exit 1; the one failing check is orientation snapshot: 'FAIL commits: page says 942, record holds 969 (tolerance 25)'; COST 52 checks in 21.085s wall; check-name diff against aeecc60 is that verdict plus the counts 111->112 modules, 1204->1207 text files; the selfcheck PASS lines of F8 no longer appear",
+      "lint": "python scripts/lint.py (clone, e835205) -> exit 0",
+      "suites": "PYTHONPATH=scripts python -m unittest scripts.tests.<m> (archive e835205): test_sovaddress 18 OK; test_sov_witness_layer 72 OK (6 AddressesBelowTheFile cases listed); test_witness_record 14 OK; test_sov_diagrams 16 OK; test_sov_clarity 7 OK; test_sov_reuse 15 OK; test_repository_candidate_effects 8 OK; test_landing_isolation, test_landing_ledger, test_repository_candidate, test_sov_land -> exit 0; python scripts/tests/test_sovaddress.py -> OK",
+      "tooling": "python scripts/run_tooling_tests.py twice (clone) -> exit 0, exit 0; git status --porcelain empty afterwards",
+      "equivalence": "sov_witness_layer.py records, sov_diagrams.py, sov_clarity.py check -> exit 0 at e835205, output identical to aeecc60 (timings stripped); sov_reuse.py run --principal principal:claude-fable-5-1 -> exit 1 at both, same two failing predicates P15-Q3.1 and P15-Q3.2 and the same drifted set; 114 committed addresses: 113 identical both ways, 1 absent (pre-existing), 0 contain '#'",
+      "mutants": "nine archive copies of e835205, seven suites each: M3 YAML duplicate key silent -> caught (test_sovaddress); M4 no trailing-# strip -> caught (test_sovaddress); M5 grader NOT_FOUND as INVALID -> caught (test_sov_witness_layer); M6 shape without split -> caught (test_sov_witness_layer); M7 grader whole-file digest -> caught (test_sov_witness_layer); M10 no fenced-block skip -> caught; M11 selector matches a missing key -> caught; M12 UnicodeDecodeError escapes -> caught; M13 freeze ignores checks that modified the checked paths -> survives; control -> all pass",
+      "adversarial": "probe against the e835205 archive: sibling edit CURRENT, member edit STALE_SUBJECT, fragment gone STALE_SUBJECT 'gone from the tree', malformed INVALID, .py#x INVALID, '../' before '#' INVALID, '..' after '#' a pointer key; [key=None] -> FRAGMENT_NOT_FOUND; YAML key twice -> SELECTOR_AMBIGUOUS; a '# ...' line in a fenced block no longer ends a section; non-UTF-8 .md#S -> FRAGMENT_MALFORMED from sovaddress, None from basis_digest, drifted from current_state, INVALID from records.grade; '## A ##' still collides with '## A' and 'C#' is still unreachable by its text (documented in the docstring now); CRLF bytes carried verbatim",
+      "sizes": "every touched file at e835205 <= 100 characters per line, no CRLF; production modules <= 219 lines; scripts/tests/test_sov_witness_layer.py is 682 lines and lint passes (tests are not graded by the 300-line ceiling or are named debt)"
+    },
+    "predicate_results": {
+      "F2_receipt_grader_adoption_has_fixtures": {
+        "held": true,
+        "detail": "six cases; M5, M6, M7 caught by test_sov_witness_layer"
+      },
+      "F3_citation_removed": {
+        "held": true,
+        "detail": "git grep for the report path at e835205 finds nothing under scripts/"
+      },
+      "F5_test_class_above_main": {
+        "held": true,
+        "detail": "BasisAddresses runs under -m unittest and in script mode"
+      },
+      "F6_undecodable_bytes_refuse_by_name": {
+        "held": true,
+        "detail": "FRAGMENT_MALFORMED for .md and .yaml; M12 caught; the three adopters that only catch AddressError now refuse or read drift"
+      },
+      "F7_edge_behaviours_fixed_and_pinned": {
+        "held": true,
+        "detail": "selector requires the key (M11), YAML duplicate (M3), trailing marks (M4), fenced lines (M10) each caught; remaining documented residual: closing marks are stripped so '## A ##' and '## A' collide and a heading ending in '#' is unreachable by its text"
+      },
+      "F8_selfcheck_output_captured": {
+        "held": true,
+        "detail": "no selfcheck PASS lines in the e835205 verify log"
+      },
+      "J1_freeze_measures_the_committed_tree": {
+        "held": true,
+        "detail": "gather_checks runs after git commit and is asserted to read the candidate commit; a refused check names the commit and writes no record; two cases pass"
+      },
+      "F1_verify_passes_at_commit": {
+        "held": false,
+        "detail": "exit 1: commits 969 vs page 942, tolerance 25; unrepaired and declared outside the grant"
+      },
+      "F11_grant_evaluated_before_the_commit": {
+        "held": false,
+        "detail": "authority.evaluate for repository.commit now runs after git commit; a scope refusal lands after the effect on a MUTABLE carrier with no record written (J4)"
+      },
+      "F12_post_commit_drift_refusal_has_fixture": {
+        "held": false,
+        "detail": "M13 survives every suite; preflight.refusal now always receives [] for by_checks from freeze"
+      },
+      "F13_candidate_record_current": {
+        "held": false,
+        "detail": "no .local/candidates record for e835205; a57d736's record still reads FROZEN while the branch has moved past it"
+      },
+      "readers_equivalent_to_base": {
+        "held": true,
+        "detail": "records, diagrams, clarity identical; reuse same predicates and drifted set"
+      },
+      "lint_and_tooling": {
+        "held": true,
+        "detail": "lint exit 0; tooling exit 0 twice"
+      },
+      "pass1_deposits_recoverable": {
+        "held": true,
+        "detail": "re-deposited byte-identical from scratch; their removal from the tree is unexplained by git"
+      }
+    },
+    "standing_note": "This is an observation. It supports WITNESSED for scripts/sovaddress.py and its four adoptions at e835205 and declares that in the record's block. It does not confirm the candidate for landing: F1 alone withholds it (.local/observations/2026-09-07-sovaddress-landing-2.json reads NOT_CONFIRMED with reason F1); apart from F1 this witness would land e835205, with F11 raised for judgement and F12, F13 recorded as residuals to absorb. It ratifies nothing."
+  },
+  "telemetry": {
+    "probe_location": "probe_adversarial.py and mutants2.sh in the witness's scratch directory against a git-archive copy of e835205; every other reading through verify.py, lint.py, unittest, run_tooling_tests.py, the readers' CLIs and git",
+    "tree_state": "git status --porcelain empty before and after every command until the deposits; HEAD e835205a4d0c2f99e289019cdba81d2c1af59852 throughout",
+    "after_writing": "filled by the record's pass-2 Verified section"
+  }
+}

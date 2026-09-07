@@ -219,6 +219,33 @@ recorded instead: `scripts/sovreuse/discover.py` says it reads committed files w
 reads the tree, a docstring the next landing on that module corrects. Receipt:
 `witness/observations/2026-09-07-compression-run-closing-observation.json`.
 
+## Concerns 2 and 3, held at one seam
+
+After this concern landed, the loop selected the next work from its own findings.
+
+- **Concern 2, an address below the file** (composition findings 2 and 8). `scripts/sovaddress.py`
+  resolves `path#fragment` to the bytes it means: a JSON pointer whose steps select a list
+  element by field, a top-level YAML block read by line shape, or a Markdown section. The
+  receipt grader, the diagram grader, clarity bases and this concern's settle layer digest
+  through it; a bare path keeps its meaning, and 113 committed addresses digest identically
+  either way. Two witness passes (`witness/sovaddress.md`): `WITNESSED` for the module and
+  its adoptions at `e835205`, landing withheld for one finding. The passes also found the
+  freeze reading its checks before its own commit, the second freeze-before-commit defect of
+  the day; it now commits first, judges scope before that and check-bound preconditions
+  after. Branch `feat/address-below-the-file`, PR #221.
+- **Concern 3, the tooling suite's cost.** The tooling-tests check crossed verify's
+  30-second catastrophic ceiling on the hosted runner at #220's `d2ecb7c` on a commit that
+  changed no code. The heaviest module re-ran the whole probe for each of ten readings of
+  one result; it now shares runs and drops a selfcheck subprocess verify already runs. 10 to
+  4 seconds here. Branch `feat/tooling-test-cost`, PR #223.
+
+Both are held at the same seam, and it is the seam finding 4 named: `CLAUDE.md` says 942
+commits, `main` sits at 967, the tolerance is 25, and the grant excludes the page. Every
+grant-scoped candidate fails the orientation snapshot by construction until #220 lands the
+count, and #220 is Bdo's to merge. The standing landing loop is stalled by a number in a
+governing document that the record derives. That is the highest-leverage unresolved fact
+this run leaves: not a missing capability, a page authoring what the repository measures.
+
 ## Standing changes
 
 - `custody:phase-1-5/discovery-and-reuse`: one `ITEM` member, `scripts/sov_reuse.py`, stage

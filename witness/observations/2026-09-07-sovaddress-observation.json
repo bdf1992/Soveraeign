@@ -1,0 +1,204 @@
+{
+  "case_id": "WITNESS-2026-09-07-SOVADDRESS-1",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07-sovaddress",
+  "artifact_revision": "a57d736c2a3df67d07ba38d0f2992e3dbee5d5c2",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "scripts/sovaddress.py at a57d736 (tree fff48b3, base aeecc60 = origin/main, branch feat/address-below-the-file, PR #221, candidate record .local/candidates/a57d736c2a3df67d07ba38d0f2992e3dbee5d5c2.json) and its adoption by scripts/sovwitness/{shape,records}.py, scripts/sov_diagrams.py, scripts/sov_clarity.py + scripts/sovclarity/digests.py, scripts/sovreuse/settle.py, plus the diagram scratch views moved to temp directories. Builder claims, as the commit states them: path#fragment resolves to bytes (JSON pointer with [key=value] selectors whose values may hold slashes, canonical JSON bytes; top-level YAML block by line shape; Markdown section to the next heading at its level or above; bare path = exact bytes; refusals FRAGMENT_UNSUPPORTED, FRAGMENT_MALFORMED, FRAGMENT_NOT_FOUND, SELECTOR_AMBIGUOUS); every existing whole-file address digests identically; a sibling change leaves a fragment digest unchanged; the four adoptions each have a test; the candidate record reads verify PASS and lint PASS",
+    "record": "witness/sovaddress.md",
+    "record_section": "Pass 1: commit a57d736 (2026-09-07)",
+    "prior_receipts": [],
+    "verdict": "REPRODUCED_WITH_DISSENT",
+    "verdict_scope": "REPRODUCED for the module: every fragment kind resolves to the bytes the docstring names, all four refusals fire by name, a sibling edit leaves a fragment digest unchanged while the member's own edit moves it, every committed whole-file address digests identically (113 of 113 present addresses) and the four readers' verdicts at a57d736 equal their verdicts at aeecc60. DISSENT from two claims: the sovwitness adoption has no test (mutants M5, M6, M7 survive every suite), and the frozen candidate does not pass verify.py on a clean clone (orientation snapshot: CLAUDE.md says 942 commits, the record holds 968, tolerance 25; base reads 967 and passes; the record's PASS was read before the commit existed). Record verdict RATIFIABLE-WITH-CONDITIONS; landing NOT_CONFIRMED",
+    "standing_supported": "WITNESSED",
+    "standing_binds": {
+      "subject": "sovaddress",
+      "field": "scripts/sovaddress.py (no custody member names it; concern custody:phase-1-5/discovery-and-reuse)",
+      "revision": "a57d736c2a3df67d07ba38d0f2992e3dbee5d5c2",
+      "claim": "scripts/sovaddress.py resolves path#fragment to the bytes it means for .json (pointer with selectors, canonical bytes), .yaml (top-level block by line shape) and .md (section to the next heading at its level or above), keeps a bare path as exact bytes, and refuses by one of four named codes",
+      "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-07-sovaddress, pass 1 at a57d736c2a3df67d07ba38d0f2992e3dbee5d5c2",
+      "not_supported": "WITNESSED is not supported for the candidate as a landable unit: verify fails at the frozen commit and the sovwitness adoption carries no defeating fixture"
+    },
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07-sovaddress",
+    "observer_independence_basis": "This participant did not write, edit, stage or commit any file of the change and read no builder report other than the commit message and the candidate record (which it treated as the claim, not as evidence). It froze the subject at a57d736 (git rev-parse HEAD before and after every command; git status --porcelain empty throughout until its own two deposits), cloned the repository into its scratch directory (full history, 968 commits, not shallow), checked out a57d736 there and added a worktree at aeecc60, ran verify.py, lint.py, the six named suites and run_tooling_tests.py twice in that clone, ran the four readers in both trees and diffed their output, recomputed every committed address digest both ways against a git-archive copy, drove 60 adversarial cases through the module and each adopter with its own probe, and ran nine mutants against the six suites. Every command's cwd was the clone, the worktree or the archive; nothing under the witnessed tree was executed with a writable side effect",
+    "observer_relation": "INDEPENDENT_OF_BUILDER",
+    "observed_at": "2026-09-07",
+    "observed_state_addresses": [
+      "scripts/sovaddress.py",
+      "scripts/sovwitness/records.py",
+      "scripts/sovwitness/shape.py",
+      "scripts/sov_diagrams.py",
+      "scripts/sov_clarity.py",
+      "scripts/sovclarity/digests.py",
+      "scripts/sovreuse/settle.py",
+      "scripts/tests/test_sovaddress.py",
+      "scripts/tests/test_sov_clarity.py",
+      "scripts/tests/test_sov_diagrams.py",
+      "scripts/tests/test_sov_reuse.py",
+      "scripts/tests/test_witness_record.py",
+      "scripts/tests/test_sov_witness_layer.py",
+      "scripts/sovland/isolation.py",
+      "scripts/sovland/candidates.py",
+      "scripts/sovsnapshot/claims.py",
+      "scripts/run_tooling_tests.py",
+      "CLAUDE.md",
+      "STATUS.yaml",
+      "contracts/participant-observation.schema.json",
+      "contracts/custodies/phase-1-5.json",
+      ".clarity/coverage.json",
+      "witness/README.md",
+      "diagrams/README.md",
+      "diagrams/authority-typing.md",
+      "diagrams/crossing-topology.md",
+      "diagrams/crossing-typology.md",
+      "diagrams/event-outcomes.md",
+      "diagrams/requirement-lifecycle.md",
+      "diagrams/service-map.md",
+      "diagrams/source-reader-recording.md",
+      "diagrams/standing-transition.md"
+    ],
+    "observed_state_digests": [
+      "sha256:a423a623ab48f90fa3bc78407f53a3a9bd3d7e76eb4ae92533aaf50572a3f2ad",
+      "sha256:c095366bfe793ac64fb9f6041d818c8f2df648e1a3127cecc30a4d3dec1b6919",
+      "sha256:081c195ec46423a2d3ab15762f6aab6e4928c82781db726d7fbc5bcf003b37dd",
+      "sha256:5b74ab2465f5d6241505a0712c6639a6dd2fcbac3a0e9594f7ae2cbf6b037b86",
+      "sha256:c179bd1d5694c497b61a280ecb44ef067803c1b69ae14fe390c0a0d6756dfbc5",
+      "sha256:eea9cc1497682ad2b9cf31782c4a41a4e90044534692c2b74760ea69cd0d0186",
+      "sha256:4598837df9c3ff3667f0dabbd61c6a79b8eb150611deea44669b8b6bbfffaaeb",
+      "sha256:115f1c72fa7ca9aa425deaeeae0a99af1daefd32cb20a62ffbfa6f00b3862985",
+      "sha256:225c7043e51daaccd3a2634170e351ca36efac5dba563aad75b3099e8ba5ed49",
+      "sha256:127845749bb08a113cc7219028a2d6f8f26c020df1392fb669ee16482f5041cd",
+      "sha256:253c134afa924141ddfa66ab2f5d289fd8bee7c3e14bcf647bd7b6357e8a54b2",
+      "sha256:e3466a6383e979e4ac94e2a4a3a74becf3cf054759632d9ad83c083f88e864b2",
+      "sha256:9715d03180e03bff46ffc541b8f1e710f8d415ac54b98a8f8063efd2270bf712",
+      "sha256:cd95ed31c3033fc2406e0be1858a926452da516fb21abf0788db1c2877d344ee",
+      "sha256:c274140a69a42afdd0ec87f386348eea4fb6f40219d88fd3aebf3e52fdc991f3",
+      "sha256:dc66c6f8dae11d94d53deeeb89a49c54d4e82c1fb2c01d691a105786927c062b",
+      "sha256:182540039f3206d65681cbb99928620a35dd200b4a14f2506119ef25fbf30871",
+      "sha256:de1d5ab3bea42df1812c313e4ec17a67678baaafcb0e27a340fcbdfe0b3aa4e1",
+      "sha256:9ddb4c4f974389b7a8539e3b2e0d3d7e0cb4a020356cb994fea3505210fad9ae",
+      "sha256:8292b477342d1b30cf3eaeacfbd05c6eacdf7c0abed228e2fc81a67ed8d05945",
+      "sha256:9b6041e9182f9bc4a969336f1ca5285ea86e66b220f64453c0297ccf08260602",
+      "sha256:1a35c6976745a78b41a89553a6e616763f260ccd120338b2d7a73da01fb9b30b",
+      "sha256:500c3c406ba8da336c25f8dd4de6d11f0f0662e481bc2e0377d698b6304cbc6b",
+      "sha256:11614c06e4d6d9686b49774e920b684fbb89ecde77a66206d1cc9262bffc7a85",
+      "sha256:77fd0c21db8ad8c2ac02b260f4043d1c8afa95136162e95f87993bed537e790c",
+      "sha256:3bb877b6c3f5ef6f3454aa1eee9ed220b8373057958d1f337d076f7b75e7d868",
+      "sha256:beae2c65732f439504e5792ec8352361cdb74e24fc7fc309dcff760ef4af4455",
+      "sha256:6d57fe0eece924c9eb616544f5f7fd21f21f6aab8241db2a1856e946a688e664",
+      "sha256:548d8c1154df0e96ed0ff39cea618732d181079b11642966ddac18d490fa948d",
+      "sha256:5fed62e00796a5f8ac1ffa1b20b83d025cac486f1fe33e9bc6030e5d9bff6693",
+      "sha256:3983e1eff208e7503b3b91cce31568a0c8c001340075e035a7b106116ac934c4",
+      "sha256:b88ef19f5ff4bbb470cb5bcc75444051f473fbb7ce32a09a62a6137048aab604"
+    ],
+    "fragment_digests_at_revision": {
+      "STATUS.yaml#owner_holds": "sha256:75fbabba57373be563eba16917d50063a449cf588480754d947389fded4cf373",
+      "contracts/custodies/phase-1-5.json#/custodies[custody_id=custody:phase-1-5/discovery-and-reuse]/members[address=scripts/sov_reuse.py]": "sha256:51807f497c5a9f5b08f21f9f013d0e9b326a1e5b46b09323d04014da8e1dd83c"
+    },
+    "commands": {
+      "tree": "git rev-parse HEAD -> a57d736c2a3df67d07ba38d0f2992e3dbee5d5c2 before and after every command; git status --porcelain -> empty until the deposits; git rev-parse a57d736^{tree} -> fff48b3ffcf575905d93c6ccddbe464cf38ded03; git show --stat a57d736 -> 11 files +530/-33, all named by the candidate record's changed_paths; git ls-remote origin -> feat/address-below-the-file at a57d736, main at aeecc60",
+      "clone": "git clone <repository root> <scratch>/clone; git rev-parse --is-shallow-repository -> false; git checkout a57d736; git worktree add <scratch>/base aeecc60; git archive a57d736 | tar -x -C <scratch>/arch; sha256 of arch/scripts/sovaddress.py equals the tree's",
+      "verify_candidate": "SOV_PRINCIPAL=principal:claude-fable-5-1 python scripts/verify.py (clone, a57d736) -> exit 1; the one failing check is orientation snapshot: 'FAIL commits: page says 942, record holds 968 (tolerance 25)'; COST 52 checks in 23.760s wall; 13 checks over ceiling, attributed debt; every other check PASS, identical to base except the counts 111->112 tooling modules, 1204->1207 text files",
+      "verify_base": "python scripts/verify.py (worktree, aeecc60) -> exit 0; 'PASS: 10 of 10 snapshot claim(s) match the record'; git rev-list --count aeecc60 -> 967, a57d736 -> 968; tolerance rule scripts/sovsnapshot/claims.py:205 (tolerance=25) and grading.py:76 (abs(actual - stated) > tolerance)",
+      "lint": "python scripts/lint.py (clone, a57d736) -> exit 0; PASS: repository hygiene (1207 text files, 565 Python modules, 10 named debt); WARN pre-existing: STATUS.yaml key ticket_kind_vocabulary_status declared 2 times",
+      "suites": "python -m unittest scripts.tests.<m> in the clone: test_sovaddress 14 OK exit 0; test_sov_witness_layer 66 OK exit 0; test_witness_record 14 OK exit 0; test_sov_diagrams 16 OK exit 0; test_sov_reuse 15 OK exit 0; test_sov_clarity -> exit 1 ModuleNotFoundError sovclarity without PYTHONPATH (identical at aeecc60), with PYTHONPATH=scripts 7 OK exit 0 (6 at base); the new BasisAddresses test runs and passes under -m unittest",
+      "tooling": "python scripts/run_tooling_tests.py twice in the clone -> exit 0, exit 0; 'PASS: repository tooling tests (112 modules, 4 shards)'; 16.99s and 16.97s wall; git status --porcelain empty and diagrams/ holds only its .md files afterwards",
+      "equivalence": "at both trees, SOV_PRINCIPAL set: sov_witness_layer.py records -> exit 0 both, output identical (12 receipts graded, 0 unusable, 12 STALE_SUBJECT, same recomputed counts); sov_diagrams.py -> exit 0 both, identical (8 CURRENT); sov_clarity.py check -> exit 0 both, identical ('clarity scope and receipts are well-formed and current'); sov_reuse.py run --principal principal:claude-fable-5-1 -> exit 1 both, same two failing predicates P15-Q3.1 and P15-Q3.2 and the same eight drifted addresses; differences are only the host session id, the lease id, the projection urn and the branch name in the inventory",
+      "digest_equivalence": "in the archive: every address named by witness/observations/*.json observed_state_addresses, .clarity/coverage.json basis paths and diagrams/*.md source lines (114 unique) -> sovaddress.digest equals sha256 of read_bytes for 113; 1 address is absent from the tree (pre-existing); 0 differ; 0 committed addresses contain '#'; 0 tracked file names contain '#'",
+      "adversarial": "probe_adversarial.py against the archive, cwd arch, temp root: sibling member edited + custody appended -> CURRENT; member edited -> STALE_SUBJECT; fragment gone -> STALE_SUBJECT 'gone from the tree (FRAGMENT_NOT_FOUND...)'; 'c.json#custodies' -> INVALID FRAGMENT_MALFORMED; 'p.py#x' -> INVALID FRAGMENT_UNSUPPORTED; '../c.json#/custodies' -> INVALID not canonical; '/etc/hostname#/x' -> INVALID not repository-relative; 'c.json#/../../etc/passwd' -> STALE_SUBJECT FRAGMENT_NOT_FOUND (a pointer key, no filesystem read); ':' inside a fragment admitted, in the path half refused; selector value with '/' resolves; with ']' -> FRAGMENT_MALFORMED; YAML key twice -> SELECTOR_AMBIGUOUS (also live STATUS.yaml#ticket_kind_vocabulary_status); '## A ##' addressed as 'A'; heading 'C#' unreachable by its text, reachable as 'C'; a '# ...' line inside a fenced block ends a section; CRLF YAML block b -> b'b:\\r\\n  - x\\r' and CRLF md section -> b'## S\\r\\n\\r\\nbody\\r\\n\\r' (bytes verbatim, LF and CRLF digest differently); non-UTF-8 .md with a fragment -> UnicodeDecodeError escapes sovaddress, clarity basis_digest, settle.current_state and sov_diagrams.source_digest; records.grade reads it INVALID; '[nope=None]' selects elements lacking the key; diagram view on STATUS.yaml#owner_holds -> CURRENT, on #no_such -> INVALID 'does not resolve'",
+      "mutants": "nine copies of the archive, six suites each (PYTHONPATH=scripts): M1 _steps without bracket depth -> caught (test_sovaddress, test_sov_diagrams); M2 no trailing blank/comment trim -> caught (test_sovaddress); M3 YAML duplicate key silent -> survives; M4 HEADING without trailing-# strip -> survives; M5 records.py FRAGMENT_NOT_FOUND read as INVALID -> survives; M6 shape.resolve_address without split -> survives; M7 records.py digests the whole file ignoring the fragment -> survives; M8 settle NOT_FOUND into drifted -> caught (test_sov_reuse); M9 clarity basis_digest whole file -> caught (test_sov_clarity); control -> all six pass",
+      "sizes": "every touched file at a57d736: lines <= 295 (sov_clarity.py 295), max line length <= 100 (sovclarity/digests.py 100), no CRLF",
+      "record_lookups": "git ls-tree a57d736 reports/ | grep 2026-09-07 -> nothing; git log --all -- reports/2026-09-07-discovery-and-reuse-slice.md -> 6be70fb, 77421de, d71f153 on origin/claude/sovereign-phase-1-5-5uzffu only; git diff --stat aeecc60...origin/claude/sovereign-phase-1-5-5uzffu -- <candidate files> -> CLAUDE.md (942/31 -> 970/32), scripts/sov_diagrams.py, scripts/tests/test_sov_diagrams.py; git merge-tree --write-tree a57d736 origin/claude/sovereign-phase-1-5-5uzffu -> d870be9 clean; git grep -l sys.path.insert -- scripts/*.py -> 166 files at base, 168 at candidate",
+      "after_writing": "recorded in telemetry.after_writing"
+    },
+    "predicate_results": {
+      "bare_path_keeps_its_meaning": {
+        "held": true,
+        "detail": "113 of 113 present committed addresses digest identically both ways; four readers' verdicts identical at base and candidate"
+      },
+      "json_pointer_with_selectors_resolves_to_canonical_bytes": {
+        "held": true,
+        "detail": "member note -> b'\"one\"'; selector value custody:phase/a resolves; key order and indentation do not move the digest; live custody member reads b'\"VERTICAL_SLICE\"'"
+      },
+      "yaml_block_by_line_shape": {
+        "held": true,
+        "detail": "block runs to the line before the next top-level key, trailing blank and column-zero comment lines trimmed; last key runs to the end; keys outside [A-Za-z_][A-Za-z0-9_-]* are neither addressable nor terminators (F7)"
+      },
+      "markdown_section_to_next_heading_at_level_or_above": {
+        "held": true,
+        "detail": "'## Pass 2' carries its '### Detail'; '## Pass 1' stops before EOF; trailing-# marks stripped (F7)"
+      },
+      "refusals_name_themselves": {
+        "held": true,
+        "detail": "FRAGMENT_UNSUPPORTED, FRAGMENT_MALFORMED, FRAGMENT_NOT_FOUND, SELECTOR_AMBIGUOUS each observed with the code in AddressError.code"
+      },
+      "sibling_change_leaves_fragment_digest_alone": {
+        "held": true,
+        "detail": "receipt on c.json#/custodies[...]/members[address=x.py] reads CURRENT after a sibling member edit and an appended custody; STALE_SUBJECT after the member's own edit"
+      },
+      "fragment_not_found_reads_moved_in_receipt_grader": {
+        "held": true,
+        "detail": "STALE_SUBJECT with 'gone from the tree (FRAGMENT_NOT_FOUND: ...)'; no fixture in the tree pins it (F2, M5)"
+      },
+      "unreadable_fragment_reads_invalid_in_receipt_grader": {
+        "held": true,
+        "detail": "FRAGMENT_MALFORMED and FRAGMENT_UNSUPPORTED both read INVALID; non-UTF-8 read INVALID via the ValueError branch; no fixture pins it (F2)"
+      },
+      "path_containment_applies_to_path_half_only": {
+        "held": true,
+        "detail": "'..' and absolute paths before '#' refused; ':' and '..' after '#' are fragment text and touch no file; no fixture pins it (F2, M6)"
+      },
+      "four_adoptions_each_have_a_test": {
+        "held": false,
+        "detail": "diagrams, clarity and reuse have one each (M1/M9/M8 caught); sovwitness has none: no test in test_witness_record.py or test_sov_witness_layer.py names a fragment, and M5, M6, M7 survive"
+      },
+      "diagram_scratch_views_outside_diagrams": {
+        "held": true,
+        "detail": "Grading and Stamping setUp use tempfile; selfcheck writes selfcheck-view.md under a TemporaryDirectory; a case pins is_relative_to(diagrams) False; diagrams/ unchanged after tooling runs"
+      },
+      "verify_passes_on_clean_clone_at_candidate": {
+        "held": false,
+        "detail": "exit 1: orientation snapshot, commits 968 vs page 942, tolerance 25; base 967 passes; the candidate record's verify PASS was measured before the commit (scripts/sovland/candidates.py commits after gathering checks)"
+      },
+      "lint_passes_on_clean_clone_at_candidate": {
+        "held": true,
+        "detail": "exit 0"
+      },
+      "named_suites_pass": {
+        "held": true,
+        "detail": "five pass as modules; test_sov_clarity needs PYTHONPATH=scripts, identically at aeecc60"
+      },
+      "tooling_tests_pass_twice": {
+        "held": true,
+        "detail": "exit 0, exit 0; 112 modules"
+      },
+      "module_size_and_line_length": {
+        "held": true,
+        "detail": "all touched files <= 300 lines and <= 100 characters"
+      },
+      "docstring_citation_resolves_at_revision": {
+        "held": false,
+        "detail": "reports/2026-09-07-discovery-and-reuse-slice.md is not in the tree at a57d736 or on main; it lives on origin/claude/sovereign-phase-1-5-5uzffu"
+      },
+      "existing_address_with_hash_reinterpreted": {
+        "held": true,
+        "detail": "none: 0 committed addresses and 0 tracked file names contain '#'"
+      },
+      "non_utf8_fragment_refuses_by_name": {
+        "held": false,
+        "detail": "UnicodeDecodeError escapes sovaddress.resolve_bytes for .yaml/.md; clarity, settle and diagrams do not catch it (F6); records.py does"
+      },
+      "mutants_caught": {
+        "held": false,
+        "detail": "4 of 9 caught (M1, M2, M8, M9); M3, M4 are module behaviours without fixtures; M5, M6, M7 are the untested sovwitness adoption"
+      }
+    },
+    "standing_note": "This is an observation. It supports WITNESSED for scripts/sovaddress.py's resolution and refusal semantics at a57d736 and declares that in the record's block. It does not confirm the candidate for landing (.local/observations/2026-09-07-sovaddress-landing.json reads NOT_CONFIRMED), supports no standing for the sovwitness adoption until a fixture defeats M5-M7, and ratifies nothing."
+  },
+  "telemetry": {
+    "probe_location": "no probe file committed; probe_adversarial.py and mutants.sh ran from the witness's scratch directory against a git-archive copy of a57d736; every other reading came through scripts/verify.py, scripts/lint.py, unittest, run_tooling_tests.py, the four readers' CLIs and git",
+    "tree_state": "git status --porcelain empty before and after every command until the three deposits (witness/sovaddress.md, this receipt, gitignored .local/observations/2026-09-07-sovaddress-landing.json); HEAD a57d736c2a3df67d07ba38d0f2992e3dbee5d5c2 throughout",
+    "after_writing": "filled by the witness record's Verified section: sov_witness_layer.py records, sov_clarity.py check and lint.py rerun over the tree with the deposits present",
+    "host_note": "The CLAUDE.md the host presented to this witness at launch reads '970 commits ... 32 reports'; the bytes at a57d736 and in the working tree read '942 commits ... 31 reports'. The 970/32 wording is the sibling branch's (origin/claude/sovereign-phase-1-5-5uzffu). Recorded as T6 evidence; the tree itself did not move."
+  }
+}

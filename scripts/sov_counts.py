@@ -5,10 +5,14 @@
 went stale inside a day and every launched agent reads it as current
 (`LESSONS.md` L-0001). The same failure is not confined to that page. When this
 check was first run, `CLAUDE.md` was the only file in the repository whose counts
-were graded, and it was correct; eight numbers elsewhere had drifted, four of them
-in documents that govern - a product requirement in `PRD.md`, an owner-accepted
-ratio in `GROUND.md`, a service's own legal-transition count, and the harness
-count in the file that describes the harness.
+were graded, and it was correct; nine numbers elsewhere had drifted, across eight
+files, four of them in root governing documents - two in `PRD.md`, an
+owner-accepted ratio in `GROUND.md`, a skill population in `ROADMAP.md`, and
+beyond those a service's own legal-transition count, the harness count in the
+file that describes the harness, and the command index's count of itself, which
+was short by twenty-three of the entrypoints it exists to make reachable. A
+tenth was found by a clarity review rather than by this check, because its
+total sits in a table column away from the noun it counts.
 
 The generalisation is a contract rather than more patterns.
 `contracts/counted-populations.json` declares a population, how to count it, and
@@ -96,8 +100,17 @@ def cmd_check(_args=None) -> int:
         return 1
 
     graded = len([f for f in findings if f.kind == grading.MATCH])
+    dormant = sorted(set(values) - {claim.population for claim in claims})
+    if dormant:
+        # A population that binds nothing derives a number, agrees with no prose,
+        # and cannot disagree with any. Counting it as coverage is how a reader
+        # reads a check as broader than it is; an independent witness found one
+        # here whose number was already owned by `sov_snapshot.py`.
+        print(f"NOT CHECKED: {len(dormant)} declared population(s) bind no claim in "
+              f"current prose, so they grade nothing today: {', '.join(dormant)}")
     print(f"PASS: {graded} stated count(s) match the record, across "
-          f"{len(values)} declared population(s)")
+          f"{len(values) - len(dormant)} population(s) that bind prose "
+          f"({len(values)} declared)")
     return 0
 
 

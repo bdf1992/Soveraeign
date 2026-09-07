@@ -111,18 +111,6 @@
       "reason": "'reports' is an ordinary English plural and an illustration in a skill used it for a fictional organisation's dashboards. Scoped to the one page that counts the directory."
     },
     {
-      "id": "verification-checks",
-      "counts": "checks in the table scripts/verify.py runs",
-      "derivation": {
-        "kind": "python_length",
-        "module": "sovverify.checks",
-        "name": "CHECKS"
-      },
-      "anchors": [
-        "verification checks"
-      ]
-    },
-    {
       "id": "declared-operations",
       "counts": "operations declared across every service manifest",
       "derivation": {
@@ -207,7 +195,9 @@
     "Counts inside frozen_paths, which are dated observations rather than current claims.",
     "Wall-clock timings, percentages, version numbers, and identifiers that happen to be numeric.",
     "Whether a graded claim means what its sentence means. This reads a number and a noun; it does not read the clause around them. The subset guard above is the whole defence against that, and it is a word list.",
-    "A total stated away from its noun. PRD.md carries `5 of 140` in a table whose noun is in the header column, so nothing on the line says what 140 counts. It was stale, and a clarity review found it rather than this check. A line-local reader cannot bind it, and inventing a rule for table columns would grade whatever else happens to sit in one."
+    "A total stated away from its noun. PRD.md carries `5 of 140` in a table whose noun is in the header column, so nothing on the line says what 140 counts. It was stale, and a clarity review found it rather than this check. A line-local reader cannot bind it, and inventing a rule for table columns would grade whatever else happens to sit in one.",
+    "A historical exemption keyed on (path, anchor, stated value) covers any live claim in the same file that states the same number about the same population. A witness planted 'the repository holds 17 decision records' in LESSONS.md against a record of 90 and it was reported HISTORICAL, citing L-0001's reason. It is printed rather than silent, so a reader of the output sees it, but the reason shown is the wrong one. Line numbers were rejected as a key because they drift onto whatever is edited into their place; this is the symmetric hole in what was chosen instead, and it is recorded rather than papered over.",
+    "Prose and manifests that are not committed. File populations count what the commit at HEAD holds, so an untracked document with a wrong count is not graded, and a service whose manifest is not yet committed brings no population. `git add` makes both visible. That is the referent Bdo ruled on in acceptance packet A5 and the cost of it belongs here rather than in a surprise."
   ],
   "subset_qualifiers": {
     "words": [
@@ -222,10 +212,9 @@
       "last",
       "of its",
       "of these",
-      "of those",
-      "of the"
+      "of those"
     ],
-    "reason": "A number preceded by one of these counts part of a population, not the population. 'The other fifteen declared operations' is a correct sentence about a subset of seventeen, and grading it against the manifest total would report correct prose as drift. The guard is a declared list and can go short; a claim it misses is graded and may be reported wrongly, which is why the list lives here where it can be read and extended rather than inside the checker."
+    "reason": "A number preceded by one of these counts part of a population, not the population. 'The other fifteen declared operations' is a correct sentence about a subset of seventeen, and grading it against the manifest total would report correct prose as drift. `of the` was in this list and was removed: measured, it suppressed three sentences that state a manifest total exactly and would grade MATCH (services/gateway/SERVICE-SPEC.md, services/host/SRD.md, services/observation/CHARTER.md), while preventing no false drift at all - the one genuine subset it also covered is caught by `other`. An independent witness measured that; the list had been written from what a reader guessed rather than from what the corpus does. The guard can still go short, and a claim it misses is graded and may be reported wrongly, which is why it lives here where it can be read and extended."
   },
   "historical_claims": {
     "reason": "A live document may state what the record held on a past date. That number is correct and must not be repaired. Each exemption pins the stated value, so editing the sentence stops the exemption matching and the claim is graded again; a line number would drift and silently exempt whatever moved into its place.",
@@ -314,5 +303,12 @@
     ],
     "affects": "debt reporting only, never grading",
     "reason": "The candidate pattern looks for a number followed by a word ending in s, because the point of that half is to find populations nobody declared and a tighter pattern would go short by whatever nobody listed. The cost is that English verbs end in s too: 'four exists', 'nine owns', and 47 counts of 'is' crowded out the fifteen real ones. This list suppresses them in the report. Its failure mode is one-directional and benign - a word missing here adds noise to a list that fails nothing, and a word wrongly here hides a candidate from a report rather than from a grade."
-  }
+  },
+  "owned_elsewhere": [
+    {
+      "population": "verification checks",
+      "owner": "scripts/sov_snapshot.py",
+      "reason": "CLAUDE.md writes 'runs 54 checks', which no anchor here matched, so this population was declared, derived 54, and bound not one claim - coverage that a reader would have read off the population count. `sov_snapshot.py` already grades that number on the one page that states it, with a pattern written for that page. Declaring it here would be a second grader for one number; an independent witness found the dead population and this is the repair."
+    }
+  ]
 }

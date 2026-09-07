@@ -11,7 +11,8 @@ take as current is still true of the repository.
 commits and 17 decision records against a record holding 65 and 27, having drifted
 inside one day. `counted populations` is the generalisation of that check past the
 one page it was written for, and it was built because that check was green while
-eight numbers elsewhere had drifted, four of them in governing documents.
+nine numbers elsewhere had drifted, across eight files, four of them in root
+governing documents.
 `recorded traps` inverts the same idea: it fails when a recorded hazard stops
 being true, so a warning cannot outlive what it warns about.
 
@@ -49,8 +50,8 @@ STALENESS_CHECKS = (
           "computes for the rest - and searches prose for the wording claiming each, so a "
           "number is graded wherever written rather than only where a pattern was authored; "
           "it reads no page's claim to be current. The generalisation of `orientation "
-          "snapshot`, built because that check was green while eight numbers elsewhere had "
-          "drifted, four in governing documents. Every run prints the count-shaped "
+          "snapshot`, built because that check was green while nine numbers elsewhere had "
+          "drifted, four in root governing documents. Every run prints the count-shaped "
           "sentences no population declares, so coverage is a list rather than silence",
           ("contracts/counted-populations.json", "scripts/sov_counts.py",
            "scripts/sovcounts", "scripts/sovverify/checks.py")),

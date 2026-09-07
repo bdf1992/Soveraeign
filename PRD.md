@@ -505,7 +505,7 @@ operator surface and only its continuity path is built.
   through its declared surface but yet to observe any run, and `AI-NATIVE.md`
   check 3 still reads `UNATTESTABLE` on every service assessment.
 - Composition depends on Gateway, Identity and Authority crossings; four of the
-  ten service boundaries are declared with no implementation.
+  ten service boundaries have no operation built.
 - Skills depend on a skill contract that does not exist. The `.claude/` harness
   skills are host plumbing holding no standing and are not the product's skills.
 - `ENGINEERING.md` owns the growth triggers deciding when HTTP, queues,

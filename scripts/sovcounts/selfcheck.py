@@ -4,13 +4,24 @@ A drift checker that has silently stopped matching anything reports a clean
 repository. So `check` refuses to report a verdict until this has run, and this
 refuses to report success having exercised nothing.
 
-Three things are proven here, and they are different things. That the grader
+Four things are proven here, and they are different things. That the grader
 returns DRIFT for a disagreement and MATCH for an agreement is arithmetic, and
 cheap. That an exemption stops applying when its stated value moves is the
 property that keeps a historical exemption from covering whatever is edited into
 its place. That every declared population still derives against this repository
 is the one that catches the real decay: a population whose glob stops matching
 answers zero, agrees with nothing, and turns the whole check into a green light.
+That an anchor binds a number written beside it proves the scanner still reaches
+prose at all.
+
+What none of that proves, stated because an independent witness read the
+paragraph above as a stronger promise than the code keeps: that any particular
+population binds any real sentence. Deriving is not binding. A population can
+count correctly and match no wording anyone writes, and one did - its number was
+already owned by `sov_snapshot.py`. That is not failed here, because a population
+may honestly be declared before the prose that states it; `check` prints which
+populations bind nothing on every run instead, so the count of declared
+populations is never read as the reach of the check.
 """
 
 from __future__ import annotations
@@ -71,6 +82,36 @@ def _exemption_cases() -> list[str]:
     return failures
 
 
+def _binding_cases() -> list[str]:
+    """A declared anchor must turn a number in text into a graded claim.
+
+    Controlled text, controlled population, so this says nothing about the
+    repository and everything about whether the scanner still reaches prose. A
+    scanner that has stopped matching reports every page as clean.
+    """
+    from sovcounts import scan
+    population = pops.Population(id="p", counts="things",
+                                 derivation={"kind": "files", "glob": "x"},
+                                 anchors=("widgets",))
+    found, _ = scan.scan(pops.ROOT, [], [population], ())
+    failures = []
+    claims: list = []
+    candidates: list = []
+    scan._read_line("X.md", 1, "The node ships twenty-three widgets today.",
+                    scan._anchors([population]), (), claims, candidates)
+    if [(c.stated, c.population) for c in claims] != [(23, "p")]:
+        failures.append("a declared anchor did not bind the number written beside it, "
+                        f"so the scanner reaches no prose: {claims}")
+    claims.clear()
+    scan._read_line("X.md", 1, "The node ships twenty-three sprockets today.",
+                    scan._anchors([population]), (), claims, candidates)
+    if claims:
+        failures.append("an undeclared noun was bound as a claim")
+    if found:
+        failures.append("scanning no files produced claims")
+    return failures
+
+
 def _population_cases() -> list[str]:
     """Every declared population must derive here, and none may answer zero.
 
@@ -100,8 +141,9 @@ def _population_cases() -> list[str]:
 
 def run() -> int:
     """Every case, reported together rather than at the first failure."""
-    failures = _grader_cases() + _exemption_cases() + _population_cases()
-    exercised = 7
+    failures = (_grader_cases() + _exemption_cases() + _binding_cases()
+                + _population_cases())
+    exercised = 10
     for failure in failures:
         print(f"SELFCHECK FAIL: {failure}")
     if failures:

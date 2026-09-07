@@ -105,7 +105,7 @@ class CitationGate(JournalCase):
                     cited_entries=["entry_not_there"])
         defects, _ = self.grade()
         self.assertEqual(len(defects), 3, defects)
-        self.assertTrue(any("holds no export for that node" in item for item in defects))
+        self.assertTrue(any("is no export under nodes/" in item for item in defects))
         self.assertTrue(any("is not an entry in" in item for item in defects))
         self.assertTrue(any("had not recorded at its cited head" in item for item in defects))
 
@@ -133,7 +133,7 @@ class CitationGate(JournalCase):
     def test_a_report_keeps_its_citation_when_the_node_records_more(self) -> None:
         """The state a report read stays an ancestor; only the file naming it moves."""
         first = json.loads(self.exported["path"].read_text(encoding="utf-8"))
-        self.report("earlier", journal={"address": self.address(),
+        self.report("earlier", journal={"address": self.address(), "node": "node:local",
                                         "head": self.exported["head"],
                                         "entries": first["entry_count"]},
                     cited_entries=[first["entries"][0]["entry_id"]])
@@ -148,7 +148,7 @@ class CitationGate(JournalCase):
         later = self.advanced()
         document = json.loads(Path(later["path"]).read_text(encoding="utf-8"))
         after = document["entries"][first["entry_count"]]["entry_id"]
-        self.report("ahead", journal={"address": self.address(),
+        self.report("ahead", journal={"address": self.address(), "node": "node:local",
                                       "head": self.exported["head"],
                                       "entries": first["entry_count"]},
                     cited_entries=[after])
@@ -158,12 +158,76 @@ class CitationGate(JournalCase):
 
     def test_an_earlier_citation_must_still_state_its_own_position(self) -> None:
         first = json.loads(self.exported["path"].read_text(encoding="utf-8"))
-        self.report("miscounted", journal={"address": self.address(),
+        self.report("miscounted", journal={"address": self.address(), "node": "node:local",
                                            "head": self.exported["head"],
                                            "entries": first["entry_count"] + 1})
         self.advanced()
         defects, _ = self.grade()
         self.assertTrue(any("its head is entry" in item for item in defects), defects)
+
+    def test_a_stale_address_must_name_its_node_or_it_is_a_defect(self) -> None:
+        """The address stays measured: a deleted file is not silently resolved away."""
+        first = json.loads(self.exported["path"].read_text(encoding="utf-8"))
+        self.report("orphan", journal={"address": self.address(),
+                                       "head": self.exported["head"],
+                                       "entries": first["entry_count"]})
+        self.advanced()
+        defects, _ = self.grade()
+        self.assertTrue(any("which is no export under nodes/" in item for item in defects),
+                        defects)
+
+    def test_naming_the_node_resolves_a_stale_address(self) -> None:
+        first = json.loads(self.exported["path"].read_text(encoding="utf-8"))
+        self.report("named", journal={"address": self.address(), "node": "node:local",
+                                      "head": self.exported["head"],
+                                      "entries": first["entry_count"]},
+                    cited_entries=[first["entries"][0]["entry_id"]])
+        self.advanced()
+        defects, _ = self.grade()
+        self.assertEqual(defects, [], defects)
+
+    def test_a_named_node_with_no_export_is_a_defect(self) -> None:
+        self.report("elsewhere", journal={"address": "nodes/node-gone/journal/x.json",
+                                          "node": "node:gone", "head": "x"})
+        defects, _ = self.grade()
+        self.assertTrue(any("has no export under nodes/" in item for item in defects), defects)
+
+    def test_a_citation_may_not_understate_its_position(self) -> None:
+        """Fewer entries than the head's position is as wrong as more."""
+        first = json.loads(self.exported["path"].read_text(encoding="utf-8"))
+        self.report("under", journal={"address": self.address(), "node": "node:local",
+                                      "head": self.exported["head"],
+                                      "entries": first["entry_count"] - 1})
+        defects, _ = self.grade()
+        self.assertTrue(any("its head is entry" in item for item in defects), defects)
+
+    def test_an_export_filename_must_be_the_whole_head_prefix(self) -> None:
+        """A shorter filename is a prefix of the head and must not pass as its name."""
+        shortened = self.exported["path"].with_name(self.exported["head"][:6] + ".json")
+        self.exported["path"].rename(shortened)
+        defects, _ = self.grade()
+        self.assertTrue(any("filename says" in item for item in defects), defects)
+
+    def grant_id(self) -> str:
+        document = json.loads(self.exported["path"].read_text(encoding="utf-8"))
+        return next(entry["payload"]["grant_id"] for entry in document["entries"]
+                    if isinstance(entry.get("payload"), dict)
+                    and entry["payload"].get("grant_id"))
+
+    def test_a_report_may_name_a_grant_the_node_recorded(self) -> None:
+        """The positive half: grants are ids the node holds, not only entry ids."""
+        self.report("grant", journal={"address": self.address(),
+                                      "head": self.exported["head"]},
+                    office_act={"grants": [{"grant_id": self.grant_id()}]})
+        defects, _ = self.grade()
+        self.assertEqual(defects, [], defects)
+
+    def test_a_fabricated_grant_id_is_refused(self) -> None:
+        self.report("fake", journal={"address": self.address(),
+                                     "head": self.exported["head"]},
+                    office_act={"grants": [{"grant_id": "grant_never_recorded_0000"}]})
+        defects, _ = self.grade()
+        self.assertTrue(any("grant_never_recorded_0000" in item for item in defects), defects)
 
     def test_a_node_has_one_head(self) -> None:
         second = self.exported["path"].with_name("aaaaaaaaaaaa.json")

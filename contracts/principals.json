@@ -70,6 +70,23 @@
       "revoked": null
     },
     {
+      "principal_id": "principal:claude-fable-5-1",
+      "kind": "MODEL",
+      "durability": "DURABLE",
+      "controller": "principal:bdo",
+      "anchor": {"kind": "model-binding", "reference": "reports/2026-09-06-fresh-participation-slice.md (the serving model recorded by the host session); BYOM.md (declared, no adapter)"},
+      "crossing_class": "provider-boundary",
+      "model": {"model_id": "claude", "model_version": "fable-5-1", "lineage": "principal:claude-fable-5"},
+      "delegation": null,
+      "claim": {
+        "claimed_at": "2026-09-06T00:00:00Z",
+        "claim_basis": "the model the host reports serving this node's interactive sessions since 2026-09-06; named by Bdo's direction in session_014F32VV3yNJqQMCZiCDjunn so a fresh session can declare the principal it actually runs as",
+        "verification": "UNVERIFIED"
+      },
+      "verification_channel": {"kind": "local-file", "reference": ".local/challenges/ (gitignored runtime state)"},
+      "revoked": null
+    },
+    {
       "principal_id": "principal:qwen3-4b",
       "kind": "MODEL",
       "durability": "DURABLE",

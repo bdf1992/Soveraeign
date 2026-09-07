@@ -3,8 +3,150 @@
 ```witness
 standing_supported  BUILT -> WITNESSED (citation-gate repair; the recorded act and reading as journal facts)
 subject             office-act-and-citation
-revision            d03772afac294084c62d2ed68f20d0c90d768d13
-pass                3
+revision            8ef29e12e4213c3f67516bb428688186cee35b71
+pass                4
+```
+
+## Pass 4: commit 8ef29e1 (2026-09-07)
+
+**Verdict: RATIFIABLE.** Every finding raised across four passes is closed. H5 turned
+out to name a compression rather than a patch: `node` and `head` already determine the
+address, so one equality replaced three comparisons and reached H3, H4 and H5 at once —
+and writing its failing case is what exposed that H4 had never been closed at all. That
+is the loop working. One residual is recorded and I am not holding the change for it.
+
+- **Commit witnessed:** `8ef29e12e4213c3f67516bb428688186cee35b71`, HEAD of
+  `claude/sovereign-phase-1-5-5uzffu` after the force-push; tree
+  `02d4247d7bfce83d304446c5bb9cc1a7003c1710`; base `b1448eeb458afa4a8c60b57c1cb46906246af7f7`.
+- **Working tree witnessed against:** the worktree at `8ef29e1`, porcelain empty before
+  every measurement and holding only this pass's deposits after. Measurements ran in a
+  clean full-history clone at the same commit; the clone was returned to `8ef29e1` with
+  empty porcelain after the merge probe described below.
+- **Observed:** 2026-09-07T20:05Z (UTC).
+- **Receipt:** `witness/observations/2026-09-07-office-act-and-citation-observation-4.json`.
+- **Landing record:** `.local/observations/2026-09-07-office-act-and-citation-landing-4.json`.
+- **Absorbing these deposits:** they stale `docs/documentation.html` and nothing else.
+
+### The rebase
+
+**Linear, and I checked it with the repository's own instrument as well as by hand.**
+Five commits, one parent each, on `b1448ee`; no merge commits in the range.
+`sov_ci_subject.py candidate` emits `construction_history: LINEAR`,
+`construction_commits: 5`, `base_is_ancestor: true`, `candidate_tree: 02d4247` — the same
+tree I froze.
+
+**Blob identity, wider than you asked.** Rather than the four named files I diffed whole
+trees. Each rebased commit differs from its pre-rebase original in exactly three paths:
+`.clarity/coverage.json` and `ROADMAP.md`, which the trunk brought, and
+`docs/documentation.html`, which is generated. Every other blob in all five trees is
+byte-identical — `a13b888→7918314`, `d56fff5→a6f7c42`, `575d65f→4b978aa`,
+`d03772a→bce972d`, `e6ee165→8ef29e1`.
+
+**My receipts replayed.** Each earlier receipt's declared digests, recomputed against the
+blobs of its rebased counterpart: 13 of 13 for pass 1, 10 of 11 for pass 2, 11 of 12 for
+pass 3. The only two misses are `docs/documentation.html` in each. So 34 of 36 digests
+replay exactly and the code readings of passes 1 to 3 carry to this history. My three
+receipts and this record survived the rebase byte-identical, which I confirmed by digest.
+
+**The rule.** Your correction is right by the contract's own words and not only by the
+gate that refused you: `contracts/repository-candidate-lifecycle.json` has
+`rewrite_policy.mutable_allowed` containing `rebase-onto-current-target` and
+`rewrite_policy.frozen_forbidden` containing `rebase`. The prohibition attaches to a
+FROZEN candidate; this carrier was MUTABLE. The instinct that produced the merge — that
+my receipts bind to SHAs and a rebase orphans them — was a real cost correctly
+identified and weighed against the wrong rule.
+
+**The gate, checked both ways rather than taken.** On the linear branch
+`sov_ci_subject.py candidate` exits 0 with a receipt. On a merge commit I built myself —
+a side commit off `b1448ee` merged into the candidate with `--no-ff` — it exits 2 with
+`REFUSED: CANDIDATE_HISTORY_NONLINEAR` naming that commit.
+
+**What the rebase cost.** The SHA binding and nothing else. All 33 witness receipts in
+the tree now read `STALE` against their subjects, mine included, because every subject
+SHA moved; `sov_witness_layer` grades that as record ageing rather than failure, which is
+the right grade. Had these been FROZEN the rebase would have been forbidden, and the move
+would have been `SUPERSEDED` and a fresh freeze.
+
+### Dispositions, re-derived
+
+**H1 closed.** The T3 case now declares `node:loc` against `node:local` with an address
+otherwise exactly right, so nothing but the node comparison can refuse it, and the
+mutant reading the declared node as contained in the real one dies on it.
+
+**H2 closed.** The comparison the pass-3 commit called unreachable is reached by a
+shipped case now, and my two-node case still passes unmutated against these bytes.
+
+**H3 closed.** The suffix mutant dies on two cases.
+
+**H4 closed, and it had not been closed before.** A declared node is checked whether or
+not the address is live. A report naming the current export while declaring `node:gone`
+is refused. That early return carried this open from pass 2 through pass 3 and is gone.
+
+**H5 closed, and it was the right compression.** One equality against
+`<node dir>/<head[:12]>.json` refuses an invented parent, another node's directory, a
+missing address and an invented filename — all on one line. The compression is sound
+because `node` and `head` genuinely determine the address: one directory per node, each
+export named by the head it replays to. A citation of an earlier head still passes when
+its address names *that* head, which is what keeps a superseded citation readable.
+
+**G1 and G2 not regressed.** `entries` as `null` and as a dict still give clean defects
+with no exception; the cited-head prefix mutant still dies.
+
+### Measurements
+
+Fifteen adversarial citation cases, all behaving correctly. Ten mutants: **nine die on
+the shipped 30-case suite** — both directions of the address equality, the shortened
+head, the cited-head prefix, the unchecked address, the swallowed count, the any-address
+branch, node-blind resolution, and expected-built-from-the-address.
+
+### The one residual, which I am not holding this for
+
+The mutant reading the *real* node as contained in the *declared* one —
+`_node_id_of(_export_node(path)) in node` — survives the shipped suite. It is killed by
+the case I handed over in pass 3, `node="node:local-2"` against a `node:local` export,
+which was replaced by the `node:loc` case rather than joined to it. Two directions of one
+comparison want two lines in the same case. I record it as a residual and not a
+condition because the harm is bounded: the address equality is still built from the real
+node's directory, so what would pass is a report whose `node` field names something that
+does not exist while its address is otherwise correct. The case exists; absorbing it is
+the concern's, and holding a fourth pass open over it would be the caution `AGENTS.md`
+calls a defect.
+
+### A small caution, partly my own
+
+Two repaired cases assert on generic fragments — `"names /"` or `"names nodes/"` — where
+the earlier wording pinned a specific refusal. They do discriminate here; three mutants
+die on them. But an assertion that broad pins the shape of a message rather than its
+meaning. The other half is mine: my pass-3 two-node case asserted a refusal string this
+repair reworded, and it failed against these bytes until I updated it. I am recording
+that rather than quietly fixing it, because a case coupled to message text ages with the
+message, and that is worth knowing before the next rewording.
+
+### Judgement
+
+Unchanged, unanswered, and correctly neither yours nor mine: does Bdo affirm that he
+directed the act recorded at entries 118 to 123 of `node:local`, in the words quoted in
+`office_act.direction`? Four passes have made the gate around that record tighter. None
+of them has made the record say who asked, and none of them can.
+
+### Commands
+
+```
+git -C <this worktree> rev-parse HEAD                            8ef29e1, tree 02d4247, clean
+git log --format='%h %p' b1448ee..HEAD                           five commits, one parent each
+git log --merges b1448ee..HEAD                                   none
+git diff --name-only <old> <new>, five rebase pairs              3 paths each, all generated or trunk
+earlier receipts' digests recomputed at their counterparts       34 of 36 match; both misses generated
+python3 scripts/sov_ci_subject.py candidate (linear)             exit 0  LINEAR, 5 commits
+python3 scripts/sov_ci_subject.py candidate (merge I built)      exit 2  CANDIDATE_HISTORY_NONLINEAR
+python3 scripts/verify.py                                        exit 0  PASS: 52 checks in 12.630s
+python3 scripts/lint.py                                          exit 0
+python3 scripts/sov_node.py journals                             exit 0
+python3 -m unittest scripts.tests.test_sov_node_journal          exit 0  30 tests
+witness_layer / clarity / diagrams / surface / docs              exit 0
+fifteen adversarial citation cases                               all as expected
+ten mutants, shipped suite                                       9 killed, 1 survived (the residual)
+the same ten, plus my two cases                                  10 killed; control exits 0
 ```
 
 ## Pass 3: commit d03772a (2026-09-07)

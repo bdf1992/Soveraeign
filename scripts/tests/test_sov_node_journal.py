@@ -242,8 +242,8 @@ class CitationGate(JournalCase):
         self.report("wrongnode", journal=self.stale(address=bad))
         self.advanced()
         defects, _ = self.grade()
-        self.assertTrue(any("names /" in item or "names nodes/" in item
-                            for item in defects), defects)
+        expected = self.address().rsplit("/", 1)[0] + "/" + self.exported["head"][:12] + ".json"
+        self.assertTrue(any(expected in item for item in defects), defects)
 
     def test_a_declared_node_must_equal_the_nodes_name_and_not_merely_contain_it(self) -> None:
         """`CLAUDE.md` trap T3, in the direction that bites.
@@ -254,9 +254,21 @@ class CitationGate(JournalCase):
         `node:loc` against this fixture's `node:local`, with an address that is otherwise
         exactly right, so nothing but the node comparison can refuse it.
         """
-        self.report("substring", journal=self.stale(node="node:loc"))
+        self.report("shorter", journal=self.stale(node="node:loc"))
         defects, _ = self.grade()
         self.assertTrue(any("names node node:loc, which has no export" in item
+                            for item in defects), defects)
+
+    def test_a_declared_node_must_equal_the_nodes_name_and_not_be_contained_by_it(self) -> None:
+        """The same comparison, read the other way: node:local is inside node:local-2.
+
+        One equality has two containment readings and needs a case for each. Writing only
+        the shorter one leaves the longer mutant alive, which is how this pair came to be
+        written the first time.
+        """
+        self.report("longer", journal=self.stale(node="node:local-2"))
+        defects, _ = self.grade()
+        self.assertTrue(any("names node node:local-2, which has no export" in item
                             for item in defects), defects)
 
     def test_naming_a_node_does_not_excuse_a_missing_address(self) -> None:

@@ -8,7 +8,9 @@ grade must not be able to remove the guard that catches it.
 """
 
 from sovverify import checks as _checks
+from sovverify.commissioning import COMMISSIONING_CHECKS
 from sovverify.integrity import INTEGRITY_CHECKS
 
 
-_checks.CHECKS = _checks.REPOSITORY_CHECKS + INTEGRITY_CHECKS + _checks.PARTICIPANT_CHECKS
+_checks.CHECKS = (_checks.REPOSITORY_CHECKS + INTEGRITY_CHECKS + COMMISSIONING_CHECKS
+                  + _checks.PARTICIPANT_CHECKS)

@@ -295,6 +295,6 @@ REPOSITORY_CHECKS = (
           ("scripts/tests", "scripts/run_tooling_tests.py")),
 )
 
-#: Every check, in the order a run prints them: what the repository owns, then
-#: what each participant says about itself.
+#: Repository checks then participant checks; the package `__init__` splices the
+#: integrity and commissioning groups in, so import the table through the package.
 CHECKS = REPOSITORY_CHECKS + PARTICIPANT_CHECKS

@@ -1,0 +1,203 @@
+{
+  "case_id": "WITNESS-2026-09-06-FRESH-PARTICIPATION-VERTICAL-SLICE-5",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-06",
+  "artifact_revision": "219686db5328db9d227bc9ac110779952deef5d4",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "custody:phase-1-5/fresh-participation member scripts/sov_fresh.py at stage VERTICAL_SLICE, standing WITNESSED (pass 4 at 0cf5a57), plus the persisted node at .local/node-interface on this host (gitignored). Builder claims: at Bdo's recorded direction the session ran open-office, which seated principal:bdo as the node's root issuer and granted principal:claude-fable-5 open:session and read:registry with granted_by principal:bdo; then run --node-state entered the node as that principal, seeded nothing, and P15-Q1.1 to Q1.3 hold on identities read from the journal; the packet reports/observations/2026-09-06-fresh-participation-live-node.json carries the office receipt, the run, and the journal export verifiable against record_head",
+    "record": "witness/fresh-participation.md",
+    "record_section": "Pass 5: commit 219686d (2026-09-06)",
+    "prior_receipts": [
+      "witness/observations/2026-09-06-fresh-participation-observation.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-2.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-3.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-4.json"
+    ],
+    "verdict": "REPRODUCED",
+    "verdict_scope": "REPRODUCED for the instrument's extended surface (open-office, run --node-state) and for the live-node run's readings; DISSENT from any reading of the record as showing that the root seat acted. The clause 'whose office the root seat opened' has no path in the record that distinguishes it from a session typing the root's name and is unwitnessable as a record claim (J4)",
+    "standing_supported": "WITNESSED",
+    "standing_binds": {
+      "subject": "fresh-participation",
+      "field": "contracts/custodies/phase-1-5.json members[0] (scripts/sov_fresh.py)",
+      "revision": "219686db5328db9d227bc9ac110779952deef5d4",
+      "claim": "the instrument claim at 219686d: pass 4's scope plus open-office (seats the registry root's name as a persisted node's root issuer and grants one operator, refuses any other name by the probe's rule PROBE_ISSUER_GATE, writes nothing on refusal) and run --node-state (enters a persisted node as the declared principal, seeds nothing, opens its session under the open:session grant the journal holds, crosses once under read:registry, is refused three times by the Gateway at check-attribution / check-attribution / check-authority, grades P15-Q1.1 to Q1.3 on identities read from the journal); the builder's live run reproduces on the same node with the same grant, codes and stages, and the journal grew by exactly the run's 23 entries with no grant among them",
+      "member_words": {
+        "standing": "WITNESSED",
+        "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-06 pass 5 at 219686d (witness/fresh-participation.md; witness/observations/2026-09-06-fresh-participation-observation-5.json)"
+      },
+      "a_moved_value_must": "bind to revision 219686d and to the instrument claim. It is not evidence that the root seat opened the office: the journal's root issuer is the string principal:bdo, seated by the Console's genesis because the argv string equalled the registry's root_principal, and nothing in the node, the probe, the packet or office-opened.json authenticates who passed it (F35, F36). 'P15-X1 observed on a node whose office the root seat opened' splits: the first half (the predicates hold on a persisted node whose journal names principal:bdo as root issuer) is REPORTED and reproduced; the second half goes to Bdo as J4. P15-X1 stays NOT_EARNED. F33, F34, F36, F37 are defects owed inside the concern and are not preconditions of this standing, as F31 was not at pass 4. This receipt ratifies nothing"
+    },
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-06",
+    "observer_independence_basis": "This participant did not build, edit, stage or commit any file under the subject. It froze the tree at 219686d with git status empty throughout, copied the node state byte for byte before any command ran, verified the packet's export with the Record Service's own verifier (library and CLI) and defeated the verifier on a truncated and an edited copy, compared the export to the pre-copy entry by entry, reran the probe once against the live node and diffed the post-copy against the pre-copy, drove open-office's refusals and its overwrite on temporary nodes, replayed pass 4's two mutants in a git archive, and read the Console's genesis rule in source. It read no transcript; the quoted direction reached it only as the launcher's task text, which is not evidence. It was launched from the session that office-opened.json names in directed_in (F42).",
+    "observer_relation": "INDEPENDENT_OF_BUILDER_DECLARED_SURFACE_ONLY",
+    "observed_at": "2026-09-06",
+    "observed_state_addresses": [
+      "scripts/sov_fresh.py",
+      "scripts/sovfresh/__init__.py",
+      "scripts/sovfresh/layers.py",
+      "scripts/sovfresh/node.py",
+      "scripts/sovfresh/probe.py",
+      "scripts/tests/test_sov_fresh.py",
+      "scripts/sovsession/principals.py",
+      "scripts/sovverify/commissioning.py",
+      "conformance/commissioning.py",
+      "contracts/custodies/phase-1-5.json",
+      "contracts/phase-progress.json",
+      "contracts/principals.json",
+      "services/console/src/soveraeign_console_service/permits.py",
+      "services/console/src/soveraeign_console_service/authority.py",
+      "services/record/src/soveraeign_record_service/custody.py",
+      "reports/2026-09-06-fresh-participation-slice.md",
+      "reports/observations/2026-09-06-fresh-participation-live-node.json",
+      "docs/documentation.html",
+      "witness/observations/2026-09-06-fresh-participation-observation.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-2.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-3.json",
+      "witness/observations/2026-09-06-fresh-participation-observation-4.json"
+    ],
+    "observed_state_digests": [
+      "sha256:7e287a56f483a793c2752ffb65fbf5dde4eea242ce8087a187a2cdd656d59d85",
+      "sha256:ca222320f8c6c166a3da2c5b160d52ce95c871ef6073d0b08798e7a4389d0f1e",
+      "sha256:afc7e7578e47fe3e8b4d0a7daf4ea4fa80d631c0ae02551096fe8b0f9cf5ac44",
+      "sha256:4389f80f8f1324e5a970d3cf818b393bb1492fc6e0ad808f82c65c1fad8ca918",
+      "sha256:6900d567638f2f398ab8494522f1966316923a2d7da180f90bbdabd570178aac",
+      "sha256:4c8b7ea2818aa4b84a63969ff43ba265c0763bb3ff315b5d09f29b147b7bd418",
+      "sha256:324aeb103e342d475aa1b6d5f2b0624b941ee3fa6f4c0db2396a524b107c9409",
+      "sha256:344829ee4f36390600eacf73a52fcc0a883fd09b83d1ab1208993c2c23687d29",
+      "sha256:e25005a98e7a9e140d720c6e13fc4545a744fd8af7b636719ef2d1f8896bd90d",
+      "sha256:a322bc930f8d0971c7675e880dd8a52fbe118c06c844e11e2cd678ea7740c45c",
+      "sha256:0e5899e9742b5354351f1caf270afb315f58202545107357066d0b98411dc9fe",
+      "sha256:cec549f6fd2e465399518ad8af9b9dc7d67bf64141334a01cdd622e15d2972da",
+      "sha256:631c71a02d5484e4861f672520ed34868042d6e2fe81228fd36f4b543d4f0bd8",
+      "sha256:9c90a7afab42ca973f5ad3c8f42c823801be79a4d95bdd3ea694418283fc2125",
+      "sha256:044ae9ec998bb6a217c9997be92d91db93851301db52b5486ecdc521117440d0",
+      "sha256:99289ff6c9a36ebd5f54471b0e18772a71c198934f73dd70d1b901d05f2b7d39",
+      "sha256:1882e38ca74a47ffec24af003c26ba9c6c2309bcb2a900217cb3adcc2c3f6f3c",
+      "sha256:0c66343da36fcf0429246c036ba0447610d2aa718398c1bafbfaf85df27bf030",
+      "sha256:0dba3958b08f8a0fcf2f40082b086c29d8d1e81ca93bb40f7fd159a6b62ac9b5",
+      "sha256:fdda968af2b989b4b5512d4a2d01f7c1166fecba7bc704a0d083fefdac004d36",
+      "sha256:9c65e5169c4f04bee65afb31b46ee4fd04c81d8e2424b2f858c56c2d5789da10",
+      "sha256:610aa0a592981064c3604723990da4ce81efbe6940ac28d8915f7183242f4a2d"
+    ],
+    "node_state": {
+      "path": ".local/node-interface (gitignored runtime state on this host; not a repository address, so not in observed_state_addresses)",
+      "pre_copy": {
+        "record_service_sqlite3": "18145070283c353688fa05fb96cbf2c0ec7ede041284bacd617ab2a038cfdbe3",
+        "office_opened_json": "09ee6afe3ed81b17c3b167d7f5844b32f5ac7b10b83743e5db05c71bddfcead4",
+        "asset_service_sqlite3": "7a55b64036780b379095b599d5cd58e217b0aa84e9867688e915a5b760f84c01",
+        "journal_entries": 31,
+        "journal_head": "032377e0284f53a817779049fca5d4a0a1cc5e637e2aa257953c93383c2d0e82"
+      },
+      "packet_export_against_pre_copy": "31 of 31 entry_id and entry_digest identical in order; same head; office receipt record_head a127e398db974140ed209d2709c09132c0f092677e925d790e0ebf2230b167af is entry 7's digest",
+      "post_copy": {
+        "record_service_sqlite3": "6400c985384a09548df3b467e731eba84961a67e5e6aaad2439d53b221a95754",
+        "office_opened_json": "09ee6afe3ed81b17c3b167d7f5844b32f5ac7b10b83743e5db05c71bddfcead4",
+        "journal_entries": 54,
+        "journal_head": "0e357ea0b2a40200c4eb4ab714169ce2caf21556c97b0feff17a2d8673d2880c",
+        "delta": "23 entries appended by this witness's one run: session open and receipt under grant_3807e177a65746b1, four crossings (7+3+3+5 entries), the probe's three trailer entries; 0 authority-grant records; the 31-entry prefix identical; entry 31's prev_digest equals the pre-copy head"
+      },
+      "head_held_outside_the_packet": "032377e0284f53a817779049fca5d4a0a1cc5e637e2aa257953c93383c2d0e82"
+    },
+    "commands": {
+      "tree": "git rev-parse HEAD -> 219686db...; git status --porcelain empty before and after every command; git show --stat 219686d -> 8 files +1122/-29; git diff --stat d40d61f 219686d -- conformance/ -> empty; git check-ignore -v .local/node-interface -> .gitignore:33",
+      "verify_export": "custody.verify_export(packet.journal_export, expected_head=032377e0...) -> 032377e0...; python -m soveraeign_record_service.cli verify-export --export <packet export> --expect-head 032377e0... -> exit 0, verified true, 31 entries; truncated to 8 entries with expected head -> TruncatedExport; entry 4 granted_by edited -> BrokenChain entry 4",
+      "journal_reading": "entries 0-3 genesis: principal:bdo grants grant:authority and revoke:authority to principal:bdo, receipts authority_grant_ids []; 4-7 open:session grant_3807e177a65746b1 and read:registry grant_6ab7d1d0a99e419e to principal:claude-fable-5, granted_by principal:bdo, receipts under grant_a1de4eb14460415d; 8-9 session_9fda2bae13834739 opened under grant_3807...; 10-16 registry.resolve COMMITTED receipt entry_08efe9c3386c475e89e1069617bf76a0 under grant_6ab7...; 17-19 foreign session REFUSED check-attribution ACTOR_ATTRIBUTION_MISMATCH entry_edbe99866cb644af941f3596ab749b90; 20-22 other actor REFUSED same entry_e9c6b83a5bce4e82bd7a8d4269894ad5; 23-27 asset.ingest-asset REFUSED check-authority AuthorityRefused entry_3845543ff48c4b0cb21c066e1773c9ce; 28-30 probe trailer under fresh-dd627175",
+      "selfcheck": "python scripts/sov_fresh.py selfcheck -> exit 0, PASS",
+      "unittest": "python -m unittest scripts.tests.test_sov_fresh -> exit 0, Ran 19 tests OK",
+      "verify": "python scripts/verify.py -> exit 0; PASS: 51 checks in 16.397s wall; DEBT: no wall-clock grade; BUDGET DEBT: 8 check(s) over ceiling; fresh participation slice 1.476s within 1.500s",
+      "lint": "python scripts/lint.py -> exit 0; PASS: repository hygiene (1190 text files, 553 Python modules, 10 named debt)",
+      "open_office_refusals": "open-office --node-state <tmp>/n1 --issuer principal:not-root ... -> exit 2 REFUSED PROBE_ISSUER_GATE, n1 never created; --issuer '' -> exit 2, same",
+      "run_node_state_refusals": "run --principal principal:claude-fable-5 --node-state .local/node-interface --variant no-grant -> exit 1 uncaught ValueError traceback; ... --issuer principal:bdo -> exit 1, same (F34); live journal unchanged at 31 entries",
+      "live_rerun": "run --principal principal:claude-fable-5 --node-state .local/node-interface --json -> exit 0; passed true; issuer null; root_principal principal:bdo; registry contracts/principals.json; own COMMITTED entry_ff6c5928d1dd43d9b331029a083454b0 grant_id null; foreign_session and other_actor_on_this_session REFUSED check-attribution ACTOR_ATTRIBUTION_MISMATCH; beyond_the_grant REFUSED check-authority AUTHORITY_REFUSED/AuthorityRefused; Q1.1 session_id fresh-57ae9c86 node_session_id session_529955fd48d24543 oral_history_used false required_authority read:registry; Q1.3 principal:claude-fable-5 / session_529955fd48d24543 / grant_6ab7d1d0a99e419e / urn:soveraeign:binding:node-interface:model-json-v1, mismatch REFUSED; Q1.2 survives_session true; all three hold; other_defects []",
+      "open_office_temp_node": "<tmp>/n2 --issuer principal:bdo --operator principal:claude-fable-5 --capability read:registry=registry:any -> exit 0, two grants, office-opened.json b707a254...; second open-office on n2 --operator principal:someone-else --direction 'SECOND direction text' -> exit 0, office-opened.json replaced a00014e3..., journal 5 grants (F36); <tmp>/n3 --issuer principal:other-root --registry <other-root> -> exit 0, opened, receipt names no registry (F35); n2 --issuer principal:other-root --registry <other-root> -> exit 1 uncaught AuthorityRefused traceback (F34); run --node-state <tmp>/n2 --json -> exit 0 passed, grant_0ca6ca2a8cad4f78 session_2436a380b98e40cc",
+      "service_suites": "console Ran 193 OK; gateway Ran 26 OK; record Ran 65 OK",
+      "mutation_probe": "git archive 219686d in scratch: layers.py:48 reverted to root / principals.REGISTRY_PATH -> FAILED (failures=1) test_the_issuer_gate_reads_the_registry_the_resolver_reads; node.py:105 refused_by None -> FAILED (failures=2) incl. test_the_issuer_gate_names_itself_as_the_probes_rule (F31 repaired)",
+      "coverage_grep": "grep open_office|admit_persisted|node_state|open-office|export_journal scripts/tests/test_sov_fresh.py -> no match (F33); grep office-opened over the tree -> one writer sov_fresh.py:104, no reader; grep fresh-participation-live-node scripts contracts conformance -> custody note only (F40)",
+      "sessions": "post-copy journal: operator-session session_9fda2bae... OPEN, session_529955fd... OPEN; no close event (F38)",
+      "custody": "sov_custody.py selfcheck -> 27/27 declared refusals reached; board -> member observed by pass 4 at 0cf5a57, note carries both 'nobody has opened ... which is this node today' and 'Bdo directed this session to open' (F37); sov_next.py --strict PASS; sov_active_phase_progress.py no output",
+      "witness_layer_standing_docs_before": "sov_witness_layer.py records -> 0, PASS: 10 witness receipt(s) graded, 0 unusable, 10 stale; sov_standing.py -> PASS: 1 standing claim(s); sov_docs.py check -> PASS: documentation page matches 281 documents",
+      "timestamps": "git show -s --format=%ci 219686d -> 2026-09-06 14:30:42 +0000; grants granted_at 2026-09-06T14:29:39Z",
+      "prior_passes_unchanged": "bytes from '## Pass 4' to end of witness/fresh-participation.md identical to git show 219686d:witness/fresh-participation.md from the same heading; four prior receipts digest as at 219686d; 22 of 22 addresses identical to git show 219686d:<path>; 0 CR bytes in the 8 changed files"
+    },
+    "predicate_results": {
+      "packet_export_verifies_against_declared_head": {
+        "held": true,
+        "detail": "library and CLI reach 032377e0...; verifier refuses a truncated copy (with the head held outside) and an edited granted_by"
+      },
+      "packet_export_is_the_live_journal": {
+        "held": true,
+        "detail": "31 of 31 entries identical to the pre-copy in order; same head; the head held outside the packet is this pass's pre-copy head"
+      },
+      "root_issuer_is_principal_bdo_by_genesis": {
+        "held": true,
+        "detail": "entries 0-3: grant:authority and revoke:authority to principal:bdo by principal:bdo, no admitting grant; per permits.py:100-103 the first name offered seats itself"
+      },
+      "grants_to_operator_issued_under_that_name": {
+        "held": true,
+        "detail": "entries 4-7, granted_by principal:bdo, receipts under grant_a1de4eb14460415d"
+      },
+      "granted_by_is_authenticated": {
+        "held": false,
+        "detail": "issuer_name strips whitespace only; the probe compares the argv string to the registry's root_principal, a file whose principal:bdo entry is UNVERIFIED and whose path --registry can replace; office-opened.json is free text (F35, F36). Not a defect the builder can repair without an owner-held identity channel"
+      },
+      "run_seeds_nothing_on_persisted_node": {
+        "held": true,
+        "detail": "0 authority-grant records among the 23 entries this witness's run appended"
+      },
+      "three_refusal_legs_are_node_refusals": {
+        "held": true,
+        "detail": "check-attribution ACTOR_ATTRIBUTION_MISMATCH twice, check-authority AuthorityRefused once, receipts in the journal"
+      },
+      "identities_read_from_the_journal": {
+        "held": true,
+        "detail": "grant_6ab7d1d0a99e419e is entry 6; session_529955fd48d24543 is entry 31; principal_id from contracts/principals.json; binding from the derived interface"
+      },
+      "live_run_reproduces_builders_readings": {
+        "held": true,
+        "detail": "same grant, same codes and stages, all three predicates hold, on the same node"
+      },
+      "open_office_refuses_non_root_and_writes_nothing": {
+        "held": true,
+        "detail": "exit 2, PROBE_ISSUER_GATE, no directory created; gate reads whatever registry --registry names"
+      },
+      "run_node_state_refuses_no_grant_and_issuer": {
+        "held": true,
+        "detail": "refused, but as an uncaught ValueError traceback (F34)"
+      },
+      "new_surface_pinned_by_tests": {
+        "held": false,
+        "detail": "no test names open_office, admit_persisted, node_state, open-office or export_journal (F33)"
+      },
+      "F31_repairs_pinned_by_a_failing_case": {
+        "held": true,
+        "detail": "both pass-4 mutants fail the suite at 219686d"
+      },
+      "office_receipt_durable_and_chained": {
+        "held": false,
+        "detail": "overwritten by a second open-office; unchained; read by nothing (F36)"
+      },
+      "custody_note_consistent": {
+        "held": false,
+        "detail": "note asserts both that nobody has opened this node's office today and that Bdo directed it opened (F37)"
+      },
+      "root_seat_acted": {
+        "held": null,
+        "detail": "unwitnessable from the record; J4"
+      },
+      "oracle_unchanged": {
+        "held": true,
+        "detail": "conformance/ unchanged since d40d61f"
+      },
+      "pass1_to_pass4_carried_unchanged": {
+        "held": true,
+        "detail": "bytes from '## Pass 4' onward identical to 219686d; four prior receipts identical"
+      }
+    },
+    "standing_note": "This is an observation. It supports WITNESSED for the instrument claim at 219686d and declares it in the record's block; it supports no standing for the clause P15-X1, which stays NOT_EARNED, and no reading that the root seat acted. It ratifies nothing; a value written into the member is the builder's or lander's act over this record."
+  },
+  "telemetry": {
+    "probe_location": "no probe file; every reading came through scripts/sov_fresh.py, the Record Service verifier (library and CLI), sqlite reads of the two byte copies, the unit suite, the Console, Gateway and Record suites, the repository gates, git, and two mutants in git archive 219686d copies under the witness's scratch directory",
+    "tree_state": "git status --porcelain empty before and after every command; HEAD 219686db5328db9d227bc9ac110779952deef5d4 throughout; the only write outside witness/ was the one probe run against .local/node-interface, which appended 23 journal entries (pre head 032377e0..., post head 0e357ea0...) and changed no other file in the node state",
+    "after_writing": "python scripts/sov_witness_layer.py records: first run graded this receipt INVALID because its digests lacked the sha256: prefix; corrected in place by the same participant before any other reader was consulted; second run: exit 0, PASS: 11 witness receipt(s) graded, 0 unusable, 10 stale against their subject; this receipt CURRENT, 22 digests recomputed. python scripts/sov_standing.py: exit 0, PASS: 1 standing claim(s). python scripts/sov_docs.py check: exit 1, 'FAIL: docs/documentation.html is stale; run `python scripts/sov_docs.py build`' (the landing residual: witness/*.md is indexed; the witness may not rebuild the page). python scripts/lint.py: exit 0, 'PASS: repository hygiene (1191 text files, 553 Python modules, 10 named debt)'. bytes from '## Pass 4' to the end of witness/fresh-participation.md identical to git show 219686d:witness/fresh-participation.md from the same heading (852 lines); the four prior receipts identical to 219686d; 0 CR bytes in both new files. git status --porcelain after writing: ' M witness/fresh-participation.md' and '?? witness/observations/2026-09-06-fresh-participation-observation-5.json' only."
+  }
+}

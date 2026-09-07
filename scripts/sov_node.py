@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from sovkernel.jsonschema import validate  # noqa: E402
 from sovkernel.node_identity import registry_defects  # noqa: E402
+from sovnode import journal  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACTS = ROOT / "contracts"
@@ -109,22 +110,65 @@ def command_validate(args: argparse.Namespace) -> int:
     return 0 if not args.strict or not defects else 1
 
 
+def command_export_journal(args: argparse.Namespace) -> int:
+    """Export the journal of the node whose stores live at --node-state under nodes/."""
+    result = journal.export(Path(args.node_state), Path(args.out_dir))
+    print(f"{result['path']}  head {result['head']}  {result['entries']} entries")
+    return 0
+
+
+def command_restore_journal(args: argparse.Namespace) -> int:
+    """Restore an export into an empty node state, refusing truncation when a head is given."""
+    try:
+        count = journal.restore(Path(args.export), Path(args.node_state), args.expect_head)
+    except journal.custody.RestoreRefused as refused:
+        print(f"REFUSED {type(refused).__name__}: {refused}")
+        return 1
+    print(f"restored {count} entries into {args.node_state}")
+    return 0
+
+
+def command_journals(_: argparse.Namespace) -> int:
+    """Verify every export under nodes/ and every self-report that cites one."""
+    defects, heads = journal.grade()
+    for address, head in sorted(heads.items()):
+        print(f"  {address}  head {head[:12]}")
+    if defects:
+        print("FAIL: node journal custody")
+        print("\n".join("  " + line for line in defects))
+        return 1
+    print(f"PASS: {len(heads)} node journal export(s) replay to their heads and every "
+          "citation resolves")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Declare every command. Each one reads checked-in files and writes nothing."""
     parser = argparse.ArgumentParser(prog="sov_node", description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser("status", help=command_status.__doc__)
-    sub.add_parser("peers", help=command_peers.__doc__)
+    sub.add_parser("status", help=command_status.__doc__).set_defaults(func=command_status)
+    sub.add_parser("peers", help=command_peers.__doc__).set_defaults(func=command_peers)
+    export = sub.add_parser("export-journal", help=command_export_journal.__doc__)
+    export.add_argument("--node-state", required=True)
+    export.add_argument("--out-dir", default=str(journal.NODES / "node-local" / "journal"))
+    export.set_defaults(func=command_export_journal)
+    restore = sub.add_parser("restore-journal", help=command_restore_journal.__doc__)
+    restore.add_argument("--export", required=True)
+    restore.add_argument("--node-state", required=True)
+    restore.add_argument("--expect-head", help="the head held outside the export")
+    restore.set_defaults(func=command_restore_journal)
+    journals = sub.add_parser("journals", help=command_journals.__doc__)
+    journals.set_defaults(func=command_journals)
     validate_parser = sub.add_parser("validate", help=command_validate.__doc__)
     validate_parser.add_argument("--strict", action="store_true",
                                  help="exit non-zero on any defect")
+    validate_parser.set_defaults(func=command_validate)
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    return {"status": command_status, "peers": command_peers,
-            "validate": command_validate}[args.command](args)
+    return args.func(args)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,351 @@
+{
+  "case_id": "WITNESS-2026-09-06-FRESH-PARTICIPATION-VERTICAL-SLICE-2",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-06",
+  "artifact_revision": "161d559fc4eba85dab598c3495d0620cbacbf011",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "custody:phase-1-5/fresh-participation member scripts/sov_fresh.py at stage VERTICAL_SLICE, standing BUILT, stage_observed_by null; builder claims every pass-1 defect F1-F7 repaired at 161d559 and every P15-Q1.3 identity read from a node record (Console grant and session records, Gateway receipts)",
+    "record": "witness/fresh-participation.md",
+    "record_section": "Pass 2: commit 161d559 (2026-09-06)",
+    "prior_receipts": [
+      "witness/observations/2026-09-06-fresh-participation-observation.json"
+    ],
+    "verdict": "NOT-YET",
+    "standing_supported": "BUILT",
+    "standing_binds": {
+      "subject": "fresh-participation",
+      "field": "contracts/custodies/phase-1-5.json members[0] (scripts/sov_fresh.py)",
+      "revision": "161d559fc4eba85dab598c3495d0620cbacbf011",
+      "claim": "the identity claim is reproduced (principal from the registry, console session and grant from Console records, interface binding from the Node Interface document, each None on refusal); F2-F8, F13, F15 repaired; F1 repaired for two of three legs; the build claim stands at BUILT",
+      "a_moved_value_must": "not move: BUILT -> WITNESSED is not supported at this commit because of F18 (closure check reads FAIL under an operator environment it overrides), F19 (foreign-session leg refused by the scripts-layer composer, no node receipt) and F20 (any non-empty --issuer passes; the Console's genesis makes the first issuer root and the registry is not consulted); conditions C5-C7 name what a later pass would need to observe"
+    },
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-06",
+    "observer_independence_basis": "This participant did not build, edit, stage or commit any file under the subject. It read the tree at the named commit, ran the repository's own gates, drove the probe through scripts/sov_fresh.py (selfcheck; run with and without --issuer; every --variant with and without --issuer; no principal; SOV_PRINCIPAL and SOV_PRINCIPAL_REGISTRY set; garbage and empty --issuer) and the unit suite, drove the declared functions of scripts/sovfresh/node.py once directly against a temporary node to read what the Gateway says to a session it never opened, and read the layer modules against the pass-1 findings. The builder's report was read after every command had returned and is treated as self-report.",
+    "observer_relation": "INDEPENDENT_OF_BUILDER_DECLARED_SURFACE_ONLY",
+    "observed_at": "2026-09-06",
+    "observed_state_addresses": [
+      "scripts/sov_fresh.py",
+      "scripts/sovfresh/__init__.py",
+      "scripts/sovfresh/layers.py",
+      "scripts/sovfresh/node.py",
+      "scripts/sovfresh/probe.py",
+      "scripts/tests/test_sov_fresh.py",
+      "scripts/sovverify/__init__.py",
+      "scripts/sovverify/checks.py",
+      "scripts/sovverify/commissioning.py",
+      "scripts/sovverify/clocks.py",
+      "scripts/sovnode/bindings.py",
+      "scripts/sovnode/composition.py",
+      "scripts/sovsession/principals.py",
+      "conformance/commissioning.py",
+      "contracts/custodies/phase-1-5.json",
+      "contracts/principals.json",
+      "contracts/verification-budget.json",
+      "contracts/work-circuit.json",
+      "contracts/custody.schema.json",
+      "services/console/src/soveraeign_console_service/permits.py",
+      "services/console/src/soveraeign_console_service/core.py",
+      "services/gateway/src/soveraeign_gateway_service/core.py",
+      "services/gateway/src/soveraeign_gateway_service/attribution.py",
+      "reports/2026-09-06-fresh-participation-slice.md",
+      "witness/observations/2026-09-06-fresh-participation-observation.json"
+    ],
+    "observed_state_digests": [
+      "sha256:15cacf96bd25d793fc5cd776c8d6b64b39f0c571b39ab8a8b37860f0335f5e5d",
+      "sha256:ca222320f8c6c166a3da2c5b160d52ce95c871ef6073d0b08798e7a4389d0f1e",
+      "sha256:7b174729a9c751ed2295f907dff7ba08c6d2a21c21865caedf4a9720e0c3c425",
+      "sha256:6089ad4155ea92f532159ff9e09980fa5470bbce53ad7782a4454d965bb3fc7e",
+      "sha256:e25db79f382e54e3b5ab7ca7c7b50b0b7d2c0cb20f70c0a36e9765c9163a2544",
+      "sha256:fc058b1be7f0d8f699c40590e6c3063a035fea8ca53b80e77fd4bf559e3550fc",
+      "sha256:c4d1c1d50ab59f6f8dbd36b12f6db654b1a74c75eca80cc7ff26b49287129dfb",
+      "sha256:c061b9477a973a8bb89f038a8a3987ad5a3a7265d4f2937cd9dd422a5486f3f6",
+      "sha256:344829ee4f36390600eacf73a52fcc0a883fd09b83d1ab1208993c2c23687d29",
+      "sha256:b32c28f9e686ead31daea031c0b14b79cb31eff7f0a45d84c13f3324bcf37b11",
+      "sha256:e26a860234ba542fd64b610147e77db5fcb831812d08056a28cdef0bb85f7c5b",
+      "sha256:e7320557b3d5239e576317668bd299c4a5c63bbc3f3a0fdc90d13100d8bd60ce",
+      "sha256:324aeb103e342d475aa1b6d5f2b0624b941ee3fa6f4c0db2396a524b107c9409",
+      "sha256:e25005a98e7a9e140d720c6e13fc4545a744fd8af7b636719ef2d1f8896bd90d",
+      "sha256:43591bd454b5b2568ad05566e2bc603473fb4ff61e1f225b3bd866fbd3396b85",
+      "sha256:cec549f6fd2e465399518ad8af9b9dc7d67bf64141334a01cdd622e15d2972da",
+      "sha256:1ca5474956475b116cede6803f459b9c2341afbb7aec3ff1ba00c90743b17010",
+      "sha256:883161b29f07cc1c90ae2d77e696b5691d0b211c3301ac1e43126b88d6dcc25c",
+      "sha256:76df52375202055bd4465118e6d694813198435338a9649de4efd702a34d0ff6",
+      "sha256:631c71a02d5484e4861f672520ed34868042d6e2fe81228fd36f4b543d4f0bd8",
+      "sha256:48b42c6d1fdb40942dcf23201e883eb3ac6361a149e61495a75633501a13d8cb",
+      "sha256:5da053995f992d73cfe4976f8b78bf2c37e98e674885da33ec36b729d855aa32",
+      "sha256:52e6bc9920a94e03a6c6a5339cf6a932dbc33636b1efa810e02ec14275279641",
+      "sha256:36521417951212beb017fe1618dbbbb9976fced3513493f41f1da54d3de5754f",
+      "sha256:0dba3958b08f8a0fcf2f40082b086c29d8d1e81ca93bb40f7fd159a6b62ac9b5"
+    ],
+    "commands": {
+      "tree": {
+        "command": "git rev-parse --short HEAD; git status --porcelain; git show --stat 161d559; git diff --stat d40d61f 161d559 -- conformance/",
+        "exit": "0; 0; 0; 0",
+        "excerpt": "161d559; empty before and after every command; 11 files +1000/-373; conformance/ unchanged; .local/sov-sessions/ absent"
+      },
+      "selfcheck": {
+        "command": "python scripts/sov_fresh.py selfcheck",
+        "exit": 0,
+        "excerpt": "PASS: fresh participation slice closes on the positive variant and 3 defeating variants each fail their own predicates"
+      },
+      "run_no_issuer": {
+        "command": "python scripts/sov_fresh.py run --principal principal:claude-fable-5",
+        "exit": 1,
+        "excerpt": "FAIL; registry.resolve REFUSED SESSION_IDENTITY_REQUIRED; Q1.1 holds; Q1.2 holds; Q1.3 missing session_id, grant_id, interface_binding_id; collapsed; mismatch did not refuse; node: no issuer"
+      },
+      "run_issuer": {
+        "command": "python scripts/sov_fresh.py run --principal principal:claude-fable-5 --issuer principal:bdo",
+        "exit": 0,
+        "excerpt": "PASS; own COMMITTED; foreign_session REFUSED SESSION_ATTRIBUTION_CONFLICT; other_actor_on_this_session REFUSED ACTOR_ATTRIBUTION_MISMATCH; other_actor_without_the_grant REFUSED AuthorityRefused; Q1.1-Q1.3 holds"
+      },
+      "run_issuer_json": {
+        "command": "python scripts/sov_fresh.py run --principal principal:claude-fable-5 --issuer principal:bdo --json",
+        "exit": 0,
+        "excerpt": "identities principal:claude-fable-5 / session_c9ad17d6685b40c0 / grant_ce7bfb68d8dc49c0 / urn:soveraeign:binding:node-interface:model-json-v1; mismatch REFUSED; oral_history_used false; node.own.grant_id null; refusals.foreign_session stage bind, no receipt_id; the other two carry receipt_id"
+      },
+      "variant_unregistered": {
+        "command": "run --principal principal:claude-fable-5 --variant unregistered-principal [--issuer principal:bdo]",
+        "exit": "1 / 1",
+        "excerpt": "principal UNIDENTIFIED; Q1.1 missing principal_id; Q1.3 fails; with issuer the node COMMITTED the crossing"
+      },
+      "variant_work_dies": {
+        "command": "run --principal principal:claude-fable-5 --variant work-dies-with-session [--issuer principal:bdo]",
+        "exit": "1 / 1",
+        "excerpt": "recorded only on the session; survives False; Q1.2 missing custody_or_lease; does not survive; with issuer Q1.1 and Q1.3 hold"
+      },
+      "variant_no_grant": {
+        "command": "run --principal principal:claude-fable-5 --variant no-grant [--issuer principal:bdo]",
+        "exit": "1 / 1",
+        "excerpt": "identical to the no-issuer positive run; --issuer discarded by probe.py:101-102"
+      },
+      "no_principal": {
+        "command": "env -u SOV_PRINCIPAL python scripts/sov_fresh.py run",
+        "exit": 2,
+        "excerpt": "REFUSED PRINCIPAL_REQUIRED"
+      },
+      "env_principal_undeclared": {
+        "command": "SOV_PRINCIPAL=principal:somebody python scripts/sov_fresh.py run --principal principal:claude-fable-5 --issuer principal:bdo",
+        "exit": 1,
+        "excerpt": "Q1.1 fresh participation required oral history; defect: undeclared environment inputs: SOV_PRINCIPAL"
+      },
+      "env_principal_declared": {
+        "command": "SOV_PRINCIPAL=principal:claude-fable-5 python scripts/sov_fresh.py run --issuer principal:bdo",
+        "exit": 0,
+        "excerpt": "PASS"
+      },
+      "env_registry_undeclared": {
+        "command": "SOV_PRINCIPAL_REGISTRY=/nonexistent python scripts/sov_fresh.py run --principal principal:claude-fable-5 --issuer principal:bdo",
+        "exit": 1,
+        "excerpt": "principal UNIDENTIFIED; required oral history; defect: undeclared environment inputs: SOV_PRINCIPAL_REGISTRY"
+      },
+      "selfcheck_env_principal": {
+        "command": "SOV_PRINCIPAL=principal:bdo python scripts/sov_fresh.py selfcheck",
+        "exit": 1,
+        "excerpt": "FAIL: fresh participation probe does not discriminate; positive variant failed ... undeclared environment inputs: SOV_PRINCIPAL"
+      },
+      "selfcheck_env_registry": {
+        "command": "SOV_PRINCIPAL_REGISTRY=/nonexistent python scripts/sov_fresh.py selfcheck",
+        "exit": 1,
+        "excerpt": "FAIL: no principal registry at /nonexistent"
+      },
+      "garbage_issuer": {
+        "command": "python scripts/sov_fresh.py run --principal principal:claude-fable-5 --issuer principal:nobody-at-all",
+        "exit": 0,
+        "excerpt": "PASS; Q1.3 holds"
+      },
+      "empty_issuer": {
+        "command": "python scripts/sov_fresh.py run --principal principal:claude-fable-5 --issuer \"\"",
+        "exit": 1,
+        "excerpt": "uncaught traceback: soveraeign_console_service.refusals.AuthorityRefused: a grant must name who issued it; an empty issuer is not a name"
+      },
+      "direct_node_drive": {
+        "command": "python - (witness script: sovfresh.node.open_node/admit/bind(session_id='session_deadbeefdeadbeef')/cross against a temporary node)",
+        "exit": 0,
+        "excerpt": "composer BOUND; Gateway REFUSED stage check-attribution ACTOR_ATTRIBUTION_MISMATCH with receipt_id; own COMMITTED receipt payload carries detail.resolution and no grant identifier; console.grants(reader_id=actor) -> AuthorityRefused (no read:authority)"
+      },
+      "unittest": {
+        "command": "python -m unittest scripts.tests.test_sov_fresh",
+        "exit": 0,
+        "excerpt": "Ran 15 tests in 2.335s OK"
+      },
+      "custody_selfcheck": {
+        "command": "python scripts/sov_custody.py selfcheck",
+        "exit": 0,
+        "excerpt": "46 case(s), 27/27 declared refusals reached; selfcheck PASS"
+      },
+      "next_strict": {
+        "command": "python scripts/sov_next.py --strict",
+        "exit": 0,
+        "excerpt": "scripts/sov_fresh.py [PRESENTED] drawn / custody custody:phase-1-5/fresh-participation; PASS"
+      },
+      "active_phase_progress": {
+        "command": "python scripts/sov_active_phase_progress.py",
+        "exit": 0,
+        "excerpt": "(no output)"
+      },
+      "lint": {
+        "command": "python scripts/lint.py",
+        "exit": 0,
+        "excerpt": "PASS: repository hygiene (1186 text files, 553 Python modules, 10 named debt)"
+      },
+      "verify": {
+        "command": "python scripts/verify.py",
+        "exit": 0,
+        "excerpt": "PASS: 51 checks in 15.862s wall; BUDGET DEBT: 9 check(s) over ceiling; fresh participation slice: 1.570s over its 1.500s ceiling; FAIL lines in output are planted tooling self-test output"
+      },
+      "checks_table": {
+        "command": "python -c over sovverify.checks.CHECKS after package import",
+        "exit": 0,
+        "excerpt": "51 names, 51 distinct, 'fresh participation slice' once"
+      },
+      "selfcheck_alone": {
+        "command": "python scripts/sov_fresh.py selfcheck, timed alone, three runs",
+        "exit": "0; 0; 0",
+        "excerpt": "0.609s, 0.649s, 0.611s wall"
+      },
+      "witness_layer_before": {
+        "command": "python scripts/sov_witness_layer.py records",
+        "exit": 0,
+        "excerpt": "PASS: 7 witness receipt(s) graded, 0 unusable, 7 stale against their subject"
+      },
+      "pass1_receipt_digests": {
+        "command": "recompute 24 observed_state_digests of the pass-1 receipt against git show d40d61f:<address>",
+        "exit": 0,
+        "excerpt": "24/24 match"
+      },
+      "standing_clarity_docs_before": {
+        "command": "python scripts/sov_standing.py; python scripts/sov_clarity.py check; python scripts/sov_docs.py check",
+        "exit": "0; 0; 0",
+        "excerpt": "PASS: 1 standing claim(s); PASS clarity; PASS: documentation page matches 281 documents"
+      }
+    },
+    "predicate_results": {
+      "F1_cross_principal_derived_from_product_refusal": {
+        "held": "PARTIAL",
+        "detail": "two of three legs are Gateway receipts (check-attribution ACTOR_ATTRIBUTION_MISMATCH; check-authority AUTHORITY_REFUSED/AuthorityRefused); the foreign_session leg is the scripts-layer composer's SESSION_ATTRIBUTION_CONFLICT at stage bind with no receipt (F19)"
+      },
+      "F2_grant_id_is_the_participants_grant": {
+        "held": true,
+        "detail": "node.py:49-51 grant_id is the Console grant recorded for the actor; None with no issuer, which fails the predicate"
+      },
+      "F3_every_declared_variant_changes_the_run": {
+        "held": true,
+        "detail": "probe.py:99-102; unregistered-principal fails through the CLI with and without an issuer; no-grant discards the issuer"
+      },
+      "F4_oral_history_flag_derived": {
+        "held": true,
+        "detail": "probe.py:96,162 from layers.undeclared_inputs; fires on SOV_PRINCIPAL / SOV_PRINCIPAL_REGISTRY set and undeclared"
+      },
+      "F5_cleanup_obligations_from_the_work": {
+        "held": true,
+        "detail": "custody list + orphaned leases from the lease store + console session the Record reads OPEN (probe.py:142-149, node.py:104-111)"
+      },
+      "F6_interface_binding_from_product": {
+        "held": true,
+        "detail": "None on refusal (node.py:73-74, probe.py:176); observed missing interface_binding_id on every no-issuer run"
+      },
+      "F7_cross_session_by_code": {
+        "held": true,
+        "detail": "probe.py:76-86 exact code match on reason or diagnostic; REFUSED only when own crossing COMMITTED"
+      },
+      "F8_json_after_subcommand": {
+        "held": true,
+        "detail": "sov_fresh.py:130-134"
+      },
+      "F9_declared_evidence_request": {
+        "held": "SUPERSEDED",
+        "detail": "the sovkernel.authority request no longer exists in the probe"
+      },
+      "F10_registry_env_traced": {
+        "held": "PARTIAL",
+        "detail": "undeclared SOV_PRINCIPAL_REGISTRY fails Q1.1 and is named; the observation still omits which registry resolved the principal; run has no --registry argument"
+      },
+      "F11_survives_only_defeated_by_declining_lease": {
+        "held": false,
+        "detail": "open residual, probe.py:145-146"
+      },
+      "F12_stage_measured_by_nobody": {
+        "held": false,
+        "detail": "open, custody model design"
+      },
+      "F13_single_splice": {
+        "held": true,
+        "detail": "checks.py:298 no longer imports COMMISSIONING_CHECKS; sovverify/__init__.py:15 is the one splice; 51 distinct"
+      },
+      "F14_closure_command_vs_verify_check": {
+        "held": false,
+        "detail": "open, unchanged"
+      },
+      "F15_report_witness_section": {
+        "held": true,
+        "detail": "section 'Independent witness' present at reports/...:50"
+      },
+      "F16_work_is_own_custody": {
+        "held": false,
+        "detail": "open, layers.py:22,80-93"
+      },
+      "F17_lease_under_null_controller": {
+        "held": false,
+        "detail": "open product residual; extended by F25"
+      },
+      "F18_selfcheck_independent_of_operator_environment": {
+        "held": false,
+        "detail": "SOV_PRINCIPAL exported -> selfcheck exit 1 although speaking_as overrides it; fixture_registry reads the env-overridden registry; verify inherits env (clocks.py:135)"
+      },
+      "F19_foreign_session_refused_by_node_with_receipt": {
+        "held": false,
+        "detail": "probe.py:56-58 composes an argument/binding conflict refused by sovnode/bindings.py:108 at stage bind; node.bind session_id override (node.py:64) unused; Gateway refuses a never-opened session with ACTOR_ATTRIBUTION_MISMATCH and a receipt when driven directly"
+      },
+      "F20_issuer_checked_against_registry": {
+        "held": false,
+        "detail": "--issuer principal:nobody-at-all PASS exit 0; permits.py:100-103 genesis makes the first issuer root; contracts/principals.json root_principal not consulted"
+      },
+      "F21_empty_issuer_refusal_returned_not_raised": {
+        "held": false,
+        "detail": "node.py:48 lets AuthorityRefused escape as a traceback"
+      },
+      "F22_committed_receipt_names_grant": {
+        "held": false,
+        "detail": "residual: own.grant_id null; admission under the grant is inferred from check-authority passing"
+      },
+      "F23_one_session_label_two_sessions": {
+        "held": false,
+        "detail": "residual: Q1.1 session_id is the host session, Q1.3 session_id the console session"
+      },
+      "F24_check_within_declared_ceiling": {
+        "held": false,
+        "detail": "residual: 1.570s pooled over 1.5s ceiling; 0.61-0.65s alone; custody note carries the builder's own 'findings repaired' claim"
+      },
+      "F25_unidentified_principal_admitted_by_node": {
+        "held": false,
+        "detail": "residual (product): Console opens a session with principal_id null and the Gateway COMMITTED the crossing; masked by Q1.1/Q1.3 failing for the missing principal"
+      },
+      "positive_run_holds_all_three_predicates_with_issuer": {
+        "held": true,
+        "detail": "exit 0; every identity distinct and read from a record or the artifact"
+      },
+      "positive_run_without_issuer_fails_Q1_3_honestly": {
+        "held": true,
+        "detail": "exit 1; missing session_id, grant_id, interface_binding_id; mismatch did not refuse"
+      },
+      "oracle_unchanged": {
+        "held": true,
+        "detail": "git diff --stat d40d61f 161d559 -- conformance/ empty"
+      },
+      "pass1_record_carried_unchanged": {
+        "held": "BY_DIGEST",
+        "detail": "24/24 pass-1 digests recompute against d40d61f bytes; pass-1 section bytes left identical by this pass; no independent copy exists for a byte comparison"
+      },
+      "vertical_slice_evidence_predicate": {
+        "held": "PARTIAL",
+        "detail": "identities and refusals derived from records or the artifact; the issuer name and the foreign_session conflict are supplied by the run's caller (F19, F20)"
+      }
+    },
+    "standing_note": "This is an observation. It supports BUILT as it stands and does not support BUILT -> WITNESSED at 161d559. It ratifies nothing and grants no authority. Findings F18-F21 go back to the builder for repair inside the concern; F22-F25 are residuals recorded."
+  },
+  "telemetry": {
+    "probe_location": "no probe file; every reading came through scripts/sov_fresh.py, the unit suite, the repository gates, and one witness-side drive of scripts/sovfresh/node.py's declared functions recorded under commands.direct_node_drive",
+    "tree_state": "git status --porcelain empty before and after every command; HEAD 161d559fc4eba85dab598c3495d0620cbacbf011 throughout; .local/sov-sessions/ absent; both witness files written after every recorded command",
+    "after_writing": "python scripts/sov_witness_layer.py records: 0, PASS: 8 witness receipt(s) graded, 0 unusable, 7 stale against their subject; this receipt CURRENT, 25 digests recomputed; the pass-1 receipt STALE_SUBJECT (its subject moved to 161d559). python scripts/sov_standing.py: 0, PASS: 1 standing claim(s). python scripts/lint.py: 0, PASS: repository hygiene (1187 text files, 553 Python modules, 10 named debt). python scripts/sov_clarity.py check: 0, PASS. python scripts/sov_docs.py check: 1, docs/documentation.html is stale. python scripts/verify.py: 1, FAIL: documentation reader, repository tooling tests (test_the_built_page_is_current only, FAILED failures=1); fresh participation slice PASS at 1.663s wall, over its 1.500s ceiling. Both failures are the built page's index of witness/*.md, the landing residual pass 1 named; the witness may not rebuild the page; whoever lands this record runs python scripts/sov_docs.py build. git status --porcelain after writing: M witness/fresh-participation.md, ?? witness/observations/2026-09-06-fresh-participation-observation-2.json, nothing else."
+  }
+}

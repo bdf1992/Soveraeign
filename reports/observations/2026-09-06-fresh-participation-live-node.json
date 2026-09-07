@@ -1,0 +1,952 @@
+{
+  "branch": "claude/phase-2-citizen-mechanics-inrozu",
+  "journal_export": {
+    "entries": [
+      {
+        "actor": "principal:bdo",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "dd4ca69bc021ed1ebf92c7743b9518aa57afa206792d44fc813b4b9e56b712e5",
+        "entry_id": "entry_3514be0bbb054b3fb4308b1ce5a81105",
+        "kind": "EVENT",
+        "payload": {
+          "capability": "grant:authority",
+          "grant_id": "grant_a1de4eb14460415d",
+          "granted_at": "2026-09-06T14:29:39Z",
+          "granted_by": "principal:bdo",
+          "node_id": "node:local",
+          "operator_id": "principal:bdo",
+          "record_kind": "authority-grant",
+          "scope": "node:local",
+          "standing": "RECORDED"
+        },
+        "prev_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+        "recorded_at": 1788704979.5933056,
+        "source_address": null,
+        "subject": "grant_a1de4eb14460415d"
+      },
+      {
+        "actor": "principal:bdo",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "9ab21efc37aab3e6201c9180fa0bd10273473a9f42bff5a5415cbf65d74221f1",
+        "entry_id": "entry_2b4a22227caa4d53a7a32eeb1880aa75",
+        "kind": "RECEIPT",
+        "payload": {
+          "detail": {
+            "authority_grant_ids": [],
+            "effect_class": "RECORD_LOCAL",
+            "emitted_record_addresses": [
+              "entry_3514be0bbb054b3fb4308b1ce5a81105"
+            ],
+            "interface_id": null,
+            "operation_type": "console.grant",
+            "reason_code": null
+          },
+          "event": "console.grant",
+          "outcome": "COMMITTED"
+        },
+        "prev_digest": "dd4ca69bc021ed1ebf92c7743b9518aa57afa206792d44fc813b4b9e56b712e5",
+        "recorded_at": 1788704979.5942767,
+        "source_address": null,
+        "subject": "grant_a1de4eb14460415d"
+      },
+      {
+        "actor": "principal:bdo",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "b3b33b7fd49ac403ed1b31a9be4116638d7f94dae40efe731bd955bb754df00f",
+        "entry_id": "entry_d6209f320b9f4ab6af2c39f567f79be7",
+        "kind": "EVENT",
+        "payload": {
+          "capability": "revoke:authority",
+          "grant_id": "grant_f9513e9a80bb4ff0",
+          "granted_at": "2026-09-06T14:29:39Z",
+          "granted_by": "principal:bdo",
+          "node_id": "node:local",
+          "operator_id": "principal:bdo",
+          "record_kind": "authority-grant",
+          "scope": "node:local",
+          "standing": "RECORDED"
+        },
+        "prev_digest": "9ab21efc37aab3e6201c9180fa0bd10273473a9f42bff5a5415cbf65d74221f1",
+        "recorded_at": 1788704979.5949097,
+        "source_address": null,
+        "subject": "grant_f9513e9a80bb4ff0"
+      },
+      {
+        "actor": "principal:bdo",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "81fd8f95ac5df8dc7f7d41115d8e6e695bc596ff7e9df0d5956bc9fa1fa0e657",
+        "entry_id": "entry_e5a2c5fb3f954110913b161bb86c7371",
+        "kind": "RECEIPT",
+        "payload": {
+          "detail": {
+            "authority_grant_ids": [],
+            "effect_class": "RECORD_LOCAL",
+            "emitted_record_addresses": [
+              "entry_d6209f320b9f4ab6af2c39f567f79be7"
+            ],
+            "interface_id": null,
+            "operation_type": "console.grant",
+            "reason_code": null
+          },
+          "event": "console.grant",
+          "outcome": "COMMITTED"
+        },
+        "prev_digest": "b3b33b7fd49ac403ed1b31a9be4116638d7f94dae40efe731bd955bb754df00f",
+        "recorded_at": 1788704979.5957541,
+        "source_address": null,
+        "subject": "grant_f9513e9a80bb4ff0"
+      },
+      {
+        "actor": "principal:bdo",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "f690757a56df89d3a9e31f912f88ea57867348f63874f731b9f4cf7b5733ac1d",
+        "entry_id": "entry_61baa146a275455993aa8b9845700c03",
+        "kind": "EVENT",
+        "payload": {
+          "capability": "open:session",
+          "grant_id": "grant_3807e177a65746b1",
+          "granted_at": "2026-09-06T14:29:39Z",
+          "granted_by": "principal:bdo",
+          "node_id": "node:local",
+          "operator_id": "principal:claude-fable-5",
+          "record_kind": "authority-grant",
+          "scope": "principal:claude-fable-5",
+          "standing": "RECORDED"
+        },
+        "prev_digest": "81fd8f95ac5df8dc7f7d41115d8e6e695bc596ff7e9df0d5956bc9fa1fa0e657",
+        "recorded_at": 1788704979.5966132,
+        "source_address": null,
+        "subject": "grant_3807e177a65746b1"
+      },
+      {
+        "actor": "principal:bdo",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "b86965eef11b157b8a0989161cea32274535a82f897dc0cb4e31029214c38409",
+        "entry_id": "entry_8fd258540f2e44c0a91115c2659c3bd5",
+        "kind": "RECEIPT",
+        "payload": {
+          "detail": {
+            "authority_grant_ids": [
+              "grant_a1de4eb14460415d"
+            ],
+            "effect_class": "RECORD_LOCAL",
+            "emitted_record_addresses": [
+              "entry_61baa146a275455993aa8b9845700c03"
+            ],
+            "interface_id": null,
+            "operation_type": "console.grant",
+            "reason_code": null
+          },
+          "event": "console.grant",
+          "outcome": "COMMITTED"
+        },
+        "prev_digest": "f690757a56df89d3a9e31f912f88ea57867348f63874f731b9f4cf7b5733ac1d",
+        "recorded_at": 1788704979.5971148,
+        "source_address": null,
+        "subject": "grant_3807e177a65746b1"
+      },
+      {
+        "actor": "principal:bdo",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "affefd073d7dde8651f6213e12a9509a5d568f86a3e88b6ef750816bbe23eb69",
+        "entry_id": "entry_1da94f8e03794cd48f8fb78f5bbfb837",
+        "kind": "EVENT",
+        "payload": {
+          "capability": "read:registry",
+          "grant_id": "grant_6ab7d1d0a99e419e",
+          "granted_at": "2026-09-06T14:29:39Z",
+          "granted_by": "principal:bdo",
+          "node_id": "node:local",
+          "operator_id": "principal:claude-fable-5",
+          "record_kind": "authority-grant",
+          "scope": "registry:any",
+          "standing": "RECORDED"
+        },
+        "prev_digest": "b86965eef11b157b8a0989161cea32274535a82f897dc0cb4e31029214c38409",
+        "recorded_at": 1788704979.5981877,
+        "source_address": null,
+        "subject": "grant_6ab7d1d0a99e419e"
+      },
+      {
+        "actor": "principal:bdo",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "a127e398db974140ed209d2709c09132c0f092677e925d790e0ebf2230b167af",
+        "entry_id": "entry_1726e3b0f8b344b5ad0eebd1261e134b",
+        "kind": "RECEIPT",
+        "payload": {
+          "detail": {
+            "authority_grant_ids": [
+              "grant_a1de4eb14460415d"
+            ],
+            "effect_class": "RECORD_LOCAL",
+            "emitted_record_addresses": [
+              "entry_1da94f8e03794cd48f8fb78f5bbfb837"
+            ],
+            "interface_id": null,
+            "operation_type": "console.grant",
+            "reason_code": null
+          },
+          "event": "console.grant",
+          "outcome": "COMMITTED"
+        },
+        "prev_digest": "affefd073d7dde8651f6213e12a9509a5d568f86a3e88b6ef750816bbe23eb69",
+        "recorded_at": 1788704979.5989258,
+        "source_address": null,
+        "subject": "grant_6ab7d1d0a99e419e"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "b9a13f3e28a5acf0568b4247a5efcfcc6a546dd88094294682fb7290d6df393b",
+        "entry_id": "entry_6f451b2d399246d3b9a44c14e9a1e4a8",
+        "kind": "EVENT",
+        "payload": {
+          "active_thread_id": null,
+          "actor_kind": "MODEL",
+          "binding_id": "urn:soveraeign:binding:session:fresh-probe",
+          "closed_at": null,
+          "lifecycle": "OPEN",
+          "node_id": "node:local",
+          "opened_at": "2026-09-06T14:29:39Z",
+          "operator_id": "principal:claude-fable-5",
+          "principal_id": "principal:claude-fable-5",
+          "record_kind": "operator-session",
+          "session_id": "session_9fda2bae13834739",
+          "standing": "RECORDED",
+          "unread_cursor": null
+        },
+        "prev_digest": "a127e398db974140ed209d2709c09132c0f092677e925d790e0ebf2230b167af",
+        "recorded_at": 1788704979.7875984,
+        "source_address": null,
+        "subject": "session_9fda2bae13834739"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "eca6d85035bf30ec9aea569e867af98d6fda1de153f27294de2a015134f281a8",
+        "entry_id": "entry_9c7da06641744a5dbc579ea03f7be94d",
+        "kind": "RECEIPT",
+        "payload": {
+          "detail": {
+            "authority_grant_ids": [
+              "grant_3807e177a65746b1"
+            ],
+            "effect_class": "RECORD_LOCAL",
+            "emitted_record_addresses": [
+              "entry_6f451b2d399246d3b9a44c14e9a1e4a8"
+            ],
+            "interface_id": "urn:soveraeign:binding:session:fresh-probe",
+            "operation_type": "console.open-session",
+            "reason_code": null
+          },
+          "event": "console.open-session",
+          "outcome": "COMMITTED"
+        },
+        "prev_digest": "b9a13f3e28a5acf0568b4247a5efcfcc6a546dd88094294682fb7290d6df393b",
+        "recorded_at": 1788704979.7900681,
+        "source_address": null,
+        "subject": "session_9fda2bae13834739"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "25630410b9f6908ae573a89c2b52934938279a775c18d054daa34d60529fd538",
+        "entry_id": "entry_932d7f8317bc4d87ac9c80cc4c5572f9",
+        "kind": "EVENT",
+        "payload": {
+          "actor_kind": "MODEL",
+          "argument_names": [
+            "name"
+          ],
+          "envelope_fields": [
+            "actor",
+            "actor_kind",
+            "arguments",
+            "interface_binding_id",
+            "interface_operation_digest",
+            "logical_endpoint",
+            "principal_id",
+            "scope",
+            "session_binding_id",
+            "session_id",
+            "transport"
+          ],
+          "interface_binding_id": "urn:soveraeign:binding:node-interface:model-json-v1",
+          "interface_operation_digest": "e600bdf1ba0fca26580c9db33f77f9ef8375559e1b6e978e79cae10d9590ecc3",
+          "principal_id": "principal:claude-fable-5",
+          "record_kind": "gateway-request",
+          "request_id": "gateway_request_9afad14080514d3a93abedf68f8538f5",
+          "scope": "registry:any",
+          "session_binding_id": "urn:soveraeign:binding:session:fresh-probe",
+          "session_id": "session_9fda2bae13834739",
+          "transport": "IN_PROCESS"
+        },
+        "prev_digest": "eca6d85035bf30ec9aea569e867af98d6fda1de153f27294de2a015134f281a8",
+        "recorded_at": 1788704979.7908714,
+        "source_address": null,
+        "subject": "sov://registry/resolve"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "3ecbbc3cf9cf7ee142af36360c975d7111e2031c21177d7bd5b4f8dc07c39ebf",
+        "entry_id": "entry_86492640df34404a9d0fd21c2c8bd79b",
+        "kind": "EVENT",
+        "payload": {
+          "actor_kind": "MODEL",
+          "decision": "ALLOWED",
+          "interface_binding_id": "urn:soveraeign:binding:node-interface:model-json-v1",
+          "interface_operation_digest": "e600bdf1ba0fca26580c9db33f77f9ef8375559e1b6e978e79cae10d9590ecc3",
+          "principal_id": "principal:claude-fable-5",
+          "record_kind": "gateway-session-attribution",
+          "request_entry_id": "entry_932d7f8317bc4d87ac9c80cc4c5572f9",
+          "request_id": "gateway_request_9afad14080514d3a93abedf68f8538f5",
+          "session_binding_id": "urn:soveraeign:binding:session:fresh-probe",
+          "session_id": "session_9fda2bae13834739"
+        },
+        "prev_digest": "25630410b9f6908ae573a89c2b52934938279a775c18d054daa34d60529fd538",
+        "recorded_at": 1788704979.7917337,
+        "source_address": null,
+        "subject": "sov://registry/resolve"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "5344e68ebf5b8e931f9b16f81a8a52d38f20254d32363e7afe05c3dcf377fb4c",
+        "entry_id": "entry_d8dd4c6b08384578b65864c983d4f9c9",
+        "kind": "EVENT",
+        "payload": {
+          "attribution_entry_id": "entry_86492640df34404a9d0fd21c2c8bd79b",
+          "capability_id": "registry.resolve",
+          "capability_map_digest": "b0ae913f108fbc8e0460a8567408dcfb229825f94fbce11638d375fa8182399b",
+          "effect_class": "RECORD_LOCAL",
+          "operation": "resolve",
+          "record_kind": "gateway-capability-resolution",
+          "request_id": "gateway_request_9afad14080514d3a93abedf68f8538f5",
+          "route_address": "registry:in-process",
+          "service_id": "registry",
+          "transport": "IN_PROCESS"
+        },
+        "prev_digest": "3ecbbc3cf9cf7ee142af36360c975d7111e2031c21177d7bd5b4f8dc07c39ebf",
+        "recorded_at": 1788704979.792597,
+        "source_address": null,
+        "subject": "sov://registry/resolve"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "94d28f4c0dcd3ecae4c217238ad4e49fd3e7522730b73b95e505d8bcbc71f8db",
+        "entry_id": "entry_89ca61a953854cae9684f173531debdc",
+        "kind": "EVENT",
+        "payload": {
+          "actor_kind": "MODEL",
+          "authority_grant_id": "grant_6ab7d1d0a99e419e",
+          "decision": "ALLOWED",
+          "record_kind": "gateway-authority-check",
+          "request_id": "gateway_request_9afad14080514d3a93abedf68f8538f5",
+          "required_authority": "read:registry",
+          "resolution_entry_id": "entry_d8dd4c6b08384578b65864c983d4f9c9",
+          "scope": "registry:any"
+        },
+        "prev_digest": "5344e68ebf5b8e931f9b16f81a8a52d38f20254d32363e7afe05c3dcf377fb4c",
+        "recorded_at": 1788704979.7941263,
+        "source_address": null,
+        "subject": "sov://registry/resolve"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "24ea2818516dc558735134f08aa6bc21fb765ca83b8e2e7f390e0b0a4188ca86",
+        "entry_id": "entry_17626dbcc2384ae78c5041ba0f8225d4",
+        "kind": "EVENT",
+        "payload": {
+          "authority_entry_id": "entry_89ca61a953854cae9684f173531debdc",
+          "authority_grant_id": "grant_6ab7d1d0a99e419e",
+          "capability_id": "registry.resolve",
+          "effect_class": "RECORD_LOCAL",
+          "operation": "resolve",
+          "record_kind": "gateway-routing-record",
+          "request_entry_id": "entry_932d7f8317bc4d87ac9c80cc4c5572f9",
+          "request_id": "gateway_request_9afad14080514d3a93abedf68f8538f5",
+          "resolution_entry_id": "entry_d8dd4c6b08384578b65864c983d4f9c9",
+          "route_address": "registry:in-process",
+          "scope": "registry:any",
+          "service_id": "registry",
+          "transport": "IN_PROCESS"
+        },
+        "prev_digest": "94d28f4c0dcd3ecae4c217238ad4e49fd3e7522730b73b95e505d8bcbc71f8db",
+        "recorded_at": 1788704979.7950234,
+        "source_address": null,
+        "subject": "sov://registry/resolve"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "faeb4916587ae0842a0d976c8a311fa3e96d0988a324cbc9bf5328b354cdb23f",
+        "entry_id": "entry_08efe9c3386c475e89e1069617bf76a0",
+        "kind": "RECEIPT",
+        "payload": {
+          "detail": {
+            "commit_semantics": "DERIVED",
+            "index_input_state_digest": "92271760ff193ea84ea74e89fdb772834942257d0f570c27c4299eeacc632075",
+            "resolution": {
+              "actor_kinds": [
+                "HUMAN",
+                "MODEL"
+              ],
+              "capability_id": "asset.ingest-asset",
+              "effect_class": "RECORD_LOCAL",
+              "kernel_paradigms": [
+                "observation",
+                "operation",
+                "receipt",
+                "retraction",
+                "standing",
+                "typed-authority"
+              ],
+              "kernel_transition": "capture_source",
+              "kind": "operation",
+              "name": "sov://asset/ingest-asset",
+              "office": "FRONT",
+              "record_digest": "c52347b685861ef3a5755a7d1e0bc0268c04af0d3fd32dc5071f403c80d0401d",
+              "required_authority": "ingest:asset",
+              "service_id": "asset",
+              "sources": [
+                {
+                  "address": "services/asset/contracts/service.json",
+                  "digest": "a189e9a0b16a445997baacd3ff616b8ccf99139c4d354d3a71d1e52262709bcd"
+                },
+                {
+                  "address": "contracts/capability-offices.json",
+                  "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
+                }
+              ],
+              "standing": "BUILT",
+              "standing_effect": "NONE"
+            },
+            "standing_effect": "NONE"
+          },
+          "event": "registry.resolve",
+          "outcome": "COMMITTED"
+        },
+        "prev_digest": "24ea2818516dc558735134f08aa6bc21fb765ca83b8e2e7f390e0b0a4188ca86",
+        "recorded_at": 1788704979.7966442,
+        "source_address": null,
+        "subject": "sov://asset/ingest-asset"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "8d8e492543f6c38e110fdc7f6e7b3fe7ab52d4f20b31a47224fcc30ba3c55154",
+        "entry_id": "entry_088caf100e81496691ecbeb1040fdcd5",
+        "kind": "EVENT",
+        "payload": {
+          "record_kind": "gateway-returned-receipt",
+          "request_id": "gateway_request_9afad14080514d3a93abedf68f8538f5",
+          "routing_entry_id": "entry_17626dbcc2384ae78c5041ba0f8225d4",
+          "terminal_outcome": "COMMITTED",
+          "terminal_receipt_id": "entry_08efe9c3386c475e89e1069617bf76a0"
+        },
+        "prev_digest": "faeb4916587ae0842a0d976c8a311fa3e96d0988a324cbc9bf5328b354cdb23f",
+        "recorded_at": 1788704979.7972066,
+        "source_address": null,
+        "subject": "sov://registry/resolve"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "32e043c2a52cb6e15ba2f0e2723c18b796fa5256416b9e76c36feb0797cdaca0",
+        "entry_id": "entry_6dc34969576d4bd3a5df05a80a9d13af",
+        "kind": "EVENT",
+        "payload": {
+          "actor_kind": "MODEL",
+          "argument_names": [
+            "name"
+          ],
+          "envelope_fields": [
+            "actor",
+            "actor_kind",
+            "arguments",
+            "interface_binding_id",
+            "interface_operation_digest",
+            "logical_endpoint",
+            "principal_id",
+            "scope",
+            "session_binding_id",
+            "session_id",
+            "transport"
+          ],
+          "interface_binding_id": "urn:soveraeign:binding:node-interface:model-json-v1",
+          "interface_operation_digest": "e600bdf1ba0fca26580c9db33f77f9ef8375559e1b6e978e79cae10d9590ecc3",
+          "principal_id": "principal:claude-fable-5",
+          "record_kind": "gateway-request",
+          "request_id": "gateway_request_5fa6302522944d42b58ac14343b359b2",
+          "scope": "registry:any",
+          "session_binding_id": "urn:soveraeign:binding:session:fresh-probe",
+          "session_id": "session_never_opened_here",
+          "transport": "IN_PROCESS"
+        },
+        "prev_digest": "8d8e492543f6c38e110fdc7f6e7b3fe7ab52d4f20b31a47224fcc30ba3c55154",
+        "recorded_at": 1788704979.7977076,
+        "source_address": null,
+        "subject": "sov://registry/resolve"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "51c05fddb2f6b2e75904c6a4ba3c561c8f508d25e3fc2d5c3e2c0be1caa46ec5",
+        "entry_id": "entry_752207f9c39e4191a01f1a5769906e2b",
+        "kind": "EVENT",
+        "payload": {
+          "actor_kind": "MODEL",
+          "decision": "REFUSED",
+          "diagnostic_code": "ACTOR_ATTRIBUTION_MISMATCH",
+          "interface_binding_id": "urn:soveraeign:binding:node-interface:model-json-v1",
+          "interface_operation_digest": "e600bdf1ba0fca26580c9db33f77f9ef8375559e1b6e978e79cae10d9590ecc3",
+          "principal_id": "principal:claude-fable-5",
+          "record_kind": "gateway-session-attribution",
+          "request_entry_id": "entry_6dc34969576d4bd3a5df05a80a9d13af",
+          "request_id": "gateway_request_5fa6302522944d42b58ac14343b359b2",
+          "session_binding_id": "urn:soveraeign:binding:session:fresh-probe",
+          "session_id": "session_never_opened_here"
+        },
+        "prev_digest": "32e043c2a52cb6e15ba2f0e2723c18b796fa5256416b9e76c36feb0797cdaca0",
+        "recorded_at": 1788704979.798849,
+        "source_address": null,
+        "subject": "sov://registry/resolve"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "021bb39c0c2fd09a88af827a6419ff716b773972fa428a218689e0301fd2a6b2",
+        "entry_id": "entry_edbe99866cb644af941f3596ab749b90",
+        "kind": "RECEIPT",
+        "payload": {
+          "detail": {
+            "diagnostic_code": "ACTOR_ATTRIBUTION_MISMATCH",
+            "failure_class": "GOVERNED_REFUSAL",
+            "reason_code": "ACTOR_ATTRIBUTION_MISMATCH",
+            "request_entry_id": "entry_6dc34969576d4bd3a5df05a80a9d13af",
+            "request_id": "gateway_request_5fa6302522944d42b58ac14343b359b2",
+            "stage": "check-attribution"
+          },
+          "event": "gateway.refuse-request",
+          "outcome": "REFUSED"
+        },
+        "prev_digest": "51c05fddb2f6b2e75904c6a4ba3c561c8f508d25e3fc2d5c3e2c0be1caa46ec5",
+        "recorded_at": 1788704979.7999058,
+        "source_address": null,
+        "subject": "sov://registry/resolve"
+      },
+      {
+        "actor": "urn:soveraeign:principal:instance:another-participant",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "21206bcb1a4fd16397a8fd6255235b99ae691f070362bd050376a07bc0c71888",
+        "entry_id": "entry_25a74d6a46864658a38d4b5e86b5c853",
+        "kind": "EVENT",
+        "payload": {
+          "actor_kind": "MODEL",
+          "argument_names": [
+            "name"
+          ],
+          "envelope_fields": [
+            "actor",
+            "actor_kind",
+            "arguments",
+            "interface_binding_id",
+            "interface_operation_digest",
+            "logical_endpoint",
+            "principal_id",
+            "scope",
+            "session_binding_id",
+            "session_id",
+            "transport"
+          ],
+          "interface_binding_id": "urn:soveraeign:binding:node-interface:model-json-v1",
+          "interface_operation_digest": "e600bdf1ba0fca26580c9db33f77f9ef8375559e1b6e978e79cae10d9590ecc3",
+          "principal_id": "principal:claude-fable-5",
+          "record_kind": "gateway-request",
+          "request_id": "gateway_request_9b1d37ad0614471dac8da257771fa739",
+          "scope": "registry:any",
+          "session_binding_id": "urn:soveraeign:binding:session:fresh-probe",
+          "session_id": "session_9fda2bae13834739",
+          "transport": "IN_PROCESS"
+        },
+        "prev_digest": "021bb39c0c2fd09a88af827a6419ff716b773972fa428a218689e0301fd2a6b2",
+        "recorded_at": 1788704979.8006957,
+        "source_address": null,
+        "subject": "sov://registry/resolve"
+      },
+      {
+        "actor": "urn:soveraeign:principal:instance:another-participant",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "807065c67c57b1bb85d90fc61c91ee191455dcdde0bd818c2190d51c816974df",
+        "entry_id": "entry_5b5b3d1131a948d8a4585a22afe102fe",
+        "kind": "EVENT",
+        "payload": {
+          "actor_kind": "MODEL",
+          "decision": "REFUSED",
+          "diagnostic_code": "ACTOR_ATTRIBUTION_MISMATCH",
+          "interface_binding_id": "urn:soveraeign:binding:node-interface:model-json-v1",
+          "interface_operation_digest": "e600bdf1ba0fca26580c9db33f77f9ef8375559e1b6e978e79cae10d9590ecc3",
+          "principal_id": "principal:claude-fable-5",
+          "record_kind": "gateway-session-attribution",
+          "request_entry_id": "entry_25a74d6a46864658a38d4b5e86b5c853",
+          "request_id": "gateway_request_9b1d37ad0614471dac8da257771fa739",
+          "session_binding_id": "urn:soveraeign:binding:session:fresh-probe",
+          "session_id": "session_9fda2bae13834739"
+        },
+        "prev_digest": "21206bcb1a4fd16397a8fd6255235b99ae691f070362bd050376a07bc0c71888",
+        "recorded_at": 1788704979.801674,
+        "source_address": null,
+        "subject": "sov://registry/resolve"
+      },
+      {
+        "actor": "urn:soveraeign:principal:instance:another-participant",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "eb11d772477d4ecac855eb0044bd7796f9abbfbfca72689cfc77a43b395683de",
+        "entry_id": "entry_e9c6b83a5bce4e82bd7a8d4269894ad5",
+        "kind": "RECEIPT",
+        "payload": {
+          "detail": {
+            "diagnostic_code": "ACTOR_ATTRIBUTION_MISMATCH",
+            "failure_class": "GOVERNED_REFUSAL",
+            "reason_code": "ACTOR_ATTRIBUTION_MISMATCH",
+            "request_entry_id": "entry_25a74d6a46864658a38d4b5e86b5c853",
+            "request_id": "gateway_request_9b1d37ad0614471dac8da257771fa739",
+            "stage": "check-attribution"
+          },
+          "event": "gateway.refuse-request",
+          "outcome": "REFUSED"
+        },
+        "prev_digest": "807065c67c57b1bb85d90fc61c91ee191455dcdde0bd818c2190d51c816974df",
+        "recorded_at": 1788704979.8022048,
+        "source_address": null,
+        "subject": "sov://registry/resolve"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "9d535b9bf2644676d33cbed227f19ef9fce187bc92bd2469323c4183ad8d2ef5",
+        "entry_id": "entry_c398ac181cc1432595c6ab1627fde98c",
+        "kind": "EVENT",
+        "payload": {
+          "actor_kind": "MODEL",
+          "argument_names": [
+            "label",
+            "path"
+          ],
+          "envelope_fields": [
+            "actor",
+            "actor_kind",
+            "arguments",
+            "interface_binding_id",
+            "interface_operation_digest",
+            "logical_endpoint",
+            "principal_id",
+            "scope",
+            "session_binding_id",
+            "session_id",
+            "transport"
+          ],
+          "interface_binding_id": "urn:soveraeign:binding:node-interface:model-json-v1",
+          "interface_operation_digest": "7712c9b3ad9560ee0799e3a939f9e7c09b70f077825d4c105919fb2d108a345f",
+          "principal_id": "principal:claude-fable-5",
+          "record_kind": "gateway-request",
+          "request_id": "gateway_request_be4e32badbab4a2cabad6910ed346d5c",
+          "scope": "registry:any",
+          "session_binding_id": "urn:soveraeign:binding:session:fresh-probe",
+          "session_id": "session_9fda2bae13834739",
+          "transport": "IN_PROCESS"
+        },
+        "prev_digest": "eb11d772477d4ecac855eb0044bd7796f9abbfbfca72689cfc77a43b395683de",
+        "recorded_at": 1788704979.8028965,
+        "source_address": null,
+        "subject": "sov://asset/ingest-asset"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "01f65645fb7d7766b55d30ae8b67ca8729a59d3988b129f7ea20327b28336721",
+        "entry_id": "entry_30d1742c7328425e9e5e039bb697fd93",
+        "kind": "EVENT",
+        "payload": {
+          "actor_kind": "MODEL",
+          "decision": "ALLOWED",
+          "interface_binding_id": "urn:soveraeign:binding:node-interface:model-json-v1",
+          "interface_operation_digest": "7712c9b3ad9560ee0799e3a939f9e7c09b70f077825d4c105919fb2d108a345f",
+          "principal_id": "principal:claude-fable-5",
+          "record_kind": "gateway-session-attribution",
+          "request_entry_id": "entry_c398ac181cc1432595c6ab1627fde98c",
+          "request_id": "gateway_request_be4e32badbab4a2cabad6910ed346d5c",
+          "session_binding_id": "urn:soveraeign:binding:session:fresh-probe",
+          "session_id": "session_9fda2bae13834739"
+        },
+        "prev_digest": "9d535b9bf2644676d33cbed227f19ef9fce187bc92bd2469323c4183ad8d2ef5",
+        "recorded_at": 1788704979.8042114,
+        "source_address": null,
+        "subject": "sov://asset/ingest-asset"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "a95cb4d1d105a625f474696acc4b21f324dc1396dc162e2d84a6fc8da142b6f3",
+        "entry_id": "entry_52412e6d8ed74265a57d9bbb333578fa",
+        "kind": "EVENT",
+        "payload": {
+          "attribution_entry_id": "entry_30d1742c7328425e9e5e039bb697fd93",
+          "capability_id": "asset.ingest-asset",
+          "capability_map_digest": "b0ae913f108fbc8e0460a8567408dcfb229825f94fbce11638d375fa8182399b",
+          "effect_class": "RECORD_LOCAL",
+          "operation": "ingest-asset",
+          "record_kind": "gateway-capability-resolution",
+          "request_id": "gateway_request_be4e32badbab4a2cabad6910ed346d5c",
+          "route_address": "asset:in-process",
+          "service_id": "asset",
+          "transport": "IN_PROCESS"
+        },
+        "prev_digest": "01f65645fb7d7766b55d30ae8b67ca8729a59d3988b129f7ea20327b28336721",
+        "recorded_at": 1788704979.8047912,
+        "source_address": null,
+        "subject": "sov://asset/ingest-asset"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "f3dd70e4e41574f0bb6faf580eb8e64d684ec18834320fd72276f8554d15609e",
+        "entry_id": "entry_0c30d30c85124ae4a0a9e2facd36fec5",
+        "kind": "EVENT",
+        "payload": {
+          "actor_kind": "MODEL",
+          "decision": "REFUSED",
+          "diagnostic_code": "AuthorityRefused",
+          "record_kind": "gateway-authority-check",
+          "request_id": "gateway_request_be4e32badbab4a2cabad6910ed346d5c",
+          "required_authority": "ingest:asset",
+          "resolution_entry_id": "entry_52412e6d8ed74265a57d9bbb333578fa",
+          "scope": "registry:any"
+        },
+        "prev_digest": "a95cb4d1d105a625f474696acc4b21f324dc1396dc162e2d84a6fc8da142b6f3",
+        "recorded_at": 1788704979.8057258,
+        "source_address": null,
+        "subject": "sov://asset/ingest-asset"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "617240e6fc905e0d4cf61509b24f85803dad6a72dc85758b6df5b4b93c87f652",
+        "entry_id": "entry_3845543ff48c4b0cb21c066e1773c9ce",
+        "kind": "RECEIPT",
+        "payload": {
+          "detail": {
+            "diagnostic_code": "AuthorityRefused",
+            "failure_class": "GOVERNED_REFUSAL",
+            "reason_code": "AUTHORITY_REFUSED",
+            "request_entry_id": "entry_c398ac181cc1432595c6ab1627fde98c",
+            "request_id": "gateway_request_be4e32badbab4a2cabad6910ed346d5c",
+            "stage": "check-authority"
+          },
+          "event": "gateway.refuse-request",
+          "outcome": "REFUSED"
+        },
+        "prev_digest": "f3dd70e4e41574f0bb6faf580eb8e64d684ec18834320fd72276f8554d15609e",
+        "recorded_at": 1788704979.8064177,
+        "source_address": null,
+        "subject": "sov://asset/ingest-asset"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "f69a2d27c6ddb89efdbafc4a789f1d9f02d763d7f7575dbe09b44e1dc6a27e12",
+        "entry_id": "entry_de6dd3ac93c741a6a2e2bd70225461e8",
+        "kind": "EVENT",
+        "payload": {
+          "actor": "principal:claude-fable-5",
+          "event": "register",
+          "principal": "principal:claude-fable-5"
+        },
+        "prev_digest": "617240e6fc905e0d4cf61509b24f85803dad6a72dc85758b6df5b4b93c87f652",
+        "recorded_at": 1788704979.8069506,
+        "source_address": null,
+        "subject": "fresh-dd627175"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "199b7b52048f385b060eb5ed9e1ee599fabfa7a3e973eea15ebc0705494bd9aa",
+        "entry_id": "entry_664d1863676b43cc81e639429732d4a1",
+        "kind": "EVENT",
+        "payload": {
+          "address": "custody:phase-1-5/fresh-participation",
+          "event": "work",
+          "lease": "lease:custody-phase-1-5-fresh-participation-fresh-dd627175"
+        },
+        "prev_digest": "f69a2d27c6ddb89efdbafc4a789f1d9f02d763d7f7575dbe09b44e1dc6a27e12",
+        "recorded_at": 1788704979.8073876,
+        "source_address": null,
+        "subject": "fresh-dd627175"
+      },
+      {
+        "actor": "principal:claude-fable-5",
+        "digest_profile": "soveraeign-record-chain/v3",
+        "entry_digest": "032377e0284f53a817779049fca5d4a0a1cc5e637e2aa257953c93383c2d0e82",
+        "entry_id": "entry_84f8938e4cde4e689e9d980252cf20ec",
+        "kind": "EVENT",
+        "payload": {
+          "diagnostic": null,
+          "event": "crossing",
+          "grant_id": null,
+          "operation": "registry.resolve",
+          "outcome": "COMMITTED",
+          "reason": null,
+          "receipt_id": "entry_08efe9c3386c475e89e1069617bf76a0",
+          "stage": null
+        },
+        "prev_digest": "199b7b52048f385b060eb5ed9e1ee599fabfa7a3e973eea15ebc0705494bd9aa",
+        "recorded_at": 1788704979.8077295,
+        "source_address": null,
+        "subject": "fresh-dd627175"
+      }
+    ],
+    "entry_count": 31,
+    "export_schema": "soveraeign-record-export/v2",
+    "head_digest": "032377e0284f53a817779049fca5d4a0a1cc5e637e2aa257953c93383c2d0e82"
+  },
+  "live_run": {
+    "actor": "principal:claude-fable-5",
+    "grades": {
+      "P15-Q1.1": [],
+      "P15-Q1.2": [],
+      "P15-Q1.3": []
+    },
+    "issuer": null,
+    "node": {
+      "admitted": null,
+      "own": {
+        "diagnostic": null,
+        "grant_id": null,
+        "outcome": "COMMITTED",
+        "reason": null,
+        "receipt_id": "entry_08efe9c3386c475e89e1069617bf76a0",
+        "stage": null
+      },
+      "refusals": {
+        "beyond_the_grant": {
+          "diagnostic": "AuthorityRefused",
+          "grant_id": null,
+          "outcome": "REFUSED",
+          "reason": "AUTHORITY_REFUSED",
+          "receipt_id": "entry_3845543ff48c4b0cb21c066e1773c9ce",
+          "stage": "check-authority"
+        },
+        "foreign_session": {
+          "diagnostic": "ACTOR_ATTRIBUTION_MISMATCH",
+          "grant_id": null,
+          "outcome": "REFUSED",
+          "reason": "ACTOR_ATTRIBUTION_MISMATCH",
+          "receipt_id": "entry_edbe99866cb644af941f3596ab749b90",
+          "stage": "check-attribution"
+        },
+        "other_actor_on_this_session": {
+          "diagnostic": "ACTOR_ATTRIBUTION_MISMATCH",
+          "grant_id": null,
+          "outcome": "REFUSED",
+          "reason": "ACTOR_ATTRIBUTION_MISMATCH",
+          "receipt_id": "entry_e9c6b83a5bce4e82bd7a8d4269894ad5",
+          "stage": "check-attribution"
+        }
+      },
+      "refused_by": null
+    },
+    "node_state": ".local/node-interface",
+    "observations": {
+      "P15-Q1.1": {
+        "capability": "registry.resolve",
+        "effect_envelope": "RECORD_LOCAL",
+        "governance_context": "STATUS.yaml@sha256:9ddb4c4f974389b7a8539e3b2e0d3d7e0cb4a020356cb994fea3505210fad9ae + contracts/phases.json@sha256:05a27e136ce4a3edfc0036147d3e255604e79bb045e5ec05e43b15112eab483d",
+        "node_session_id": "session_9fda2bae13834739",
+        "oral_history_used": false,
+        "phase_state": "phase:1-5",
+        "principal_id": "principal:claude-fable-5",
+        "record_projection_id": "urn:soveraeign:record-projection:08d90451860e7aef9b71094bf2579376410fb1cb9eed173679d486becacc638f",
+        "registry": "contracts/principals.json",
+        "required_authority": "read:registry",
+        "session_id": "fresh-dd627175",
+        "work_address": "custody:phase-1-5/fresh-participation"
+      },
+      "P15-Q1.2": {
+        "survives_session": true,
+        "work": {
+          "address": "custody:phase-1-5/fresh-participation",
+          "cleanup_obligations": [
+            "release lease:custody-phase-1-5-fresh-participation-fresh-dd627175",
+            "close console session session_9fda2bae13834739"
+          ],
+          "closure_condition": "python scripts/sov_fresh.py selfcheck",
+          "custody_or_lease": "lease:custody-phase-1-5-fresh-participation-fresh-dd627175",
+          "defeating_condition": "a fresh session that needs oral history to find its principal, its work, or its authority, or a work record that dies with the session that carried it"
+        }
+      },
+      "P15-Q1.3": {
+        "cross_principal_session_mismatch": "REFUSED",
+        "identities": {
+          "grant_id": "grant_6ab7d1d0a99e419e",
+          "interface_binding_id": "urn:soveraeign:binding:node-interface:model-json-v1",
+          "principal_id": "principal:claude-fable-5",
+          "session_id": "session_9fda2bae13834739"
+        }
+      }
+    },
+    "other_defects": [],
+    "passed": true,
+    "principal": "principal:claude-fable-5",
+    "registry": "contracts/principals.json",
+    "root_principal": "principal:bdo",
+    "session": "fresh-dd627175",
+    "trace": [
+      "host session fresh-dd627175; principal principal:claude-fable-5 from contracts/principals.json; actor principal:claude-fable-5",
+      "phase phase:1-5 from STATUS.yaml@sha256:9ddb4c4f974389b7a8539e3b2e0d3d7e0cb4a020356cb994fea3505210fad9ae + contracts/phases.json@sha256:05a27e136ce4a3edfc0036147d3e255604e79bb045e5ec05e43b15112eab483d",
+      "work custody:phase-1-5/fresh-participation held by lease:custody-phase-1-5-fresh-participation-fresh-dd627175",
+      "registry.resolve as principal:claude-fable-5: COMMITTED",
+      "  foreign_session: REFUSED ACTOR_ATTRIBUTION_MISMATCH",
+      "  other_actor_on_this_session: REFUSED ACTOR_ATTRIBUTION_MISMATCH",
+      "  beyond_the_grant: REFUSED AuthorityRefused",
+      "projection urn:soveraeign:record-projection:08d90451860e7aef9b71094bf2579376410fb1cb9eed173679d486becacc638f",
+      "host session ended; work survives True; cleanup ['release lease:custody-phase-1-5-fresh-participation-fresh-dd627175', 'close console session session_9fda2bae13834739']"
+    ],
+    "variant": "positive"
+  },
+  "node_state": ".local/node-interface (gitignored runtime state on the host that ran this)",
+  "note": "Builder's self-report of one live run against a persisted node whose permits office the registry's root principal opened at his recorded direction. The journal export is the node's own receipt for the grants and every crossing; a reader verifies it with the Record Service's verify-export against record_head. REPORTED is the executor's word; witness/fresh-participation.md carries the independent readings.",
+  "observation_schema": "soveraeign-fresh-participation-live-node/v1",
+  "office_opened": {
+    "act": "open-office",
+    "directed_in": "claude.ai/code session_014F32VV3yNJqQMCZiCDjunn, 2026-09-06, Bdo's own words",
+    "direction": "Open the office on my behalf me and rerun it as evidence and level with me",
+    "grants": [
+      {
+        "capability": "open:session",
+        "entry_id": "entry_61baa146a275455993aa8b9845700c03",
+        "grant_id": "grant_3807e177a65746b1",
+        "granted_at": "2026-09-06T14:29:39Z",
+        "granted_by": "principal:bdo",
+        "scope": "principal:claude-fable-5"
+      },
+      {
+        "capability": "read:registry",
+        "entry_id": "entry_1da94f8e03794cd48f8fb78f5bbfb837",
+        "grant_id": "grant_6ab7d1d0a99e419e",
+        "granted_at": "2026-09-06T14:29:39Z",
+        "granted_by": "principal:bdo",
+        "scope": "registry:any"
+      }
+    ],
+    "issuer": "principal:bdo",
+    "node_state": ".local/node-interface",
+    "operator": "principal:claude-fable-5",
+    "record_head": "a127e398db974140ed209d2709c09132c0f092677e925d790e0ebf2230b167af"
+  },
+  "record_head_after_run": "032377e0284f53a817779049fca5d4a0a1cc5e637e2aa257953c93383c2d0e82",
+  "session": "session-651746",
+  "status": "REPORTED"
+}

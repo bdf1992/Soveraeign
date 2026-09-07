@@ -145,13 +145,27 @@ def _cited_export(journal: dict[str, Any], heads: dict[str, str]) -> tuple[str |
     """
     address = str(journal.get("address") or "")
     node = str(journal.get("node") or "")
+    head = str(journal.get("head") or "")
     if address in heads:
         return address, ""
     if not node:
         return None, (f"cites {address or '(no address)'}, which is no export under nodes/; a "
                       "report whose node has recorded more since names its node so the "
                       "citation keeps its meaning")
-    held = next((path for path in sorted(heads) if _node_id_of(_export_node(path)) == node), None)
+    if not address:
+        return None, f"names node {node} and no address; a citation names the export it read"
+    if _node_id_of(_export_node(address)) != node:
+        return None, (f"cites {address}, whose node is not the {node} it declares; naming a node "
+                      "resolves a superseded address, never a wrong one")
+    if not head or address.rsplit("/", 1)[-1] != head[:HEAD_PREFIX] + ".json":
+        named = head[:HEAD_PREFIX] or "(none)"
+        return None, (f"cites {address}, which is not named by the head {named} it declares; an "
+                      "export is named by the head it replays to, so a superseded address still "
+                      "names its own head")
+    # One node comparison, above. The export is then found by the address's own directory,
+    # so there is no second place for a substring reading to creep in (`CLAUDE.md` T3).
+    held = next((path for path in sorted(heads)
+                 if _export_node(path) == _export_node(address)), None)
     if held is None:
         return None, f"names node {node}, which has no export under nodes/"
     return held, ""
@@ -201,9 +215,14 @@ def _grade_citation(path: Path, report: dict[str, Any], heads: dict[str, str]) -
     if position is None:
         return defects + [f"{shown}: cites head {cited_head[:HEAD_PREFIX] or '(none)'}, which is "
                           f"not an entry in {resolved}"]
-    if "entries" in journal and int(journal["entries"]) != position:
-        defects.append(f"{shown}: cites {journal['entries']} entries, but its head is entry "
-                       f"{position} of {resolved}")
+    if "entries" in journal:
+        try:
+            declared = int(journal["entries"])
+        except (TypeError, ValueError):
+            declared = None
+        if declared != position:
+            defects.append(f"{shown}: cites {journal['entries']} entries, but its head is entry "
+                           f"{position} of {resolved}")
     ids = _recorded_ids(entries[:position])
     mentioned = set(report.get("cited_entries") or []) | _ids_in(report)
     missing = sorted(item for item in mentioned if item not in ids)

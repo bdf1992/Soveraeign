@@ -229,6 +229,56 @@ class CitationGate(JournalCase):
         defects, _ = self.grade()
         self.assertTrue(any("grant_never_recorded_0000" in item for item in defects), defects)
 
+    def stale(self, **over) -> dict:
+        """A citation of the pre-advance state, with fields overridden."""
+        first = json.loads(self.exported["path"].read_text(encoding="utf-8"))
+        journal = {"address": self.address(), "node": "node:local",
+                   "head": self.exported["head"], "entries": first["entry_count"]}
+        journal.update(over)
+        return journal
+
+    def test_naming_a_node_does_not_excuse_an_address_of_another_node(self) -> None:
+        bad = self.address().replace("/node-local/", "/node-elsewhere/")
+        self.report("wrongnode", journal=self.stale(address=bad))
+        self.advanced()
+        defects, _ = self.grade()
+        self.assertTrue(any("whose node is not the node:local it declares" in item
+                            for item in defects), defects)
+
+    def test_a_declared_node_must_equal_the_nodes_name_and_not_merely_contain_it(self) -> None:
+        """`CLAUDE.md` trap T3: a substring reading takes node:loc for node:local."""
+        self.report("substring", journal=self.stale(node="node:loc"))
+        self.advanced()
+        defects, _ = self.grade()
+        self.assertTrue(any("whose node is not the node:loc it declares" in item
+                            for item in defects), defects)
+
+    def test_naming_a_node_does_not_excuse_a_missing_address(self) -> None:
+        journal = self.stale()
+        del journal["address"]
+        self.report("noaddress", journal=journal)
+        self.advanced()
+        defects, _ = self.grade()
+        self.assertTrue(any("and no address" in item for item in defects), defects)
+
+    def test_an_address_must_be_named_by_the_head_it_declares(self) -> None:
+        """A superseded address still names its own head; a fabricated one does not."""
+        invented = self.address().rsplit("/", 1)[0] + "/deadbeefdead.json"
+        self.report("invented", journal=self.stale(address=invented))
+        self.advanced()
+        defects, _ = self.grade()
+        self.assertTrue(any("is not named by the head" in item for item in defects), defects)
+
+    def test_a_truncated_head_does_not_resolve_by_prefix(self) -> None:
+        self.report("prefix", journal=self.stale(head=self.exported["head"][:20]))
+        defects, _ = self.grade()
+        self.assertTrue(any("is not an entry in" in item for item in defects), defects)
+
+    def test_an_entry_count_that_is_not_a_number_is_a_defect_not_a_traceback(self) -> None:
+        self.report("wordy", journal=self.stale(entries="many"))
+        defects, _ = self.grade()
+        self.assertTrue(any("cites many entries" in item for item in defects), defects)
+
     def test_a_node_has_one_head(self) -> None:
         second = self.exported["path"].with_name("aaaaaaaaaaaa.json")
         document = json.loads(self.exported["path"].read_text(encoding="utf-8"))

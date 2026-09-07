@@ -3,8 +3,179 @@
 ```witness
 standing_supported  BUILT -> WITNESSED (citation-gate repair; the recorded act and reading as journal facts)
 subject             office-act-and-citation
-revision            a13b888f860a0b866d706f04e9eacd22fda769af
-pass                1
+revision            575d65f5efb32036183ffdc9ed4bbf557677c103
+pass                2
+```
+
+## Pass 2: commit 575d65f (2026-09-07)
+
+**Verdict: RATIFIABLE-WITH-CONDITIONS.** Pass 1's F1 is repaired where it mattered
+and the repair is the right shape: the address is measured again, and the node is
+named rather than inferred from a string. F3 is closed better than it was asked to
+be. Two of F2's three mutants are closed with cases. What holds this pass short of
+clean is one regression the count repair introduced, one mutant reported closed that
+is still alive, and what is left of F1.
+
+- **Commit witnessed:** `575d65f5efb32036183ffdc9ed4bbf557677c103`, HEAD of
+  `claude/sovereign-phase-1-5-5uzffu`, two commits after `a13b888`; candidate tree
+  `e9d7359fbf698f405396871c028105bb76871cfa`; base `6498fc7b3172476df54882d7b65c47f52366c8c8`.
+- **Trunk at witness time:** `b1448eeb458afa4a8c60b57c1cb46906246af7f7`. The pass is
+  attestable; see *The moved base* below.
+- **Working tree witnessed against:** the worktree at `575d65f`, porcelain empty before
+  every measurement and holding only this participant's pass-2 deposits after. HEAD was
+  re-read before and after every command and never moved. Measurements ran in a clean
+  full-history clone at the same commit.
+- **Observed:** 2026-09-07T18:20Z (UTC).
+- **Receipt:** `witness/observations/2026-09-07-office-act-and-citation-observation-2.json`.
+- **Landing record:** `.local/observations/2026-09-07-office-act-and-citation-landing-2.json`.
+- **Absorbing these deposits:** they stale `docs/documentation.html` and nothing
+  else. `python scripts/sov_docs.py check` fails with them present;
+  `python scripts/sov_surface.py check` exits 0 either way. Rebuild the one page.
+- **Independence:** this participant wrote pass 1's findings and none of the repairs.
+  It did not see the builder's mutant commands and did not run them; every disposition
+  below was re-derived from twelve adversarial cases and ten mutants of its own.
+
+### Dispositions, re-derived
+
+**F1 — closed where it mattered, with a residual.** A report whose `address` names a
+file no longer under `nodes/`, and which declares no node, now earns `which is no
+export under nodes/`. That is the exact case pass 1 constructed, and it is caught.
+Resolution is by node identity through `_node_id_of(_export_node(path))` rather than by
+string granularity, which is the better shape: it says what it means. See G3 for what
+is left.
+
+**F2 — two of three.** Understating the entry count is refused (`int(...) != position`)
+and a six-character export filename is refused (`head[:12] == stem`); both carry new
+cases and both of my mutants for them die. The third is not closed; see G2.
+
+**F3 — closed, and stronger than asked.** `grant_id` is in `ID_KEYS`, and
+`_recorded_ids` reads grants out of payloads. A fabricated grant id is refused; a real
+grant at or below the cited head passes; and a real grant the node recorded *after* the
+cited head is refused, which pass 1 did not ask for and should have. The `session_id`
+lesson checks out independently: adding `session_id` to `ID_KEYS` on a copy of the tree
+makes `sov_node.py journals` exit 1 with `names ids the node had not recorded at its
+cited head: fresh-e39c72b9` — the probe's own *host* session name, which the node never
+records. The docstring's reason is the true reason.
+
+**F4, F5, F6 — recorded adequately.** `observation_schema_note` says plainly that no
+such schema exists at v1, v2 or v3 and that nothing validates the file.
+`what_the_record_does_not_hold` names the direction's absence from the node, the
+unauthenticated `principal:bdo`, and the stale serving-model claim routed as owner-held
+identity naming. Each sits in the object it is about. On the question asked back: F6 is
+correctly routed and I would not repair it here. F4 is repairable inside this concern —
+write the schema, drop the field, or carry the note on all three reports, since only
+the newest has it. F5 is repairable in part: `open-office` could record the direction
+and `directed_in` as an entry the node keeps, which puts the words in the record
+instead of a gitignored ndjson without authenticating anyone; but that changes a
+recorded shape, and whether it stays inside this concern or crosses into the console
+record contract is the builder's call to make and to state.
+
+**F7 — answered, with two small inaccuracies.** All five spans are there, 111–117
+included. The 111–117 line omits the sharpest fact in the span, the
+`console.open-session` receipt `REFUSED NO_LIVE_GRANT` at entry 111. And 124–173 is
+written as one entering and one crossing, where the chain holds two sessions —
+`session_0fc948f67d3c40d8` at 124–148 and `session_5bbe1d42cdd64427` at 149–173 — each
+entering, crossing once and refused three times.
+
+**F8 — half of it was mine and is withdrawn.** `docs/documentation.html` was genuinely
+staled by the pass-1 deposits and is rebuilt here; the real check reads `PASS:
+documentation page matches 287 documents`. `docs/surface.html` was never stale. The
+`FAIL: docs/surface.html is stale` line I cited is a planted case inside
+`test_sov_surface` in tooling shard 4, and `python scripts/sov_surface.py check` exits 0
+with `PASS`. Pass 1 read a planted line out of stdout as a verdict — the exact defect
+this repository names by example — and the correction belongs to this witness, not to
+the builder. Rebuilding only the documentation page was right.
+
+### The moved base
+
+Attestable, and the reconciliation is mechanical. `b1448ee` changes three paths over
+`6498fc7`, which is exactly `git merge-base` of this branch and the trunk:
+`.clarity/coverage.json`, `ROADMAP.md`, and `docs/documentation.html`. The only overlap
+with this candidate is the generated page. `git merge --no-commit --no-ff b1448ee` in a
+clone of `575d65f` exits 1 with exactly one conflict, in `docs/documentation.html`; the
+other two merge clean. So the un-reconciled state hides no source conflict, and the
+conflict that exists is resolved by rebuilding the page rather than by choosing a side —
+choosing either side leaves a stale page the check catches. Two limits worth stating:
+this observation covers the candidate, not the merge result; and if reconciliation is
+done by rebase the candidate takes a new SHA and this observation does not transfer to
+it.
+
+### Findings
+
+**G1 — a traceback where a defect used to be.** `int(journal["entries"])` raises out of
+`grade()` when a report states a non-numeric or null count. At `a13b888` those same two
+reports produced clean defects: `cites many entries, but its head is entry 10 of ...`
+and `cites None entries, ...`. At `575d65f` they raise `ValueError` and `TypeError`,
+which propagate through `command_journals` and out of the check. It fails closed, so
+nothing bad passes — but the suite keeps a case named
+`test_an_edited_entry_is_a_defect_not_a_traceback`, and this is that defect,
+introduced by the count repair. Coerce or refuse around the count, and pin it.
+
+**G2 — the mutant pass 1 named is still alive.** Pass 1's third survivor was the
+*cited-head* position lookup matched by `startswith` instead of equality, in
+`_grade_citation`. It survives the 23-case suite unchanged. The repair fixed a real
+second instance of the same shape — the export filename in `_grade_export` — and
+reported the finding closed. Nothing pins full-digest equality on the cited head, and
+the twelve-character prefix is the form this repository writes into every export
+filename and every `journals` output line, so under that mutant a report citing
+`"head": "23d3b48086be"` would resolve. I take the disposition as honestly made and the
+finding as open.
+
+**G3 — the address is unmeasured whenever a node is declared.** `_cited_export` returns
+early on an exact address match and otherwise resolves on `node` alone, so once `node`
+is present the address is never read. Four constructed reports pass with no defect: a
+fabricated address under the right node; an address naming a different node's directory
+entirely; no address at all; and a live address contradicted by a node that has no
+export. The repaired 2026-09-06 report is itself in the first of those states — its
+`address` still names the file this branch deleted — and the `address_note` gives the
+purpose of the repair as "so a reader is not sent to a file that is no longer in the
+tree". That is now true of `verify` and not of `address`. Two comparisons using
+functions already in the module close it: when `node` is declared and `address` is
+non-empty, require `_node_id_of(_export_node(address)) == node`; when `address` is in
+`heads`, require the declared node to agree.
+
+**G4 — node equality is right and unpinned.** The comparison is `==` today; a mutant
+weakening it to substring containment survives the suite. `CLAUDE.md` T3 records that
+this repository has already shipped a substring comparison over exactly this kind of
+token and had it produce a false claim in a governed document. One case with a node id
+that contains another closes it.
+
+### Repair or rewrite
+
+Repair, on my reading, and the question was worth asking. Nothing that constitutes the
+2026-09-06 report's claim moved: `head`, `entries` and `cited_entries` are
+byte-identical, and the diff is three lines — `address_note` added, `node` added,
+`verify` repointed. The `verify` string was an instruction to a reader that named a file
+the repository no longer contains; it was wrong, and wrong is not evidence. The change
+is disclosed inside the same object rather than made silently, and the original bytes
+survive at `a13b888` and every commit before it. What would have made it a rewrite:
+touching `head`, `entries` or `cited_entries`, or making the change with no note. The
+one thing left undone is that `address` still points at the deleted file, which is G3.
+
+### Judgement
+
+Unchanged and still unanswered, correctly: does Bdo affirm that he directed the act
+recorded at entries 118 to 123 of `node:local`, in the words quoted in
+`office_act.direction`? Putting it to him is the right disposition; nothing in the
+repository can answer it.
+
+### Commands
+
+```
+git clone --no-local <this worktree> <clone>; checkout 575d65f   tree e9d7359, porcelain empty
+python3 scripts/verify.py                                        exit 0  PASS: 52 checks in 15.030s
+python3 scripts/lint.py                                          exit 0  1230 text files, 10 named debt
+python3 scripts/sov_node.py journals                             exit 0
+python3 -m unittest scripts.tests.test_sov_node_journal          exit 0  23 tests
+python3 scripts/sov_surface.py check                             exit 0  PASS (the log line is planted)
+python3 scripts/sov_witness_layer.py records                     exit 0  31 receipts, 0 unusable
+python3 scripts/sov_clarity.py check                             exit 0
+python3 scripts/sov_diagrams.py                                  exit 0
+twelve adversarial citation cases against journal.grade()        8 as expected, 4 admitted (G3), 2 raised (G1)
+ten mutants of scripts/sovnode/journal.py                        8 killed, 2 survived (G2, G4)
+ID_KEYS + session_id, then sov_node.py journals                  exit 1 on fresh-e39c72b9 (confirms F3's reason)
+the same malformed counts replayed at a13b888                    clean defects, no exception (G1 is a regression)
+git merge --no-commit --no-ff b1448ee into a clone of 575d65f    exit 1, one conflict, the generated page only
 ```
 
 ## Pass 1: commit a13b888 (2026-09-07)

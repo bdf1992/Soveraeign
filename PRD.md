@@ -442,7 +442,7 @@ satisfied this way is Bdo's call.
 | Measure | Read by | Today | Target |
 | --- | --- | --- | --- |
 | Journeys walkable end to end | `sov_canon.py trace` | 2 of 14 | every in-scope journey |
-| Declared operations reachable | the operation surface | 5 of 140 | every operation a live journey needs |
+| Declared operations reachable | the operation surface | 5 of 135 | every operation a live journey needs |
 | Requirements independently observed | `sov_standing.py` | 0 requirements; the tool's one supported claim (`observation_service_status`) is a service standing, not a P0 requirement | every P0 |
 | Promises carried by no criterion | this document | 2 | 0 |
 | Product areas serving no requirement | this document | 0 | stays 0 |

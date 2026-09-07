@@ -206,7 +206,8 @@
     "Whether an ungraded number is right. Silence here is coverage, never confirmation.",
     "Counts inside frozen_paths, which are dated observations rather than current claims.",
     "Wall-clock timings, percentages, version numbers, and identifiers that happen to be numeric.",
-    "Whether a graded claim means what its sentence means. This reads a number and a noun; it does not read the clause around them. The subset guard above is the whole defence against that, and it is a word list."
+    "Whether a graded claim means what its sentence means. This reads a number and a noun; it does not read the clause around them. The subset guard above is the whole defence against that, and it is a word list.",
+    "A total stated away from its noun. PRD.md carries `5 of 140` in a table whose noun is in the header column, so nothing on the line says what 140 counts. It was stale, and a clarity review found it rather than this check. A line-local reader cannot bind it, and inventing a rule for table columns would grade whatever else happens to sit in one."
   ],
   "subset_qualifiers": {
     "words": [

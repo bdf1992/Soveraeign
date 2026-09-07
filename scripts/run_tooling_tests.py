@@ -85,6 +85,14 @@ DEFAULT_WORKERS = 4
 # module measures 0.05s to 0.1s. Resulting synthetic loads 100/100/100/99 and measured
 # shards 12.1s, 9.6s, 11.0s and 9.8s, a 12.6s wall against 18.9s before. Still
 # scheduling hints, never evidence or budget.
+# Re-read 2026-09-07 at 112 modules when test_sov_counts.py arrived, measured at 0.08s
+# and so a bounded module carrying no entry. Every weight below was re-timed and held:
+# test_sov_fresh 5.05s, test_sov_strand 3.20s, test_sov_reuse 2.93s, test_sov_backlog
+# 2.44s, test_sov_ci_subject 2.35s. What that one light module did move was the packing,
+# which is not monotonic in the weight: the heaviest module's peer count flipped while
+# the table was still correct. The test that read peers against the live population now
+# reads the critical shard instead, which is what these weights are for and what the
+# paragraph above tuned them against.
 MODULE_WEIGHTS = {
     "test_sov_fresh.py": 51, "test_sov_strand.py": 36, "test_sov_reuse.py": 30,
     "test_sov_backlog.py": 25, "test_sov_ci_subject.py": 23,

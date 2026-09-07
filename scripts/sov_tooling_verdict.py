@@ -23,6 +23,10 @@ PASSING = (
     "    def test_true(self):\n"
     "        self.assertTrue(True)\n"
 )
+SWALLOWING = (
+    "import sys\n\n"
+    "sys.exit(0)   # exits at import and takes the rest of its shard with it\n"
+)
 FAILING = (
     "import unittest\n\n"
     "class Bad(unittest.TestCase):\n"
@@ -70,9 +74,22 @@ def run_case(
 def verdict_defects() -> list[str]:
     cases = (
         ({"test_ok": PASSING, "test_bad": FAILING}, (), False, "one failing module"),
-        ({"test_ok": PASSING, "test_bad": FAILING}, ("--failfast",), False, "failing module under --failfast"),
+        # This slot held `--failfast`, which the runner never implemented: argv was
+        # ignored, so the flag did nothing and the case graded the runner by accident.
+        # Once the runner grew a real parser the same case began grading argparse's
+        # usage error instead, before any module loaded. Both halves are now named.
+        ({"test_ok": PASSING, "test_bad": FAILING}, ("--weights",), False,
+         "failing module under a flag the runner does implement"),
+        ({"test_ok": PASSING}, ("--no-such-flag",), False,
+         "an unrecognized flag is refused rather than ignored"),
         ({"test_ok": PASSING}, (), True, "one passing module"),
         ({}, (), False, "no test modules"),
+        # A module that exits at import kills its shard, which then returns 0 and
+        # simply omits its modules. Until the runner reported per-module costs there
+        # was nothing to compare against the discovered population, and this tree
+        # reported PASS over tests that never executed. Base b1448ee exits 0 here.
+        ({"test_ok": PASSING, "test_gone": SWALLOWING}, (), False,
+         "a module that exits at import is not silently dropped"),
     )
     return [
         defect

@@ -10,6 +10,12 @@ prose. Three such campaigns each found the previous table inverted.
 This driver keeps unittest as the oracle and the existing one-process-per-shard
 isolation, and adds the reading that was being thrown away: the wall cost of
 each module, on the same run that proves the modules pass.
+
+Load order does change, and the docstring said otherwise until a witness read it:
+`python -m unittest a b c` imports every module before running any test, while this
+runs each module's tests before importing the next. No module in the population
+depends on that today. A module that comes to depend on it would be relying on a
+neighbour's import side effect, which is worth failing over rather than preserving.
 """
 
 from __future__ import annotations

@@ -149,6 +149,23 @@ def module_costs(output: str) -> dict[str, float]:
     return costs
 
 
+def failing_modules(output: str) -> set[str]:
+    """The modules the driver reported as failing, read from the same lines as the cost.
+
+    The driver has always printed this verdict and nothing consumed it, so a failing
+    module's seconds sat in the cost table indistinguishable from a passing one's. The
+    run's verdict still comes from the shard's exit code and never from this text.
+    """
+    failing = set()
+    for line in output.splitlines():
+        if not line.startswith(COST_PREFIX + " "):
+            continue
+        parts = line.split()
+        if len(parts) >= 4 and parts[3] == "FAIL":
+            failing.add(parts[1])
+    return failing
+
+
 def measured_weights(costs: dict[str, float]) -> dict[str, int]:
     """Derive the scheduling table from measurement: seconds times ten, at or above 1s.
 
@@ -162,16 +179,19 @@ def measured_weights(costs: dict[str, float]) -> dict[str, int]:
     }
 
 
-def report_costs(costs: dict[str, float], shards: int, threshold: float = 1.0) -> None:
+def report_costs(costs: dict[str, float], shards: int, threshold: float = 1.0,
+                 failing: set[str] | None = None) -> None:
     """Print what each module cost, so an overrun names the module that owns it."""
     if not costs:
         return
+    failing = failing or set()
     ranked = sorted(costs.items(), key=lambda item: (-item[1], item[0]))
-    named = [item for item in ranked if item[1] >= threshold]
-    rest = [item for item in ranked if item[1] < threshold]
+    named = [item for item in ranked if item[1] >= threshold or item[0] in failing]
+    rest = [item for item in ranked if item[1] < threshold and item[0] not in failing]
     print(f"\n== tooling cost: {len(costs)} modules, {shards} shards ==")
     for name, seconds in named:
-        print(f"  {seconds:7.3f}s  {name}")
+        mark = "  FAILED" if name in failing else ""
+        print(f"  {seconds:7.3f}s  {name}{mark}")
     if rest:
         total = sum(seconds for _, seconds in rest)
         print(f"  {total:7.3f}s  ({len(rest)} module(s) under {threshold:.3f}s)")
@@ -196,9 +216,11 @@ def main(argv: list[str] | None = None) -> int:
         results = list(pool.map(_run, buckets))
     failed = False
     costs: dict[str, float] = {}
+    failing: set[str] = set()
     shard_log: list[str] = []
     for index, ((code, output), bucket) in enumerate(zip(results, buckets), start=1):
         costs.update(module_costs(output))
+        failing |= failing_modules(output)
         names = ", ".join(path.stem for path in bucket)
         shard_log.append(f"\n== tooling shard {index}/{len(buckets)}: {names} ==")
         body = "\n".join(
@@ -214,7 +236,17 @@ def main(argv: list[str] | None = None) -> int:
         return 1 if failed else 0
     for line in shard_log:
         print(line)
-    report_costs(costs, len(buckets))
+    report_costs(costs, len(buckets), failing=failing)
+    # Every module reports its cost before its verdict, so a module with no cost line
+    # never ran. A shard that dies quietly -- a module calling sys.exit(0) at import
+    # takes its whole shard with it -- returns 0 and its modules simply vanish. Before
+    # this run held the costs there was nothing to compare and the suite reported PASS
+    # over tests that never executed. This is that comparison.
+    silent = sorted({path.stem for path in modules} - set(costs))
+    if silent:
+        print(f"FAIL: {len(silent)} module(s) reported no cost, so they did not run: "
+              f"{', '.join(silent)}")
+        failed = True
     if failed:
         print(f"FAIL: repository tooling tests ({len(modules)} modules, {len(buckets)} shards)")
         return 1

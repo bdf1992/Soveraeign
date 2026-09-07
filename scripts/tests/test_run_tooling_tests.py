@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from pathlib import Path
+from unittest import mock
 import sys
+import time
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -162,6 +164,39 @@ class PerModuleCost(unittest.TestCase):
         self.assertGreaterEqual(seconds, 0.0)
         self.assertIn("Failed to import test module", output)
 
+    @staticmethod
+    def suite_that_takes(seconds: float) -> unittest.TestSuite:
+        """A one-test suite that really spends `seconds`, for timing the timer."""
+
+        class Slow(unittest.TestCase):
+            def test_spends_the_time(self):
+                time.sleep(seconds)
+
+        return unittest.TestSuite([Slow("test_spends_the_time")])
+
+    def test_the_reported_cost_tracks_real_elapsed_work(self):
+        """The residual the witness pressed: nothing proved a number meant anything.
+
+        Asserting only that a cost is positive would pass against a constant. This
+        runs a suite that really spends a known interval and reads the cost back.
+        """
+        with mock.patch.object(unittest.defaultTestLoader, "loadTestsFromName",
+                               return_value=self.suite_that_takes(0.25)):
+            passed, seconds, _ = driver.run_module("any_name")
+        self.assertTrue(passed)
+        self.assertGreaterEqual(seconds, 0.25)
+        self.assertLess(seconds, 5.0, "the reported cost must be this module's, not the run's")
+
+    def test_a_faster_module_reports_a_smaller_cost_than_a_slower_one(self):
+        """The defeat of a timer that reports a constant, which the case above admits."""
+        with mock.patch.object(unittest.defaultTestLoader, "loadTestsFromName",
+                               return_value=self.suite_that_takes(0.01)):
+            _, quick, _ = driver.run_module("any_name")
+        with mock.patch.object(unittest.defaultTestLoader, "loadTestsFromName",
+                               return_value=self.suite_that_takes(0.30)):
+            _, slow, _ = driver.run_module("any_name")
+        self.assertLess(quick, slow)
+
     def test_a_loader_that_raises_refuses_one_module_and_not_the_whole_shard(self):
         """The guard around the loader, which no module name can reach.
 
@@ -171,25 +206,36 @@ class PerModuleCost(unittest.TestCase):
         shard share one process: an exception escaping here would lose the cost
         reading for every module beside it, which is the reading this run adds.
         """
-        original = unittest.defaultTestLoader.loadTestsFromName
-
-        def explode(name):
-            raise RuntimeError("loader exploded")
-
-        unittest.defaultTestLoader.loadTestsFromName = explode
-        try:
-            passed, seconds, output = driver.run_module("test_sov_kernel")
-        finally:
-            unittest.defaultTestLoader.loadTestsFromName = original
+        with mock.patch.object(unittest.defaultTestLoader, "loadTestsFromName",
+                               side_effect=RuntimeError("loader exploded")):
+            passed, seconds, output = driver.run_module("any_name")
+        self.assertNotIn("loadTestsFromName", vars(unittest.defaultTestLoader),
+                         "the patch must leave no residue on the process-wide loader")
         self.assertFalse(passed)
         self.assertGreaterEqual(seconds, 0.0)
         self.assertIn("could not be loaded", output)
         self.assertIn("loader exploded", output)
 
-    def test_a_module_that_passes_reports_its_cost(self):
-        passed, seconds, _ = driver.run_module("test_sov_kernel")
-        self.assertTrue(passed)
-        self.assertGreater(seconds, 0.0)
+    def test_a_failing_module_is_read_back_from_the_verdict_it_reported(self):
+        failing = run_tooling_tests.failing_modules(
+            f"{driver.COST_PREFIX} test_a 1.500 PASS\n"
+            f"{driver.COST_PREFIX} test_b 0.030 FAIL\n"
+        )
+        self.assertEqual(failing, {"test_b"})
+
+    def test_a_module_that_reported_no_cost_is_named_as_not_having_run(self):
+        """The swallow this run can now refuse.
+
+        A module that exits its shard at import takes the shard's remaining modules
+        with it and the shard returns 0, so before the costs existed there was
+        nothing to compare and the suite reported PASS over tests that never ran.
+        """
+        declared = {"test_a", "test_b", "test_c"}
+        reported = run_tooling_tests.module_costs(
+            f"{driver.COST_PREFIX} test_a 0.100 PASS\n"
+            f"{driver.COST_PREFIX} test_b 0.100 PASS\n"
+        )
+        self.assertEqual(sorted(declared - set(reported)), ["test_c"])
 
 
 if __name__ == "__main__":

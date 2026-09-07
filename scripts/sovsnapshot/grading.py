@@ -24,6 +24,14 @@ from sovsnapshot import claims
 
 DRIFTED = "DRIFTED"
 UNANSWERABLE = "UNANSWERABLE"
+DEFERRED = "DEFERRED"
+
+#: A page carrying this string states its numbers by naming the command that prints
+#: them, so a claim it does not state is deferred rather than drifted. Without the
+#: marker an absent number is still drift, because deleting a line must not be a way
+#: past the gate. The marker is the command itself, so a page cannot defer to a
+#: reader that does not exist without the deferral being visibly wrong.
+DEFERRAL_MARKER = "python scripts/sov_snapshot.py numbers"
 
 
 class Finding(NamedTuple):
@@ -56,9 +64,14 @@ def grade(text: str, derived: dict[str, int],
     for claim in claims.CLAIMS:
         stated = read_claim(text, claim)
         if not stated:
-            findings.append(Finding(DRIFTED, claim.name,
-                                    "the page states no number, so nothing can be "
-                                    "checked against the record"))
+            if DEFERRAL_MARKER in text:
+                findings.append(Finding(DEFERRED, claim.name,
+                                        "the page states no number and defers to "
+                                        f"`{DEFERRAL_MARKER}`"))
+            else:
+                findings.append(Finding(DRIFTED, claim.name,
+                                        "the page states no number, so nothing can be "
+                                        "checked against the record"))
             continue
         if len(set(stated)) > 1:
             # Before consulting the derived values: two numbers on one page

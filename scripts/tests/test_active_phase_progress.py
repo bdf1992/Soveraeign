@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 from pathlib import Path
+import subprocess
 import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+import sov_active_phase_progress as active  # noqa: E402
 import sov_phase_progress as progress  # noqa: E402
 
 
@@ -76,6 +78,71 @@ class ActivePhaseFloor(unittest.TestCase):
         declared["exit_custody_floors"]["custody:phase-1-5/not-an-exit"] = "ROOT_POINT"
         defects = progress.grade_active_phase("phase:1-5", phase(), declared, [custody()])
         self.assertIn("EXIT_CUSTODY_UNTRACKED", codes(defects))
+
+
+class TheReaderCanBeRun(unittest.TestCase):
+    """The reader a fresh participant is told to run must say something.
+
+    It held only functions until 2026-09-07, so running it printed nothing and
+    exited 0 while CLAUDE.md and decisions/0102 both named it as the thing that
+    grades the active phase. Seven witness passes recorded the silence and none
+    could refuse it: a module with no entry point has no behaviour to defeat.
+    These cases are that behaviour.
+    """
+
+    PHASE = {
+        "phase_id": "phase:test",
+        "title": "A Test Phase",
+        "exit_clauses": [
+            {"clause_id": "T-X1", "verdict": "NOT_EARNED", "held_by": "custody:test/carried"},
+            {"clause_id": "T-X2", "verdict": "NOT_EARNED", "held_by": "custody:test/empty"},
+        ],
+    }
+    RECORDS = [
+        {"custody_id": "custody:test/carried", "entry_stage": "ROOT_POINT",
+         "members": [{"address": "scripts/thing.py", "stage": "VERTICAL_SLICE"}]},
+        {"custody_id": "custody:test/empty", "entry_stage": "ROOT_POINT", "members": []},
+    ]
+    PROFILE = {"exit_custody_floors": {"custody:test/carried": "ROOT_POINT",
+                                       "custody:test/empty": "ROOT_POINT"}}
+
+    def test_the_module_has_an_entry_point(self) -> None:
+        """The defect itself: `python scripts/sov_active_phase_progress.py` did nothing."""
+        source = (ROOT / "scripts" / "sov_active_phase_progress.py").read_text(encoding="utf-8")
+        self.assertIn('if __name__ == "__main__":', source)
+        self.assertTrue(callable(getattr(active, "main", None)))
+
+    def test_running_it_against_the_live_repository_prints_and_names_the_phase(self) -> None:
+        result = subprocess.run(
+            [sys.executable, "scripts/sov_active_phase_progress.py"],
+            cwd=str(ROOT), capture_output=True, text=True, check=False,
+        )
+        self.assertTrue(result.stdout.strip(), "the reader must not be silent")
+        self.assertIn(active.status_phase(), result.stdout)
+
+    def test_every_exit_clause_appears_in_the_reading(self) -> None:
+        lines = "\n".join(active.report("phase:test", self.PHASE, self.PROFILE, self.RECORDS))
+        self.assertIn("T-X1", lines)
+        self.assertIn("T-X2", lines)
+
+    def test_a_clause_whose_custody_carries_nothing_is_named(self) -> None:
+        lines = "\n".join(active.report("phase:test", self.PHASE, self.PROFILE, self.RECORDS))
+        self.assertIn("NO MEMBER", lines)
+        self.assertIn("T-X2 (empty)", lines)
+
+    def test_a_clause_whose_custody_carries_work_is_not_named_as_empty(self) -> None:
+        """The defeat of the case above: a carried clause must not read as abandoned."""
+        lines = "\n".join(active.report("phase:test", self.PHASE, self.PROFILE, self.RECORDS))
+        self.assertNotIn("T-X1 (carried)", lines)
+        self.assertIn("1 member(s)", lines)
+
+    def test_no_active_phase_reads_as_no_active_phase_and_not_as_a_defect(self) -> None:
+        lines = "\n".join(active.report("NONE_ACTIVE", None, None, []))
+        self.assertIn("no active successor phase", lines)
+
+    def test_a_phase_active_in_status_but_absent_from_the_registry_says_so(self) -> None:
+        lines = "\n".join(active.report("phase:ghost", None, None, []))
+        self.assertIn("absent from contracts/phases.json", lines)
 
 
 if __name__ == "__main__":

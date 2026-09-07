@@ -19,7 +19,8 @@
     "files": "count of paths matching a glob, relative to the repository root",
     "dirs": "count of directories matching a glob",
     "json_array": "length of the array at a named key in a JSON document",
-    "python_length": "length of a named module-level sequence, imported from scripts/"
+    "python_length": "length of a named module-level sequence, imported from scripts/",
+    "matches": "count of lines in a document matching a regular expression"
   },
   "populations": [
     {
@@ -162,6 +163,32 @@
         "`sov_*.py` entrypoints"
       ],
       "reason": "scripts/README.md is the index contracts/publication-surface.json requires, and states its own size. It said thirty-seven against sixty, so the page that exists to make every command reachable had lost track of twenty-three of them."
+    },
+    {
+      "id": "ground-claims",
+      "counts": "the claims GROUND.md states, one heading each",
+      "derivation": {
+        "kind": "matches",
+        "path": "GROUND.md",
+        "pattern": "^### `GROUND-[0-9]+`"
+      },
+      "anchors": [
+        "claims that say what product",
+        "claims"
+      ],
+      "scope": [
+        "GROUND.md",
+        "AGENTS.md",
+        "PRD.md",
+        "CANON.md",
+        "SPEC.md",
+        "SYSTEM.md",
+        "services/"
+      ],
+      "scoped_anchors": [
+        "claims"
+      ],
+      "reason": "Sixteen is restated in five live places across four documents, and GROUND.md is the only record of how many claims there are - no contract holds the number. Scoped because 'claims' is an ordinary English plural that a skill uses for a fictional example."
     }
   ],
   "templates": [
@@ -310,5 +337,26 @@
       "owner": "scripts/sov_snapshot.py",
       "reason": "CLAUDE.md writes 'runs 54 checks', which no anchor here matched, so this population was declared, derived 54, and bound not one claim - coverage that a reader would have read off the population count. `sov_snapshot.py` already grades that number on the one page that states it, with a pattern written for that page. Declaring it here would be a second grader for one number; an independent witness found the dead population and this is the repair."
     }
-  ]
+  ],
+  "threshold_qualifiers": {
+    "words": [
+      "past",
+      "beyond",
+      "over",
+      "under",
+      "above",
+      "below",
+      "more than",
+      "fewer than",
+      "less than",
+      "at most",
+      "at least",
+      "up to",
+      "exceeds",
+      "exceeding",
+      "reaches",
+      "reaching"
+    ],
+    "reason": "A number preceded by a comparative is a bound the population must stay inside, not a census of it. `GROUND.md` names 'Ground growing past twenty claims' as the signal that claims are being minted per feature; grading twenty against a record of sixteen reports a correct defeating condition as drift. Distinct from `subset_qualifiers`, which marks a count of part of the population - a bound is not a part, and merging the two lists would hide which mistake a word is there to prevent."
+  }
 }

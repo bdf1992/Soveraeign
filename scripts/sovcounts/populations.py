@@ -22,6 +22,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import fnmatch
 import json
+import re
 import subprocess
 import sys
 
@@ -109,6 +110,25 @@ def _dirs(derivation: dict, paths: list[str]) -> int:
     return len(found)
 
 
+def _matches(derivation: dict) -> int:
+    """Lines of one document matching a pattern, for a population a file enumerates.
+
+    `GROUND.md` states sixteen claims and is the only record of how many there
+    are; nothing else counts them. A pattern over its own headings is the
+    derivation, not a second implementation of a number held elsewhere. Reads the
+    working tree, like the other in-document derivations, so someone correcting
+    the page is graded on what they wrote.
+    """
+    document = ROOT / derivation["path"]
+    if not document.is_file():
+        raise Underivable(f"{derivation['path']} is absent")
+    try:
+        pattern = re.compile(derivation["pattern"], re.MULTILINE)
+        return len(pattern.findall(document.read_text(encoding="utf-8")))
+    except (re.error, OSError, UnicodeDecodeError) as broken:
+        raise Underivable(f"{derivation['path']} could not be counted: {broken}") from broken
+
+
 def _json_array(derivation: dict) -> int:
     """Read where the repository computes it, working tree and not commit."""
     document = ROOT / derivation["path"]
@@ -141,6 +161,8 @@ def derive(derivation: dict, paths: list[str]) -> int:
         return _files(derivation, paths)
     if kind == "dirs":
         return _dirs(derivation, paths)
+    if kind == "matches":
+        return _matches(derivation)
     if kind == "json_array":
         return _json_array(derivation)
     if kind == "python_length":

@@ -101,7 +101,12 @@ def _anchors(populations) -> list[tuple[str, str, object, bool]]:
 
 
 def scan(root: Path, files: list[str], populations, guard) -> tuple[list[Claim], list[Candidate]]:
-    """Read every live file once, returning graded claims and uncovered candidates."""
+    """Read every live file once, returning graded claims and uncovered candidates.
+
+    `guard` is a sequence of (words, label) pairs. Two lists rather than one so the
+    report says which mistake was avoided: a subset is a count of part of the
+    population, a threshold is a bound it must stay inside, and neither is a census.
+    """
     anchors = _anchors(populations)
     claims: list[Claim] = []
     candidates: list[Candidate] = []
@@ -150,13 +155,19 @@ def _read_line(relative, number, line, anchors, guard, claims, candidates) -> No
         lowered_anchor, anchor, population = best
         span = (match.start(), match.end() + len(lowered_anchor))
         matched_spans.append(span)
-        if _subset(lowered[:match.start()], guard):
-            # A count of a part, correctly stated. Reported as a candidate so the
-            # sentence is still visible, never graded against the population total.
-            candidates.append(
-                Candidate(relative, number, stated, anchor + " (subset)", line.strip()))
-            continue
-        claims.append(Claim(relative, number, stated, anchor, population.id, line.strip()))
+        before = lowered[:match.start()]
+        for words, label in guard:
+            if _subset(before, words):
+                # A count of a part, or a bound the population must stay inside.
+                # Both are correctly stated and neither is a census, so the
+                # sentence stays visible as a candidate and is never graded.
+                candidates.append(Candidate(relative, number, stated,
+                                            f"{anchor} ({label})", line.strip()))
+                break
+        else:
+            claims.append(Claim(relative, number, stated, anchor,
+                                population.id, line.strip()))
+        continue
     for match in CANDIDATE.finditer(lowered):
         stated = value_of(match.group(1))
         if stated is None:

@@ -54,7 +54,8 @@ def _read() -> tuple[list, list, dict, dict, dict]:
         except pops.Underivable as absent:
             reasons[population.id] = str(absent)
     files = scan.live_files(paths, tuple(declared["frozen_paths"]["paths"]))
-    guard = tuple(declared["subset_qualifiers"]["words"])
+    guard = ((tuple(declared["subset_qualifiers"]["words"]), "subset"),
+             (tuple(declared["threshold_qualifiers"]["words"]), "threshold"))
     claims, candidates = scan.scan(pops.ROOT, files, populations, guard)
     return claims, candidates, values, reasons, declared
 

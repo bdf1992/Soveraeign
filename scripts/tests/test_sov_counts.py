@@ -89,6 +89,55 @@ class SubsetGuard(unittest.TestCase):
             self.assertFalse(scan._subset(before, self.GUARD), before)
 
 
+class ThresholdGuard(unittest.TestCase):
+    """A bound the population must stay inside is not a census of it."""
+
+    GUARD = ((("other",), "subset"), (("past", "more than"), "threshold"))
+
+    def _read(self, line: str):
+        population = _population(id="ground", anchors=("claims",))
+        claims: list = []
+        candidates: list = []
+        scan._read_line("GROUND.md", 1, line, scan._anchors([population]),
+                        self.GUARD, claims, candidates)
+        return claims, candidates
+
+    def test_a_threshold_is_not_graded(self):
+        """GROUND.md names growing past twenty claims as its own defeating signal.
+
+        Graded against a record of sixteen it reports a correct sentence as drift,
+        which is what this check did on the day the population was declared.
+        """
+        claims, candidates = self._read("Ground growing past twenty claims is the signal.")
+        self.assertEqual(claims, [])
+        self.assertEqual([c.noun for c in candidates], ["claims (threshold)"])
+
+    def test_a_subset_and_a_threshold_are_told_apart(self):
+        _, subset = self._read("The other sixteen claims are elsewhere.")
+        _, threshold = self._read("more than sixteen claims would be a defect.")
+        self.assertEqual([c.noun for c in subset], ["claims (subset)"])
+        self.assertEqual([c.noun for c in threshold], ["claims (threshold)"])
+
+    def test_a_plain_total_is_still_graded(self):
+        claims, _ = self._read("GROUND.md owns the sixteen claims that say what it is.")
+        self.assertEqual([(c.stated, c.population) for c in claims], [(16, "ground")])
+
+
+class Derivations(unittest.TestCase):
+    def test_matches_counts_a_document_the_repository_enumerates(self):
+        """GROUND.md is the only record of how many claims there are."""
+        found = pops.derive({"kind": "matches", "path": "GROUND.md",
+                             "pattern": r"^### `GROUND-[0-9]+`"}, [])
+        self.assertEqual(found, 16)
+
+    def test_an_absent_or_unreadable_source_refuses_rather_than_answering_zero(self):
+        for derivation in ({"kind": "matches", "path": "nothing-here.md", "pattern": "^x"},
+                           {"kind": "matches", "path": "GROUND.md", "pattern": "([unclosed"},
+                           {"kind": "nonexistent-kind"}):
+            with self.subTest(derivation), self.assertRaises(pops.Underivable):
+                pops.derive(derivation, [])
+
+
 class Grading(unittest.TestCase):
     class _Claim:
         def __init__(self, stated, path="X.md", anchor="workflows"):

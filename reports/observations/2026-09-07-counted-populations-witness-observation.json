@@ -1,0 +1,148 @@
+{
+  "case_id": "COUNTED-POPULATIONS-WITNESS-PASS-3",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-07",
+  "artifact_revision": "b93a721a5fa3fb32cac952ac1402b2dff3233d02",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "counted populations: grade every hand-written count in live prose against a deterministic counter",
+    "verdict": "REPRODUCED_WITH_RESIDUALS",
+    "standing_supported": "BUILT -> WITNESSED",
+    "standing_binds": "contracts/counted-populations.json, scripts/sov_counts.py, scripts/sovcounts/, scripts/sovverify/staleness.py and the two staleness entries plus the capability-map entry in scripts/sovverify/checks.py, at b93a721 only.",
+    "standing_note": "This is an observation, not a settlement and not a ratification. It supports the standing proposal BUILT -> WITNESSED for the mechanism as built at this revision. It settles nothing about whether the numbers this check does not reach are correct, and nothing about phase, requirement, or service standing.",
+    "candidate_commit": "b93a721a5fa3fb32cac952ac1402b2dff3233d02",
+    "candidate_tree": "dcdbc8ebb368f6eee7093628598aea710a1d65a9",
+    "base_commit": "b1448eeb458afa4a8c60b57c1cb46906246af7f7",
+    "observed_at": "2026-09-07",
+    "observer_id": "claude-opus-5/sov-witness@2026-09-07",
+    "observer_relation": "INDEPENDENT_OF_BUILDER",
+    "observer_independence_basis": "Separate launched witness invocation that did not build, edit, stage, or commit any part of this change. Every reading was taken in isolated full clones of the repository checked out at a pinned commit, never in the shared working tree. No builder report, completion report, or acceptance packet was read as evidence at any point; the builder's coordinating messages were used only to locate the subject and to learn which commits to freeze. Each claimed number was re-derived from the source its sentence names rather than from the checker under witness. The only file this witness wrote anywhere in the repository is this record.",
+    "independence_caveat": "The three build commits carry the host trailer Claude-Session: https://claude.ai/code/session_01NibVQxHqhE4JevvzTwuUek, which is the same session identifier this witness invocation's own host attribution instruction names. The separation above is real and structural, but the committed record will show one host session identifier spanning build and witness. AGENTS.md requires that a build cannot witness itself and contracts/closure-ownership.json refuses a helper that read or edited the change as witness; whether a shared host session identifier defeats independence on the record, regardless of actual separation, is not this witness's to settle. It is raised here rather than left for a reader to discover.",
+    "tree_state": "Frozen and measured at three successive heads because the branch moved twice under this witness after measurement began. Pass 1: 56d45e5, clean, findings recorded. Pass 2: 488c8a3, clean, repairs 1-8 measured; the head had already moved to b93a721 by the time that pass closed, disclosed by the builder as a sequencing error. Pass 3, the pinned one: b93a721a5fa3fb32cac952ac1402b2dff3233d02, tree dcdbc8e, git status --porcelain empty in the clone and in the shared working tree before and after every command in this pass. This record attests b93a721 only. The verdicts for the two earlier heads are carried forward as evidence of how the repairs behaved, not as attestation of those revisions.",
+    "commands": {
+      "freeze": "git clone --no-hardlinks <repository root> <scratch outside the tree>; git checkout b93a721; git status --porcelain -> empty",
+      "verify": "python scripts/verify.py -> exit 0; PASS: 55 checks in 16.565s wall; wall-clock DEBT only, advisory under decisions/0081",
+      "lint": "python scripts/lint.py -> exit 0; zero FAIL; 4 pre-existing STATUS.yaml duplicate-key WARN and named module debt",
+      "clarity": "python scripts/sov_clarity.py check -> exit 0; PASS: clarity scope and receipts are well-formed and current",
+      "counts": "python scripts/sov_counts.py check -> exit 0; PASS: 31 stated count(s) match the record, across 15 population(s) that bind prose (20 declared); 5 populations bind nothing and are printed by name",
+      "counts_selfcheck": "python scripts/sov_counts.py selfcheck -> exit 0; SELFCHECK PASS: 10 controlled cases, 20 declared populations derive non-zero",
+      "unit": "python -m unittest discover -s scripts/tests -p test_sov_counts.py -> exit 0; Ran 17 tests OK",
+      "tooling_partition": "python -m unittest discover -s scripts/tests -p test_run_tooling_tests.py -> exit 0; Ran 8 tests OK",
+      "verdict_source": "scripts/sovverify/clocks.py takes result.returncode as the verdict; no check in this change reads FAIL out of stdout"
+    },
+    "predicate_results": {
+      "every_repaired_number_re_derived_from_its_named_source": {
+        "held": true,
+        "detail": "workflows 23 (ls .claude/workflows/*.js), skills 31 (dirs under .claude/skills), agents 5, sov_*.py entrypoints 60, service manifests 10, summed manifest operations 135 (json len over services/*/contracts/service.json), Record 13, Console 26, gateway 9, host 15, identity 7, observation 8, projection 16, proofing 11, registry 13, decision records 90, reports 32, diagram views 8, CHECKS 55, GROUND claim headings 16 (GROUND-001..016 contiguous). Every one agrees with the prose that states it."
+      },
+      "the_pre_change_prose_was_genuinely_stale": {
+        "held": true,
+        "detail": "Eight prose files reverted to b1448ee inside the frozen tree and graded against the current record produce exactly nine drifts, at all three heads: .claude/README.md 20/23, .claude/epic/NARRATIVE.md 20/23 and 11/13, GROUND.md 102/135, PRD.md 140/135 and 11/10, ROADMAP.md 25/31, scripts/README.md 37/60, services/console/SERVICE-SPEC.md 21/26."
+      },
+      "claude_md_check_count_was_not_among_the_stale_numbers": {
+        "held": true,
+        "detail": "CHECKS at b1448ee is 52 and the page said 52. The change added two checks, made its own snapshot stale, and repaired it in the same commit. Counting it as a ninth pre-existing stale number would overclaim; the tool's own docstring does not, and was corrected during this witness to nine across eight files, which matches measurement."
+      },
+      "the_refusal_fires_end_to_end": {
+        "held": true,
+        "detail": "A stale count planted in SYSTEM.md yields FAIL SYSTEM.md:125 and exit 1 from sov_counts.py check, and python scripts/verify.py exits 1 with counted populations named in the FAIL list. A stale Ground count planted at AGENTS.md:50 yields FAIL states 15 claims, the record holds 16, exit 1."
+      },
+      "frozen_paths_are_correctly_not_graded": {
+        "held": true,
+        "detail": "The same stale counts planted in decisions/0001-founding-boundary.md and reports/2026-08-22-baseline.md are not graded; check exits 0."
+      },
+      "subset_and_historical_claims_are_not_over_fired": {
+        "held": true,
+        "detail": "services/asset/JOURNEYS.md:51 'The other fifteen declared operations' is diverted to a candidate, not graded against 17. CLAUDE.md:196 day-two and LESSONS.md:49 L-0001 are reported HISTORICAL. The exemption pin is live: editing LESSONS.md:49 from 17 to 18 makes it graded and it FAILs."
+      },
+      "no_guard_word_suppresses_a_sentence_that_states_a_population_total": {
+        "held": true,
+        "detail": "Measured per word by dropping each guard word and grading what appears. Of 12 subset words, only 'other' changes anything and it prevents one genuine false DRIFT (asset 15 against 17). Of 16 threshold words, only 'past' changes anything and it prevents one genuine false DRIFT (GROUND.md:292 'growing past twenty claims' against 16). Every other word in both lists costs nothing and prevents nothing today. 'its' costs nothing, confirming the builder's own measurement. threshold_qualifiers does not reproduce the 'of the' failure."
+      },
+      "the_of_the_repair_gained_exactly_what_was_measured": {
+        "held": true,
+        "detail": "Dropping 'of the' gained three claims, all MATCH: services/gateway/SERVICE-SPEC.md:72 9/9, services/host/SRD.md:143 15/15, services/observation/CHARTER.md:3 8/8, with zero false drift, and the one genuine subset it also covered is still caught by 'other'. The builder's measurement of the witness finding was correct."
+      },
+      "the_dead_population_was_really_removed_and_its_number_still_owned": {
+        "held": true,
+        "detail": "verification-checks is absent from the loaded populations at b93a721 and recorded under owned_elsewhere naming scripts/sov_snapshot.py. That owner is real: planting 'runs 53 checks' in CLAUDE.md yields FAIL verification checks: page says 53, record holds 55 and exit 1 from sov_snapshot.py check. No number lost coverage."
+      },
+      "the_selfcheck_binding_case_closes_global_scanner_decay": {
+        "held": true,
+        "detail": "Breaking the scanner's number pattern so it reaches no prose now yields SELFCHECK FAIL and exit 1. Before the repair that mutation passed."
+      },
+      "single_anchor_decay_still_exits_zero_but_is_no_longer_silent": {
+        "held": true,
+        "detail": "Renaming one contract anchor so command-entrypoints binds nothing, with 'Nine' planted in scripts/README.md against 60, still exits 0. It is now printed by name in the NOT CHECKED dormant-population line and the graded count drops 23 to 22 and binding populations 14 to 13. The selfcheck docstring was corrected during this witness to state that deriving is not binding, which retracts the over-promise this witness found. The repair is real and honestly scoped, not cosmetic."
+      },
+      "the_capability_map_gap_is_closed": {
+        "held": true,
+        "detail": "sov_capability.py check is now check 25 of 55 and has a live defeating case: appending an operation to services/gateway/contracts/service.json yields STALE: the manifests or the office table have moved past this build, exit 1. GROUND.md's 135, derived from that projection, no longer rests on a projection nothing re-derives."
+      },
+      "prd_507_numerator_is_correct_under_its_new_predicate": {
+        "held": true,
+        "detail": "Under 'have no operation built', exactly four services have zero BUILT operations by their manifests' own per-operation standing field: gateway 0/9, identity 0/7, projection 0/16, proofing 0/11. ROADMAP.md:354 independently uses 'no implementation' for the two lacking src/. The two documents now state two distinct predicates consistently; the repair made the predicate explicit rather than changing a number to fit."
+      },
+      "the_template_expansion_is_complete": {
+        "held": true,
+        "detail": "All ten services expand, and test_the_template_expands_over_every_service_manifest measures the set against git ls-files rather than declaring it. Both the expander and the test read the same referent, so an uncommitted manifest is invisible to both; that cost is now recorded in not_settled."
+      },
+      "the_new_matches_derivation_is_live_and_refuses_rather_than_answering_zero": {
+        "held": true,
+        "detail": "Appending a real GROUND-017 heading makes all eight restatements FAIL, so the derivation is genuinely live rather than pinned. pops.derive raises Underivable for an absent path, an unclosed regex, and an unknown kind, which is the zero-decay this check exists to avoid."
+      },
+      "the_ground_claims_restatement_count_in_the_contract_is_accurate": {
+        "held": false,
+        "detail": "contracts/counted-populations.json states 'Sixteen is restated in five live places across four documents'. Measured, eight sites are graded across six files: AGENTS.md:50, CANON.md:50, GROUND.md:21, GROUND.md:78, GROUND.md:300, PRD.md:79, services/console/SERVICE-GROUND.md:6, services/record/SERVICE-GROUND.md:8, plus one subset diversion at AGENTS.md:78. Excluding GROUND.md's own three still gives five places across five documents, not four. A hand-written count inside the counted-populations contract itself is wrong, and no population grades it."
+      },
+      "no_unreported_substantive_change_rode_along": {
+        "held": true,
+        "detail": "Across b1448ee..b93a721 the only files changed beyond the declared subject are regenerated artifacts: docs/documentation.html is digest-only churn with zero non-digest lines changed, three diagrams restamp the PRD.md source digest and are gated by sov_diagrams, and .clarity/coverage.json carries re-recorded review receipts. No secrets, no module over the 300-line ceiling, and no collision between the new verdict words DRIFT, UNDERIVABLE, HISTORICAL, MATCH and any term in CLASSIFICATION.md or SPEC.md."
+      },
+      "the_tooling_assertion_rewrite_weakened_an_oracle": {
+        "held": false,
+        "detail": "Challenged directly and refuted. The replaced peer assertion is False at the 112-module population (weighted 27 against unweighted 26) and True at 111 (27 against 30), so one bounded 0.08s module flipped it while every measured weight was still correct: non-monotonicity reproduced exactly as documented. The replacement asserts the critical shard at 100 against 137 and 100 against 132, matching the docstring's stated figures, which were re-derived rather than taken on trust. The peer property is genuinely preserved next door with a live defeating case: in the controlled sixteen-module population the docs bucket is 1 against a max of 5 with the weight and 4 against 4 without, so the assertion does fail when the weight is dropped. Test count rose 7 to 8. This asserted a sounder property."
+      },
+      "clarity_coverage_regressed": {
+        "held": false,
+        "detail": "This witness's pass-1 finding was wrong and is retracted. scripts/sov_clarity.py do_record writes 'changed' from an explicit --changed CLI flag, so it records whether a completed review edited the artifact; it is not a drift flag and nothing consumes it as a review queue. Drift is TEXT_STALE and BASIS_STALE, computed from artifact and basis digests by state_map and failed by do_check. That gate is real, passes clean at b93a721, and fires: appending an unreviewed sentence to GROUND.md yields STALE lines and exit 1, and reaches verify.py through the repository tooling tests. The pass-1 inference that regenerating coverage.json silently re-baselines basis digests is also retracted; do_record acts on one path per explicit invocation, so the CANON.md and CONTRACT.md flips record reviews that were actually performed. The builder's reading was correct and this witness's was not."
+      }
+    },
+    "findings": [
+      "F1 RESOLVED. Dead population: verification-checks derived 55 and bound zero claims while the run reported it as coverage. Removed, recorded under owned_elsewhere, owner verified to fire.",
+      "F2 RESOLVED IN PART, HONESTLY SCOPED. The selfcheck's stated purpose exceeded what it proved. A binding case now closes global scanner decay and the docstring retracts the over-promise. A single population going dormant still exits 0; it is printed by name rather than silent.",
+      "F3 RESOLVED. 'of the' in subset_qualifiers suppressed three sentences stating a manifest total exactly, while preventing no false drift. Removed; three claims gained, all MATCH.",
+      "F4 RECORDED, NOT CLOSED. The historical exemption key (path, anchor, stated) covers any live claim in the same file stating the same number about the same population. A planted present-tense 'the repository holds 17 decision records' against a record of 90 is reported HISTORICAL, citing L-0001's unrelated reason, and passes. Now named in not_settled with the witness's planted case; the hole itself remains, by a defensible design choice against line numbers.",
+      "F5 RESOLVED. PRD.md:507 repaired the denominator without re-deriving the numerator. The predicate is now explicit and four is correct under it.",
+      "F6 RETRACTED. The clarity 'changed' finding was this witness's error. See predicate clarity_coverage_regressed.",
+      "F7 RESOLVED. The capability map is now re-derived from the manifests inside verify, with a live defeating case.",
+      "F8 NOT A DEFECT. The tooling assertion rewrite asserted a sounder property; the old instrument was genuinely brittle.",
+      "F9 OPEN, LOW. The contract's own 'five live places across four documents' is wrong; eight graded sites across six files. A hand-written count inside the counted-populations contract, graded by nothing.",
+      "F10 OPEN, LOW. scripts/tests/test_sov_counts.py test_matches_counts_a_document_the_repository_enumerates asserts 16 against live GROUND.md. Adding a legitimate GROUND-017 fails that test, which is a hand-written count with no counter inside the suite built to eliminate them. A fixture or an independently derived expectation would remove it.",
+      "F11 OPEN, MEDIUM. No instrument measures the guard lists. 15 of 16 threshold words and 11 of 12 subset words currently cost nothing and prevent nothing; each will silently suppress the first genuine total it ever prefixes, and only the per-word method used in this witness would notice. A test asserting that every guard word either prevents a DRIFT or costs nothing is cheap, would have caught 'of the' automatically, and is the generalisation of F3.",
+      "F12 OPEN, LOW. A writer can escape grading by prefixing a guard word, turning a census into a bound or a part in wording only. The contract names the guard going short but not this opposite direction.",
+      "F13 OBSERVATION. contracts/participant-observation.schema.json forbids additional top-level properties, while scripts/sov_land.py _report reads observation['observer_id'] and observation['verdict'] and scripts/sovland/candidates.py reads candidate_commit, candidate_tree and base_commit at top level. Every landed record, including this one, places them inside observed, so the gate's display line reads None. A gate reading fields its own schema forbids; not this concern's to repair."
+    ],
+    "residuals": [
+      "The branch moved twice under this witness after measurement began, disclosed by the builder both times. This record attests b93a721 only; readings at 56d45e5 and 488c8a3 are carried as evidence of behaviour, not as attestation of those revisions.",
+      "Wall-clock debt on every verify run (16.5s to 17.0s against a 15s SILVER band) on a host running sibling sessions. Advisory under decisions/0081, not a semantic failure.",
+      "Uncommitted prose and uncommitted service manifests are ungraded until git add; now recorded in not_settled.",
+      "Five declared populations bind no claim in current prose; honest for a template declared ahead of the prose that states it, but nothing distinguishes an honestly dormant population from one that was binding and stopped.",
+      "No clarity review exists for this record; reports/ is outside the clarity scope and inside frozen_paths, so its own numbers are not graded."
+    ],
+    "judgement_items": [
+      "J1 Does an independent witness invocation carrying the same host Claude-Session identifier as the build satisfy the independent-observation requirement of grant:standing-landing-loop, or does the shared identifier defeat independence on the record regardless of the structural separation recorded above? This is asked of the owner seat and of no other.",
+      "J2 None remaining on the capability map. The witness raised it at pass 1; the builder gated the already-passing check inside the concern, which is the correct absorption and needed no judgement the builder does not hold."
+    ],
+    "not_settled_by_this_observation": [
+      "Whether any number this check does not reach is correct. 919 count-shaped sentences remain ungraded and are listed by debt; silence there is coverage, not confirmation.",
+      "Whether the sentences around the graded numbers are true. This witness re-derived numbers, not meaning.",
+      "Any service, requirement, or phase standing. Nothing here moves STATUS.yaml."
+    ]
+  },
+  "telemetry": {
+    "method": "Three isolated full clones at pinned commits under a scratch directory outside the repository; all mutation testing done in throwaway copies so the frozen clones stayed byte-identical to their commits. Verdicts read from process exit codes.",
+    "probe_location": "no probe file; readings came through git plumbing, the repository gates, the unit suites, and short scratch scripts importing sovcounts and run_tooling_tests outside the repository",
+    "host": "Linux, Python 3.11, shared host with sibling sessions writing the tree",
+    "writes_by_this_witness": "this file only; no work, fixture, contract, test, or implementation file was edited at any point"
+  }
+}

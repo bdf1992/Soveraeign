@@ -125,10 +125,23 @@ class ThresholdGuard(unittest.TestCase):
 
 class Derivations(unittest.TestCase):
     def test_matches_counts_a_document_the_repository_enumerates(self):
-        """GROUND.md is the only record of how many claims there are."""
+        """GROUND.md is the only record of how many claims there are.
+
+        The expected value is counted here rather than written here. An earlier
+        draft asserted the literal 16, which an independent witness named for what
+        it was: a hand-written count with no counter, inside the suite built to
+        eliminate them. Adding a legitimate `GROUND-017` would have failed this
+        test for the wrong reason, on top of the eight restatements it correctly
+        fails. Counting the identifiers a different way keeps the derivation
+        honest without pinning it to today's number.
+        """
+        text = (pops.ROOT / "GROUND.md").read_text(encoding="utf-8")
+        identifiers = {line.split("`")[1] for line in text.splitlines()
+                       if line.startswith("### `GROUND-")}
         found = pops.derive({"kind": "matches", "path": "GROUND.md",
                              "pattern": r"^### `GROUND-[0-9]+`"}, [])
-        self.assertEqual(found, 16)
+        self.assertEqual(found, len(identifiers))
+        self.assertGreater(found, 0, "the pattern matches nothing, so it counts nothing")
 
     def test_an_absent_or_unreadable_source_refuses_rather_than_answering_zero(self):
         for derivation in ({"kind": "matches", "path": "nothing-here.md", "pattern": "^x"},
@@ -175,6 +188,83 @@ class TheContractAgainstThisRepository(unittest.TestCase):
                 value = pops.derive(population.derivation, paths)
                 self.assertGreater(value, 0, "a population that counts nothing "
                                              "agrees with every number written")
+
+    def test_no_guard_word_suppresses_a_sentence_that_states_a_total(self):
+        """Every guard word must prevent a false drift or cost nothing. Nothing else.
+
+        This is the generalisation of a defect an independent witness found by
+        hand. `of the` sat in `subset_qualifiers` and suppressed three sentences
+        stating a manifest total exactly - gateway, host, observation - while
+        preventing no false drift at all. Nothing in the repository noticed,
+        because the guard lists were the one part of this check graded by nobody:
+        a word that hides a true sentence produces silence, and silence is what a
+        passing check looks like.
+
+        Two scans settle it rather than one per word. Everything the guards
+        suppress is the difference between grading with them and grading without,
+        and a suppressed sentence that would have MATCHed was a real total the
+        guard was hiding. Only those lines are then asked which word did it, so
+        the cost is two passes over the corpus and not one pass per word.
+
+        A word that suppresses a DRIFT is load-bearing and is why the lists exist.
+        A word that suppresses nothing is harmless and stays until it costs
+        something. A word added tomorrow is graded the day it is added.
+        """
+        declared = pops.contract()
+        populations, paths = pops.load()
+        values = {}
+        for population in populations:
+            try:
+                values[population.id] = pops.derive(population.derivation, paths)
+            except pops.Underivable:
+                continue
+        files = scan.live_files(paths, tuple(declared["frozen_paths"]["paths"]))
+        exemptions = declared["historical_claims"]["claims"]
+        lists = {name: tuple(declared[name]["words"])
+                 for name in ("subset_qualifiers", "threshold_qualifiers")}
+        guard = ((lists["subset_qualifiers"], "subset"),
+                 (lists["threshold_qualifiers"], "threshold"))
+
+        def matched(active) -> dict:
+            claims, _ = scan.scan(pops.ROOT, files, populations, active)
+            found = grading.grade(claims, values, {}, exemptions)
+            return {(f.path, f.line, f.stated, f.population): f.kind for f in found}
+
+        with_guards = matched(guard)
+        without_guards = matched(())
+        # A suppressed sentence that would have graded MATCH is a real total the
+        # guard hid. One that would have DRIFTed is the false positive the guard
+        # exists to prevent, and is left alone.
+        hidden = [key for key, kind in without_guards.items()
+                  if kind == grading.MATCH and key not in with_guards]
+
+        # Only the hidden lines are asked which word hid them, and only the files
+        # holding them are re-read. Attribution never drove the verdict - `hidden`
+        # already is the verdict - so a word this fails to name still fails the
+        # test, under `unattributed`. An earlier draft attributed by slicing the
+        # line at the stated value and found nothing, because the value was
+        # written `sixteen` and searched for as `16`.
+        blamed: dict[str, list] = {}
+        affected = sorted({key[0] for key in hidden})
+        for name, words in lists.items():
+            for word in words:
+                thinner = []
+                for other, label in guard:
+                    keep = tuple(w for w in other if w != word or label != name[:len(label)])
+                    thinner.append((keep, label))
+                claims, _ = scan.scan(pops.ROOT, affected, populations, tuple(thinner))
+                found = grading.grade(claims, values, {}, exemptions)
+                gained = {(f.path, f.line, f.stated, f.population)
+                          for f in found if f.kind == grading.MATCH} & set(hidden)
+                if gained:
+                    blamed.setdefault(f"{name}:{word}", []).extend(sorted(gained))
+        unnamed = set(hidden) - {k for keys in blamed.values() for k in keys}
+        if unnamed:
+            blamed["unattributed"] = sorted(unnamed)
+        self.assertEqual({}, blamed,
+                         "these guard words hide sentences that state a population "
+                         "total exactly; each would grade MATCH if the word were "
+                         "dropped, so the word buys nothing and costs coverage")
 
     def test_the_template_expands_over_every_service_manifest(self):
         populations, paths = pops.load()

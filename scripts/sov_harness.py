@@ -112,19 +112,29 @@ def _status_claims(root: Path = ROOT) -> dict[str, set[str]]:
 
 @emits("CAPABILITY")
 def check_capability(root: Path = ROOT) -> list[Defect]:
-    """A tool named in agent frontmatter must be one a supported host provides."""
+    """A tool named in agent frontmatter must be provided by a declared environment.
+
+    Admissibility, not availability. A non-portable tool is admissible: an agent
+    definition is loaded on whichever host runs it, and a name that host does not
+    provide is inert there rather than an error. Refusing a non-portable name is
+    how v1 of this check deleted PowerShell from four definitions on the evidence
+    of one container, which cost the workstation environment a real capability.
+    """
     contract = _contract(root, "harness-hosts.json")
+    admissible = set(contract["admissible"])
     portable = set(contract["portable"])
-    retired = contract.get("retired", {})
+    corrections = contract.get("corrections", {})
     defects = []
     for path in sorted((root / ".claude" / "agents").glob("*.md")):
         match = FRONTMATTER_TOOLS.search(path.read_text(encoding="utf-8"))
         if not match:
             continue
         for tool in (t.strip() for t in match.group(1).split(",")):
-            if not tool or tool in portable:
+            if not tool or tool in admissible:
                 continue
-            why = retired.get(tool) or f"not in the portable set: {sorted(portable)}"
+            why = corrections.get(tool) or (
+                f"no declared environment provides it: "
+                f"{sorted(contract['environments'])}")
             defects.append(Defect("CAPABILITY", f"{path.relative_to(root)} declares {tool!r}", why))
     return defects
 

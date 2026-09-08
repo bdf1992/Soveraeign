@@ -15,7 +15,7 @@
       "changed": true
     },
     ".claude/agents/sov-controller.md": {
-      "artifact_digest": "sha256:4ff5bee109663d7601e7e14c7f374bddf60524529c039e59814639887d013cdb",
+      "artifact_digest": "sha256:a85fba75be703d59a835250dc9e7c7061e45e7d700002661b5f4a554284f6bae",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",
@@ -29,7 +29,7 @@
       "changed": true
     },
     ".claude/agents/sov-orchestrator.md": {
-      "artifact_digest": "sha256:8982be75d19fcc7dd89f356f6fe713e15d97dfabb6c5d2cb7009b4d3957922c3",
+      "artifact_digest": "sha256:71c37d01cd57ab6b7106aaea7c12d5feea21d72de4779ebc3c200f9aa2e3c04d",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",
@@ -43,7 +43,7 @@
       "changed": true
     },
     ".claude/agents/sov-witness.md": {
-      "artifact_digest": "sha256:8707c3883c5d1ab9368961de3cddc7ef3dd8b3b68be7e3262f8ee131074ab2e1",
+      "artifact_digest": "sha256:9b8aa3f255dd39067560356199f628a5365348f0db7d168362beed0d2d854d80",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",
@@ -57,7 +57,7 @@
       "changed": true
     },
     ".claude/agents/sov-worker.md": {
-      "artifact_digest": "sha256:6caf6a4400bdd0899de8fcd81703954f2e7ffc9a2b7569b04778fcf19a57bc67",
+      "artifact_digest": "sha256:39164ed9d453d4637d9e3ba122643e45c1aed848132f198e45e7fc4f78a32c82",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",
@@ -679,7 +679,7 @@
       "changed": false
     },
     "CLAUDE.md": {
-      "artifact_digest": "sha256:8dbdc7c19489e5215eea67dbc6348b60ec3f2e557d31745151bbc21872099af3",
+      "artifact_digest": "sha256:ab65833af4d0e453d380801a68e7fb0f3c758ef7a59618552a0dfdff3f2dbb45",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",

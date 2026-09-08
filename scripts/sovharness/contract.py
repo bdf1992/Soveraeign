@@ -31,6 +31,24 @@ def _footprint(root: Path, term: str) -> tuple[list[str], int]:
     return files, occurrences
 
 
+def _hosts(root: Path) -> list[tuple[str, str]]:
+    """`admissible` and `portable` must be the union and intersection they claim.
+
+    They exist so a check and a cold-start probe can read one array instead of
+    recomputing set algebra over the environments. That convenience is exactly
+    how a summary drifts from what it summarises, so it is graded here.
+    """
+    contract = json.loads((root / "contracts" / "harness-hosts.json").read_text(
+        encoding="utf-8"))
+    sets = [set(env["tools"]) for env in contract["environments"].values()]
+    expected = {"admissible": sorted(set().union(*sets)),
+                "portable": sorted(set.intersection(*sets))}
+    return [(f"contracts/harness-hosts.json {key}",
+             f"states {sorted(contract.get(key, []))}; the declared environments give "
+             f"{want}")
+            for key, want in expected.items() if sorted(contract.get(key, [])) != want]
+
+
 def check_contract(root: Path, kinds: set[str]) -> list[tuple[str, str]]:
     """Return (where, detail) for every claim the contract makes that is untrue.
 
@@ -59,6 +77,8 @@ def check_contract(root: Path, kinds: set[str]) -> list[tuple[str, str]]:
         defects.append(("contracts/harness-claims.json coverage",
                         f"the contract describes {sorted(extra)}, which the module does not "
                         f"emit; a described kind that never runs reads as coverage"))
+
+    defects.extend(_hosts(root))
 
     for entry in contract.get("known_drift", []):
         stated = entry.get("footprint")

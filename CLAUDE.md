@@ -217,10 +217,12 @@ command that replaces it.
 
 ## Host facts (Claude Code, any platform)
 
-- Shell: use the `Bash` tool. Do not assume which shell is behind it, or that
-  `&&` chains; read the invocation, not this file. Use absolute paths; do not
-  `cd`. `contracts/harness-hosts.json` declares the tool surface an agent
-  definition may name and `python scripts/sov_harness.py` grades it.
+- Shell: which tool reaches one depends on the environment, so read the
+  invocation rather than this file. `contracts/harness-hosts.json` declares each
+  working environment and what it provides: `Bash` everywhere, `PowerShell` on
+  the workstation, where `&&` and `||` do not chain. Use absolute paths; do not
+  `cd`. `python scripts/sov_harness.py` refuses an agent definition naming a
+  tool no declared environment provides, and admits one only some provide.
 - Line endings: the repository pins LF via `.gitattributes`, and
   `scripts/lint.py` checks working-tree bytes. The host's Write/Edit tools can
   emit CRLF, so run `python scripts/lint.py` after editing repository text. A

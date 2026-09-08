@@ -1,28 +1,117 @@
 {
-  "contract_id": "soveraeign-harness-hosts/v1",
+  "contract_id": "soveraeign-harness-hosts/v2",
   "status": "PROPOSED",
   "governed_by": [
     "AGENTS.md",
     "CLAUDE.md",
     "decisions/0026-federation-harness.md"
   ],
-  "summary": "Which tool names each supported host binding actually provides, so an agent definition cannot declare a capability the invocation will not grant. A tool name in .claude/agents frontmatter is a claim about the host, and this file is what that claim is graded against.",
-  "note": "Declaring a tool here does not grant it. A host may still withhold a tool the repository expects; that is a capability the invocation did not grant, never a rule Soveraeign made (CLAUDE.md, Host facts). This contract only refuses the inverse error: naming a tool no supported host provides at all.",
-  "hosts": {
-    "claude-code": {
-      "description": "Claude Code, any platform. The tool surface is the harness's, not the operating system's.",
+  "summary": "The working environments this repository is operated from, and the tool surface each one provides. An agent definition's `tools:` line is a claim about a host; this is what that claim is graded against. v1 declared a single host from the one container it happened to be written in and called the result portable, which is how it came to assert that PowerShell was never a Claude Code tool name on any platform - a claim about an environment its author had never observed, inside the contract whose purpose is refusing exactly that.",
+  "provenance_levels": {
+    "OBSERVED": "Established by running commands in the environment while writing this entry.",
+    "RECORDED": "Established from artifacts committed to this repository that describe the environment. Weaker than OBSERVED and not a substitute for it.",
+    "UNVERIFIED": "Asserted and not yet established by either route."
+  },
+  "environments": {
+    "remote-linux-container": {
+      "description": "Claude Code on the web. Ephemeral container, repository cloned fresh, reclaimed on inactivity.",
+      "platform": "linux",
+      "shell": "system shell, reached through the Bash tool",
+      "provenance": "OBSERVED",
+      "observed_at": "2026-09-08",
+      "observed_how": "This environment. Tool schemas present in the invocation.",
       "tools": [
-        "Agent", "AskUserQuestion", "Bash", "Edit", "Glob", "Grep", "NotebookEdit",
-        "Read", "Skill", "Task", "TodoWrite", "WebFetch", "WebSearch", "Workflow", "Write"
+        "Agent",
+        "AskUserQuestion",
+        "Bash",
+        "Edit",
+        "Glob",
+        "Grep",
+        "NotebookEdit",
+        "Read",
+        "Skill",
+        "Task",
+        "TodoWrite",
+        "WebFetch",
+        "WebSearch",
+        "Workflow",
+        "Write"
       ]
+    },
+    "workstation-windows": {
+      "description": "Bdo's workstation. The environment the harness, its hooks and most of this repository were written in.",
+      "platform": "windows",
+      "shell": "PowerShell 5.1 primary, no `&&`/`||` chaining; a Git Bash tool also present",
+      "provenance": "RECORDED",
+      "recorded_from": [
+        ".claude/settings.json - a PreToolUse hook registers matcher `Bash|PowerShell`, which matches on tool name",
+        ".claude/README.md - documents that hook as guarding Bash/PowerShell",
+        "scripts/sovcoldstart/corpus.json H10 - PowerShell 5.1, && and || are parser errors",
+        "CLAUDE.md before 2026-09-08 - named PowerShell 5.1 as the primary shell"
+      ],
+      "tools": [
+        "Agent",
+        "AskUserQuestion",
+        "Bash",
+        "Edit",
+        "Glob",
+        "Grep",
+        "NotebookEdit",
+        "PowerShell",
+        "Read",
+        "Skill",
+        "Task",
+        "TodoWrite",
+        "WebFetch",
+        "WebSearch",
+        "Workflow",
+        "Write"
+      ],
+      "open": "The tool list is inferred from the hook matcher and the corpus, not read from an invocation. Whoever next works from this environment should confirm it and change provenance to OBSERVED, or correct the list."
     }
   },
-  "portable": [
-    "Agent", "AskUserQuestion", "Bash", "Edit", "Glob", "Grep", "NotebookEdit",
-    "Read", "Skill", "Task", "TodoWrite", "WebFetch", "WebSearch", "Workflow", "Write"
+  "grading": {
+    "admissible": "A tool named in .claude/agents/ frontmatter must be provided by at least one declared environment. A name no environment provides is a capability no invocation can grant.",
+    "portable": "Provided by every declared environment. An agent definition may name a non-portable tool - it is loaded on whichever host runs it, and a name that host does not provide is inert there rather than an error - but a definition that depends on one is only usable in the environments that provide it.",
+    "note": "This grades admissibility, not availability. A host may still withhold a tool this repository expects; that is a capability the invocation did not grant, never a rule Soveraeign made (CLAUDE.md, Host facts)."
+  },
+  "corrections": {
+    "PowerShell": "v1 removed it from four agent definitions and recorded that it was never a Claude Code tool name on any platform. Bdo corrected this on 2026-09-08: it exists in the workstation environment. The declarations are restored and the claim is withdrawn. The defect v1 actually found was narrower and stands: CLAUDE.md stated one environment's shell as a repository-wide fact."
+  },
+  "admissible": [
+    "Agent",
+    "AskUserQuestion",
+    "Bash",
+    "Edit",
+    "Glob",
+    "Grep",
+    "NotebookEdit",
+    "PowerShell",
+    "Read",
+    "Skill",
+    "Task",
+    "TodoWrite",
+    "WebFetch",
+    "WebSearch",
+    "Workflow",
+    "Write"
   ],
-  "portable_note": "An agent definition under .claude/agents/ is loaded on whatever host the invocation runs. It may name only portable tools. A shell is reached through Bash on every supported platform; PowerShell was named here until 2026-09-08 and was never a Claude Code tool name on any platform, which is why four agent definitions declared a capability no invocation could grant.",
-  "retired": {
-    "PowerShell": "Removed 2026-09-08. Named in four agent definitions and in the CLAUDE.md host-facts section as though it were a Claude Code tool. It is a Windows shell, reached like any other shell through Bash; it is not a tool name the harness resolves."
-  }
+  "portable": [
+    "Agent",
+    "AskUserQuestion",
+    "Bash",
+    "Edit",
+    "Glob",
+    "Grep",
+    "NotebookEdit",
+    "Read",
+    "Skill",
+    "Task",
+    "TodoWrite",
+    "WebFetch",
+    "WebSearch",
+    "Workflow",
+    "Write"
+  ],
+  "derived_note": "`admissible` is the union of every environment's tools and `portable` the intersection. Both are derived from `environments` and graded against it by scripts/sovharness/contract.py, so neither can drift from the environments it summarises."
 }

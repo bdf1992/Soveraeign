@@ -4044,6 +4044,7 @@
         "Glob",
         "Grep",
         "NotebookEdit",
+        "PowerShell",
         "Read",
         "Skill",
         "Task",
@@ -4058,12 +4059,12 @@
         "kind": "json_get",
         "file": "contracts/harness-hosts.json",
         "path": [
-          "portable"
+          "admissible"
         ],
         "scope": "tracked"
       },
       "source": "contracts/harness-hosts.json",
-      "why": "Four agent definitions declared PowerShell as a tool until 2026-09-08. No invocation could grant it, no check read the frontmatter, and the host section of this corpus encoded the same assumption in an unprobed question, so nothing could report it. The answer now comes from the contract a grader reads."
+      "why": "Four agent definitions declared PowerShell. A first repair deleted it on the evidence of one container and recorded that it was never a Claude Code tool name anywhere; Bdo corrected that - it exists in the workstation environment. The answer is now the union across declared environments, and admissibility is what an agent definition can be graded on without observing the host it will run on."
     },
     {
       "id": "A37",

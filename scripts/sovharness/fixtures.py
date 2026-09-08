@@ -134,8 +134,9 @@ def _wrong_footprint(claims: dict) -> None:
 #: count came from reading `why`, which no code did.
 CASES = (
     ("control", {}, None, "a supported tree is not refused", False),
-    ("CAPABILITY", {"tools": "Bash, PowerShell, Read"}, "CAPABILITY",
-     "four agent definitions declared PowerShell", True),
+    ("CAPABILITY", {"tools": "Bash, Telepathy, Read"}, "CAPABILITY",
+     "a tool no declared environment provides is a capability no invocation can grant",
+     False),
     ("STANDING", {"prompt": "'asset_service_status is BUILT_AND_WITNESSED'\n"}, "STANDING",
      "sov-console.js asserted a token STATUS.yaml contradicts", True),
     ("REFERENCE", {"orientation": "see `contracts/gone.json`\n"}, "REFERENCE",
@@ -143,7 +144,10 @@ CASES = (
     ("REFERENCE/unlisted", {"orientation": "see `contracts/quarterly-plan.yaml`\n"},
      "REFERENCE", "an address nobody anticipated is refused without being listed", False),
     ("CAPABILITY/unlisted", {"tools": "Bash, Kubernetes, Read"}, "CAPABILITY",
-     "a tool nobody anticipated is refused without being listed", False),
+     "a tool no declared environment provides is refused without being listed", False),
+    ("CAPABILITY/non-portable", {"tools": "Bash, PowerShell, Read"}, None,
+     "a tool only the workstation provides is admissible; grading portability instead "
+     "deleted PowerShell from four definitions on the evidence of one container", True),
     ("STANDING/unlisted", {"prompt": "'banana_service_status is BUILT'\n"}, "STANDING",
      "a subject STATUS.yaml never had is refused without being listed", False),
     ("STANDING/colon", {"prompt": "`asset_service_status: WITNESSED` per STATUS.yaml\n"},

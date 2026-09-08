@@ -33,6 +33,13 @@ OPEN_ROLES = ("procurement-steward", "supplier-liaison", "worker")
 """One proving-role name and two an alternate institution uses: not a closed vocabulary."""
 CLOSED_ROLES = ("worker", "orchestrator", "controller", "owner")
 """The vocabulary a third witness found in this repository: closed without being four-of-four."""
+PROSE_KEYS = ("description", "note", "$comment", "warrant", "title", "name", "enum")
+"""Prose keys the mispaired variant fills with its term, pinned equal to
+`declaration.PROSE_KEYS` by a unit test. Written out for the same reason `INSTANCE_KEYS` is:
+a variant that reads the tuple it guards empties itself when that tuple is narrowed. An
+eighth witness found the prose half unpinned, so deleting `warrant` from the variant and then
+collecting warrant values left the whole gate green."""
+
 INSTANCE_KEYS = ("examples", "example", "fixtures")
 """Keys the mispaired variant fills with instance data that declares its term.
 
@@ -59,24 +66,32 @@ def _mispaired(term: str) -> dict[str, Any]:
     `DECLARED_NAME_KEYS` had no refusal case at all: harvesting every dict key in the document
     left the self-check green.
 
-    So every prose key says the term at the root and again below it, every example key carries
-    an instance that declares it, and `sections` holds it as an ordinary dict key that no
-    schema keyword reaches. A reader that reads any of those resolves this contract, the
-    declared defeat does not fire, and `selfcheck` fails by name.
+    So every prose key says the term at the root and again below it, every instance key carries
+    an instance that declares it at the root and again below it, and `sections` holds it as an
+    ordinary dict key that no schema keyword reaches. A reader that reads any of those resolves
+    this contract, the declared defeat does not fire, and `selfcheck` fails by name.
+
+    The limit of that, stated because an eighth witness measured it: both lists are pinned to
+    the rule's own tuples by equality, which forces them to move together and does not say
+    which keys belong in either. Narrowing `EXAMPLE_KEYS` alone fails the self-check and
+    widening it alone fails the test, but narrowing both together passes everything. The pin
+    raises the cost of that regression from one edit to two; it does not refuse it, and no
+    fixture anchored to the rule it grades can.
     """
     said = f"Fixture {term} declaration"
-    prose = {"title": said, "name": said, "description": said, "note": said,
-             "$comment": said, "warrant": said}
+    prose = {key: [said] if key == "enum" else said for key in PROSE_KEYS}
     instance = {"properties": {f"{term}_id": {"type": "string"}}}
+    nested: dict[str, Any] = {}
+    for key in INSTANCE_KEYS:
+        nested[key] = [dict(instance)] if key.endswith("s") else dict(instance)
     stub: dict[str, Any] = {
         "$id": "https://soveraeign.local/contracts/fixture-unrelated.schema.json",
-        "properties": {"actor_id": dict({"type": "string", "enum": [said]}, **prose)},
+        "properties": {"actor_id": dict({"type": "string"}, **prose)},
         "sections": {term: {"kind": "string"}},
-        "elsewhere": dict(prose),
+        "elsewhere": dict(prose, **{"deeper": dict(nested)}),
     }
     stub.update(prose)
-    for key in INSTANCE_KEYS:
-        stub[key] = [instance] if key.endswith("s") else dict(instance)
+    stub.update(nested)
     return stub
 
 

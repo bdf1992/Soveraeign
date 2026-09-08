@@ -38,7 +38,9 @@
       "documentation reader": 1.0,
       "kernel participant parity": 1.0,
       "semantic cold-start task": 1.0,
-      "fresh participation slice": 3.0
+      "fresh participation slice": 3.0,
+      "discovery and reuse slice": 3.0,
+      "definition recurrence slice": 0.5
     }
   },
   "catastrophic_check_seconds": 30.0,

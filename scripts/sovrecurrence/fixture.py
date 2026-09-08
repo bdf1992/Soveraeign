@@ -5,9 +5,10 @@ fixture members, the ten contracts that declare the primitives, and one contract
 primitive names as governing it. Nothing here reads or writes the real repository, names a
 real principal, or witnesses anything.
 
-The collection deliberately carries a member at `BUILT` as well as members at `WITNESSED`.
-A basis that admitted the built one would be citing work nobody independently judged, so
-the positive variant is checked for its *absence* as well as for passing.
+The collection deliberately carries a member at `BUILT` and one at `NOT_WITNESSED` as well
+as members at `WITNESSED`. A basis that admitted either would be citing work nobody
+independently judged - the second is worse, because an observation refused it by name - so
+the positive variant is checked for their *absence* as well as for passing.
 """
 
 from __future__ import annotations
@@ -21,6 +22,10 @@ from sovrecurrence import neutrality, recurrence
 COLLECTION = "contracts/custodies/phase-1-5.json"
 SETTLED = ("P15-F1", "P15-F2")
 BUILT_ONLY_ADDRESS = "scripts/fixture_unwitnessed.py"
+REFUSED_ADDRESS = "scripts/fixture_not_witnessed.py"
+"""A member at `NOT_WITNESSED`, which contains the token `WITNESSED` (`CLAUDE.md`, trap T3).
+The reader compares whole tokens, and until a sixth witness said so nothing proved it: a
+substring comparison passed every variant and every test while admitting this member."""
 GOVERNING_STUB = "contracts/fixture-governing.json"
 """A contract the `settlement` stub names in its own `governed_by`. Open by default, so the
 graded-governance path is exercised in both directions rather than only when it fires."""
@@ -28,6 +33,30 @@ OPEN_ROLES = ("procurement-steward", "supplier-liaison", "worker")
 """One proving-role name and two an alternate institution uses: not a closed vocabulary."""
 CLOSED_ROLES = ("worker", "orchestrator", "controller", "owner")
 """The vocabulary a third witness found in this repository: closed without being four-of-four."""
+
+
+def _mispaired(term: str) -> dict[str, Any]:
+    """A contract that says `term` everywhere prose is allowed and declares it nowhere.
+
+    This is the whole excluded set, not one key of it. A sixth witness reintroduced
+    `description` reading and watched the self-check stay green, because the variant only
+    carried its term in a title: the fixture certified one prose key out of five while its
+    own docstring claimed the class. Any reader that reads a description, a note, a comment,
+    a warrant, a title, a name, or an enum value resolves this contract, the declared defeat
+    does not fire, and `selfcheck` fails by name.
+    """
+    said = f"Fixture {term} declaration"
+    return {
+        "$id": "https://soveraeign.local/contracts/fixture-unrelated.schema.json",
+        "title": said,
+        "name": said,
+        "description": said,
+        "note": said,
+        "$comment": said,
+        "warrant": said,
+        "properties": {"actor_id": {"type": "string", "enum": [said], "description": said}},
+        "examples": [{"properties": {f"{term}_id": {"type": "string"}}}],
+    }
 
 
 def _stub(term: str, **extra: Any) -> dict[str, Any]:
@@ -87,8 +116,13 @@ because a primitive that cannot be resolved and one that only the proving roles 
 are equally uncomposable by an institution the founder did not predict.
 
 `primitive-mispaired` and `governed-vocabulary-closed` cover the two rules a fourth witness
-changed, so that what the repository certifies through `scripts/verify.py` includes them.
-An earlier fixture wrote `"$comment": "declares the {primitive} primitive"` into every stub,
+changed, so the self-check refuses a regression of either rather than leaving it to the unit
+tests alone. Both routes reach `scripts/verify.py`: it runs this self-check as the
+"definition recurrence slice" and it runs `scripts/tests/test_sov_recurrence.py` inside
+"repository tooling tests". Two commit messages on this branch and an earlier draft of the
+custody note said otherwise, on a claim carried forward from a third witness that a sixth
+one disproved by planting the defect and watching `verify.py` exit 1. An earlier fixture
+wrote `"$comment": "declares the {primitive} primitive"` into every stub,
 which meant the fixture could never disagree with a binding: whatever path `PRIMITIVES`
 named, the stub written there declared the term. A witness named that gap and it is closed
 here - `primitive-mispaired` writes a contract that parses and declares structure that is
@@ -122,6 +156,7 @@ def build(root: Path) -> Path:
                 "subject": f"scripts/fixture_member_{index}.py",
                 "standing_supported": "WITNESSED"})
     _write(root / BUILT_ONLY_ADDRESS, '"""Fixture member nobody independently observed."""\n')
+    _write(root / REFUSED_ADDRESS, '"""Fixture member an observation explicitly refused."""\n')
     custodies = [
         _custody(SETTLED[0], [{"member_kind": "ITEM", "address": "scripts/fixture_member_1.py",
                                "standing": "WITNESSED", "work_state": "LANDED",
@@ -133,7 +168,10 @@ def build(root: Path) -> Path:
                                                     "witness/observations/fixture-2.json)"}]),
         _custody("P15-F3", [{"member_kind": "ITEM", "address": BUILT_ONLY_ADDRESS,
                              "standing": "BUILT", "work_state": "LANDED",
-                             "stage_observed_by": None}]),
+                             "stage_observed_by": None},
+                            {"member_kind": "ITEM", "address": REFUSED_ADDRESS,
+                             "standing": "NOT_WITNESSED", "work_state": "LANDED",
+                             "stage_observed_by": "fixture refusal"}]),
         _custody("P15-F4", []),
     ]
     _write(root / COLLECTION, {"collection_schema": "soveraeign-custody-collection/v1",
@@ -180,8 +218,7 @@ def _defeat_root(root: Path, variant: str) -> None:
     if variant == "primitive-undeclared":
         (root / neutrality.PRIMITIVES["custody"][0]).unlink()
     elif variant == "primitive-mispaired":
-        _write(root / neutrality.PRIMITIVES["custody"][0],
-               _stub("unrelated", title="Fixture custody declaration"))
+        _write(root / neutrality.PRIMITIVES["custody"][0], _mispaired("custody"))
     elif variant == "role-vocabulary-closed":
         _write(root / neutrality.PRIMITIVES["finding"][0],
                _stub("finding", properties={"evaluator_role": {

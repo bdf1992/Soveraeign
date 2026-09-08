@@ -31,7 +31,9 @@ SETTLED_STANDINGS = ("WITNESSED", "RATIFIED")
 """Standings that mean an independent participant has judged the member. `RATIFIED` is
 above `WITNESSED` on the lifecycle, so admitting only the exact token `WITNESSED` would
 silently drop a member that a seat had since settled. Compared as whole tokens, never as
-substrings: `NOT_WITNESSED` contains `WITNESSED` (`CLAUDE.md`, trap T3)."""
+substrings: `NOT_WITNESSED` contains `WITNESSED` (`CLAUDE.md`, trap T3). The fixture carries
+a `NOT_WITNESSED` member for that reason, and the self-check refuses a reading that cites
+it; a sixth witness pointed out that the rule was asserted here with nothing proving it."""
 
 
 def digest(path: Path) -> str | None:
@@ -75,8 +77,14 @@ def gather(root: Path, collection_path: str = CUSTODY_COLLECTION) -> dict[str, A
     """Read every settled member under `root`, digested at the address it declares.
 
     Returns the settled sources with their digests, the clauses they came from, and the
-    defects found. The reading is of committed files only; no session, transcript, or
-    environment is consulted, so a second participant reproduces it from the artifact.
+    defects found. No session, transcript or environment is consulted, so a second
+    participant reproduces it from the artifact.
+
+    It reads the working tree under `root`, not a git object. Earlier wording here said
+    "committed files only", which a sixth witness disproved by appending one uncommitted byte
+    to a settled member and watching the proposal identity move. Reproducibility therefore
+    requires a clean tree, which is why every reading of this member has been taken at a
+    frozen commit (`CLAUDE.md`, trap T6).
     """
     defects: list[str] = []
     try:

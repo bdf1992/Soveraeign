@@ -134,6 +134,44 @@ def _preconditions(grant: dict, request: dict) -> dict:
     }
 
 
+def independence_basis(request: dict) -> str:
+    """How well this request can establish that its observer stayed outside the build.
+
+    `contributed_to_build` is a boolean the observer sets about itself. A gate that reads
+    it and nothing else grades a declaration where it could measure, which is the defect
+    this repository keeps finding in its own checks. Three things here are measurable from
+    the request alone and are measured; the rest is declaration, and the difference is
+    reported rather than blurred.
+
+    Returns `MEASURED` when a structural reading was available and clean, and
+    `DECLARED_ONLY` when the only evidence of independence is the observer's own word.
+    Nothing here reads the session registry: that store is per-machine and gitignored, so
+    a check joining on it would pass vacuously wherever it is absent, which is the skipped
+    check that satisfies its own requirement (`CLAUDE.md`, trap T5).
+    """
+    observation = (request.get("evidence") or {}).get("observation") or {}
+    paths = [str(path) for path in (request.get("paths") or [])]
+    observer = str(observation.get("observer_id") or "")
+    if observer and paths and any(observer == path or observer in path for path in paths):
+        return "MEASURED"
+    return "DECLARED_ONLY"
+
+
+def _observed_path(observation: dict, paths: list[str]) -> str | None:
+    """The changed path that is the observation itself, if the request carries one.
+
+    An observation written into the set of paths being landed is inside the change it is
+    offered as the reading of. That is measurable without trusting anyone's account.
+    """
+    written = str(observation.get("observation_file") or "")
+    if not written:
+        return None
+    for path in paths:
+        if path == written or path.endswith(written) or written.endswith(path):
+            return path
+    return None
+
+
 def _observation_verdict(grant: dict, request: dict) -> tuple[str, str] | None:
     """Check the independent-observation precondition, if this capability sets one."""
     preconditions = _preconditions(grant, request)
@@ -144,9 +182,24 @@ def _observation_verdict(grant: dict, request: dict) -> tuple[str, str] | None:
     if not observation:
         return (OBSERVATION_MISSING,
                 "the grant requires an independent observation and the request carries none")
+
+    observer = str(observation.get("observer_id") or "").strip()
+    if not observer:
+        return (OBSERVER_NOT_INDEPENDENT,
+                "the observation names no observer, so nothing about its independence can "
+                "be established, declared or measured")
+    if observer == str(request.get("actor_id") or ""):
+        return (OBSERVER_NOT_INDEPENDENT,
+                f"observer {observer!r} is the actor exercising this grant; a build cannot "
+                "witness itself")
+    inside = _observed_path(observation, [str(p) for p in (request.get("paths") or [])])
+    if inside:
+        return (OBSERVER_NOT_INDEPENDENT,
+                f"the observation at {inside!r} is among the paths being landed, so it is "
+                "inside the change it is offered as the reading of")
     if observation.get("contributed_to_build"):
         return (OBSERVER_NOT_INDEPENDENT,
-                f"observer {observation.get('observer_id')!r} contributed to the build it "
+                f"observer {observer!r} contributed to the build it "
                 "is offered as the observation of")
     if observation.get("verdict") != "CONFIRMED":
         return (OBSERVATION_MISSING,

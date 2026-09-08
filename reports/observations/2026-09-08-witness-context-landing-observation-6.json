@@ -1,0 +1,118 @@
+{
+  "candidate_commit": "e6ac6f2e5f95a4b3e712a9c7cd03c1e2e0c48f1b",
+  "candidate_tree": "7bd6eb0c924fae02777c2b2c2e7948953614b1b6",
+  "base_commit": "d00f46ad38448856fa692399d12cf0a324266004",
+  "observer_id": "claude-opus-5/sov-witness@2026-09-08T14:41Z",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+
+  "case_id": "WITNESS-CONTEXT-LANDING-OBSERVATION-6",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08T14:41Z",
+  "artifact_revision": "e6ac6f2e5f95a4b3e712a9c7cd03c1e2e0c48f1b",
+  "participant_claim": "FAILED",
+  "supersedes": "reports/observations/2026-09-08-witness-context-landing-observation-5.json (subject 77b4de3, superseded); the four earlier records stand as history",
+  "observer_relation": "Independent evaluator of WORK, sixth reading of this concern by the same observer, still outside the build: planned, wrote, reviewed and advised on nothing in any of the six candidates. A note on that relation, because it narrowed this round: two of this candidate's changes were made on prescriptions I wrote in observation five. I did not write or review the code, and I re-derived every reading here from the artifact, but I am no longer a neutral party to those two decisions and this record says so rather than implying independence it does not have (contracts/observation.schema.json, observer_relation). Isolated full clone at the pinned commit; every mutation in a fresh throwaway copy; JavaScript semantics established by executing the object literals in node.",
+  "concern": "concern:harness/witness-context",
+  "standing_supported": "NONE",
+
+  "subject_state": {
+    "linear": "One parent, d00f46a. No merge commit.",
+    "tree": "7bd6eb0c924fae02777c2b2c2e7948953614b1b6, matching the declared candidate_tree.",
+    "record_vs_git": "The record's 36 changed_paths are set-equal to git.",
+    "scope": "`sovkernel.scope.out_of_scope` returns None over all 36 paths against grant:standing-landing-loop.",
+    "branch_head_re_derived": "d6cba64ecf32a5905100ce8ec6baabdb0bb2b176. e6ac6f2 is an ancestor; the diff between them is only my five earlier observation files. Working tree clean at 2026-09-08T14:41:00Z."
+  },
+
+  "observed": {
+    "baseline_at_the_commit": {
+      "python3 scripts/verify.py": "exit 0, 'PASS: 55 checks in 17.686s wall'",
+      "python3 scripts/lint.py": "exit 0",
+      "python3 scripts/sov_clarity.py check": "exit 0",
+      "python3 scripts/tests/test_witness_context_provenance.py": "exit 0, Ran 13 tests in 1.934s - one fewer, as claimed, because the withdrawn cross-check took its case with it",
+      "real tree": "83 dispatches across 23 files, 30 witness, none unresolvable",
+      "qualification": "CLAUDE.md T2: exit 0 means unchanged, not qualified."
+    },
+
+    "my_prescriptions_work": {
+      "verdict": "REPRODUCED",
+      "duplicate_inline_key": "My round-five construction, rebuilt: exit 1, 'a dispatch declares an agent type this cannot read'. `_types_in` reads every occurrence and refuses to choose. node still evaluates that literal to sov-witness; the classifier now declines rather than reading the overridden half.",
+      "spread_only_options": "`{ ...REAL, phase: 'Witness' }` with the type in REAL: exit 1.",
+      "the_cross_check_is_withdrawn": "Confirmed by diff and by the test count. I had asked for withdrawal rather than a patch and the builder confirmed my false positive first - a legal file whose two dispatches share one options const reads 1 against 2 - before acting on it. That is the right order.",
+      "regression_sample": "Ambiguous options binding, one-hop alias, container write, account without `const`, and a call with no agentType all still exit 1."
+    },
+
+    "survivor_one_inline_decoy_then_spread_override": {
+      "verdict": "DISSENTED",
+      "the_construction": "const REAL = { agentType: 'sov-' + 'witness' }\nconst built = await agent('build it', { agentType: 'sov-worker' })\nconst w = await agent('THE BUILD REPORT IS YOUR ORACLE: ' + built.summary + ' Derive your checks from it.', { agentType: 'sov-worker', ...REAL, phase: 'Witness' })",
+      "what_javascript_does": "Measured, not reasoned: `node -e \"const REAL={agentType:'sov-'+'witness'};const o={agentType:'sov-worker',...REAL,phase:'W'};console.log(o.agentType)\"` prints sov-witness.",
+      "what_the_reader_does": "`_types_in` finds exactly one `agentType:` token in the call, so `answers` has one member, the binding branch is skipped because `answers` is non-empty, and the call is classified sov-worker. `agent_calls` returns ['sov-worker', 'sov-worker'].",
+      "the_gate_admits_it": "With that workflow in the tree, `python3 scripts/verify.py` exits 0 and `python3 scripts/lint.py` exits 0.",
+      "why_the_builders_claim_2_is_true_and_claim_3_is_not": "A spread-only options object is caught, because it leaves no `agentType:` token at all and the reader correctly refuses. The decoy form is not caught, because one visible token plus one invisible declaration site reads as unambiguous. 'Twenty total, no survivors' does not hold.",
+      "the_repair_is_small_and_already_in_the_modules_own_shape": "A spread inside an options literal is a declaration site the token scan cannot enumerate. Refusing any options literal that carries `...` is the same closed statement about the reader's competence that `_types_in` already makes about two visible values."
+    },
+
+    "survivor_two_the_enumerator_does_not_recognise_four_ways_of_naming_agent": {
+      "verdict": "DISSENTED",
+      "measured": "Each is a workflow whose witness prompt hands the builder's account over as its oracle, unlabelled, with the module exiting 0 and `agent_calls` returning only ['sov-worker'] - the witness dispatch does not exist to any rule.",
+      "cases": {
+        "two-hop alias": "const spawn = agent; const dispatch = spawn; ... dispatch(prompt, opts)",
+        "alias by bare reassignment": "let spawn; spawn = agent; ... spawn(prompt, opts)",
+        "member call": "const api = { go: agent }; ... api.go(prompt, opts)",
+        "destructured alias": "const tools = { agent: agent }; const { agent: spawn } = tools; ... spawn(prompt, opts)"
+      },
+      "why_they_escape_every_guard": "`_agent_names` matches the bespoke regex `\\b(?:const|let|var)\\s+NAME\\s*=\\s*agent`, which resolves one hop and only through a declaration. `written_into` - this module's own general resolver, already imported into calls.py, and the thing that closed `acct = built` in round two - would resolve all four. Fail-closed cannot fire, because a call that is never recognised produces no None to assert on. And each uses `'sov-' + 'witness'`, so the literal never appears in the file and the every-file-that-names-the-witness case cannot see it either.",
+      "the_general_form": "Fail-closed protects classification and there is nothing corresponding for enumeration: no reading answers 'I am not sure I found every dispatch'. With the cross-check withdrawn there is now no guard on that question at all."
+    },
+
+    "the_carried_desync": {
+      "verdict": "RESIDUAL_NOT_A_NEW_FINDING",
+      "state": "Reproduced at this commit: a workflow whose witness dispatch is hidden by `/`/.test(hit)` after `probe[0]`, closed by a lone backtick in a trailing comment, passes with the module green and the lexer silent. Inside an existing workflow that contains the literal `sov-witness` it is still caught by the sweep case; in a new file using a concatenated type it is not.",
+      "attribution": "This is my round-five finding, now uncontained. The builder withdrew the only detector on my written prescription and said so plainly. I record the cost rather than counting it against the candidate as a new defect: I recommended the withdrawal and I still think it was right, because a proxy that convicts correct code is worse than the gap it covers.",
+      "what_would_close_it_without_a_proxy": "Two scans of the same bytes with different regex-disambiguation rules, compared, disagreement refusing. That measures the scan itself rather than a stand-in for it, so it is not the thing I asked to be withdrawn. Named as a residual, not asked for here."
+    },
+
+    "the_convergence_test_I_set_settled": {
+      "the_test": "A sixth defect that is neither a proxy being paid off nor a place the fail-closed rule was not applied means regress, and the refactor is owed.",
+      "the_answer": "No third kind. The series is converging, and the refactor is not owed by this concern.",
+      "how_each_survivor_classifies": {
+        "inline decoy plus spread": "The rule ran and was wrong because its predicate is the token `agentType:` and a spread declares a type without one. That is the rule not extended to a syntax, and the extension is a single closed statement - an options literal carrying `...` cannot be enumerated, so refuse.",
+        "the four enumeration gaps": "All four are resolved by machinery already inside this module. `_agent_names` uses a bespoke one-hop regex where `written_into` exists and is already imported. That is the rule not applied to the enumerator's own name resolution, not a new kind of problem.",
+        "the desync": "Carried, caused by a withdrawal I recommended, and it too has a fail-closed formulation available."
+      },
+      "why_I_am_confident_this_is_not_me_widening_the_category_to_absorb_everything": "The test I owe myself is whether a stated rule closes the class rather than the instances. For every survivor here I can write the rule in one sentence, in the same shape as the rule already in the module, and it closes constructions nobody has enumerated - including ones I have not thought of. That was not true in rounds one to three, where each repair listed the escapes it had seen. It is the difference between 'follow bindings through push, destructuring and parameters' and 'refuse what you cannot settle'.",
+      "what_would_still_change_this": "A defect where refusing would refuse everything - where being right requires understanding what the prompt means rather than what it declares. That is the presence-grading ceiling, which is stated, agreed, and out of this concern's scope. It is the one place where the refactor is genuinely the only answer, and it is already named as such."
+    },
+
+    "why_this_is_still_a_dissent_rather_than_a_confirmation": {
+      "reasoning": "The convergence question and the landing question are different, and I was asked both. The approach converges. This artifact still admits the defect the concern exists to prevent: five distinct constructions, demonstrated at this commit, hand a witness the builder's account as its oracle with verify and lint both exiting 0. A witness record that says CONFIRMED asserts that the claims hold, and 'no survivors' does not.",
+      "what_would_make_me_reproduce_rather_than_dissent": "Refusing an options literal that carries a spread; resolving agent names through `written_into` instead of the one-hop regex; and either restoring a non-proxy desync reading or carrying its absence as an owner-visible accepted residual rather than only a module docstring. All three are inside this concern, inside the grant's scope, and small. I would expect that to be the last round.",
+      "on_being_asked_not_to_find_something": "Recorded because it matters to how this reading should be read: I did not go looking for a sixth defect to justify a sixth dissent. The first three constructions I tried were the two the builder named as fixed - both are fixed - and the third was the spread variant of one of them, which is not."
+    }
+  },
+
+  "residuals": [
+    "An options literal carrying a spread reads as unambiguous while JavaScript takes the spread; the classifier returns a confident wrong answer.",
+    "_agent_names resolves the name `agent` one hop by regex; a two-hop alias, a bare reassignment, a member call and a destructured alias each make a dispatch invisible, and written_into would resolve all four.",
+    "There is no fail-closed reading for enumeration: a call never recognised produces no refusal, and with the cross-check withdrawn nothing guards that question.",
+    "A backtick-bodied regex misread as division can hide a dispatch with the lexer silent; uncontained by a withdrawal this observer recommended.",
+    "Presence and position are graded; meaning is not. Stated as the ceiling, agreed, out of scope, and the one place the refactor is the only answer.",
+    "The witness prompt parse evidence in all six of my observations assumes a wrapper model of the host's execution, unverified against the host.",
+    "This observer prescribed two of this candidate's changes and is not a neutral party to them.",
+    "independence_basis records MEASURED over an entanglement test that cannot fire under this grant; honestly described since 1e4423d.",
+    "sovcounts._committed_paths() reads the index while its name and docstring say the commit at HEAD - pre-existing, acknowledged, not repaired here.",
+    "grant:standing-landing-loop cannot carry `.clarity/coverage.json` or a new `scripts/sov_*.py` entrypoint."
+  ],
+
+  "judgement_items": [
+    "grant:standing-landing-loop cannot carry `.clarity/coverage.json`, and therefore cannot carry any change to clarity-covered prose inside its own scope or any new `scripts/sov_*.py` entrypoint. Widening the grant is the owner's.",
+    "No observation schema in contracts/ admits the shape the landing gate reads. Carried forward and routed separately.",
+    "Six readings of this concern have been taken by one observer, two of whose findings became prescriptions the builder implemented. Whether that observer remains independent enough to witness the seventh is a question for the seat that commissions it, not for the observer."
+  ],
+
+  "telemetry": {
+    "host": "Linux, Python 3.11.15, node v22.22.2",
+    "method": "Isolated full clone at e6ac6f2; eighteen mutations in this battery, each in a fresh throwaway copy; classification measured by calling agent_calls() directly against each file; JavaScript semantics of the spread override and the duplicate key established by executing them in node; full verify and lint run with the spread-override workflow present to establish that the gate admits it; verdicts from exit codes.",
+    "writes_by_this_witness": "this file only; nothing in the subject was edited, staged, committed, merged, reset or rebased anywhere",
+    "helpers_recruited": "none"
+  }
+}

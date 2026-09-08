@@ -394,6 +394,21 @@ axis, and it widened rather than narrowed.
    covered prose worth its cost, and is repairing a Record defect in a decision
    record the builder's to do?
 
+## How this landed
+
+`python scripts/sov_land.py plan` refuses `AUTHORITY_REFUSED`: the change carries `decisions/`,
+`STATUS.yaml`, `AGENTS.md`, `CLAUDE.md` and `.clarity/coverage.json`, every one outside
+`grant:standing-landing-loop`. The refusal is on scope, not on evidence — `lint` and `verify`
+both read `PASS` at the graded tree.
+
+Bdo directed the landing in session on 2026-09-08, which is the owner act `AGENTS.md` requires
+for a direct change to `main`. Landing confers no standing: the walk is `BUILT` and not
+witnessed, three passes dissented, and `STATUS.yaml` says so. What landed is a proposal, its
+implementation, three witness records, and the disclosed limits — not a ratified rule.
+
+`reports/2026-09-08-controller-handoff-independence.md` is the read-in for whoever picks this
+up, and names what to distrust about it.
+
 ## Residuals
 
 - Question 2 below is unanswered, and the retirement of grant-descent is built

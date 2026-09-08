@@ -54,9 +54,11 @@ egg-info directory, a coverage file, a `.DS_Store` - each moved the digest.
 
 So the declaration is read rather than restated. `.gitignore` is a tracked file and needs no
 git to open. What is implemented is the subset of its syntax this repository uses: a
-directory pattern ending in `/`, a glob, a plain name, and a `!` negation. An anchored or
-path-bearing pattern is matched against the member-relative path as well as the name. That
-is narrower than git's own matching and is stated as such."""
+directory pattern ending in `/`, a glob, a plain name, and a `!` negation. A path-bearing
+pattern is matched against the member-relative path as well as the name. That is not git's
+own matching, and the difference does not all run one way: an unanchored pattern matches at
+any depth as git's does, a directory pattern matches only directories, and an anchored or
+`**` pattern is not implemented. This repository's declaration uses none of the last."""
 
 GENERATED_DIRS = frozenset({"__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache",
                             ".ipynb_checkpoints", ".tox", ".venv", "node_modules"})
@@ -67,7 +69,16 @@ GENERATED_SUFFIXES = frozenset({".pyc", ".pyo", ".pyd"})
 
 
 def _ignore_patterns(root: Path) -> tuple[list[str], list[str]]:
-    """The ignore and negation patterns this repository declares, in declaration order."""
+    """The ignore and negation patterns this repository declares.
+
+    A pattern ending in `/` names a directory and is kept apart from the rest, because a
+    directory pattern must not match a file of the same name. An eleventh witness measured
+    the first version of this against `git check-ignore` over controlled paths and found it
+    excluding nine paths git keeps - a file called `build`, one called `dist`, one called
+    `env` - because every trailing slash had been stripped away. The docstring at the time
+    warned that the matcher was narrower than git; it was broader, in the direction that
+    quietly drops content out of a member's digest.
+    """
     try:
         text = (root / IGNORE_DECLARATION).read_text(encoding="utf-8")
     except OSError:
@@ -78,14 +89,28 @@ def _ignore_patterns(root: Path) -> tuple[list[str], list[str]]:
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
             continue
-        (negate if stripped.startswith("!") else ignore).append(stripped.lstrip("!").strip("/"))
+        target = negate if stripped.startswith("!") else ignore
+        pattern = stripped.lstrip("!")
+        target.append(pattern if pattern.endswith("/") else pattern.strip("/"))
     return ignore, negate
 
 
 def _matches(relative: PurePosixPath, patterns: list[str]) -> bool:
-    """True when any pattern matches this member-relative path, one of its parents, or a name."""
-    candidates = [str(relative), relative.name, *(part for part in relative.parts)]
-    return any(fnmatch(candidate, pattern) for pattern in patterns for candidate in candidates)
+    """True when any pattern matches this member-relative path, a parent of it, or its name.
+
+    A pattern ending in `/` is tested against the path's directory components alone, so
+    `build/` excludes everything under a `build` directory and keeps a file named `build`.
+    """
+    parents = relative.parts[:-1]
+    for pattern in patterns:
+        if pattern.endswith("/"):
+            if any(fnmatch(part, pattern[:-1]) for part in parents):
+                return True
+            continue
+        if any(fnmatch(candidate, pattern)
+               for candidate in (str(relative), relative.name, *relative.parts)):
+            return True
+    return False
 
 
 def _is_artifact(entry: Path, base: Path, ignore: list[str], negate: list[str]) -> bool:
@@ -158,8 +183,8 @@ def gather(root: Path, collection_path: str = CUSTODY_COLLECTION) -> dict[str, A
     """Read every settled member under `root`, digested at the address it declares.
 
     Returns the settled sources with their digests, the clauses they came from, and the
-    defects found. No session, transcript or environment is consulted, so a second
-    participant reproduces it from the artifact.
+    defects found. No session or transcript is consulted, so a second participant reproduces
+    it from a clean tree.
 
     It reads the working tree under `root`, not a git object. Earlier wording here said
     "committed files only", which a sixth witness disproved by appending one uncommitted byte

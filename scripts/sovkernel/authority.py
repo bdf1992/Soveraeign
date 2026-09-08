@@ -154,25 +154,27 @@ def _covers(landed: str, target: str) -> bool:
     return landed == target or target.startswith(landed + "/")
 
 
-def independence_basis(request: dict) -> str:
-    """How this request established that its observer stayed outside the change.
+def observation_basis(request: dict) -> str:
+    """How this request came by the observation it offers: declared, or supplied and resolved.
 
     `contributed_to_build` is a boolean the observer sets about itself, and a gate reading
     it alone grades a declaration where a measurement was available.
 
-    An earlier form returned MEASURED when the observer's own id appeared inside a landed
-    path: entanglement read as evidence of independence. Two readings then defeated that form in turn: it returned MEASURED for any non-empty
-    `observation_path`, and then for `"."` and for a path naming no file, because a string
-    that is merely present was taken as evidence a comparison had something to compare.
-    This module reads no files by design, so the caller that read the observation asserts
-    it with `observation_resolved`, and MEASURED requires the assertion.
+    An earlier form returned a measured verdict when the observer's own id appeared inside
+    a landed path: entanglement read as evidence of independence. Two readings then
+    defeated that form in turn, for any non-empty `observation_path`, and then for `"."`
+    and for a path naming no file, because a string that is merely present was taken as
+    evidence a comparison had something to compare. This module reads no files by design,
+    so the caller that read the observation asserts it with `observation_resolved`.
 
-    What is measured is narrower than the field's name suggests, and a reading said so:
-    that an observation was supplied, from a path its caller resolved, against a change
-    with paths to compare it to. That is supply and resolution, not independence. Nothing
-    here joins the observer against the session registry, which is per-machine and
-    gitignored, so a check reading it would pass wherever it is absent. MEASURED means the
-    comparison had both its sides, and no more than that.
+    The name says what is established, because the previous one did not. This was
+    `independence_basis`, returning `MEASURED`, and a reading found the consequence: a
+    downstream reader of the landing ledger takes that pair for a measurement of
+    independence, which nothing here performs. What is established is that an observation
+    was supplied, from a path its caller resolved, against a change with paths to compare
+    it to. Nothing joins the observer against the session registry, which is per-machine
+    and gitignored, so a check reading it would pass wherever it is absent.
+    `SUPPLIED_AND_RESOLVED` means the comparison had both its sides, and no more.
     """
     if not (request.get("evidence") or {}).get("observation"):
         return "DECLARED_ONLY"
@@ -186,7 +188,7 @@ def independence_basis(request: dict) -> str:
         # against a string that resolves to no file is vacuous however carefully it runs.
         # This module reads no files, so the assertion has to come from the one that does.
         return "DECLARED_ONLY"
-    return "MEASURED"
+    return "SUPPLIED_AND_RESOLVED"
 
 
 def _observed_path(request: dict) -> str | None:

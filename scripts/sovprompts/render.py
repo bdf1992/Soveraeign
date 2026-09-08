@@ -107,13 +107,63 @@ def _body(source: str, name: str) -> str:
     raise Unreadable(f"{name} has no closing brace")
 
 
+NESTED = re.compile(r"\bfunction\b[^(){}]*\(|=>\s*")
+
+
+def _own_returns(code: str) -> list[int]:
+    """Where this function's own `return` statements are, with nested functions blanked.
+
+    A return inside `if (...) { ... }` belongs to this function; a return inside a callback
+    passed to `.map(function (d) { ... })` does not. Counting both made every workflow with
+    an inline callback read as branch-dependent. Length is preserved so offsets stay valid
+    in the caller's own text.
+    """
+    out = list(code)
+    for match in NESTED.finditer(code):
+        brace = code.find("{", match.end() - 1)
+        if brace == -1:
+            continue
+        index, depth = brace, 0
+        while index < len(code):
+            if code[index] == "{":
+                depth += 1
+            elif code[index] == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            index += 1
+        for position in range(brace, min(index + 1, len(code))):
+            out[position] = " "
+    return [match.start() for match in re.finditer(r"\breturn\b", "".join(out))]
+
+
+def returned(source: str, name: str) -> str:
+    """The one expression a function returns, refusing a function that returns more.
+
+    Every return, not the first. A guarded decoy return ahead of the live one was the text
+    every frame rule graded while the evaluator received the other: an independent reading
+    built `if (legacyFrame) { return [ ...correct frame... ] }` above a return that
+    inverted the rule and deleted the subject pin, and both test modules passed. Which
+    branch executes is a question this reader does not evaluate, so more than one return
+    is refused rather than guessed at.
+    """
+    body = _body(source, name)
+    code = masked(body)
+    returns = _own_returns(code)
+    if len(returns) != 1:
+        raise Unreadable(
+            f"{name} has {len(returns)} return statements, so which text reaches an "
+            "evaluator depends on a branch this reader does not evaluate")
+    return body[returns[0] + len("return"):]
+
+
 def blocks(source: str, name: str) -> list[str]:
     """The blocks a `return [ ... ].join(...)` function produces, in order."""
-    body = _body(source, name)
-    start = body.find("return [")
-    if start == -1:
+    body = returned(source, name)
+    if not masked(body).lstrip().startswith("["):
         raise Unreadable(f"{name} does not return an array of blocks")
-    index, depth = start + len("return "), 0
+    start = len(body) - len(body.lstrip())
+    index, depth = start, 0
     while index < len(body):
         if body[index] == "[":
             depth += 1
@@ -133,7 +183,7 @@ def blocks(source: str, name: str) -> list[str]:
         raise Unreadable(
             f"{name}'s blocks are transformed before they are joined, so the order they "
             "reach an evaluator in is not the order they are written in")
-    inner = body[start + len("return ["):index]
+    inner = body[start + 1:index]
     # Where the separating commas are is a structural question, and it is answered on the
     # one mask rather than by a scan of this module's own. This split used to be a private
     # character scan that did not skip comments, so a comma inside `/* first, always */`

@@ -129,24 +129,24 @@ class TheGateMeasuresWhatItCan(unittest.TestCase):
 class TheBasisIsRecordedRatherThanBlurred(unittest.TestCase):
     def test_a_reading_resting_on_the_observers_word_says_so(self):
         """No observation path on the request: the relation was never read."""
-        self.assertEqual(authority.independence_basis(request(CLEAN)), "DECLARED_ONLY")
+        self.assertEqual(authority.observation_basis(request(CLEAN)), "DECLARED_ONLY")
 
     def test_a_request_carrying_the_observations_path_is_measured(self):
         """The landing tool knows where the observation lives, so the relation is read
         rather than taken on trust. An earlier form reached MEASURED only when the
         observer was named after a file, which no participant is."""
         self.assertEqual(
-            authority.independence_basis(
+            authority.observation_basis(
                 request(CLEAN, observation_path=WRITTEN, observation_resolved=True)),
-            "MEASURED")
+            "SUPPLIED_AND_RESOLVED")
 
     def test_measured_is_reachable_by_an_ordinarily_named_observer(self):
         """The defect this replaced: MEASURED was unreachable in practice."""
         ordinary = {**CLEAN, "observer_id": "witness:governance"}
         self.assertEqual(
-            authority.independence_basis(
+            authority.observation_basis(
                 request(ordinary, observation_path=WRITTEN, observation_resolved=True)),
-            "MEASURED")
+            "SUPPLIED_AND_RESOLVED")
 
     def test_a_path_the_caller_did_not_resolve_is_not_measured(self):
         """The defeating case for the repair above.
@@ -159,11 +159,11 @@ class TheBasisIsRecordedRatherThanBlurred(unittest.TestCase):
         """
         for path in (".", "not/a/file/at/all.json", WRITTEN):
             self.assertEqual(
-                authority.independence_basis(request(CLEAN, observation_path=path)),
+                authority.observation_basis(request(CLEAN, observation_path=path)),
                 "DECLARED_ONLY", f"{path!r} was reported as measured without resolution")
 
     def test_a_request_with_no_observation_at_all_is_not_measured(self):
-        self.assertEqual(authority.independence_basis(request(None)), "DECLARED_ONLY")
+        self.assertEqual(authority.observation_basis(request(None)), "DECLARED_ONLY")
 
 
 if __name__ == "__main__":

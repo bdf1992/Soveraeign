@@ -181,16 +181,17 @@ def _iterated_over(source: str, name: str) -> tuple[str, ...]:
 
 
 def _split_arguments(text: str) -> list[str]:
-    """Split an argument list on its top-level commas."""
-    out, depth, quote, start = [], 0, "", 0
-    for index, char in enumerate(text):
-        if quote:
-            if char == quote and text[index - 1:index] != "\\":
-                quote = ""
-            continue
-        if char in "'\"`":
-            quote = char
-        elif char in "([{":
+    """Split an argument list on its top-level commas, found on the one mask.
+
+    On `masked(text)` rather than on a scan of this module's own. A comma inside a comment
+    or a regex is not a separator, and an unbalanced `{` inside a comment - `/* { */` -
+    made a two-argument dispatch read as one, which took its prompt out of every rule.
+    `masked` preserves length, so every offset below is valid in `text` itself.
+    """
+    code = masked(text)
+    out, depth, start = [], 0, 0
+    for index, char in enumerate(code):
+        if char in "([{":
             depth += 1
         elif char in ")]}":
             depth -= 1

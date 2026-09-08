@@ -1,6 +1,6 @@
 """Run every construction that ever defeated the witness-context check, and require it to fail.
 
-Twenty-nine cases from seven independent readings. Until this module existed they were
+Every case from every independent reading, ids running D1..Dn with no gaps. Until this module existed they were
 prose in docstrings, and an independent reading observed the consequence: one defeat
 reproduced across three candidates *after* it had been named, because what refused it was
 a sentence. `SDLC.md` gate 3 and `AGENTS.md`, Testing and verification, require a
@@ -59,7 +59,14 @@ def mutated(case: dict) -> dict[str, str]:
 class TheCorpusIsWellFormed(unittest.TestCase):
     def test_every_case_is_declared_completely(self):
         cases = json.loads(CORPUS.read_text(encoding="utf-8"))["cases"]
-        self.assertGreaterEqual(len(cases), 29)
+        # Contiguous, not a floor. This asserted `len(cases) >= 29` while fifty-five
+        # existed, so twenty-six could be deleted and the suite would still pass - a
+        # check reading a declaration where it could measure, which is the defect this
+        # whole concern is about. An independent reading found it. Ids run D1..Dn with
+        # no gaps, so removing a case is visible whichever one goes.
+        numbers = sorted(int(case["id"][1:]) for case in cases)
+        self.assertEqual(numbers, list(range(1, len(cases) + 1)),
+                         "case ids must run D1..Dn with no gaps; a deleted case shows here")
         seen = set()
         for case in cases:
             for field in ("id", "found_by_reading", "shows", "expects", "file"):

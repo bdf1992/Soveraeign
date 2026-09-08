@@ -99,16 +99,34 @@ def _dispatch_violations(name: str, source: str) -> list[str]:
             out.append(f"{name}: a dispatch declares an agent type this cannot read once, "
                        f"so no rule reaches it: {call.strip()[:70]}")
     for call in dispatches(source, WITNESS):
-        written = prompt_of(call)
-        prompt = resolved_prompt(source, written)
-        # `resolved_prompt` prefixes the expression it followed - a bare `witnessPrompt`,
-        # or `buildPrompt(args)` - onto the body it resolved to. That prefix is not text
-        # the evaluator reads, and grading position over it convicted three workflows for
-        # the name of their own prompt appearing before their label.
-        body = prompt[len(written):] if prompt != written else prompt
-        code = masked(prompt)
+        try:
+            written = prompt_of(call)
+        except Unreadable as defect:
+            # Which argument carries the prompt is structural, and a call shape this
+            # reader does not understand is refused rather than sliced at a brace.
+            out.append(f"{name}: which argument of a witness dispatch is the prompt "
+                       f"cannot be read: {defect}")
+            continue
+        try:
+            # Substituted in place by `resolved_prompt`, so the body is the whole resolved
+            # text and its splice positions are the ones the evaluator reads in.
+            body = resolved_prompt(source, written)
+        except Unreadable as defect:
+            out.append(f"{name}: what this prompt delivers cannot be read, so the rule "
+                       f"cannot reach it: {defect}")
+            continue
+        code = masked(body)
         if "witnessFrame(" in code:
-            before = prompt[:prompt.index("witnessFrame(")]
+            if "function witnessFrame(" not in masked(source):
+                # The frame rules key on that declaration. A file dispatching through a
+                # frame it defines another way - an arrow function, a `const` - took this
+                # branch and skipped every delivered-text rule while `_frame_violations`
+                # never ran at all, so nothing graded the frame. Refused rather than split
+                # between two rules that each assume the other covers it.
+                out.append(f"{name}: a witness dispatch renders a frame this file does "
+                           "not declare as `function witnessFrame(`, so no rule reads it")
+                continue
+            before = body[:code.index("witnessFrame(")]
             for expression in interpolated(before):
                 # Asked, not listed. This was a frozenset naming `plan`, `built` and
                 # `orchestrationReview` - a hardcoded name list, which is the defect

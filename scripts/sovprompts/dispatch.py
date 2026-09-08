@@ -16,9 +16,12 @@ from __future__ import annotations
 
 import re
 
-from sovprompts.bindings import IDENT, derives_from_agent_result, roots, written_into
+from sovprompts.bindings import (
+    IDENT, _split_arguments, derives_from_agent_result, roots, written_into,
+)
 from sovprompts.calls import agent_calls
-from sovprompts.render import Unreadable, _body
+from sovprompts.render import Unreadable, returned
+from sovprompts.scan import masked
 
 
 def dispatches(source: str, agent_type: str) -> list[str]:
@@ -33,35 +36,35 @@ def dispatches(source: str, agent_type: str) -> list[str]:
 
 
 def prompt_of(call: str) -> str:
-    """The prompt expression of an agent(...) call: everything before its options object."""
-    depth, quote = 0, ""
-    for index, char in enumerate(call):
-        if quote:
-            if char == quote and call[index - 1:index] != "\\":
-                quote = ""
-            continue
-        if char in "'\"`":
-            # Backticks included. Without them a template-literal prompt was read only as
-            # far as its first `${`, so a label in the head satisfied the rule while the
-            # tail the evaluator actually reads was never graded.
-            quote = char
-        elif char in "([":
-            depth += 1
-        elif char in ")]":
-            depth -= 1
-        elif char == "{" and depth == 0:
-            return call[:index].rstrip().rstrip(",")
-    return call
+    """The prompt argument of an agent(...) call: every argument before its options object.
 
+    Read as arguments, not as characters. This used to return `call[:index]` at the first
+    `{` seen at depth zero, on the assumption that the first brace opens the options
+    object. An independent reading defeated that with one ordinary object literal inside
+    the prompt expression - `'...' + {sep: ' '}.sep + '...'` - which ended the graded text
+    early and put an inversion, a real `agent(...)` result, and every splice after it
+    outside every rule in this package. A regex containing `{` does the same. Which
+    argument is which is structural, so it is answered structurally.
 
-def interpolated(prompt: str) -> list[str]:
-    """The expressions a prompt splices in, with its literal prose removed.
-
-    A prompt that happens to contain the word "claims" in a sentence is not handing an
-    evaluator the builder's account; a prompt that splices `claims` in is. Grading prose
-    for that distinction is what made the first version of this check unreliable.
+    Fails closed. A call whose last argument is not an object literal is a shape this
+    reader does not understand, and `Unreadable` says so rather than grading a guess.
     """
-    out: list[str] = []
+    arguments = _split_arguments(call)
+    if len(arguments) != 2:
+        raise Unreadable(
+            f"an agent call passes {len(arguments)} argument(s); this reader knows the "
+            "prompt-then-options shape and refuses to guess which one is the prompt")
+    return arguments[0]
+
+
+def expression_spans(prompt: str) -> list[tuple[int, int]]:
+    """Where each spliced expression sits in a prompt, with its literal prose skipped.
+
+    Offsets rather than text, so a caller that needs to substitute a resolved body back in
+    can do it without moving anything else. `interpolated` is the same walk reported as
+    text.
+    """
+    out: list[tuple[int, int]] = []
     index, length = 0, len(prompt)
     while index < length:
         char = prompt[index]
@@ -94,40 +97,76 @@ def interpolated(prompt: str) -> list[str]:
             elif here == "+" and depth == 0:
                 break
             index += 1
-        piece = prompt[start:index].strip()
-        if piece:
-            out.append(piece)
+        if prompt[start:index].strip():
+            out.append((start, index))
     return out
+
+
+def interpolated(prompt: str) -> list[str]:
+    """The expressions a prompt splices in, with its literal prose removed.
+
+    A prompt that happens to contain the word "claims" in a sentence is not handing an
+    evaluator the builder's account; a prompt that splices `claims` in is. Grading prose
+    for that distinction is what made the first version of this check unreliable.
+    """
+    return [prompt[a:b].strip() for a, b in expression_spans(prompt)]
 
 
 CALL = re.compile(r"^\s*([A-Za-z_$][\w$]*)\s*\(")
 
 
 def resolved_prompt(source: str, prompt: str) -> str:
-    """The prompt text, following one level of indirection to where it is written.
+    """The prompt with every indirection inside it replaced by the text it resolves to.
 
     A prompt assembled by a helper is still a prompt, and so is one bound to a name.
     Grading only the call site let one workflow's whole prompt sit outside every check
     because the call read `witnessPrompt(claims, read, tick)`.
 
-    Two shapes are followed. A call `buildPrompt(args)` resolves through the function's
-    body. A bare identifier resolves through its `const` initialiser: an independent
-    reading found `agent(witnessPrompt, ...)` in `sov-contracts.js` reaching no check at
-    all, because only the call shape was followed and a bare name is not a call. Inverting
-    that file's label to "oracle and never artifact" left every case passing.
+    Every piece, not the whole expression. This used to match the prompt against `CALL`
+    and `IDENT.fullmatch`, both of which require the prompt to be *exactly* one call or
+    exactly one name. Twenty-one of the twenty-two repaired workflows concatenate -
+    `'...label...' + qaPrompt(d)` - which is neither, so the helper body was rendered as
+    one opaque `<expr>` and its text never read. An independent reading put the corpus's
+    own "oracle and never artifact" sentence inside such a helper and every case passed.
+
+    Substituted in place rather than appended. Appending resolved bodies after the prompt
+    puts the helper's literals behind every splice at the call site, and the position rule
+    counts `<expr>` markers in delivered order; the resolved text has to keep the order
+    the evaluator reads in.
     """
-    text = prompt.strip()
-    match = CALL.match(text)
-    if match and "+" not in prompt.split("(")[0]:
-        try:
-            return prompt + "\n" + _body(source, match.group(1))
-        except Unreadable:
-            return prompt
-    if IDENT.fullmatch(text):
-        written = written_into(source, text)
-        if written:
-            return prompt + "\n" + "\n".join(written)
-    return prompt
+    out, cut = [], 0
+    for begin, finish in expression_spans(prompt):
+        text = prompt[begin:finish].strip()
+        resolved = None
+        match = CALL.match(text)
+        if match and "+" not in text.split("(")[0]:
+            try:
+                resolved = returned(source, match.group(1))
+            except Unreadable as defect:
+                # A name that is not a local function - `JSON.stringify`, an import - is
+                # not indirection this reader has to follow, and stays an expression. A
+                # helper it *can* find and cannot read is different: the text an evaluator
+                # receives is then branch-dependent one level down, which is the defeat
+                # this package refuses at the top level, so it is refused here too.
+                if not str(defect).startswith("no function named"):
+                    raise
+                resolved = None
+            if resolved is not None and masked(resolved).lstrip().startswith("["):
+                # A function returning an array of blocks is a frame, and `blocks` reads
+                # it as ordered blocks rather than as a concatenation. Substituting its
+                # source here would put a bare `[` where a string belongs and render the
+                # whole frame as one opaque expression. Left in place for the frame rules.
+                resolved = None
+        elif IDENT.fullmatch(text):
+            written = written_into(source, text)
+            resolved = "\n".join(written) if written else None
+        if resolved is None:
+            continue
+        out.append(prompt[cut:begin])
+        out.append(resolved)
+        cut = finish
+    out.append(prompt[cut:])
+    return "".join(out)
 
 
 __all__ = [

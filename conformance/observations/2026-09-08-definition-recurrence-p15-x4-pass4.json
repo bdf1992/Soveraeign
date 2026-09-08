@@ -267,6 +267,12 @@
         "withdraws": "The claim that this repository records no container, host or prompt for any reading. It stood in two places with different wording: C6 above says \"Nothing in this repository records a container, a host or a prompt for any of the seven readings\", and the custody note at 0b8b000 said the same of any reading. Neither is quoted exactly here, because a tenth reading found an earlier draft of this entry quoting a hybrid of the two that appeared in neither.",
         "why": "False. Passes 4 through 10 each record a container and a prompt in their own independence block. An eighth reading opened the four that existed then; the later ones carry the same fields. The sentence came from the seventh reading's list of things it could not attest and was written into a governed file as fact without being re-derived.",
         "what_stands": "That nothing outside a reading corroborates either, and that a later record quoting an earlier one is not corroboration. Passes 1 through 3 record neither."
+      },
+      {
+        "id": "C8",
+        "withdraws": "\"Passes 5 and 6 share this container as well\", which stood in the custody member note at 7188ef5 and 5632495 and was removed at 0b8b000 without a withdrawal.",
+        "why": "It rests on the same self-report C1, C6 and C7 withdrew, and it was edited away rather than withdrawn, which is the one move this block exists to avoid. Re-derived here from the file's own history rather than taken from the reading that found it: the sentence is present in the note at 7188ef5 and 5632495 and absent from 0b8b000 onward, and no entry above names it.",
+        "what_stands": "Passes 4 through 12 each record a container in their own independence block and passes 1 through 3 record none. Nothing outside a reading corroborates any of it, which is why the note now argues from the model family, where the commit trailers and the participant ids are checkable, and makes no container claim at all."
       }
     ],
     "findings_the_fifth_reading_added": [

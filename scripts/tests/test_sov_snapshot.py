@@ -32,6 +32,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import sov_snapshot  # noqa: E402
 from sovsnapshot import claims  # noqa: E402
+from sovsnapshot import grading  # noqa: E402
 from sovsnapshot import committed  # noqa: E402
 from sovsnapshot import grading  # noqa: E402
 from sovsnapshot import selfcheck  # noqa: E402
@@ -217,14 +218,30 @@ class TheExitCodeIsWhatFailedCI(unittest.TestCase):
             for claim in claims.CLAIMS)
         return unittest.mock.patch.object(claims, "CLAIMS", rebuilt)
 
+    @staticmethod
+    def _stating_page():
+        """cmd_check against a page that states every count.
+
+        These cases used to read the live CLAUDE.md, which stated all ten. It now
+        defers them to `sov_snapshot.py numbers`, so a page-reading case graded
+        against it has no stated claim left to drift or to be unable to check, and
+        both of these passed for that reason rather than for their own. They are
+        about the mechanism, not about what the page happens to say today.
+        """
+        # Built eagerly, from the real derivations, before any deriver is patched:
+        # a synthetic page of placeholders would drift against every true count and
+        # test nothing but the placeholder.
+        text = selfcheck.page(**claims.derive_all().values).text
+        return unittest.mock.patch.object(claims, "page_text", lambda: text)
+
     def test_check_exits_zero_when_a_claim_cannot_be_derived(self):
-        with self._patched(commits=self._refuse):
+        with self._stating_page(), self._patched(commits=self._refuse):
             self.assertEqual(sov_snapshot.cmd_check(None), 0)
 
     def test_check_still_exits_one_on_a_real_drift(self):
         """The control: refusing to fail on the unanswerable must not mute the rest."""
-        with self._patched(commits=self._refuse,
-                           **{"verification checks": lambda: 999999}):
+        with self._stating_page(), self._patched(commits=self._refuse,
+                                                 **{"verification checks": lambda: 999999}):
             self.assertEqual(sov_snapshot.cmd_check(None), 1)
 
 
@@ -420,15 +437,24 @@ class TheTwoConstantsHaveABoundary(unittest.TestCase):
             for index, claim in enumerate(claims.CLAIMS))
         return unittest.mock.patch.object(claims, "CLAIMS", rebuilt)
 
+    @staticmethod
+    def _stating_page():
+        """The boundary is measured against what a page states, so it must state."""
+        # Built eagerly, from the real derivations, before any deriver is patched:
+        # a synthetic page of placeholders would drift against every true count and
+        # test nothing but the placeholder.
+        text = selfcheck.page(**claims.derive_all().values).text
+        return unittest.mock.patch.object(claims, "page_text", lambda: text)
+
     def test_exactly_half_the_claims_derivable_still_passes(self):
         """The boundary is `<`, so half is enough and the constant says so."""
         half = len(claims.CLAIMS) - int(len(claims.CLAIMS) * sov_snapshot.MIN_CHECKABLE)
-        with self._with_underivable(half):
+        with self._stating_page(), self._with_underivable(half):
             self.assertEqual(sov_snapshot.cmd_check(None), 0)
 
     def test_one_below_half_refuses_rather_than_reporting_a_pass(self):
         half = len(claims.CLAIMS) - int(len(claims.CLAIMS) * sov_snapshot.MIN_CHECKABLE)
-        with self._with_underivable(half + 1):
+        with self._stating_page(), self._with_underivable(half + 1):
             self.assertEqual(sov_snapshot.cmd_check(None), 1)
 
     def test_a_tolerance_at_the_ceiling_is_allowed_and_one_past_it_is_not(self):
@@ -1504,6 +1530,59 @@ CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", _skills),)
                 unittest.mock.patch.object(selfcheck, "derivations_read_the_commit",
                                            lambda: "planted: a claim globs the tree"):
             self.assertEqual(selfcheck.run(), 1)
+
+
+class DeferringACountToTheCommand(unittest.TestCase):
+    """A number the page does not state, and why that is not a way past the gate.
+
+    Every count used to be written into CLAUDE.md and graded against the record.
+    Correcting one means editing CLAUDE.md, which grant:standing-landing-loop
+    excludes, so adding a check, a skill, a workflow, a service or an operation
+    could not be landed under the standing grant at all. The page may now defer a
+    count to the command that derives it. The three cases that matter are: the
+    deferral works, deleting a number without deferring does not, and a number the
+    page does state is graded exactly as before.
+    """
+
+    DERIVED = {claim.name: 1 for claim in claims.CLAIMS}
+
+    def page(self, body: str = "") -> str:
+        return f"a page. {grading.DEFERRAL_MARKER} is named here.\n{body}"
+
+    def test_a_count_the_page_defers_is_not_drift(self) -> None:
+        findings = grading.grade(self.page(), self.DERIVED)
+        self.assertEqual(grading.drift(findings), [])
+        self.assertEqual(len([f for f in findings if f.kind == grading.DEFERRED]),
+                         len(claims.CLAIMS))
+
+    def test_deleting_a_count_without_deferring_is_still_drift(self) -> None:
+        """The defeat. Without this the deferral is a way to delete the gate."""
+        findings = grading.grade("a page that names no reader at all.", self.DERIVED)
+        self.assertEqual(len(grading.drift(findings)), len(claims.CLAIMS))
+
+    def test_a_count_the_page_does_state_is_graded_even_when_deferral_is_named(self) -> None:
+        """Deferral is per claim, not a switch that turns the whole check off."""
+        findings = grading.grade(self.page("It runs 999 checks."),
+                                 {"verification checks": 52})
+        drifted = grading.drift(findings)
+        self.assertEqual(len(drifted), 1)
+        self.assertIn("999", drifted[0].detail)
+
+    def test_the_command_prints_every_claim_the_page_may_defer(self) -> None:
+        """A page may only defer to a reader that answers for every count."""
+        result = subprocess.run(
+            [sys.executable, "scripts/sov_snapshot.py", "numbers"],
+            cwd=str(ROOT), capture_output=True, text=True, check=False,
+        )
+        self.assertEqual(result.returncode, 0)
+        for claim in claims.CLAIMS:
+            self.assertIn(claim.name, result.stdout)
+
+    def test_the_marker_is_a_command_the_page_can_actually_run(self) -> None:
+        """The marker is the command, so a page cannot defer to something absent."""
+        self.assertTrue(grading.DEFERRAL_MARKER.startswith("python scripts/"))
+        script = grading.DEFERRAL_MARKER.split()[1]
+        self.assertTrue((ROOT / script).is_file())
 
 
 if __name__ == "__main__":

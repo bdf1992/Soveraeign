@@ -74,6 +74,10 @@ The closed record does not settle the durability/custody relation across the ser
 
 Gate summaries count checks without identifying every atomic credited check. The result may not be claimed independently inspectable beyond the evidence actually named.
 
+### S29 · A conforming witness record cannot satisfy the gate that requires one — CARRIED
+
+`contracts/participant-observation.schema.json` sets `additionalProperties: false` and declares neither `verdict` nor `contributed_to_build`. `scripts/sovkernel/authority.py` `_observation_verdict` reads both at the top level and refuses `OBSERVATION_MISSING` without them. The two are mutually exclusive: a record that conforms to the schema cannot pass the gate, and a record that passes the gate does not conform. Measured 2026-09-08, no observation record under `reports/observations/` satisfies both. A landing that requires an independent observation is therefore refused whatever the witness found. No implementation may resolve this by writing the forbidden fields into a record and calling it conforming, and no reader may take the gate's refusal as evidence that no observation exists.
+
 ## Closed by existing evidence
 
 These seams are not carried into the gap. Their closing evidence already exists; this file does not mint a new ruling.

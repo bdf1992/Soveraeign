@@ -767,7 +767,7 @@
       "changed": false
     },
     "OPEN-SEAMS.md": {
-      "artifact_digest": "sha256:40fb42d24d1a0d6685cc67d8ed50a2daac2fc7257848f486e73b7c6e73a19ecd",
+      "artifact_digest": "sha256:283ae9632e9943b301dcee183bd0c6bfc7a36efd2ffb74a9fb4e910c30196e88",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
@@ -782,7 +782,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "PRD.md": {
       "artifact_digest": "sha256:8c1aa77ce1978732c4dc7043d1a111f89bdec86b3badf7a24c937d24adbe2d30",

@@ -206,9 +206,17 @@ class TheContractAgainstThisRepository(unittest.TestCase):
         guard was hiding. Only those lines are then asked which word did it, so
         the cost is two passes over the corpus and not one pass per word.
 
-        A word that suppresses a DRIFT is load-bearing and is why the lists exist.
         A word that suppresses nothing is harmless and stays until it costs
         something. A word added tomorrow is graded the day it is added.
+
+        What this does not separate, stated because an earlier draft of these
+        lines claimed it did: a word that suppresses a DRIFT is scored
+        load-bearing whether that drift was a correctly stated subset or a
+        genuinely stale total. "The remaining twelve service manifests" against a
+        record of ten passes here and passes the check, and dropping the guard
+        word reports it as drift. So this grades what the lists cost in coverage,
+        never what they let through; the escape hatch that follows from it is
+        recorded in `not_settled` in the contract.
         """
         declared = pops.contract()
         populations, paths = pops.load()

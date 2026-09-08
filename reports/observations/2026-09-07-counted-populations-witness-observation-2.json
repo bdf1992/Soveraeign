@@ -1,0 +1,115 @@
+{
+  "case_id": "COUNTED-POPULATIONS-WITNESS-PASS-4",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-07",
+  "artifact_revision": "d12d01fd1dc03d334698934973785b757a3b3594",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "counted populations: grade every hand-written count in live prose against a deterministic counter",
+    "verdict": "REPRODUCED_WITH_RESIDUALS",
+    "standing_supported": "BUILT -> WITNESSED",
+    "supersedes": "reports/observations/2026-09-07-counted-populations-witness-observation.json, which attests b93a721 and is left unedited because reports/ is append-preserving. That record stands as a dated observation of the revision it names; this one attests the head.",
+    "standing_binds": "contracts/counted-populations.json, scripts/sov_counts.py, scripts/sovcounts/, scripts/sovverify/staleness.py, scripts/tests/test_sov_counts.py, and the two staleness entries plus the capability-map entry in scripts/sovverify/checks.py, at d12d01f only.",
+    "standing_note": "An observation, not a settlement and not a ratification. It supports the standing proposal BUILT -> WITNESSED for the mechanism as built at this revision, and settles nothing about the numbers this check does not reach, nothing about phase, requirement, or service standing.",
+    "candidate_commit": "d12d01fd1dc03d334698934973785b757a3b3594",
+    "candidate_tree": "1a8c9111b6ca72fb77f9ada7203c874ec191a306",
+    "base_commit": "b1448eeb458afa4a8c60b57c1cb46906246af7f7",
+    "observed_at": "2026-09-07",
+    "observer_id": "claude-opus-5/sov-witness@2026-09-07",
+    "observer_relation": "INDEPENDENT_OF_BUILDER",
+    "contributed_to_build": false,
+    "observer_independence_basis": "Separate launched witness invocation that did not build, edit, stage, or commit any part of the subject. Every reading was taken in isolated full clones checked out at a pinned commit, never in the shared working tree; all mutation testing was done in throwaway copies so the frozen clones stayed byte-identical to their commits. No builder report, completion report, or acceptance packet was read as evidence; the builder's coordinating messages located the subject and named the commits to freeze. Each number was re-derived from the source its sentence names rather than from the checker under witness. The only files this witness wrote in the repository are its own two observation records.",
+    "independence_caveat": "The build commits carry the host trailer Claude-Session: https://claude.ai/code/session_01NibVQxHqhE4JevvzTwuUek, the same session identifier this witness invocation's own host attribution names. The separation above is real and structural, but the committed record shows one host session identifier spanning build and witness. Whether that defeats independence on the record regardless of actual separation is raised as J1 and is not this witness's to settle.",
+    "tree_state": "Measured at four successive heads as the branch moved under this witness; the builder disclosed each move and has now held the branch. 56d45e5 pass 1, 488c8a3 pass 2, b93a721 pass 3 and attested by the superseded record, d12d01f pass 4 and attested here. git status --porcelain empty in the clone and in the shared working tree before and after every command in this pass. Earlier passes are carried as evidence of how the repairs behaved, not as attestation of those revisions.",
+    "commands": {
+      "freeze": "git clone --no-hardlinks <repository root> <scratch outside the tree>; git checkout d12d01f; git status --porcelain -> empty; tree 1a8c911",
+      "verify": "python scripts/verify.py -> exit 0; PASS: 55 checks in 16.722s wall; wall-clock DEBT only, advisory under decisions/0081",
+      "lint": "python scripts/lint.py -> exit 0, zero FAIL",
+      "clarity": "python scripts/sov_clarity.py check -> exit 0",
+      "counts": "python scripts/sov_counts.py check -> exit 0; PASS: 32 stated count(s) match the record, across 15 population(s) that bind prose (20 declared)",
+      "unit": "python -m unittest discover -s scripts/tests -p test_sov_counts.py -> exit 0; Ran 18 tests in 0.295s",
+      "guard_test_alone": "python -m unittest scripts.tests.test_sov_counts.TheContractAgainstThisRepository.test_no_guard_word_suppresses_a_sentence_that_states_a_total -> exit 0, 0.33s wall",
+      "verdict_source": "verify reads process exit codes via scripts/sovverify/clocks.py. Two FAIL: lines appear in stdout at exit 0 - a witness-layer selfcheck feeding an invented effect_class and a tooling test exercising the surface-stale refusal - and both are oracles firing as designed, not repository failures. Read as failures they would be the stdout-versus-exit-code defect this witness was asked to look for."
+    },
+    "predicate_results": {
+      "f11_the_guard_lists_are_now_graded": {
+        "held": true,
+        "detail": "test_no_guard_word_suppresses_a_sentence_that_states_a_total runs inside verify through repository tooling tests. Positive control: reintroducing 'of the' fails it and names subset_qualifiers:of the against services/gateway/SERVICE-SPEC.md, services/host/SRD.md and services/observation/CHARTER.md, the same three files this witness found by hand at pass 1. 0.33s."
+      },
+      "the_two_scan_method_is_stronger_than_the_per_word_sweep_this_witness_used": {
+        "held": true,
+        "detail": "Confirmed, and it corrects this witness. At pass 3 this witness measured every guard word by dropping it alone and reported that 'its' costs nothing, confirming the builder's identical measurement. Both readings were wrong for a nameable reason: per-word ablation is blind to redundant coverage. 'its' and 'of its' were each independently sufficient to hide AGENTS.md:78, so dropping either alone changed nothing and neither sweep could see it. Measured at d12d01f: reintroducing 'of its' alone fails the test, reintroducing 'its' alone fails the test, and at b93a721 with both present the sentence was hidden and both sweeps read clean. The difference-of-two-scans verdict does not have that blind spot."
+      },
+      "attribution_failure_fails_loudly_rather_than_silently": {
+        "held": true,
+        "detail": "This was the specific question asked, and the answer is that it is not weaker than it looks. The verdict is `hidden`, the set of sentences that grade MATCH without the guards and are absent with them; it is computed before attribution and never from it. Attribution is diagnostic. Reintroducing both 'its' and 'of its' produces exit 1 with {'unattributed': [('AGENTS.md', 78, 16, 'ground-claims')]} - the word cannot be named because either word alone suffices, and the test still fails and still names the exact hidden claim, its line, its stated value and its population. A reader is pointed at the sentence, not merely told something is wrong."
+      },
+      "the_of_removals_introduce_no_false_drift": {
+        "held": true,
+        "detail": "37 claims graded, 32 MATCH, 5 HISTORICAL, 0 DRIFT. AGENTS.md:78 'grounds seven of its sixteen claims' now grades MATCH at 16. Only two diversions remain and both are genuine: GROUND.md:292 'growing past twenty claims' as a threshold, services/asset/JOURNEYS.md:51 'The other fifteen declared operations' as a subset of seventeen."
+      },
+      "the_structural_reading_of_preposition_guards_is_correct": {
+        "held": true,
+        "detail": "Verified against the scanner rather than accepted as reasoning. _subset reads the two words before the number the anchor attaches to. In 'seven of its sixteen claims' the anchor attaches to sixteen, so the guard tested is the text before sixteen and the subset seven is never matched at all; a preposition guard therefore always suppresses the total. In 'the other fifteen declared operations' the anchor attaches to fifteen, which is the subset, so a non-preposition guard suppresses the part. The two cases are structurally distinct and removing every 'of ...' form is right."
+      },
+      "f9_the_ungraded_count_inside_the_contract_is_gone": {
+        "held": true,
+        "detail": "The ground-claims rationale now carries no figure and states why. This witness measured the removed claim as wrong on both numbers: eight graded sites across six files, or five places across five documents excluding GROUND.md's own three, against the 'five live places across four documents' that was there."
+      },
+      "f10_the_derivation_test_no_longer_pins_a_live_value": {
+        "held": true,
+        "detail": "The expected value is now counted a second way from GROUND.md's own identifiers rather than written as 16, with an assertGreater floor so a pattern that matches nothing fails instead of passing. Adding a legitimate GROUND-017 now fails only the eight restatements it should fail, not the derivation test as well."
+      },
+      "f12_the_escape_hatch_is_recorded": {
+        "held": true,
+        "detail": "not_settled now names it with a worked example, and names the new test as the reason a guard word cannot quietly cost coverage."
+      },
+      "every_earlier_defeating_case_still_fires": {
+        "held": true,
+        "detail": "Nine original drifts still caught when the eight pre-change prose files are restored. Live-document drift exit 1, stale Ground count exit 1, frozen-path plant exit 0, global scanner decay SELFCHECK FAIL exit 1. Every population re-derived independently and correct at this revision."
+      },
+      "the_new_test_can_see_a_guard_word_hiding_a_stale_number": {
+        "held": false,
+        "detail": "It cannot, by construction, and this is the blind spot worth naming. `hidden` takes only sentences that would grade MATCH. A guard word hiding a sentence that would grade DRIFT is scored as load-bearing, which is the strongest endorsement the test can give, whether the drift it hides is a correctly stated subset or a genuinely stale total. Measured: appending 'The remaining twelve service manifests are declared here.' to SYSTEM.md against a record of 10 passes sov_counts.py check at exit 0 and passes the guard test at exit 0, while the identical sentence without the guard word yields FAIL SYSTEM.md:125: states 12 service manifests, the record holds 10. The contract records this escape hatch honestly under not_settled and the sentence is visible in `debt` as a candidate, so it is disclosed rather than hidden. What is one category too broad is the test's own docstring line 'A word that suppresses a DRIFT is load-bearing and is why the lists exist': suppressing a false drift is why the lists exist, suppressing a true one is the failure the lists must not cause, and the test does not distinguish them. The verdict the test settles is sound; the justification written beside it is not."
+      },
+      "a_schema_conformant_observation_can_satisfy_the_landing_gate": {
+        "held": false,
+        "detail": "This witness reported F13 at pass 3 as a display defect and was wrong about its severity. scripts/sovkernel/authority.py _observation_verdict reads observation['contributed_to_build'] and requires observation['verdict'] == 'CONFIRMED' at the top level. contracts/participant-observation.schema.json sets additionalProperties false and declares neither field, so the two artifacts are mutually exclusive rather than merely inconsistent. Measured over all 85 observation records in reports/observations, witness/observations and services/*/observations: 33 validate against the schema, 5 satisfy the gate, and the intersection is empty. Run against this witness's pass-3 record the gate returns ('OBSERVATION_MISSING', \"the observation reads None, not CONFIRMED\"). 49 of the 85 records carry top-level verdict and observer_id and therefore violate the schema they are written against."
+      }
+    },
+    "findings": [
+      "F1 F3 F5 F7 RESOLVED at 6429b55 and 488c8a3, re-verified here.",
+      "F2 RESOLVED IN PART AND HONESTLY SCOPED. Global scanner decay now fails the selfcheck; a single population going dormant still exits 0 but is printed by name, and the docstring says so.",
+      "F4 RECORDED, NOT CLOSED, by a defensible design choice against line numbers.",
+      "F6 RETRACTED at pass 3. The clarity 'changed' flag records whether a completed review edited the artifact; drift is TEXT_STALE and BASIS_STALE and that gate is real, green, and fires. The builder's reading was correct and this witness's was not.",
+      "F8 NOT A DEFECT. The tooling assertion rewrite asserted a sounder property.",
+      "F9 F10 F11 F12 RESOLVED at d12d01f and verified above.",
+      "F11a CORRECTION OF THIS WITNESS. Pass-3 confirmation that 'its' costs nothing was wrong. Per-word ablation is blind to two words redundantly hiding one sentence. The defect was found by the instrument built in response to the finding, not by another reading, which is the outcome the finding was for.",
+      "F14 OPEN, LOW. The guard test cannot distinguish a guard word suppressing a false drift from one suppressing a genuinely stale total, and its docstring claims the stronger property. Disclosed in not_settled and visible in `debt`; the wording beside the test overstates what it proves.",
+      "F15 OPEN, MEDIUM, OUTSIDE THIS CONCERN. contracts/participant-observation.schema.json and scripts/sovkernel/authority.py cannot both be satisfied by one record. No record in the repository satisfies both. This record does not satisfy the landing gate."
+    ],
+    "residuals": [
+      "This record conforms to contracts/participant-observation.schema.json and is therefore refused by the landing gate, which requires a top-level verdict of CONFIRMED that the schema forbids. This witness did not add the forbidden fields: shipping a knowingly schema-invalid artifact to make a gate pass is the shape of weakening an oracle so a participant passes, and choosing which of the two governing artifacts yields is a POLICY_SEAM the builder or the owner seat settles, not the witness.",
+      "The branch moved three times during this witness before being held. This record attests d12d01f only.",
+      "Wall-clock debt on every verify run, 16.5s to 17.0s against a 15s SILVER band, on a host running sibling sessions. Advisory under decisions/0081.",
+      "Five declared populations bind no claim in current prose; nothing distinguishes an honestly dormant population from one that was binding and stopped.",
+      "919 count-shaped sentences remain ungraded and are listed by `debt`. Silence there is coverage, not confirmation.",
+      "No clarity review for this record; reports/ is outside the clarity scope and inside frozen_paths, so its own numbers are not graded."
+    ],
+    "judgement_items": [
+      "J1 Does an independent witness invocation carrying the same host Claude-Session identifier as the build satisfy the independent-observation precondition of grant:standing-landing-loop, or does the shared identifier defeat independence on the record regardless of the structural separation recorded above?",
+      "J2 Which of contracts/participant-observation.schema.json and scripts/sovkernel/authority.py yields, given that no record can satisfy both and 49 of 85 existing records resolve it by violating the schema? This is a genuine conflict between settled constraints and belongs in OPEN-SEAMS.md or a decision record, not inside this concern."
+    ],
+    "not_settled_by_this_observation": [
+      "Whether any number this check does not reach is correct.",
+      "Whether the sentences around the graded numbers are true. Numbers were re-derived, not meaning.",
+      "Any service, requirement, or phase standing. Nothing here moves STATUS.yaml.",
+      "Whether this change may land. The gate is not satisfied by this record for the reason recorded in F15."
+    ]
+  },
+  "telemetry": {
+    "method": "Four isolated full clones at pinned commits under a scratch directory outside the repository; mutation testing in throwaway copies only. Verdicts read from process exit codes, never from stdout.",
+    "probe_location": "no probe file; readings came through git plumbing, the repository gates, the unit suites, and short scratch scripts importing sovcounts, sovkernel.authority and run_tooling_tests outside the repository",
+    "host": "Linux, Python 3.11, shared host with sibling sessions writing the tree",
+    "writes_by_this_witness": "this record and the pass-3 record it supersedes; no work, fixture, contract, test, or implementation file was edited at any point"
+  }
+}

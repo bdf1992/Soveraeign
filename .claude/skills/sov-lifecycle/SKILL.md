@@ -21,7 +21,7 @@ metadata:
     execution: host
   instantiates:
     core: see-it-through
-    digest: sha256:7766fed6d66e4eeaac896c8a9d260898716201b8087dc56bc038e047640ed96b
+    digest: sha256:77115c73956ad4a9fbc549029c545bbd6ec01a7eccc08673f1a8c3365f97c921
   activation: [explicit]
   control: loop
   role: bind
@@ -54,8 +54,10 @@ metadata:
   provenance:
     author: bdo
     origin: >-
-      instance of bdos core see-it-through; folds .claude/skills/sdlc-{control,orchestration,worker,qa,
-      product,development,release,feedback} which restated SDLC.md one shard each and which nothing routed to
+      instance of bdos core see-it-through; the path through the eight skills SDLC.md Skill axes declares,
+      which .claude/skills/sdlc-* realizes one shard each. Those eight remain: SDLC.md declares them and is
+      outside the standing grant, charting/derive.py derives its chart from them, and
+      .claude/workflows/sov-compression.js routes to sdlc-feedback
     adopted: 2026-09-07
   currency:
     verified: 2026-09-07
@@ -65,16 +67,25 @@ metadata:
 
 This is the binding of `see-it-through` to this repository. The move is the core's; the stations, the
 owners, the commands and the refusals are this repository's. Every rule below is owned by a governing
-document and cited to it — `SDLC.md` owns the loop, its three tiers and its two dyads, and prevails on
-any divergence. A skill that restates an owned rule as independent authority is defective by `SDLC.md`'s
+document and cited at the sentence that applies it — `SDLC.md` owns the loop, its three tiers and its two
+dyads, and prevails on any divergence. A skill that restates an owned rule as independent authority is defective by `SDLC.md`'s
 own test, so nothing here is stated as if it were the source.
+
+What grades this file, and what does not. `python -m bdos instance
+.claude/skills/sov-lifecycle/SKILL.md`, run from a checkout of the bdos repository, grades it against the
+core it pins: same role, control, reach and gives, an edge of every kind the core declares and none
+pointing back here, and never fewer refusals. The digest covers what the core is, with its own
+reading date elided, so re-reading the core does not stale this file and changing the move does. Nothing in *this* repository runs that command, so the
+digest above cannot tell you here that the core has moved — that reading happens where bdos is, or not at
+all. Recorded rather than implied, because a pin nothing checks is a decoration.
 
 ## The move
 
-1. **Take up one concern.** `python scripts/sov_session.py register` then `brief`. One session, one
-   concern, for its lifetime (`AGENTS.md`, One session, one concern). A concern routes and attributes; it
-   is never authority. Discovered work that belongs elsewhere is routed with `sov_session.py route`, not
-   silently absorbed.
+1. **Take up one concern, and say what done is.** `python scripts/sov_session.py register` then
+   `brief`. One session, one concern, for its lifetime (`AGENTS.md`, One session, one concern). Name the
+   condition that ends it, in one sentence, before starting: the terminal you are aiming at and the
+   evidence that will show it reached. A concern routes and attributes; it is never authority. Discovered
+   work that belongs elsewhere is routed with `sov_session.py route`, not silently absorbed.
 2. **Bound it against the grant.** Read `contracts/standing-grants.json`. Work touching an excluded path
    ends at an acceptance packet under `acceptance/`, not a merge. Then apply the absorption test in
    `contracts/closure-ownership.json`: work inside the same service, effect class and authority is this
@@ -83,20 +94,29 @@ own test, so nothing here is stated as if it were the source.
    then the contract and its positive *and* defeating case, then the smallest change that satisfies the
    visible case. No business logic without a prior contract, fixture, or explicit experimental label.
 4. **Build, and check as you go.** `python scripts/lint.py` and `python scripts/verify.py` from the
-   repository root, against the state you intend to land. Report real exit codes; a check you did not run
-   is not a check. `verify.py` exiting 0 means unchanged, never qualified (`CLAUDE.md`, trap T2).
+   repository root, against the state you intend to land (`AGENTS.md`, Implementation order 5, and
+   Secrets and local boundaries for lint). Report real exit codes: `AGENTS.md`, Completion report, says
+   work is not complete because files were written or tests returned zero. `verify.py` exiting 0 means
+   unchanged, never qualified (`CLAUDE.md`, trap T2). Verify the state you will commit, not the state you
+   have: several snapshot claims read committed bytes, so an uncommitted file is invisible to them and a
+   green working tree can go red the moment it lands (`CLAUDE.md`, snapshot section).
 5. **Freeze the candidate.** `contracts/repository-candidate-lifecycle.json` owns carrier state. Evidence
    meant to outlive construction binds an exact `FROZEN` subject: candidate commit, tree, and base. A
    repaired or rebased candidate is a new subject and earns its evidence again.
 6. **Have it observed by a participant that did not build it.** Launch `sov-witness`. It receives the
    contract, the claimed invariants and the frozen artifact; the builder's plan and tests are part of
-   that artifact, readable and attackable, and never its evidence or its oracle (`SDLC.md`, Red lane 6).
+   that artifact, readable and attackable, and never its evidence or its oracle (`SDLC.md`, Release gate 6).
    A helper that read or edited the change is inside the build and cannot observe it. Launching that
    participant is this concern's own step. Where none can be launched, stop at that edge and name it.
-7. **Repair what comes back, here.** A finding is fixed inside the concern. Filing it moves the defect out
+7. **Take the reversible decisions yourself.** Which reachable design, what to name a local symbol,
+   what the defeating case should be, when to split a module: these belong to whoever holds the concern,
+   and asking another tier to settle one is a defect rather than caution
+   (`decisions/0023-acceptance-not-approval.md`; `decisions/0033-close-the-founding-docket.md`, Ruling 1).
+   Record them under `Defaults taken` and continue.
+8. **Repair what comes back, here.** A finding is fixed inside the concern. Filing it moves the defect out
    of the only place that owns it (`AGENTS.md`, Closure ownership).
-8. **Land, or present, or stop at a named seam.** `python scripts/sov_land.py` is the only path that
-   commits and merges, and the gate grades the request; a refusal is the correct outcome to report, not a
+9. **Land, or present, or stop at a named seam.** `python scripts/sov_land.py` is the only path that
+   commits and merges (`CLAUDE.md`, How we launch things), and the gate grades the request; a refusal is the correct outcome to report, not a
    problem to route around. Outside the grant, write the acceptance packet instead. Say which of the three
    happened in the closing line.
 

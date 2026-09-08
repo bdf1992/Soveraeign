@@ -1,0 +1,74 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A25",
+  "claim": "The eight sdlc-* skills now have one replacement to be judged against: sov-lifecycle, an instance of the portable core see-it-through in the bdos repository, pinned by digest and refused by a checker when it drifts. It carries the whole path a concern takes and cites every rule to the document that owns it. What needs your judgement is the one thing this session could not do: SDLC.md, Skill axes, declares those eight skills by name and states an operator holds exactly one tier skill plus its domain skills, so the tree cannot drop them without that section changing, and SDLC.md is excluded from the standing grant. Until you rule, the repository holds nine skills covering the same ground, which is more duplication than before and not less. The CLAUDE.md line this packet also carries is a one-word count correction the snapshot check demands and the grant excludes.",
+  "subject": {
+    "artifact": "CLAUDE.md",
+    "from_standing": "OPEN",
+    "to_standing": "BUILT"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": {
+    "actor_id": "urn:soveraeign:actor:claude-independent-judge",
+    "actor_kind": "MODEL"
+  },
+  "visible_result": {
+    "demo": [
+      "python",
+      "scripts/sov_snapshot.py",
+      "check"
+    ],
+    "shows": "the orientation snapshot agreeing with the record once CLAUDE.md says 32 skills rather than 31",
+    "expect": "PASS: 9 of 10 snapshot claim(s) match the record. Before the CLAUDE.md line moved this read FAIL skills: page says 31, record holds 32, and scripts/verify.py exited 1. The count moved because .claude/skills/sov-lifecycle/ is the 32nd skill."
+  },
+  "evidence": [
+    {
+      "address": ".claude/skills/sov-lifecycle/SKILL.md",
+      "digest": null,
+      "says": "the instance: nine stations from taking up a concern to landing it, every rule cited to AGENTS.md, SDLC.md, CLAUDE.md or a contract, and nine refusals. It pins bdos core see-it-through by that core's artifact digest."
+    },
+    {
+      "address": "SDLC.md",
+      "digest": null,
+      "says": "Skill axes declares Control, Orchestration, Worker, Product, Development, QA, Release and Feedback skills by name and states that a working operator holds exactly one tier skill and the domain skills its concern requires. Bindings states the loop is stack-neutral and that a second, materially different binding must be able to run it against the same documents. Release gate item 6 states that a Red operator receives the contract, the claimed invariants and the artifact, and never uses the builder's tests or plan as evidence or as the oracle."
+    },
+    {
+      "address": ".claude/workflows/sov-loop.js",
+      "digest": null,
+      "says": "lines 270 to 283 hand the witness plan.operation and built.changed_paths as its frame. That is the oracle position Release gate 6 forbids, and it is the drift that motivated this work."
+    },
+    {
+      "address": "charting/derive.py",
+      "digest": null,
+      "says": "line 218 filters skill directories on the sdlc- prefix and derives the chart from SDLC.md. Removing the eight fails four charting tests, measured in a throwaway copy: 14 passed at baseline, 4 failed and 10 passed with them removed."
+    },
+    {
+      "address": ".claude/workflows/sov-compression.js",
+      "digest": null,
+      "says": "line 118 instructs an agent to read .claude/skills/sdlc-feedback/SKILL.md. A live route to one of the eight, which an earlier reading in this session wrongly reported as absent."
+    }
+  ],
+  "why_it_matters": "A rule the repository has held since day two - that an independent reading works from the contract and never from the builder's plan - is stated in SDLC.md and enforced nowhere, and the harness workflow that runs the loop violates it. The eight skills that restate the rule are unreachable, so the statement survived where nothing could act on it. sov-lifecycle puts the whole path in one place with the rule cited at the station where it applies, and being an instance rather than a local skill means a second harness can bind the same core rather than writing a ninth version. The duplication this leaves is real and is the reason the packet exists: the replacement cannot supersede the eight while SDLC.md declares them.",
+  "what_could_defeat_it": [
+    "A ruling that the eight tier and domain skills are the right shape and one path skill is the wrong one, in which case sov-lifecycle should be withdrawn rather than the eight retired.",
+    "An operator that genuinely needs to load exactly one tier's competence without the rest of the path, which is what Skill axes currently assumes and what one path skill cannot serve.",
+    "Evidence that binding to a core in another repository costs more than it saves, since nothing in this repository runs the grader and the pin is checked only where bdos is.",
+    "A second harness that cannot express the core's kernel, which would make stack-neutrality a claim this instance does not actually demonstrate."
+  ],
+  "residuals": [
+    "The eight sdlc-* skills remain, so nine skills now cover the same ground. That is the judgement this packet asks for and the reason it is presented rather than landed.",
+    "Nothing in this repository runs python -m bdos instance, so the pinned digest cannot report a moved core from here. The skill states this rather than implying it.",
+    "No skill's clarity basis includes SDLC.md, so sov-lifecycle's promise that SDLC.md prevails on divergence has no staleness detector: if SDLC.md moves, nothing stales the skill.",
+    "sov-loop.js is unchanged. It still hands the witness the builder's frame, which is the defect this work names and does not yet repair.",
+    "The independent judge dissented on the first pass and its findings are repaired in this commit, including a blocking one: verify.py passed against the working tree and failed against the commit, because snapshot claims that read committed bytes cannot see an uncommitted file. The evidence was gathered against a state that was not the state landed.",
+    "Appending one acceptance-queue entry to STATUS.yaml staled 60 clarity readers, because STATUS.yaml is their declared basis and the basis is the whole file. The reading each needed was one question - does a queued packet change what this document must satisfy - answered no for all 60 before re-stamping, and the previous packet-queuing commit did the same. That is sanctioned rather than correct: a basis that stales everything on a queue movement makes staleness mean less each time, which is the erosion contracts/clarity.json exists to prevent. Scoping a basis below whole-file is a separate concern in the contracts boundary."
+  ],
+  "on_accept": "CLAUDE.md carries the corrected count, sov-lifecycle stands as the declared path at PROPOSED, and the next bounded concern is SDLC.md Skill axes: whether one instance plus domain competences replaces one tier skill plus domain skills. Retiring the eight then follows, with charting/derive.py and sov-compression.js repaired in the same concern because both route to them.",
+  "on_reject": "Revert the two commits on claude/witness-context-discovery-runas1 that touch .claude/ and CLAUDE.md. The eight skills are untouched, no code outside .claude/ changed, no operation became reachable and no standing entry moved. The bdos half stands on its own and is unaffected."
+}

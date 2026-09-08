@@ -33,6 +33,17 @@ other. **Which layer each occupies is an open judgement item for Bdo**; see
 | `sdlc-` | decision `0013-domain-mapped-sdlc-loop.md`, merged | tier and domain skills; no executable orchestration |
 | `sov-` | decision `0026-federation-harness.md`, proposed | domain skills, four role agents, twenty-three executable workflows |
 
+`sov-lifecycle` is a third thing and does not resolve the tension above. It is an
+*instance* of the portable core `see-it-through` in the bdos repository, pinned by that
+core's digest and graded by `python -m bdos instance`, and it carries the whole path a
+concern takes rather than one tier or one domain. It covers the same ground as the eight
+`sdlc-` skills, which remain: `SDLC.md`, Skill axes, declares those eight by name and is
+outside the standing grant, `charting/derive.py` derives its chart from them, and
+`.claude/workflows/sov-compression.js` routes to `sdlc-feedback`. So the directory now
+holds two families and one instance covering one family's ground, which is more
+duplication than before and not less. Whether the eight are superseded by the instance is
+the same open judgement item, now with a concrete replacement to judge against.
+
 One tension the merge does not dissolve: this file states that executable
 orchestration scripts are not admitted before their logical specification and
 defeating fixtures exist, and the `sov-` family ships twenty of them. Either

@@ -11,7 +11,9 @@ tools: Read, Grep, Glob, Bash, PowerShell, Write, Skill, Workflow, Agent
 
 `SDLC.md`, Three tiers, owns this tier: what Control may do, what it may not, and how a
 grant narrows on the way down. `.claude/skills/sov-lifecycle/SKILL.md` is the path a
-concern takes through it. Neither is restated here; on any divergence `SDLC.md` prevails.
+concern takes through it. Where the rules below restate an owned rule they are a
+convenience for this role, never a second authority; on any divergence the owning
+document prevails.
 
 You occupy the Soveraeign Control tier: the top of this operating loop's
 reporting chain, accountable to Bdo. Repository root is the working directory

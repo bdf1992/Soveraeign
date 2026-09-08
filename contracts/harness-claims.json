@@ -1,0 +1,65 @@
+{
+  "contract_id": "soveraeign-harness-claims/v1",
+  "status": "PROPOSED",
+  "governed_by": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "STATUS.yaml"
+  ],
+  "summary": "What scripts/sov_harness.py grades, stated as a contract rather than left implicit in the code. Every kind compares an extracted claim against a record that owns it, so each generalizes past the defect that motivated it. scripts/sovharness/contract.py grades this block against the kinds the module actually runs, because a grader whose own coverage claim is unchecked is the defect it exists to catch.",
+  "coverage": {
+    "derived": {
+      "CAPABILITY": "Every tool name in agent frontmatter, against the environments declared in contracts/harness-hosts.json. Generalizes: any tool no declared environment provides fails, named or not. It grades admissibility, not availability - a tool only one environment provides is admissible, because a definition is loaded on whichever host runs it and an unprovided name is inert there. Grading portability instead is how the first version deleted PowerShell from four definitions on the evidence of one container.",
+      "REFERENCE": "Every backticked repository address in an orientation surface, against git ls-files. Generalizes: any address that does not resolve from the repository root, the document's own directory, the harness root, or a service root fails.",
+      "STANDING": "Every `<subject>_status` claim in .claude/, against STATUS.yaml. Generalizes over subjects and tokens: a subject STATUS.yaml never declared and a token nobody invented are both refused. The regex is a recognizer, not the standard - widening it changes what is extracted while STATUS.yaml keeps deciding what is true, which is the line between this kind and the two withdrawn on 2026-09-08, whose word lists were themselves the standard. It reads `is`, `is now`, `:` and `=`; a witness sized the earlier `is`-only form at one spelling of six, and widening it immediately surfaced three false standing claims in skills that had cited STATUS.yaml by name.",
+      "SELFCLAIM": "This contract itself, against the kinds scripts/sov_harness.py actually runs and the drift footprint git's index actually holds. Generalizes: the kind set is read off ALL_CHECKS membership, so a check removed from the module removes its kind and this refuses the contract that still claims it."
+    },
+    "presence_only": {
+      "PROVENANCE": "That a vendored skill declares its source fields. Does not recompute the digest; that needs the origin repository's rule and is a DEPENDENCY_SEAM."
+    },
+    "not_covered": [
+      "Whether a description asserts mutable standing in words nobody listed. Two kinds here matched a hand-written vocabulary and were withdrawn on 2026-09-08: they refused 'accepted but unbuilt' and passed 'implementation is still pending', which is the same claim differently worded. SDLC.md puts generative detection in the Red lane and declared cases in Blue; a phrase list is a Blue case pretending to be a net.",
+      "Prose that misleads without asserting a graded claim.",
+      "Whether a description's scope statement is accurate.",
+      "Whether a workflow prompt's reasoning is sound.",
+      "The cold-start `host` section, which records one workstation's facts and is mostly unprobed.",
+      "The two cold-start probes A36 and A37. No gate executes sov_coldstart.py - it is in neither the verify table nor .github/. The gate that refuses a bad tool declaration is CAPABILITY, which runs in verify."
+    ]
+  },
+  "known_drift": [
+    {
+      "term": "PUBLIC-CLEARANCE",
+      "status": "RECORDED_NOT_ENFORCED",
+      "why": "PUBLIC-CLEARANCE names a live concept, owner_holds O1 with reason PUBLICATION, under a retired spelling. Nothing here refuses it; the footprint below is a derived count that fails if it drifts, so the successor concern has an exact target rather than an estimate.",
+      "follow_up": "The wider retired-name cleanup. Add to retired_identifiers in the same change that repairs the citations.",
+      "footprint": {
+        "files": 12,
+        "occurrences": 14,
+        "note": "Graded by scripts/sovharness/contract.py against the tree. The first hand-written version of this said eight workflow prompts and three skills and omitted .claude/README.md.",
+        "paths": [
+          ".claude/README.md",
+          ".claude/skills/sov-asset/SKILL.md",
+          ".claude/skills/sov-governance/SKILL.md",
+          ".claude/workflows/sov-asset.js",
+          ".claude/workflows/sov-byom.js",
+          ".claude/workflows/sov-conformance.js",
+          ".claude/workflows/sov-console.js",
+          ".claude/workflows/sov-contracts.js",
+          ".claude/workflows/sov-governance.js",
+          ".claude/workflows/sov-projection.js",
+          ".claude/workflows/sov-proofing.js",
+          ".claude/workflows/sov-verification.js"
+        ]
+      }
+    }
+  ],
+  "successor": {
+    "concern": "a semantic lane for standing claims in prose",
+    "why": "The withdrawn kinds failed because detecting a standing claim in arbitrary English is a semantic judgement, not a lexical one. A model answers it; a substring list cannot.",
+    "shape": "The model detects and proposes; deterministic code refuses. A model verdict is a report, never authority (AGENTS.md, Evidence and standing), and verify.py must return the same verdict for the same bytes, so a proposal lands as a fixture or a repair and the gate stays deterministic.",
+    "routes": [
+      "Enable the existing generative red lane in .github/workflows/qa-lanes.yml (SOV_RED_LANE_ENABLED plus a key). External crossing, owner-held, per pull request.",
+      "Local, through adapters/ollama/invoke.py with data_boundary LOCAL_ONLY. No external crossing and no owner gate, but invoke_model is declared in contracts/kernel-transitions.json with no kernel implementation (PROD-I-9), so this is a build rather than a configuration change."
+    ]
+  }
+}

@@ -52,7 +52,8 @@ authority.
   the implementation; that needs an agent other than its builder.
 - `no_runtime_code_before_logical_spec_and_defeating_fixtures` still binds: the
   defeating fixture comes before the code, every time.
-  `no_external_effects_in_phase_i` always applies, and a remote crossing needs a
+  An external-world effect is neither ambient nor phase-refused: it needs an
+  explicit live grant, admitted scope, and a receipt. A remote crossing needs a
   declared adapter, data-boundary mode, input projection, authority, and receipt.
 - Nothing here waits on Bdo. Settle what evidence can settle and record what would
   defeat it (`decisions/0033-close-the-founding-docket.md`, Ruling 1).

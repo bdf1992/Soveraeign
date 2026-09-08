@@ -64,6 +64,29 @@ when a concern uses one and the use produces something.
 - A carried core turning out to reach the network, write a record, or claim authority.
 - The fourteen arriving later without each one naming the use that earned it.
 
+## Amendment, 2026-09-08 · the digest table is now enforced
+
+Added by Bdo's instruction. Nothing above this line changed.
+
+The Constraints say this table exists so a later reader can tell whether the copy
+still matches. `python scripts/verify.py` now does that, through
+`scripts/sov_vendor.py`. Editing a row, or adding a skill that declares bdos
+provenance without one, fails the build.
+
+Three things it does not catch, so a green build is not read as more:
+
+- It compares this file against the tree, not against bdos. Both can move in one
+  commit. What holds that is `AGENTS.md`: `decisions/` is outside
+  `grant:standing-landing-loop`, so a table edit cannot land under the standing
+  grant.
+- It finds a copy by the `bdos: true` marker in the skill's own frontmatter. A
+  copy carried in without that marker is invisible to it.
+- It cannot see upstream. `python scripts/sov_vendor.py sync <bdos tree>` can,
+  for anyone holding both trees; CI holds one.
+
+This records enforcement. It does not ratify the decision, which is still
+`PROPOSED` with the queue below unanswered.
+
 ## Judgement queue for Bdo
 
 Whether the other fourteen should be carried on the same terms, or whether the repository

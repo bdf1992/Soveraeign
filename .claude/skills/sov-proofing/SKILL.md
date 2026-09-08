@@ -1,6 +1,6 @@
 ---
 name: sov-proofing
-description: Working knowledge for the Soveraeign proofing domain — the services/proofing chartered boundary. Load when a task mentions "sov-proofing", "proofing domain", "Proofing Service", "proofing session", "review round", "version-pinned annotation", "proofing charter", "proofing receipt", or names the artifacts CHARTER.md, proofing-session.schema.json, annotation.schema.json, or contracts/service.json under services/proofing. Covers charter refinement, proofing contract drafting, and defeating-fixture authoring while the service is accepted but unbuilt. Not for the Asset Service, kernel contracts, or conformance oracle work.
+description: Working knowledge for the Soveraeign proofing domain — the services/proofing chartered boundary. Load when a task mentions "sov-proofing", "proofing domain", "Proofing Service", "proofing session", "review round", "version-pinned annotation", "proofing charter", "proofing receipt", or names the artifacts CHARTER.md, proofing-session.schema.json, annotation.schema.json, or contracts/service.json under services/proofing. Covers charter refinement, proofing contract drafting, and defeating-fixture authoring. Resolve what is built from STATUS.yaml, not from this description. Not for the Asset Service, kernel contracts, or conformance oracle work.
 ---
 
 # sov-proofing

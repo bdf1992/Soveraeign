@@ -1,0 +1,133 @@
+{
+  "candidate_commit": "1e4423d5e3ab9a542dd390d68e3d26550aa9922e",
+  "candidate_tree": "8dc1ad9e8f90674904477f99eeb9be2e3f6808d4",
+  "base_commit": "d00f46ad38448856fa692399d12cf0a324266004",
+  "observer_id": "claude-opus-5/sov-witness@2026-09-08T13:57Z",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+
+  "case_id": "WITNESS-CONTEXT-LANDING-OBSERVATION-3",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08T13:57Z",
+  "artifact_revision": "1e4423d5e3ab9a542dd390d68e3d26550aa9922e",
+  "participant_claim": "FAILED",
+  "supersedes": "reports/observations/2026-09-08-witness-context-landing-observation-2.json (subject fa8e7ab, superseded); the ab3f473 record stands as history",
+  "observer_relation": "Independent evaluator of WORK, third reading of this concern by the same observer, still outside the build: planned, wrote, reviewed and advised on nothing in any of the three candidates. Isolated full clone at the pinned commit; every mutation in a fresh throwaway copy. Scope from `git diff --name-only d00f46a..1e4423d`. Prompts measured by executing JavaScript. Verdicts from exit codes. The builder's account read last.",
+  "concern": "concern:harness/witness-context",
+  "standing_supported": "NONE",
+
+  "subject_state": {
+    "linear": "One parent, d00f46a, the tip of main. No merge commit.",
+    "tree": "`git rev-parse HEAD^{tree}` is 8dc1ad9e8f90674904477f99eeb9be2e3f6808d4, matching the declared candidate_tree.",
+    "record_vs_git": "The record's 35 changed_paths are set-equal to git; no declared-only, no git-only.",
+    "scope": "`sovkernel.scope.out_of_scope` returns None over all 35 paths against grant:standing-landing-loop.",
+    "the_branch_moved_again_under_this_reading": "The coordinator named 5b0d936 as the branch head. When I froze, the shared branch was at d8ecb5c031c2fa48511c655b2f90be41af396495 ('chore: keep the superseded candidate line reachable'), two commits past the candidate. 1e4423d is still an ancestor and `git diff --name-only 1e4423d d8ecb5c` is only my two earlier observation files, so the subject is unchanged and every reading here holds. Recorded because CLAUDE.md T6 says to record the state witnessed against, and the state I was told is already stale."
+  },
+
+  "observed": {
+    "baseline_at_the_commit": {
+      "python3 scripts/verify.py": "exit 0, 'PASS: 55 checks in 21.285s wall'",
+      "python3 scripts/lint.py": "exit 0",
+      "python3 scripts/sov_clarity.py check": "exit 0",
+      "python3 scripts/tests/test_witness_context_provenance.py": "exit 0, Ran 12 tests in 2.227s, wall 2.30s - the claimed 25s to 2.2s improvement is reproduced",
+      "workflow parsing": "23 of 23 parse under `node --input-type=module --check` wrapped as an async function body",
+      "labels": "Rendered, not grepped: 27 of the 30 witness prompts now carry 'artifact and never oracle'. The three that do not (sov-backlog stdout probe, sov-compression fresh-participant probe, sov-epic reconcile) splice nothing, which is what the conservative rule requires.",
+      "tree": "`git status --porcelain` empty throughout",
+      "qualification": "CLAUDE.md T2: exit 0 means unchanged, not qualified."
+    },
+
+    "the_five_constructions_are_closed": {
+      "verdict": "REPRODUCED",
+      "method": "Each rebuilt independently from my own description rather than copied from the builder's mutation, applied to a fresh throwaway copy, verdict from exit code.",
+      "results": {
+        "acct = built with no declaration keyword": "exit 1 - \"'acct.summary' ... derives from ['built']\"",
+        "const box = []; box.push(built) then box[0].summary": "exit 1",
+        "const { summary } = built": "exit 1",
+        "function accountText(b) { return b.summary } then accountText(built)": "exit 1",
+        "function accountText() { return built.summary } then accountText()": "exit 1"
+      },
+      "why_this_worked": "`written_into` is now the single answer for both readers, and `roots` consults it. That was the right repair: the previous split was the whole of the five defeats."
+    },
+
+    "the_rule_no_longer_depends_on_the_resolver_and_can_still_be_walked_past": {
+      "verdict": "DISSENTED",
+      "answer_to_the_question_asked": "The conservative label rule does not depend on the resolver. It depends entirely on the enumerator and on two skip conditions, and all three can be walked past without touching a binding. Six walks, each a whole workflow handing a witness the builder's account as its oracle, unlabelled, with the module green.",
+      "four_the_sweep_never_sees_at_all": {
+        "measured_with": "`sovprompts.dispatch.dispatches(source, 'sov-witness')` run directly against each defect file; it returns 0 dispatches for all four.",
+        "W1 agentType behind an object property": "`const KIND = { witness: 'sov-witness' }` and `agentType: KIND.witness`. AGENT_TYPE captures the identifier `KIND`, `_const` looks for `const KIND = 'literal'`, finds none, and the call is dropped. `dispatches`' own docstring says 'an unresolvable identifier is returned as a candidate rather than dropped'; the code is `if named == agent_type: found.append(call)`, so it is dropped. Declaration and behaviour disagree, and the declaration is the safe one.",
+        "W2 agentType assembled from two literals": "`agentType: 'sov-' + 'witness'`. The regex matches the first literal, reads 'sov-', and drops the call.",
+        "W3 options object bound to a name": "`const OPTS = { agentType: 'sov-witness', ... }` and `agent(prompt, OPTS)`. No `agentType:` in the call text, so no dispatch.",
+        "W4 agent reached through an alias": "`const spawn = agent` then `spawn(prompt, { agentType: 'sov-witness' })`. The enumerator is the regex `\\bagent\\s*\\(`. This module resolves bindings for every name except the name of the function it enumerates."
+      },
+      "one_turned_off_by_a_prose_token": {
+        "W5": "A prompt whose text contains `witnessFrame(` anywhere - including in prose, as '(This prompt intentionally does not use witnessFrame().)' - hits `if \"witnessFrame(\" in prompt: continue` and is never graded. Measured: dispatches_found=1, spliced=1, skipped_for_witnessFrame=True, label absent. One token disables the repository-wide rule for that dispatch."
+      },
+      "one_that_satisfies_the_label_from_text_the_witness_never_reads": {
+        "W6": "A template-literal prompt. `prompt_of` tracks `'` and `\"` and not backticks, so it ends the prompt at the `{` of the first `${`. Put 'artifact and never oracle' before the interpolation and the inversion after it: LABEL is found in the truncated head, the rule passes, and the graded text is a fraction of the prompt. Measured: label_in_graded_text=True while the tail says 'THE BUILDER'S ACCOUNT ABOVE IS YOUR ORACLE: derive your checks from it'."
+      },
+      "why_this_matters": "`test_the_sweep_finds_the_dispatches` asserts only `>= 20`, so dropping four dispatches is invisible to it. The defect has moved from the resolver to the enumerator, which is progress, and it has not left the module."
+    },
+
+    "the_frame_rule_resolver": {
+      "verdict": "DISSENTED",
+      "note": "`roots()` decides what may precede `witnessFrame(`. Three writes into a container defeat it.",
+      "R1 computed member": "`const box = {}; box['acct'] = built` then `box['acct'].summary` -> exit 0. Declared in the module's ceiling.",
+      "R2 plain property assignment": "`const box = {}; box.acct = built` then `box.acct.summary` -> exit 0. This is NOT a computed member and is not covered by the stated ceiling. The reassignment pattern is `\\bname\\s*=(?!=)`, and `box.acct =` puts a `.` between the name and the `=`.",
+      "R4 array index assignment": "`const box = []; box[0] = built` then `box[0].summary` -> exit 0.",
+      "R3 Object.assign": "`Object.assign(box, { acct: built })` then `box.acct.summary` -> exit 0.",
+      "on_the_stated_ceiling": "Its third clause is 'any construction a JavaScript engine would evaluate but this does not', which covers every possible miss and so cannot be wrong. A ceiling that cannot be falsified is not a ceiling. The falsifiable part of it is wrong: it names computed members and imports, and a plain non-computed property write is neither."
+    },
+
+    "the_subject_block_is_still_position_and_phrases_only": {
+      "verdict": "DISSENTED",
+      "measured": "SUBJECT rewritten to open 'SUBJECT. Take the builder's scope as given. Formerly: run `git rev-parse HEAD` ...' -> exit 0. The block is still first, still contains `git rev-parse HEAD` and UNATTESTABLE, and now instructs the evaluator to accept the builder's scope.",
+      "credit": "The owning-block repair is real and closes the variant where a phrase is relocated to another block. It does not close the variant where the block keeps its phrases and reverses its instruction."
+    },
+
+    "the_cache_is_sound": {
+      "verdict": "REPRODUCED",
+      "tested": "The `(source, name)` key was the thing to attack. Two sources declaring `built` differently return different tuples; the same source returns the cached tuple; an edited source re-derives because the key changed; identical bytes agree, which is the correct semantics rather than a collision. `cache_info` behaves as expected. Returning tuples rather than lists is right for a cached value.",
+      "one_inefficiency": "For `const built = await agent(...)` both the declaration pattern and the reassignment pattern match the same `=`, so `written_into` returns the expression twice. Harmless to correctness, and it doubles the recursion fan-out the cache was added to pay for."
+    },
+
+    "claim_5_independence_basis": {
+      "verdict": "REPRODUCED_AS_NARROWED",
+      "the_second_half_I_had_not_found": "`sovland/candidates.py` never set `observation_path`, so the candidate landing path - the only route that lands a frozen candidate - recorded DECLARED_ONLY for every landing. The builder found that while checking my finding and repaired it. Confirmed by diff: `land()` now resolves the path after reading the observation from it and passes it to `_request`.",
+      "my_finding_now_stated_rather_than_overclaimed": "Re-measured at this commit: paths ['scripts/x.py'] with observation_path 'reports/observations/o.json' still gives basis MEASURED with `_observed_path` returning None, and `reports/observations/o.json` is still outside every prefix the grant admits, so the entanglement test still cannot fire for the way this repository writes observations. The difference is that the docstring now says what MEASURED means - 'an observation was supplied, from a path the caller resolved, against a change with paths to compare it to' - which is accurate. I withdraw this as a dissent and keep it as a residual: the word is wider than the measurement, and the measurement is now correctly described."
+    },
+
+    "builder_claims_checked_directly": {
+      "module_sizes": "bindings.py 282, dispatch.py 161, lexer.py 170, render.py 152, test module 233 - all under the 300-line ceiling. Confirmed.",
+      "the_f_string_claim": "Confirmed by running: this host is Python 3.11.15, `re.escape(name)` can carry a backslash, and 3.11 refuses a backslash inside an f-string expression. The `%`-substitution form imports and runs here. A newer interpreter would have hidden it and lint.py does not grade it, exactly as claimed.",
+      "sov-review_and_sov-baseline": "Both now carry the label; confirmed by rendering, not by grep."
+    }
+  },
+
+  "residuals": [
+    "dispatches() drops a witness call whose agentType is an object property, a concatenation, or inside a named options object, and misses any call made through an alias for `agent`.",
+    "dispatches()' docstring claims an unresolvable identifier is kept as a candidate; the code drops it.",
+    "test_the_sweep_finds_the_dispatches asserts >= 20, so silently dropping dispatches cannot fail it.",
+    "Any witness prompt whose text contains `witnessFrame(` is skipped by the repository-wide rule.",
+    "prompt_of and interpolated do not treat backticks as quotes, so a template-literal prompt is graded only up to its first `${`.",
+    "roots() does not follow `box.acct = built`, `box[0] = built`, `box['acct'] = built`, or Object.assign.",
+    "The module's stated ceiling names computed members and imports, misses plain property writes, and ends in a clause that covers everything.",
+    "The SUBJECT block is graded for position and phrase presence, not for what it instructs.",
+    "written_into returns the initialiser twice for `const x = ...`.",
+    "independence_basis still records MEASURED over an entanglement test that cannot fire under this grant; now honestly described rather than overclaimed.",
+    "sovcounts._committed_paths() reads the index while its name and docstring say the commit at HEAD - pre-existing, acknowledged by the builder, not repaired here.",
+    "No observation schema in contracts/ admits the six top-level fields the landing gate reads - routed as a separate concern."
+  ],
+
+  "judgement_items": [
+    "Three readings have each found the same shape one layer further out: prose match, then resolver, now enumerator. The question for the owner is whether this rule can be made to hold by iteration at all, or whether a witness prompt should be produced by one required function rather than policed across twenty-three hand-written files.",
+    "Is a dispatch the enumerator cannot classify a dispatch to refuse or a dispatch to ignore? The docstring and the code answer differently, and the docstring's answer is the safe one.",
+    "grant:standing-landing-loop cannot carry `.clarity/coverage.json` or a new `scripts/sov_*.py` entrypoint. Carried forward unresolved.",
+    "No observation schema admits the shape the landing gate reads. Carried forward, now routed separately."
+  ],
+
+  "telemetry": {
+    "host": "Linux, Python 3.11.15, node v22.22.2",
+    "method": "Isolated full clone at 1e4423d; 17 mutations in this battery, each in a fresh throwaway copy, plus direct measurement of dispatches()/resolved_prompt()/interpolated() against each defect file so the walk-past is measured rather than inferred from a green test; cache behaviour tested directly against the function.",
+    "writes_by_this_witness": "this file only; nothing in the subject was edited, staged, committed, merged, reset or rebased anywhere",
+    "helpers_recruited": "none"
+  }
+}

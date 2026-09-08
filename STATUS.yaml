@@ -236,6 +236,13 @@ accepted_repository_claims:
 open_decisions: []
 
 owner_acceptance_queue:
+  - id: A25
+    packet: acceptance/A25.json
+    presented: one judgement and one grant defect - whether sov-lifecycle, an instance of a portable core carrying the whole path a concern takes, replaces one tier skill plus domain skills while SDLC.md Skill axes declares the eight sdlc-* skills by name; and decisions/0104, that grant:standing-landing-loop admits 109 clarity-covered artifacts whose receipt file it excludes, so none of them can be changed under it
+    waits_on: seat:root
+    presented_by_seat: seat:session-control
+    at: 2026-09-08T00:00:00Z
+
   - id: A24
     packet: acceptance/A24.json
     presented: A fresh participant can discover, reconstruct, reach and try to use the fresh-participation result from the committed artifact alone, and the reader can fail nine ways; the one decision is whether principal:claude-fable-5-1 is granted on node:local

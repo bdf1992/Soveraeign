@@ -15,8 +15,12 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Callable
+
+from sovharness import contract
 import json
+import os
 import shutil
+import subprocess
 import tempfile
 
 REAL_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -30,7 +34,7 @@ SOURCED = ("---\nmetadata:\n  bdos: true\n  author: a\n  origin: o\n  adopted: 2
 
 def build(tmp: Path, *, tools: str = "Bash, Read", prompt: str = CLEAN_PROMPT,
           orientation: str = CLEAN_ORIENTATION, description: str = CLEAN_DESCRIPTION,
-          vendored: str = SOURCED, plant: str = "") -> Path:
+          vendored: str = SOURCED, plant: str = "", contract_patch=None) -> Path:
     """A minimal tree carrying exactly the surfaces the grader reads.
 
     The two contracts are copied from the repository, so a case is graded against
@@ -55,10 +59,54 @@ def build(tmp: Path, *, tools: str = "Bash, Read", prompt: str = CLEAN_PROMPT,
         planted = root / plant
         planted.parent.mkdir(parents=True, exist_ok=True)
         planted.write_text("{}", encoding="utf-8")
+    _commit(root)
+    # The copied contract states the real repository's drift footprint, which this
+    # tree does not have. Re-derive it here so the control is self-consistent and a
+    # patched case is failing on the patch rather than on the fixture's own shape.
+    _rebase_footprint(root)
+    if contract_patch is not None:
+        target = root / "contracts" / "harness-claims.json"
+        claims = json.loads(target.read_text(encoding="utf-8"))
+        contract_patch(claims)
+        target.write_text(json.dumps(claims, indent=2), encoding="utf-8")
     return root
 
 
-#: (name, kwargs, expected kind or None for silence, why this case exists)
+def _commit(root: Path) -> None:
+    """A real index, because REFERENCE and the footprint both read git, not the disk."""
+    env = {"GIT_AUTHOR_NAME": "f", "GIT_AUTHOR_EMAIL": "f@f", "GIT_COMMITTER_NAME": "f",
+           "GIT_COMMITTER_EMAIL": "f@f", "PATH": os.environ.get("PATH", "")}
+    for args in (["init", "-q"], ["add", "-A"], ["commit", "-qm", "fixture"]):
+        subprocess.run(["git", *args], cwd=root, env=env, capture_output=True, check=False)
+
+
+def _rebase_footprint(root: Path) -> None:
+    """Point the copied contract's footprint at this tree instead of the real one."""
+    target = root / "contracts" / "harness-claims.json"
+    claims = json.loads(target.read_text(encoding="utf-8"))
+    for entry in claims.get("known_drift", []):
+        files, occurrences = contract._footprint(root, entry["term"])
+        entry["footprint"] = {**entry.get("footprint", {}), "files": len(files),
+                              "occurrences": occurrences, "paths": files}
+    target.write_text(json.dumps(claims, indent=2), encoding="utf-8")
+
+
+def _drop_a_kind(claims: dict) -> None:
+    """A kind the module runs but the contract does not describe."""
+    claims["coverage"]["derived"].pop("REFERENCE", None)
+
+
+def _wrong_footprint(claims: dict) -> None:
+    """A hand-written population count that the tree contradicts."""
+    claims["known_drift"][0]["footprint"]["files"] += 8
+
+
+#: (name, kwargs, expected kind or None for silence, why this case exists). A case
+#: whose `why` names a defect this repository actually shipped is counted as a
+#: regression by `selfcheck`; the count is derived rather than written down,
+#: because a hand-written population count is the defect this module grades.
+SHIPPED = ("CAPABILITY", "STANDING", "REFERENCE", "VOLATILE/unbuilt", "VOLATILE/phase",
+           "RETIRED", "SELFCLAIM/kinds", "SELFCLAIM/footprint")
 CASES = (
     ("control", {}, None, "a supported tree is not refused"),
     ("CAPABILITY", {"tools": "Bash, PowerShell, Read"}, "CAPABILITY",
@@ -81,7 +129,12 @@ CASES = (
      "sdlc-release told participants to cite a record that no longer exists"),
     ("PROVENANCE", {"vendored": "---\nmetadata:\n  bdos: true\n---\n"}, "PROVENANCE",
      "a vendored copy with no declared source is a fork"),
+    ("SELFCLAIM/kinds", {"contract_patch": _drop_a_kind}, "SELFCLAIM",
+     "the contract said two of five kinds while the module ran six"),
+    ("SELFCLAIM/footprint", {"contract_patch": _wrong_footprint}, "SELFCLAIM",
+     "the contract stated a drift footprint the tree contradicts"),
 )
+
 
 
 def selfcheck(grade: Callable[[Path], list]) -> int:
@@ -101,6 +154,7 @@ def selfcheck(grade: Callable[[Path], list]) -> int:
         for line in failures:
             print(f"  {line}")
         return 1
+    regressions = sum(1 for name, _, _, _ in CASES if name in SHIPPED)
     print(f"harness claim refusals: {len(CASES)} cases, every declared refusal fires; "
-          f"four are regressions for defects this repository actually shipped")
+          f"{regressions} are regressions for defects this repository actually shipped")
     return 0

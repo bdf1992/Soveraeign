@@ -252,9 +252,21 @@ def check_provenance(root: Path = ROOT) -> list[Defect]:
 ALL_CHECKS = (check_capability, check_standing, check_reference,
               check_volatile, check_retired, check_provenance)
 
+#: The kinds ALL_CHECKS emits. Held here so the coverage contract can be graded
+#: against what the module does rather than against a second copy of the list.
+KINDS = frozenset({"CAPABILITY", "STANDING", "REFERENCE", "VOLATILE", "RETIRED",
+                   "PROVENANCE"})
+
+
+def check_selfclaim(root: Path = ROOT) -> list[Defect]:
+    """The coverage contract must describe the kinds this module actually runs."""
+    from sovharness.contract import check_contract
+    return [Defect("SELFCLAIM", where, detail)
+            for where, detail in check_contract(root, set(KINDS))]
+
 
 def grade(root: Path = ROOT) -> list[Defect]:
-    return [d for check in ALL_CHECKS for d in check(root)]
+    return [d for check in (*ALL_CHECKS, check_selfclaim) for d in check(root)]
 
 
 def main() -> int:
@@ -271,8 +283,9 @@ def main() -> int:
               "support. Repair the claim, or the record if the record is what is wrong.\n"
               "What this does and does not reach: contracts/harness-claims.json")
         return 1
-    print(f"harness claims: {graded} files graded across six kinds; coverage and its limits "
-          f"are declared in contracts/harness-claims.json")
+    print(f"harness claims: {graded} files graded across {len(KINDS) + 1} kinds; coverage "
+          f"and its limits are declared in contracts/harness-claims.json, which "
+          f"SELFCLAIM grades against the kinds this module actually runs")
     return 0
 
 

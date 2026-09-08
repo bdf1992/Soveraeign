@@ -1,8 +1,12 @@
 {
   "contract_id": "soveraeign-harness-claims/v1",
   "status": "PROPOSED",
-  "governed_by": ["AGENTS.md", "CLAUDE.md", "STATUS.yaml"],
-  "summary": "What scripts/sov_harness.py grades, stated as a contract rather than left implicit in the code. Two of the five claim kinds are derived from records and generalize; two are declared vocabulary and cover exactly what is listed here; one is a presence check. A grader that overstates its reach is worse than an absent one, because a green run is then read as an assurance nobody gave.",
+  "governed_by": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "STATUS.yaml"
+  ],
+  "summary": "What scripts/sov_harness.py grades, stated as a contract rather than left implicit in the code. Some kinds are derived from records and generalize; some cover exactly the vocabulary listed here; one is a presence check. Which is which is the `coverage` block below, and `scripts/sovharness/contract.py` grades that block against the kinds the module actually runs, because a grader whose own coverage claim is unchecked is the defect it exists to catch. This file said 'two of the five claim kinds are derived' while documenting six kinds and three derived; an independent witness caught it, no check could have.",
   "coverage": {
     "derived": {
       "CAPABILITY": "Every tool name in agent frontmatter, against contracts/harness-hosts.json. Generalizes: any tool not in the portable set fails, named or not.",
@@ -20,7 +24,8 @@
       "Prose that is misleading without asserting a graded claim.",
       "Whether a description's scope statement is accurate.",
       "Whether a workflow prompt's reasoning is sound.",
-      "The cold-start `host` section, which records one workstation's facts and is mostly unprobed."
+      "The cold-start `host` section, which records one workstation's facts and is mostly unprobed.",
+      "The two cold-start probes A36 and A37. They are recorded in the corpus, and no gate executes sov_coldstart.py - it is in neither the verify table nor .github/. The gate that actually refuses a bad tool declaration is CAPABILITY, which runs in verify."
     ]
   },
   "representation_rule": {
@@ -28,24 +33,71 @@
     "remedy": "Delete the standing clause. If the reader genuinely needs the standing, point at STATUS.yaml instead of copying it."
   },
   "standing_vocabulary": [
-    {"term": "unbuilt", "why": "sov-console and sov-proofing both described a boundary as 'accepted but unbuilt'; Console's continuity path was built."},
-    {"term": "not built", "why": "The same claim spelled with a space."},
-    {"term": "not yet built", "why": "The same claim hedged."},
-    {"term": "not implemented", "why": "The spelling STATUS.yaml itself uses in a status value, which makes it likely to be copied into prose."},
-    {"term": "accepted but", "why": "The construction that carries a standing contrast into a description."},
-    {"term": "phase-i boundaries stand", "why": "sdlc-release conditioned a live refusal on a phase that is terminal."},
-    {"term": "in phase i this", "why": "The body form of the same, which asserts the closed phase is current."},
-    {"term": "while the service is", "why": "The clause that introduced both 'accepted but unbuilt' descriptions."}
+    {
+      "term": "unbuilt",
+      "why": "sov-console and sov-proofing both described a boundary as 'accepted but unbuilt'; Console's continuity path was built."
+    },
+    {
+      "term": "not built",
+      "why": "The same claim spelled with a space."
+    },
+    {
+      "term": "not yet built",
+      "why": "The same claim hedged."
+    },
+    {
+      "term": "not implemented",
+      "why": "The spelling STATUS.yaml itself uses in a status value, which makes it likely to be copied into prose."
+    },
+    {
+      "term": "accepted but",
+      "why": "The construction that carries a standing contrast into a description."
+    },
+    {
+      "term": "phase-i boundaries stand",
+      "why": "sdlc-release conditioned a live refusal on a phase that is terminal."
+    },
+    {
+      "term": "in phase i this",
+      "why": "The body form of the same, which asserts the closed phase is current."
+    },
+    {
+      "term": "while the service is",
+      "why": "The clause that introduced both 'accepted but unbuilt' descriptions."
+    }
   ],
   "retired_identifiers": [
-    {"term": "no_external_effects_in_phase_i",
-     "replacement": "owner_holds O1 (reason PUBLICATION) in STATUS.yaml, or the applicable hold_reasons entry in contracts/acceptance-policy.json",
-     "why": "Cited by sdlc-release as the record to name in a refusal. It is not in STATUS.yaml, so the instruction was to cite a record that does not exist."}
+    {
+      "term": "no_external_effects_in_phase_i",
+      "replacement": "owner_holds O1 (reason PUBLICATION) in STATUS.yaml, or the applicable hold_reasons entry in contracts/acceptance-policy.json",
+      "why": "Cited by sdlc-release as the record to name in a refusal. It is not in STATUS.yaml, so the instruction was to cite a record that does not exist."
+    }
   ],
   "known_drift": [
-    {"term": "PUBLIC-CLEARANCE",
-     "status": "NOT_ENFORCED",
-     "why": "Still cited in eight workflow prompts and three skills. It names a live concept, owner_holds O1 with reason PUBLICATION, under a retired spelling, so it is drift rather than falsehood. Enforcing it now would fail the build on text this branch is not repairing.",
-     "follow_up": "The wider retired-name cleanup. Add to retired_identifiers in the same change that repairs the citations."}
+    {
+      "term": "PUBLIC-CLEARANCE",
+      "status": "NOT_ENFORCED",
+      "why": "It names a live concept, owner_holds O1 with reason PUBLICATION, under a retired spelling, so it is drift rather than falsehood. Enforcing it now would fail the build on text this branch is not repairing.",
+      "follow_up": "The wider retired-name cleanup. Add to retired_identifiers in the same change that repairs the citations.",
+      "footprint": {
+        "files": 12,
+        "occurrences": 14,
+        "note": "Graded by scripts/sovharness/contract.py against the tree. The first hand-written version of this said eight workflow prompts and three skills and omitted .claude/README.md.",
+        "paths": [
+          ".claude/README.md",
+          ".claude/skills/sov-asset/SKILL.md",
+          ".claude/skills/sov-governance/SKILL.md",
+          ".claude/workflows/sov-asset.js",
+          ".claude/workflows/sov-byom.js",
+          ".claude/workflows/sov-conformance.js",
+          ".claude/workflows/sov-console.js",
+          ".claude/workflows/sov-contracts.js",
+          ".claude/workflows/sov-governance.js",
+          ".claude/workflows/sov-projection.js",
+          ".claude/workflows/sov-proofing.js",
+          ".claude/workflows/sov-verification.js"
+        ]
+      }
+    }
   ]
 }

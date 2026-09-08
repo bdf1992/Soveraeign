@@ -1,6 +1,6 @@
 # Command surface
 
-Sixty-one `sov_*.py` entrypoints plus the two verification commands. This is the
+Sixty-two `sov_*.py` entrypoints plus the two verification commands. This is the
 whole of how the node is operated from a terminal, and it is the index
 `contracts/publication-surface.json` requires: an entrypoint absent from this
 page is unreachable by anyone who did not write it.
@@ -19,6 +19,7 @@ Run any of them with `--help` for exact arguments.
 | `python scripts/lint.py` | Is the repository text clean — endings, module size, secret shapes, absolute host paths? |
 | `python scripts/sov_next.py` | What happens next? Reconciles five signposts and reports disagreements rather than resolving them. |
 | `python scripts/sov_traps.py` | Are the hazards recorded in `CLAUDE.md` still real? Fails when one stops being true. |
+| `python scripts/sov_vendor.py` | Do the cores carried from another repository still match the digests the decision that carried them recorded? `sync <bdos tree>` is the attended half, comparing against upstream. |
 | `python scripts/sov_harness.py` | Does what `.claude/` asserts about capability, standing, addresses and provenance hold against the records that own those claims? Coverage and its limits are declared in `contracts/harness-claims.json`. |
 
 ## Where the work stands

@@ -21,6 +21,13 @@ from typing import Any
 DECLARED_NAME_KEYS = ("$defs", "definitions", "properties", "patternProperties")
 """Where a contract declares names rather than describing itself."""
 
+PROSE_KEYS = ("description", "note", "$comment", "warrant", "title", "name", "enum")
+"""Keys whose values a contract uses to describe itself rather than to declare anything.
+
+Named here so the self-check's mispaired variant can be pinned against the list instead of
+carrying its own copy. `enum` is in it because an enum value is data the contract admits,
+not a name it declares."""
+
 EXAMPLE_KEYS = ("examples", "example", "fixtures")
 """Instance data, not declaration. Identity is read at the root for exactly this reason, and
 a fifth witness showed the names half did not follow the same line: a `properties` dict
@@ -68,8 +75,7 @@ def structural_names(document: Any) -> set[str]:
                 if key in DECLARED_NAME_KEYS and isinstance(value, dict):
                     names.update(value)
                     walk(value)
-                elif key not in ("description", "note", "$comment", "warrant", "enum",
-                                 "title", "name"):
+                elif key not in PROSE_KEYS:
                     walk(value)
         elif isinstance(node, list):
             for value in node:

@@ -275,6 +275,7 @@ class InstitutionNeutrality(unittest.TestCase):
         Narrowing `EXAMPLE_KEYS` fails the self-check; widening it fails here.
         """
         self.assertEqual(set(declaration.EXAMPLE_KEYS), set(fixture.INSTANCE_KEYS))
+        self.assertEqual(set(declaration.PROSE_KEYS), set(fixture.PROSE_KEYS))
 
     def test_a_properties_dict_inside_an_example_declares_nothing(self) -> None:
         """Identity is read at the root; declared names must follow the same line."""

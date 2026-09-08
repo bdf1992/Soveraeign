@@ -97,3 +97,32 @@ These seams are not carried into the gap. Their closing evidence already exists;
 - **S28 · Accepted document wording — CLOSED 2026-08-30.** The accepted wording repair is already recorded in the closed seam history.
 
 `contracts/SUCCESSOR-PREP.md` is the gap synthesis of the surviving residue. `STATUS.yaml` remains the machine source for current phase state.
+
+### S31 · Work cannot be requested into the node — CARRIED
+
+`contracts/phase-1-5-phase-ii-horizon.md` draws the commissioning circuit as Definition,
+Request, Agenda, Queue/Custody/Lease, and onward. `python scripts/sov_session.py console`
+projects `sources: (none)` and `queues: (none)`, and nothing anywhere writes into either.
+No Request object and no Agenda object exist. `scripts/sov_ticket.py` reads a ticket
+export produced by the GitHub registrar under `adapters/github/`, and nothing carries those
+tickets to a session. Work therefore reaches a participant only because a person tells it,
+which is the oral history `P15-X1` forbids, at the front of the circuit whose exit clause
+forbids it. Measured 2026-09-08 by carrying one concern around the circuit by hand. No
+implementation may resolve this by treating a human prompt as a Request, which would make
+the clause unfalsifiable.
+
+### S32 · Nothing ever writes a Finding or a receipt — CARRIED
+
+`contracts/finding.schema.json` specifies a Finding and requires `frozen_at`. Across the
+tree the token `finding_schema` appears in exactly two files: that schema and
+`conformance/fixtures/commissioning/evidence-contract-cases.json`. No instance exists and
+no code constructs one. `contracts/receipt.schema.json` requires fifteen fields, and
+exactly one object in the tree carries all fifteen —
+`bindings/mcp/observations/journey-02-receipt.json`, a binding demonstration. No operation
+in this repository has ever emitted a receipt. `conformance/commissioning.py` grades
+`P15-Q2.3` by reading `projections_frozen_before_sharing` as a boolean out of an `observed`
+mapping, so the freeze `P15-X2` requires is asserted to the oracle and performed by nothing.
+Distinct from S29, which is a contradiction between a schema and a gate; here the
+contracts are coherent and nothing writes them. Measured 2026-09-08. No implementation
+may resolve this by writing a conforming fixture and calling the contract exercised.
+

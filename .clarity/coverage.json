@@ -767,7 +767,7 @@
       "changed": false
     },
     "OPEN-SEAMS.md": {
-      "artifact_digest": "sha256:6bc6ed6bd1567a4b1413ee4e750e6711bcee49a5f491fe1298657a9b712701e9",
+      "artifact_digest": "sha256:5de31fbfc063c894f4b5fd731b8c7fa7f585b899276b148561a2516b86d67a9f",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",

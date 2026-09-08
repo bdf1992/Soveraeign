@@ -75,21 +75,49 @@ class ToolingPartition(unittest.TestCase):
         self.assertEqual(run_tooling_tests.module_weight(Path("test_a.py")), 1)
         self.assertGreater(run_tooling_tests.module_weight(Path(heaviest_declared())), 1)
 
-    def test_the_declared_weight_buys_the_heaviest_module_fewer_peers(self):
-        """Dropping the entry is the defeat: the weight has to change the packing.
+    def critical_shard(self, weights) -> int:
+        """The cost of the slowest shard, scored with the measured weights.
 
-        Asserting only that the two slow readers land in different shards proves
-        nothing — longest-weight-first separates the first two modules whenever
-        there are at least two workers, whatever their weights are. What the
-        declared value buys is a shorter shard, so that is what is asserted, for
-        whichever module the table currently weights heaviest: naming one module
-        here pinned test_sov_branch after it had stopped being slow.
+        Scored with the real table whatever map produced the packing, because that
+        is the question: a partition built in ignorance of how long modules take
+        still takes exactly as long to run.
+        """
+        modules = run_tooling_tests.test_modules()
+        real = dict(run_tooling_tests.MODULE_WEIGHTS)
+        run_tooling_tests.MODULE_WEIGHTS = weights
+        try:
+            buckets = run_tooling_tests.partition(modules, run_tooling_tests.DEFAULT_WORKERS)
+        finally:
+            run_tooling_tests.MODULE_WEIGHTS = real
+        return max(sum(real.get(module.name, 1) for module in bucket) for bucket in buckets)
+
+    def test_the_declared_weight_shortens_the_slowest_shard(self):
+        """Dropping the entry is the defeat: the weight has to buy a shorter shard.
+
+        This asserts the critical shard rather than the heaviest module's peer
+        count. Peer count is what the weights were originally tuned by, and it is
+        the wrong instrument against the live population: `run_tooling_tests`
+        records that peers are not monotonic in the weight, so the property flips
+        whenever anyone adds a module of any size. Adding one bounded 0.08s module
+        at 112 flipped it while every measured weight in the table was still
+        correct, which is a brittle instrument reporting a sound table as expired.
+
+        The peer property is not lost. It is proven next door in
+        `test_full_corpus_reader_gets_fewer_peers_than_default_modules`, against a
+        controlled sixteen-module population where it is stable and means what it
+        says. What is asserted here is what the table is actually for and what its
+        own comments record tuning against: the slowest shard is the suite's wall
+        clock, and at 112 modules the declared weights buy 100 against 137.
         """
         heaviest = heaviest_declared()
-        weighted = self.peers(heaviest)
-        with self.weights(**{heaviest.replace(".", "__"): None}):
-            unweighted = self.peers(heaviest)
-        self.assertLess(weighted, unweighted)
+        declared = dict(run_tooling_tests.MODULE_WEIGHTS)
+        dropped = {name: weight for name, weight in declared.items() if name != heaviest}
+        self.assertLess(self.critical_shard(declared), self.critical_shard(dropped))
+
+    def test_the_declared_weights_beat_no_weights_at_all(self):
+        """The table as a whole must buy something, not merely its heaviest entry."""
+        self.assertLess(self.critical_shard(dict(run_tooling_tests.MODULE_WEIGHTS)),
+                        self.critical_shard({}))
 
     def test_a_weight_changes_placement_and_never_the_population(self):
         modules = run_tooling_tests.test_modules()

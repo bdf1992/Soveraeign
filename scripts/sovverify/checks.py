@@ -17,35 +17,14 @@ from __future__ import annotations
 import sys
 
 from sovverify.participants import PARTICIPANT_CHECKS
+from sovverify.staleness import STALENESS_CHECKS
 from sovverify.shape import ROOT, Check
 
-REPOSITORY_CHECKS = (
+REPOSITORY_CHECKS = STALENESS_CHECKS + (
     Check("repository hygiene", [sys.executable, "scripts/lint.py"], ROOT,
           "reads repository bytes directly with read_bytes, never a build report, and never "
           "Path.read_text whose newline translation would hide the defect it looks for",
           (".gitattributes", "scripts/lint.py")),
-    Check("orientation snapshot", [sys.executable, "scripts/sov_snapshot.py", "check"],
-          ROOT,
-          "re-derives every number at the moment of the check - git ls-tree for the "
-          "counted directories and git rev-list for the history, both of the commit at "
-          "HEAD, and the working tree for the two counts the repository already "
-          "computes, the check table and the capability projection - and never reads "
-          "the page's own claim about being current; the page is orientation for every "
-          "launched agent, which does not carry the interactive session's context to "
-          "correct it (LESSONS.md L-0001). Reading the commit for the counted "
-          "directories is Bdo's ruling on acceptance packet A5, and it is what stops "
-          "another session's untracked file from reporting a correct page as drifted; "
-          "the same ruling left the other two where they were, and the run prints which "
-          "half each number belongs to",
-          # The derivation moved into scripts/sovsnapshot/ and this tuple did not
-          # follow it, so the emitted observation digested neither the code that
-          # produces the verdict nor the check table one of the claims counts.
-          ("CLAUDE.md", "scripts/sov_snapshot.py", "scripts/sovsnapshot",
-           "scripts/sovverify/checks.py")),
-    Check("recorded traps still hold", [sys.executable, "scripts/sov_traps.py"], ROOT,
-          "re-derives every recorded trap from the repository at check time, so a trap that "
-          "has stopped being true fails here instead of going stale in prose",
-          ("CLAUDE.md", "scripts/sov_traps.py")),
     Check("standing claims carry a witness", [sys.executable, "scripts/sov_standing.py"], ROOT,
           "reads STATUS.yaml and the witness records by separate paths and grades one against "
           "the other, so a standing claim cannot supply the record that would support it",
@@ -160,6 +139,17 @@ REPOSITORY_CHECKS = (
           ("GROUND.md", "CANON.md", "contracts/product-ground.json",
            "contracts/product-canon.json",
            "contracts/fixtures/capability-map.reference.json")),
+    Check("capability map against the manifests",
+          [sys.executable, "scripts/sov_capability.py", "check"], ROOT,
+          "rebuilds the projection from the service manifests at check time and compares it "
+          "against the checked-in file, so the map cannot claim a capability no manifest "
+          "declares and cannot go stale behind a manifest that moved. It was already "
+          "executable and already passing, and only `events` was gated; the count it holds "
+          "is now written into GROUND.md, an owner-accepted document, by way of the "
+          "counted-populations check, so a number a reader takes as current rested on a "
+          "projection nothing re-derived. An independent witness named that gap",
+          ("contracts/fixtures/capability-map.reference.json", "services",
+           "scripts/sov_capability.py")),
     Check("receipt event vocabulary",
           [sys.executable, "scripts/sov_capability.py", "events"], ROOT,
           "parses each service's own modules and reads the event names its source passes to "
@@ -295,6 +285,7 @@ REPOSITORY_CHECKS = (
           ("scripts/tests", "scripts/run_tooling_tests.py", "scripts/sovtooling")),
 )
 
-#: Repository checks then participant checks; the package `__init__` splices the
+#: Staleness checks, then the rest of the repository's, then the participants';
+#: the package `__init__` splices the
 #: integrity and commissioning groups in, so import the table through the package.
 CHECKS = REPOSITORY_CHECKS + PARTICIPANT_CHECKS

@@ -1,0 +1,108 @@
+{
+  "case_id": "COUNTED-POPULATIONS-WITNESS-PASS-6",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08",
+  "artifact_revision": "8e23ec9143a67f34b7ddf07bc29bb7f4dacfea8c",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "counted populations: grade every hand-written count in live prose against a deterministic counter",
+    "verdict": "REPRODUCED_WITH_RESIDUALS",
+    "standing_supported": "BUILT -> WITNESSED",
+    "supersedes": "reports/observations/2026-09-08-counted-populations-witness-observation-3.json, which pins 42c8ed2. That commit and the three before it are unreachable on this branch after four reconciles onto a moving trunk. None of those attestations was withdrawn or falsified; each had its subject reconciled out from under it, which is what contracts/repository-candidate-lifecycle.json operations.RECONCILE.evidence_effect INVALIDATE_SUBJECT_EVIDENCE says a reconcile does. Every superseded record is left unedited because reports/ is append-preserving.",
+    "supersedes_chain": [
+      "2026-09-07-counted-populations-witness-observation.json (b93a721, unreachable)",
+      "2026-09-07-counted-populations-witness-observation-2.json (d12d01f, unreachable)",
+      "2026-09-08-counted-populations-witness-observation-3.json (42c8ed2, unreachable)"
+    ],
+    "standing_binds": "contracts/counted-populations.json, scripts/sov_counts.py, scripts/sovcounts/, scripts/sovverify/staleness.py, scripts/tests/test_sov_counts.py, and the two staleness entries plus the capability-map entry in scripts/sovverify/checks.py, at 8e23ec9 only.",
+    "standing_note": "An observation, not a settlement and not a ratification.",
+    "candidate_commit": "8e23ec9143a67f34b7ddf07bc29bb7f4dacfea8c",
+    "candidate_tree": "c53c452874725b48a0d7f64283837023a23ab7ab",
+    "base_commit": "c08d59df7636234ea39412986810a820b46acaad",
+    "observed_at": "2026-09-08",
+    "observer_id": "claude-opus-5/sov-witness@2026-09-08",
+    "observer_relation": "INDEPENDENT_OF_BUILDER",
+    "contributed_to_build": false,
+    "observer_independence_basis": "Separate launched witness invocation that did not build, edit, stage, commit, merge, reset or rebase any part of the subject. Every reading was taken in an isolated full clone at the pinned commit; mutation testing in throwaway copies only. No builder report or acceptance packet was read as evidence. The builder's local gate readings and the CI summary were re-derived rather than accepted, and one of them did not reproduce as reported.",
+    "independence_caveat": "The build commits carry the host trailer Claude-Session: https://claude.ai/code/session_01NibVQxHqhE4JevvzTwuUek, the same session identifier this witness invocation's own host attribution names. Raised as J1; not this witness's to settle.",
+    "tree_state": "Measured at six successive heads: 56d45e5, 488c8a3, b93a721, d12d01f, 42c8ed2, and 8e23ec9 attested here. The first five are unreachable. git status --porcelain empty in the clone and in the shared working tree before and after every command; HEAD 8e23ec9 at the start and end of the pass.",
+    "commands": {
+      "freeze": "git clone --no-hardlinks <repository root> <scratch outside the tree>; git checkout 8e23ec9; git status --porcelain -> empty; tree c53c452",
+      "verify": "python scripts/verify.py -> exit 0; PASS: 55 checks in 14.755s wall",
+      "lint": "python scripts/lint.py -> exit 0",
+      "clarity": "python scripts/sov_clarity.py check -> exit 0",
+      "diagrams": "python scripts/sov_diagrams.py -> exit 0",
+      "counts": "python scripts/sov_counts.py check -> exit 0; PASS: 25 stated count(s) match, across 14 population(s) that bind prose (20 declared)",
+      "unit_counts": "python -m unittest discover -s scripts/tests -p test_sov_counts.py -> exit 0",
+      "unit_partition": "python -m unittest discover -s scripts/tests -p test_run_tooling_tests.py -> exit 0; Ran 19 tests",
+      "ci_subject": "python scripts/sov_ci_subject.py candidate --base c08d59df7636234ea39412986810a820b46acaad --candidate 8e23ec9143a67f34b7ddf07bc29bb7f4dacfea8c -> exit 0; base_is_ancestor true, construction_history LINEAR, construction_commits 10, candidate_tree c53c452874725b48a0d7f64283837023a23ab7ab",
+      "snapshot": "python scripts/sov_snapshot.py check -> exit 0"
+    },
+    "predicate_results": {
+      "the_seven_claude_md_counts_were_dropped_and_not_lost": {
+        "held": true,
+        "detail": "This was the builder's claim and it holds. The graded claim sets at 42c8ed2 and 8e23ec9 were enumerated and diffed: ten claims left CLAUDE.md and three returned at shifted line numbers, a net of seven. The three that returned are the day-two historical sentence (17 decision records, 8 reports) and the diagram views count, all moved rather than removed. The seven genuinely dropped are 10 service boundaries, 135 declared operations, 5 agent definitions, 31 skills, 23 workflows, 90 decision records and 32 reports. Live prose was then searched for every one of those nouns preceded by any number, and cross-referenced against the graded set. service-manifests is still stated and graded at PRD.md:508, diagrams/service-map.md:74 and services/console/JOURNEYS.md:185; declared-operations at GROUND.md:22 and PRD.md:168; harness-skills at ROADMAP.md:408; harness-workflows at .claude/README.md:34 and .claude/epic/NARRATIVE.md:171. harness-agents, decision-records and reports have no live statement of their total anywhere. Nothing was left stated and ungraded. Every remaining ungraded hit is a per-service operation count inside .claude/, a genuine subset, or an unrelated English use of 'skills' or 'reports', all pre-existing and none a whole-population total."
+      },
+      "removing_the_numbers_did_not_hollow_out_the_orientation_snapshot_check": {
+        "held": true,
+        "detail": "The concern was that a page stating no numbers turns its grader into the dead population this witness found at pass 1. It does not. sov_snapshot.py check reports NOT STATED for all ten counts with an explicit deferral to `sov_snapshot.py numbers`, still exercises 9 of 10 claims against controlled values in 7 cases, and states plainly that the page has no number that can go stale. The path re-arms: planting 'runs 53 checks' back into CLAUDE.md yields FAIL verification checks: page says 53, record holds 55 at exit 1, and planting '4 agent definitions' yields FAIL CLAUDE.md:99 from sov_counts at exit 1. Not stating a number is a real repair here rather than an evasion, because a number that is never written cannot go stale and both graders still fire the moment one is."
+      },
+      "the_dropped_reports_count_was_about_to_drift": {
+        "held": true,
+        "detail": "The reports population derives 33 at this head, not the 32 CLAUDE.md used to state. Had the number stayed it would now be stale. Removing it was the stronger repair, not merely the cheaper one."
+      },
+      "the_merge_resolution_kept_both_sides_honestly": {
+        "held": true,
+        "detail": "main's heaviest_declared() helper is used in all five places that need a weighted module, including inside this branch's critical-shard assertion at line 112, and it removes the hardcoded module name the file had already been burned by twice. Both properties keep live defeating cases at this head: critical shard declared 101 against dropped 138 and no-weights 132; the peer property on the controlled sixteen-module population reads (1, 5) with the weight and (4, 4) without, so the assertion fails when the weight is dropped. 19 tests pass. Neither side was dropped to resolve the conflict."
+      },
+      "every_defeating_case_still_fires": {
+        "held": true,
+        "detail": "Nine original drifts still caught; live-document drift exit 1; stale Ground count exit 1; frozen-path plant exit 0; global scanner decay SELFCHECK FAIL exit 1; guard test with 'of the' reintroduced exit 1; with 'its' and 'of its' reintroduced exit 1; capability map stale exit 1; unreviewed prose edit fails clarity exit 1."
+      },
+      "every_count_re_derived_at_this_head": {
+        "held": true,
+        "detail": "workflows 23, skills 31, agents 5, sov_*.py entrypoints 60, service manifests 10, summed manifest operations 135, capability map 135, decision records 90, reports 33, diagram views 8, GROUND headings 16, CHECKS 55. Each agrees with the prose that states it, where any prose still does."
+      },
+      "the_builder_s_reported_gate_readings_reproduce": {
+        "held": false,
+        "detail": "Nine of ten reproduce exactly. One does not as reported: `sov_ci_subject.py candidate` was reported at exit 0, and the bare invocation exits 2 with an argparse usage error in both the clone and the shared tree, because --base and --candidate are required and must be full forty-character SHAs; abbreviated input is refused with CANDIDATE_HEAD_MISMATCH. Supplied correctly the tool does exit 0 and its receipt matches the frozen subject. The substance of the claim is sound and the reported command is not the command that produces it. Recorded because a reader re-running the reported line gets a failure and would not know why."
+      },
+      "freezing_this_carrier_is_an_act_the_builder_may_take": {
+        "held": true,
+        "detail": "The builder's stated reason for not freezing - that it is a lifecycle act on Bdo's repository not theirs to take unilaterally while a merge decision is pending - does not survive the governing artifacts. scripts/sov_land.py ships a `freeze` subcommand described as 'commit reconciled construction as a frozen candidate', writing under .local/candidates, on the same governed landing path grant:standing-landing-loop already covers with repository.commit and repository.land. contracts/acceptance-policy.json hold_reasons is exhaustive - EXTERNAL_WORLD_EFFECT, IRREVERSIBLE, PUBLICATION, OWNER_IDENTITY_OR_NAMING, SECRET_EXPOSURE, DESTRUCTIVE_ADMIN, RESOURCE_COMMITMENT - and FREEZE is none of them: it is RECORD_LOCAL, it does not rewrite candidate identity, and SUPERSEDE exists from FROZEN with evidence_effect PRESERVE_OLD_EVIDENCE as its reversal. presumptive_execution covers it on all three conditions and its note names the refusal: an agent that stops to ask for a prior owner act on reversible record-local work is refused by PREAPPROVAL_REQUESTED. AGENTS.md addresses the obligation to the participant producing the evidence, not to an owner: freeze before witness evidence is used as evidence for a repository candidate. The freeze subject is already computed and emitted by sov_ci_subject.py, which runs in CI, so this is not a missing capability either."
+      }
+    },
+    "findings": [
+      "F1 F3 F5 F7 F9 F10 F11 F12 F14 RESOLVED and re-verified at this head.",
+      "F2 RESOLVED IN PART AND HONESTLY SCOPED. F4 RECORDED, NOT CLOSED. F6 RETRACTED. F8 NOT A DEFECT. F11a CORRECTION OF THIS WITNESS.",
+      "F15 OPEN, MEDIUM, OUTSIDE THIS CONCERN, carried as OPEN-SEAMS.md S29.",
+      "F16 OPEN, MEDIUM, OUTSIDE THIS CONCERN, and now evidenced rather than argued. The repository candidate lifecycle declares four states and five operations with explicit evidence effects and persists no state; nothing records a FREEZE, nothing refuses a witness taken against a MUTABLE carrier, and RECONCILE fires INVALIDATE_SUBJECT_EVIDENCE silently without naming what it invalidated. It has now invalidated five attestations in this concern.",
+      "F17 OPEN, LOW. This witness's four records conform to the schema while 52 of 54 records in reports/observations/ use the gate-shaped convention; nothing marks which shape a record is.",
+      "F18 OPEN, LOW. Removing '5 agent definitions' from CLAUDE.md left 'four roles and the Sov binding' in the same sentence: a hand-written decomposition of the population that was just de-numbered, pointing at no counter. Pre-existing wording, newly the only number in that clause.",
+      "F19 OPEN, LOW. `sov_ci_subject.py candidate` requires full SHAs and refuses abbreviations with CANDIDATE_HEAD_MISMATCH, whose message prints the abbreviation and the full SHA side by side as though they disagreed. They do not; the comparison is a string equality on a value the caller was free to abbreviate."
+    ],
+    "residuals": [
+      "This record conforms to contracts/participant-observation.schema.json and is therefore refused by the landing gate, which requires a top-level verdict of CONFIRMED that the schema forbids. Recorded as S29. This witness did not add the forbidden fields.",
+      "Five earlier attestations pin unreachable commits; their content is carried forward by re-measurement, never by assertion.",
+      "CI at 8e23ec9 reports 17 success and 1 skipped. The skipped check is `red · generative screening`, and CLAUDE.md trap T5 records that a skipped required check satisfies the ruleset without running. The builder does not count it as a pass and neither does this witness; it is neither evidence for nor against the change.",
+      "919 count-shaped sentences remain ungraded and are listed by `debt`. Silence there is coverage, not confirmation.",
+      "Six populations bind no claim in current prose at this head, up from five, because CLAUDE.md stopped stating counts.",
+      "No clarity review for this record; reports/ is outside the clarity scope."
+    ],
+    "judgement_items": [
+      "J1 Does an independent witness invocation carrying the same host Claude-Session identifier as the build satisfy the independent-observation precondition of grant:standing-landing-loop?",
+      "J2 Which of contracts/participant-observation.schema.json and scripts/sovkernel/authority.py yields, given that no record satisfies both? Carried as S29.",
+      "J3 ANSWERED, and the answer is that this was never a judgement item. Freezing is the builder's own act under presumptive_execution and withholding it for a prior owner act is the PREAPPROVAL_REQUESTED refusal by name. What remains for an owner seat is only the merge itself."
+    ],
+    "not_settled_by_this_observation": [
+      "Whether any number this check does not reach is correct.",
+      "Whether the sentences around the graded numbers are true.",
+      "Any service, requirement, or phase standing.",
+      "Whether this change may land. The gate is not satisfied by this record, for the reason recorded in S29."
+    ]
+  },
+  "telemetry": {
+    "method": "Six isolated full clones at pinned commits under a scratch directory outside the repository; mutation testing in throwaway copies only. Verdicts read from process exit codes, never from stdout. The dropped-count claim was settled by enumerating and diffing graded claim sets at both heads, then searching live prose for each dropped noun and cross-referencing the graded set, rather than by reading the diff.",
+    "host": "Linux, Python 3.11, shared host with sibling sessions writing the tree",
+    "writes_by_this_witness": "this record and the three it supersedes; no work, fixture, contract, test, or implementation file was edited at any point"
+  }
+}

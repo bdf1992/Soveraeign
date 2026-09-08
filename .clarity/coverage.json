@@ -1,7 +1,7 @@
 {
   "reviews": {
     ".claude/README.md": {
-      "artifact_digest": "sha256:d3561b25acebf514932983d42ffb4f70b3b0f0f3adaf8c2c58b9c48e8a0597f3",
+      "artifact_digest": "sha256:a0d40acfa69b0d825610e48c36d86a7bbfd42376135b5843d78e7ffc89b471ad",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
@@ -12,7 +12,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     ".claude/agents/sov-controller.md": {
       "artifact_digest": "sha256:a85fba75be703d59a835250dc9e7c7061e45e7d700002661b5f4a554284f6bae",
@@ -99,7 +99,7 @@
       "changed": false
     },
     ".claude/epic/NARRATIVE.md": {
-      "artifact_digest": "sha256:057b496d2cc7f5621a13de0016e4821cb386923627afa8dc83e41aa1b284649b",
+      "artifact_digest": "sha256:41a055f0da0e39429d033a4b7cb060f377be18407ae442869132b726ea744009",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
@@ -110,7 +110,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     ".claude/epic/README.md": {
       "artifact_digest": "sha256:641787417b7dfb6a6cd34741a79c1eabef9136542d7fe13077f81f64e9fbcb47",
@@ -596,7 +596,7 @@
       "artifact_digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
       "basis": [
         {
-          "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+          "digest": "sha256:43d7c7a888ac8b42ea4bd73edc2a1b19ac66be167cc5b8ac2190c02356801d73",
           "path": "GROUND.md"
         },
         {
@@ -658,17 +658,17 @@
       "artifact_digest": "sha256:e618947defa9d0f8cdc689d1d00d6cb56f9e9b2f61132e5341c6794d13f26a22",
       "basis": [
         {
-          "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+          "digest": "sha256:43d7c7a888ac8b42ea4bd73edc2a1b19ac66be167cc5b8ac2190c02356801d73",
           "path": "GROUND.md"
         }
       ],
-      "changed": true
+      "changed": false
     },
     "CLASSIFICATION.md": {
       "artifact_digest": "sha256:caf2384160b00eed0f1221756f7b5129459a5e519a42e58d6afbb320f1730572",
       "basis": [
         {
-          "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+          "digest": "sha256:43d7c7a888ac8b42ea4bd73edc2a1b19ac66be167cc5b8ac2190c02356801d73",
           "path": "GROUND.md"
         },
         {
@@ -700,7 +700,7 @@
       "artifact_digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
       "basis": [
         {
-          "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+          "digest": "sha256:43d7c7a888ac8b42ea4bd73edc2a1b19ac66be167cc5b8ac2190c02356801d73",
           "path": "GROUND.md"
         },
         {
@@ -708,7 +708,7 @@
           "path": "CANON.md"
         }
       ],
-      "changed": true
+      "changed": false
     },
     "CONTRIBUTING.md": {
       "artifact_digest": "sha256:1830d77a740cddfd5abe19fd2ee7d884a866216c61fe38efe020e5466e14e427",
@@ -743,9 +743,9 @@
       "changed": false
     },
     "GROUND.md": {
-      "artifact_digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+      "artifact_digest": "sha256:43d7c7a888ac8b42ea4bd73edc2a1b19ac66be167cc5b8ac2190c02356801d73",
       "basis": [],
-      "changed": false
+      "changed": true
     },
     "LESSONS.md": {
       "artifact_digest": "sha256:34f54601089e0e848092bf80cbe3d379b3c9b9b39fbb5fc3c3ef4bd08c44eb70",
@@ -767,7 +767,7 @@
       "changed": false
     },
     "OPEN-SEAMS.md": {
-      "artifact_digest": "sha256:40fb42d24d1a0d6685cc67d8ed50a2daac2fc7257848f486e73b7c6e73a19ecd",
+      "artifact_digest": "sha256:6bc6ed6bd1567a4b1413ee4e750e6711bcee49a5f491fe1298657a9b712701e9",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
@@ -782,13 +782,13 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "PRD.md": {
-      "artifact_digest": "sha256:8c1aa77ce1978732c4dc7043d1a111f89bdec86b3badf7a24c937d24adbe2d30",
+      "artifact_digest": "sha256:7e636591342c367cc9355bb34258198b86936b11a00f4a6f1ad9b774fa619494",
       "basis": [
         {
-          "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+          "digest": "sha256:43d7c7a888ac8b42ea4bd73edc2a1b19ac66be167cc5b8ac2190c02356801d73",
           "path": "GROUND.md"
         },
         {
@@ -800,7 +800,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "PUBLICATION.md": {
       "artifact_digest": "sha256:fdbc85578be8b63331de905de0dff8454f3fe6618ce28380856a2f7633e1c3b3",
@@ -811,7 +811,7 @@
       "artifact_digest": "sha256:a423b77709314e80680e5109c11a3a4bee424dc886c23cd44106d6e0477373a7",
       "basis": [
         {
-          "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+          "digest": "sha256:43d7c7a888ac8b42ea4bd73edc2a1b19ac66be167cc5b8ac2190c02356801d73",
           "path": "GROUND.md"
         },
         {
@@ -830,10 +830,10 @@
       "changed": false
     },
     "ROADMAP.md": {
-      "artifact_digest": "sha256:5c826e2cc1ceeb22030126eb2539197850c470ec4c462a4cb27997ceca6ec5aa",
+      "artifact_digest": "sha256:c7e6e971392c1680d6078b7c7166cca259c12c56df63b753606064b06714e8c4",
       "basis": [
         {
-          "digest": "sha256:8c1aa77ce1978732c4dc7043d1a111f89bdec86b3badf7a24c937d24adbe2d30",
+          "digest": "sha256:7e636591342c367cc9355bb34258198b86936b11a00f4a6f1ad9b774fa619494",
           "path": "PRD.md"
         },
         {
@@ -914,7 +914,7 @@
       "artifact_digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
       "basis": [
         {
-          "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+          "digest": "sha256:43d7c7a888ac8b42ea4bd73edc2a1b19ac66be167cc5b8ac2190c02356801d73",
           "path": "GROUND.md"
         },
         {
@@ -1223,7 +1223,7 @@
       "changed": false
     },
     "scripts/README.md": {
-      "artifact_digest": "sha256:590b315b8221466c618dbca2f95ba5a8820cfdceef624d673b157ee0e8d305c3",
+      "artifact_digest": "sha256:176cc8940aa52a4fd6ae5419422a9cd2d1ab89d2ef8c6ebba83723485ac3f7d0",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
@@ -1234,7 +1234,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "services/README.md": {
       "artifact_digest": "sha256:ddece1d46bd3e136fab0cc4e90ef919bcb2dd091fe30c947fb674b9687aaf4a7",
@@ -1525,7 +1525,7 @@
       "changed": false
     },
     "services/console/SERVICE-SPEC.md": {
-      "artifact_digest": "sha256:11e329e9d59cce5ed465c845db323cb323a7453ef88b5d4dfe3931648d042c0c",
+      "artifact_digest": "sha256:45bd131d1e638e47da5510433cd40d1b59b0ab901d4de9dd01c9db03ccae4c0a",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
@@ -1540,7 +1540,7 @@
           "path": "SPEC.md"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "services/console/SRD.md": {
       "artifact_digest": "sha256:f3cee70ca510be1b4a3ba1eee5165140999c7b3e779723f21340760e0081c4ae",

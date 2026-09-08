@@ -165,7 +165,7 @@ node changes.
 | Area | What this document establishes | Serves | Standing |
 | --- | --- | --- | --- |
 | **Node** | The sovereign unit of operation, custody, continuity, deployment and eventual federation. A node is whole at any size. | 02, 15 | contract built, no admission transition |
-| **Services** | Independently bounded capabilities with owned state, contracts, declared operations and declared refusals. | — | 11 boundaries, 140 declared operations, 5 reachable |
+| **Services** | Independently bounded capabilities with owned state, contracts, declared operations and declared refusals. | — | 10 boundaries, 135 declared operations, 5 reachable |
 | **Components** | Internal decomposition of a service without creating accidental parallel authority. | — | undeclared |
 | **Composition** | Service A uses Service B through a declared capability and a receipted crossing, absorbing none of its state, policy or authority. | — | declared, unreached |
 | **Assets** | Versioned, addressable things with provenance, relationships and custody. | 05, 16 | built, self-tested |
@@ -442,7 +442,7 @@ satisfied this way is Bdo's call.
 | Measure | Read by | Today | Target |
 | --- | --- | --- | --- |
 | Journeys walkable end to end | `sov_canon.py trace` | 2 of 14 | every in-scope journey |
-| Declared operations reachable | the operation surface | 5 of 140 | every operation a live journey needs |
+| Declared operations reachable | the operation surface | 5 of 135 | every operation a live journey needs |
 | Requirements independently observed | `sov_standing.py` | 0 requirements; the tool's one supported claim (`observation_service_status`) is a service standing, not a P0 requirement | every P0 |
 | Promises carried by no criterion | this document | 2 | 0 |
 | Product areas serving no requirement | this document | 0 | stays 0 |
@@ -505,7 +505,7 @@ operator surface and only its continuity path is built.
   through its declared surface but yet to observe any run, and `AI-NATIVE.md`
   check 3 still reads `UNATTESTABLE` on every service assessment.
 - Composition depends on Gateway, Identity and Authority crossings; four of the
-  eleven service boundaries are declared with no implementation.
+  ten service boundaries have no operation built.
 - Skills depend on a skill contract that does not exist. The `.claude/` harness
   skills are host plumbing holding no standing and are not the product's skills.
 - `ENGINEERING.md` owns the growth triggers deciding when HTTP, queues,

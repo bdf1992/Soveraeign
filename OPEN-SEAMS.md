@@ -74,6 +74,14 @@ The closed record does not settle the durability/custody relation across the ser
 
 Gate summaries count checks without identifying every atomic credited check. The result may not be claimed independently inspectable beyond the evidence actually named.
 
+### S29 · A conforming witness record cannot satisfy the gate that requires one — CARRIED
+
+`contracts/participant-observation.schema.json` sets `additionalProperties: false` and declares neither `verdict` nor `contributed_to_build`. `scripts/sovkernel/authority.py` `_observation_verdict` reads both at the top level and refuses `OBSERVATION_MISSING` without them. The two are mutually exclusive: a record that conforms to the schema cannot pass the gate, and a record that passes the gate does not conform. Measured 2026-09-08, no observation record under `reports/observations/` satisfies both. A landing that requires an independent observation is therefore refused whatever the witness found. No implementation may resolve this by writing the forbidden fields into a record and calling it conforming, and no reader may take the gate's refusal as evidence that no observation exists.
+
+### S30 · The freeze that would protect witness evidence is refused by the grant that reserves the merge — CARRIED
+
+`contracts/repository-candidate-lifecycle.json` declares `RECONCILE` with `evidence_effect: INVALIDATE_SUBJECT_EVIDENCE`, so reconciling a `MUTABLE` carrier onto a moved trunk voids any witness evidence taken against it. `FREEZE` is the declared remedy, and by the acceptance policy it needs no owner act: it is `RECORD_LOCAL`, matches no `hold_reason`, and writes only under the gitignored `.local/candidates/`. But `scripts/sov_land.py freeze` grades the candidate's declared paths against `contracts/standing-grants.json`, so a candidate touching any owner-held path is refused `AUTHORITY_REFUSED` at the freeze, not only at the landing. Such a change cannot protect its own witness evidence: every trunk move silently spends another attestation, and no carrier state is persisted anywhere in `scripts/`, `contracts/` or `.local/` that would record what was invalidated. Measured 2026-09-08 on a candidate whose evidence was spent five times this way. No implementation may resolve this by declaring only the admissible subset of a candidate's paths in order to pass the freeze, which would freeze a subject that is not the change.
+
 ## Closed by existing evidence
 
 These seams are not carried into the gap. Their closing evidence already exists; this file does not mint a new ruling.

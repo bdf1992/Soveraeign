@@ -312,3 +312,67 @@ Positives so far, kept explicit because a trace of only breakage is not a
 reading: the definition stage is enforced, a stranger carried real work from the
 artifact alone, and two readings on different subjects produced the
 discrimination `P15-X2` asks for.
+
+### 11 · Settlement - THE STRONGEST MECHANISM IN THE CIRCUIT
+
+Closing the lease at `WITNESSED`, citing both readings by address, was refused:
+
+```
+REFUSED UNWITNESSED_STANDING_CLAIM:
+lease:concern-schematically-golden-rendered-text claims WITNESSED with no
+witness lease held by a principal other than
+urn:soveraeign:principal:instance:session-6352b5
+```
+
+That refusal is correct and it is the best behaviour found anywhere in this
+lap. It does not accept a citation, a name, or an evidence address as witness.
+It requires a witness **lease**, held by a **different principal**. A claim
+cannot be talked into standing.
+
+It also exposes the gap that made the refusal unavoidable. Two genuine
+independent readings existed, formed by participants that did not build the
+change and could not see each other. Settlement could not see either of them,
+because they were formed as launched participants and not under witness leases.
+`python scripts/sov_lease.py helper` exists precisely to "recruit a helper or
+witness under a lease" and nothing connected the readings to it - the same
+disconnection as F10, met at the witness end instead of the execution end.
+
+So a lap can produce exactly the evidence the clause asks for and still be
+unable to settle above `BUILT`. The lease was closed at `BUILT`, which is what
+the record can honestly carry.
+
+### 12 · Cleanup and Receipt - CLEANUP UNASKED, RECEIPT UNPRODUCED
+
+The close accepted `--receipt receipt:lap/golden-rendered-text` and four
+`--evidence` addresses. The retained lease record is:
+
+```
+lease: lease:concern-schematically-golden-rendered-text
+holder: urn:soveraeign:principal:instance:session-6352b5
+state: COMPLETED
+pressure: 0.0
+readings: []
+```
+
+The closed lease is retained, which is right. What it retains is liveness: who
+held it and that it completed. The receipt identifier, the four evidence
+addresses and the standing are not in it. The lease is a record that work
+happened, not a record of what the work produced or what supports it.
+
+No receipt object was produced. `contracts/receipt.schema.json` requires
+fifteen fields. Searching the tree for a top-level object carrying all fifteen
+finds exactly one file, `bindings/mcp/observations/journey-02-receipt.json`, a
+binding demonstration. No operation in this repository has ever emitted a
+receipt, and settlement did not emit one here.
+
+Cleanup was discharged by hand: a scratch branch retired, worktrees pruned, run
+artifacts restored. Nothing asked for it, nothing checked it, and the lease
+closed without reference to it. `contracts/custody.schema.json` carries a
+`cleanup_obligations` field for this and the settlement path does not read it.
+
+| # | Stage | Finding |
+| --- | --- | --- |
+| F17 | Settlement | Positive, and the strongest mechanism in the circuit: `WITNESSED` is refused without a witness lease held by another principal. Citations, names and evidence addresses do not buy standing. |
+| F18 | Settlement | Two genuine independent readings could not be seen by settlement, because nothing connects a launched reading to a witness lease. `sov_lease.py helper` exists and nothing routes to it. A lap can produce the evidence a clause requires and still be unable to settle above `BUILT`. |
+| F19 | Receipt | Settlement accepts a receipt identifier and evidence addresses and retains neither. No operation in this repository has ever produced a receipt: one object in the tree satisfies `contracts/receipt.schema.json`, and it is a binding demonstration. |
+| F20 | Cleanup | Cleanup obligations were discharged by hand, unasked and unchecked. `custody.schema.json` declares `cleanup_obligations` and the settlement path does not read it. |

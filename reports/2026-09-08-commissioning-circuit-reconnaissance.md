@@ -134,3 +134,81 @@ is being measured.
 | F6 | Definition | Positive: the definition, closure and defeating condition are required at lease time and refused without. |
 
 Findings are appended as the lap continues.
+
+### 6 · Execution - CARRIED, WITH ENVIRONMENT FRICTION
+
+A participant was launched holding the definition, the closure condition and
+the defeating condition, and nothing from the session that holds the lease. It
+carried the work from the artifact alone. For this payload the premise under
+`P15-X1` held: a stranger did not need oral history.
+
+It reported one environment obstacle: `playwright` was not importable although
+the browser directory is populated, so it installed the pinned version from
+`requirements-dev.txt`. Nothing in this node's orientation layer names that
+step, and the next fresh participant meets it first.
+
+### 7 · Operational Record and report - NO MECHANISM
+
+The execution converged into no Record. What exists is a markdown report the
+participant wrote to a path its launcher named. No service received it, no
+event was emitted, and nothing addresses it.
+
+The lease that holds the concern recorded nothing about the work done under it:
+
+```
+readings: []
+pressure: 0.0
+state: HELD
+```
+
+`python scripts/sov_lease.py draw` exists precisely to "record what a lease
+consumed or produced" and nothing called it, because the participant doing the
+work was never told a lease existed. Holding a concern and doing the work under
+it are two disconnected acts.
+
+### 8 · Independent perspective formation - IN PROGRESS
+
+Two readings launched in parallel on different subjects: one on the work, one
+on the participant's carrying of it. Neither built the change. Neither can see
+the other.
+
+### 9 · Frozen Findings - CONTRACT COMPLETE, NOTHING IMPLEMENTS IT
+
+`contracts/finding.schema.json` specifies a Finding: subject, evaluator, scope,
+record projection, claims, evidence and counterevidence addresses, input
+findings, authority effect, settlement effect, supersedes - and it **requires**
+`frozen_at`.
+
+No Finding has ever been produced. Across the whole tree, `finding_schema`
+appears in exactly two files:
+
+```
+./contracts/finding.schema.json
+./conformance/fixtures/commissioning/evidence-contract-cases.json
+```
+
+The schema and one test fixture. No instance, and no code that constructs one.
+The only writer of `frozen_at` anywhere is `scripts/sovland/candidates.py`,
+which freezes repository candidates, a different object.
+
+`conformance/commissioning.py` grades `P15-Q2.3` by reading
+`projections_frozen_before_sharing` as a boolean out of an `observed` dict. The
+freeze is therefore asserted to the oracle, never performed by a mechanism and
+never recorded. This is the same shape as the observer-independence problem
+`decisions/0104` describes: the property is declared by whoever is being graded.
+
+The two readings in this lap are frozen only because they were launched in
+parallel and their launcher refuses to relay between them. That is a discipline
+of the launcher, not a property of the system. `P15-X2` requires readings that
+freeze before comparison, and its custody reads two members at `VERTICAL_SLICE`.
+
+## Findings, continued
+
+| # | Stage | Finding |
+| --- | --- | --- |
+| F7 | Execution | Positive: a participant carried the work from the definition, closure and defeating condition alone, with nothing from the holding session. |
+| F8 | Execution | `playwright` is not importable despite a populated browser directory; the orientation layer does not name the install step a fresh participant needs. |
+| F9 | Record | The execution converged into no Record. The report exists only as a file at a path its launcher chose. |
+| F10 | Record / Lease | The lease recorded nothing about the work done under it. `sov_lease.py draw` exists and nothing called it; the executing participant was never told the lease existed. |
+| F11 | Frozen Findings | `contracts/finding.schema.json` is complete and requires `frozen_at`. No Finding instance exists anywhere in the tree and no code produces one; `finding_schema` appears only in the schema and one fixture. |
+| F12 | Frozen Findings | The freeze `P15-X2` requires is asserted to the oracle as a boolean and performed by nothing. In this lap it is a discipline of the launcher, not a property of the system. |

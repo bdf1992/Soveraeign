@@ -159,7 +159,8 @@ def _governing_index(root: Path, bound: dict[str, str]) -> dict[str, set[str]]:
     return index
 
 
-def _closures_beyond(root: Path, bound: dict[str, str]) -> tuple[list[str], list[str]]:
+def _closures_beyond(root: Path, bound: dict[str, str]) -> tuple[list[str], list[str],
+                                                                 list[str], list[str]]:
     """Closed vocabularies outside the ten bound paths, split into graded and reported.
 
     A closure in a contract a bound primitive names as `governed_by` is that primitive's
@@ -174,6 +175,11 @@ def _closures_beyond(root: Path, bound: dict[str, str]) -> tuple[list[str], list
     A closure in a contract no bound primitive names is still only reported. Grading follows
     the primitives, and an unrelated contract's role vocabulary defeats none of them.
 
+    The addresses on each side are returned alongside the sentences. A sixth witness showed
+    why: the test that pinned this split parsed the sentences to recover the path, so whether
+    it could fail depended on whether the closure sat under `/properties` or `/definitions`.
+    A test should not have to reparse prose to find out what the reader decided.
+
     The scan is `contracts/**` plus every `.json` a bound primitive actually names, so a
     primitive governed by a contract under `services/` is graded rather than silently missed.
     A fifth witness found that gap while it was still vacuous, which is the cheapest time.
@@ -186,6 +192,8 @@ def _closures_beyond(root: Path, bound: dict[str, str]) -> tuple[list[str], list
     governed = _governing_index(root, bound)
     graded: list[str] = []
     reported: list[str] = []
+    graded_at: set[str] = set()
+    reported_at: set[str] = set()
     scanned = {str(path.relative_to(root)).replace("\\", "/")
                for path in (root / "contracts").rglob("*.json")}
     scanned |= {name for name in governed if name.endswith(".json")}
@@ -202,9 +210,11 @@ def _closures_beyond(root: Path, bound: dict[str, str]) -> tuple[list[str], list
             if owners:
                 graded.append(f"{', '.join(owners)} is governed by {relative}, which closes "
                               f"{where} to {values} and admits no alternate role")
+                graded_at.add(relative)
             else:
                 reported.append(f"{relative}{where} admits {values} and no alternate role")
-    return graded, reported
+                reported_at.add(relative)
+    return graded, reported, sorted(graded_at), sorted(reported_at)
 
 
 def read(root: Path) -> dict[str, Any]:
@@ -235,11 +245,13 @@ def read(root: Path) -> dict[str, Any]:
         resolved[primitive] = relative
         for where, values in _closed_enums(document, ""):
             closed.append(f"{primitive} closes {relative}{where} to {values}")
-    graded, reported = _closures_beyond(root, bound)
+    graded, reported, graded_at, reported_at = _closures_beyond(root, bound)
     closed += graded
     composes = not unresolved and not closed
     return {
         "closed_elsewhere": reported,
+        "governed_closure_addresses": graded_at,
+        "reported_closure_addresses": reported_at,
         "generic_primitives": sorted(resolved),
         "primitive_addresses": resolved,
         "unresolved": unresolved,

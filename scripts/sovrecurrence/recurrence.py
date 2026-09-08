@@ -30,7 +30,7 @@ PREDICATES = ("P15-Q4.1", "P15-Q4.2", "P15-Q4.3")
 
 def observe(root: Path, collection_path: str = experience.CUSTODY_COLLECTION,
             mutate: Any = None) -> dict[str, Any]:
-    """Build the observation P15-Q4 is graded on, reading only committed files under `root`.
+    """Build the observation P15-Q4 is graded on, reading files under `root` and nothing else.
 
     `mutate` is the self-check's seam: a callable the fixture passes to defeat exactly one
     property of an otherwise sound reading. The live reading passes none, so nothing here

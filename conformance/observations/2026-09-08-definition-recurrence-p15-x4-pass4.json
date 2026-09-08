@@ -243,6 +243,18 @@
         "id": "C3",
         "withdraws": "The residual describing contracts/product-canon.schema.json as \"outside every bound primitive's governance\".",
         "why": "True of the letter and misleading about the governance. contracts/ticket-settlement.json names contracts/product-canon.json in its governed_by, and the closed vocabulary lives in contracts/product-canon.schema.json, the schema of that instance. The link is a filename convention and the instance declares canon_schema: soveraeign-product-canon/v1 rather than a path, so it is still reported and not graded; the reason is now stated where a reader will find it."
+      },
+      {
+        "id": "C4",
+        "withdraws": "\"verify.py runs selfcheck and not the unit tests\" in the message of f43ee9a; \"Only a unit test caught it, and verify.py runs selfcheck and not the unit tests\" in the message of 6d02eef; the same claim in P4-N6 of this record and in an earlier draft of the custody note.",
+        "why": "False, and re-derived as false. scripts/verify.py runs scripts/tests/test_sov_recurrence.py inside the \"repository tooling tests\" check, shard 4 of 4. A sixth witness planted the title defect at 1ce4d21 and took verify.py to exit 1 on that check. The claim entered this branch in pass 3's P3-N9, was repeated by pass 5, and was repeated again here without being tested. Taking a witness's report as evidence instead of re-deriving it is the failure this delegation was called about, and it happened here.",
+        "what_stands": "The repairs the claim was used to justify. A self-check that cannot refuse a regression of the rule it exists to protect is a weak self-check whether or not a unit test covers the same ground, and the fixture now refuses the whole excluded-prose class rather than one key of it. What does not stand is the severity: the gate was never blind, only the self-check half of it was."
+      },
+      {
+        "id": "C5",
+        "withdraws": "\"an observation built from committed files alone\" in the custody note; \"The reading is of committed files only\" in experience.gather; \"reading only committed files under root\" in recurrence.observe.",
+        "why": "The reader makes no git call. It reads the working tree. A sixth witness appended one uncommitted byte to a settled member and moved the proposal identity from 785cd7eea6b17d50 to 94f8cd4ca99d187c.",
+        "what_stands": "That no session, transcript or environment is consulted, so a second participant reproduces the reading from the artifact - provided the tree is clean, which is why every reading of this member has been taken at a frozen commit."
       }
     ],
     "findings_the_fifth_reading_added": [

@@ -311,11 +311,13 @@ class AgainstThisRepository(unittest.TestCase):
     def test_no_reported_closure_sits_in_a_contract_a_primitive_names(self) -> None:
         """Pins the split, not the count, and can actually fail.
 
-        The test it replaced asserted that no `closed_elsewhere` entry contained the string
+        The first version asserted that no `closed_elsewhere` entry contained the string
         "is governed by", which the reported branch never writes: it passed under the direct
-        inverse of the repair it claimed to pin, and under two regressions that emptied the
-        list. A fifth witness caught that. The governed set is rebuilt here from `PRIMITIVES`
-        rather than read back from the reader, so a leak in either direction fails.
+        inverse of the repair it claimed to pin. The second rebuilt the governed set here but
+        recovered each address by splitting the reader's sentence on "/properties", so an
+        identical leak passed whenever the closure sat under "/definitions". A sixth witness
+        found both. Both directions are checked now, and the addresses come from the reader as
+        data rather than from its prose.
         """
         governed: set[str] = set()
         for relative, _ in neutrality.PRIMITIVES.values():
@@ -323,9 +325,11 @@ class AgainstThisRepository(unittest.TestCase):
             governed.update(reference for reference in document.get("governed_by") or []
                             if isinstance(reference, str))
         bound = {relative for relative, _ in neutrality.PRIMITIVES.values()}
-        for entry in neutrality.read(ROOT)["closed_elsewhere"]:
-            named = entry.split("/properties")[0].split("/$defs")[0]
-            self.assertNotIn(named, governed - bound)
+        read = neutrality.read(ROOT)
+        for address in read["reported_closure_addresses"]:
+            self.assertNotIn(address, governed - bound)
+        for address in read["governed_closure_addresses"]:
+            self.assertIn(address, governed - bound)
 
     def test_the_basis_is_drawn_only_from_settled_members(self) -> None:
         gathered = experience.gather(ROOT)

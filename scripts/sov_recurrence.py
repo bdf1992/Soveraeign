@@ -101,6 +101,10 @@ def cmd_selfcheck(args: argparse.Namespace) -> int:
         if fixture.BUILT_ONLY_ADDRESS in cited:
             failures.append(f"positive variant cited {fixture.BUILT_ONLY_ADDRESS}, which no "
                             "independent participant observed")
+        if fixture.REFUSED_ADDRESS in cited:
+            failures.append(f"positive variant cited {fixture.REFUSED_ADDRESS}, whose standing "
+                            "is NOT_WITNESSED; the token contains WITNESSED and a substring "
+                            "comparison would admit it (CLAUDE.md, trap T3)")
         for variant, expected in fixture.EXPECTED_FAILURES.items():
             built = fixture.build(Path(temp) / variant)
             result = fixture.run_variant(built, variant)

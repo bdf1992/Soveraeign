@@ -87,6 +87,63 @@ class SettledExperience(unittest.TestCase):
         self.assertNotIn("scripts/fixture_member_1.py",
                          {source["address"] for source in gathered["sources"]})
 
+    def test_the_directory_digest_frames_each_file(self) -> None:
+        """A tenth witness showed the unframed form collided: `ab` empty digested as `a` = b.
+
+        The digest claims to be a function of the artifact, which has to hold in both
+        directions, so each name and each body carries its own length.
+        """
+        first, second = self.root / "member_one", self.root / "member_two"
+        for member, files in ((first, {"ab": b""}), (second, {"a": b"b"})):
+            member.mkdir(parents=True, exist_ok=True)
+            for name, body in files.items():
+                (member / name).write_bytes(body)
+        self.assertNotEqual(experience.digest(first), experience.digest(second))
+
+    def test_the_repositorys_own_ignore_declaration_decides(self) -> None:
+        """Not a third hand-written list of what counts as generated."""
+        (self.root / ".gitignore").write_text("*.log\nscratch/\n", encoding="utf-8",
+                                              newline="\n")
+        member = self.root / "services/ignored_member"
+        member.mkdir(parents=True, exist_ok=True)
+        (member / "real.py").write_text("x = 1\n", encoding="utf-8", newline="\n")
+        before = experience.digest(member, self.root)
+        (member / "run.log").write_bytes(b"tool output")
+        (member / "scratch").mkdir(exist_ok=True)
+        (member / "scratch/thing").write_bytes(b"more tool output")
+        self.assertEqual(before, experience.digest(member, self.root))
+        self.assertNotEqual(before, experience.digest(member))
+
+    def test_a_negated_ignore_pattern_keeps_the_file(self) -> None:
+        """`!.env.example` is why the negation branch exists, and nothing exercised it."""
+        (self.root / ".gitignore").write_text(".env\n.env.*\n!.env.example\n",
+                                              encoding="utf-8", newline="\n")
+        member = self.root / "services/negated_member"
+        member.mkdir(parents=True, exist_ok=True)
+        (member / "real.py").write_text("x = 1\n", encoding="utf-8", newline="\n")
+        before = experience.digest(member, self.root)
+        (member / ".env.local").write_text("SECRET=1\n", encoding="utf-8", newline="\n")
+        self.assertEqual(before, experience.digest(member, self.root))
+        (member / ".env.example").write_text("NAME=\n", encoding="utf-8", newline="\n")
+        self.assertNotEqual(before, experience.digest(member, self.root))
+
+    def test_a_directory_pattern_keeps_a_file_of_the_same_name(self) -> None:
+        """An eleventh witness measured the first matcher excluding nine paths git keeps."""
+        (self.root / ".gitignore").write_text("build/\n", encoding="utf-8", newline="\n")
+        member = self.root / "services/dir_pattern_member"
+        (member / "build").mkdir(parents=True, exist_ok=True)
+        (member / "build/out.o").write_bytes(b"generated")
+        before = experience.digest(member, self.root)
+        (member / "src").mkdir(parents=True, exist_ok=True)
+        (member / "src/build").write_text("a file, not a directory\n", encoding="utf-8",
+                                          newline="\n")
+        self.assertNotEqual(before, experience.digest(member, self.root),
+                            "a file named for a directory pattern is content, and git keeps it")
+        after = experience.digest(member, self.root)
+        (member / "build/more.o").write_bytes(b"more generated")
+        self.assertEqual(after, experience.digest(member, self.root),
+                         "everything under the directory the pattern names is still excluded")
+
     def test_the_tree_digest_reads_bytes_not_just_paths(self) -> None:
         """A directory member is pinned by what it contains, not by its file names."""
         tree = self.root / "tree"
@@ -311,33 +368,6 @@ class InstitutionNeutrality(unittest.TestCase):
         (member / "src/thing.py").write_text("x = 2\n", encoding="utf-8", newline="\n")
         self.assertNotEqual(before, experience.digest(member), "a real source change must move "
                             "the digest, or the exclusions have eaten the member")
-
-    def test_the_directory_digest_frames_each_file(self) -> None:
-        """A tenth witness showed the unframed form collided: `ab` empty digested as `a` = b.
-
-        The digest claims to be a function of the artifact, which has to hold in both
-        directions, so each name and each body carries its own length.
-        """
-        first, second = self.root / "member_one", self.root / "member_two"
-        for member, files in ((first, {"ab": b""}), (second, {"a": b"b"})):
-            member.mkdir(parents=True, exist_ok=True)
-            for name, body in files.items():
-                (member / name).write_bytes(body)
-        self.assertNotEqual(experience.digest(first), experience.digest(second))
-
-    def test_the_repositorys_own_ignore_declaration_decides(self) -> None:
-        """Not a third hand-written list of what counts as generated."""
-        (self.root / ".gitignore").write_text("*.log\nscratch/\n", encoding="utf-8",
-                                              newline="\n")
-        member = self.root / "services/ignored_member"
-        member.mkdir(parents=True, exist_ok=True)
-        (member / "real.py").write_text("x = 1\n", encoding="utf-8", newline="\n")
-        before = experience.digest(member, self.root)
-        (member / "run.log").write_bytes(b"tool output")
-        (member / "scratch").mkdir(exist_ok=True)
-        (member / "scratch/thing").write_bytes(b"more tool output")
-        self.assertEqual(before, experience.digest(member, self.root))
-        self.assertNotEqual(before, experience.digest(member))
 
     def test_a_properties_dict_inside_an_example_declares_nothing(self) -> None:
         """Identity is read at the root; declared names must follow the same line."""

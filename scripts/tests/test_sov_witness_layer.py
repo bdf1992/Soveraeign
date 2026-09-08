@@ -207,6 +207,64 @@ class Staleness(TreeCase):
         self.assertIn(record_grader.STALE_PROBE, record_grader.FAILING_VERDICTS)
 
 
+class AddressesBelowTheFile(TreeCase):
+    """A receipt may digest a part of a file; the grader reads exactly that part."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.collection = {"members": [{"address": "a", "note": "one"},
+                                       {"address": "b", "note": "two"}]}
+        self.write_collection()
+
+    def write_collection(self) -> None:
+        write(self.root / "subject" / "c.json", json.dumps(self.collection) + LF)
+
+    def member_receipt(self, name: str = "obs.json") -> dict:
+        address = "subject/c.json#/members[address=a]"
+        recorded = "sha256:" + sha256(b'{"address":"a","note":"one"}').hexdigest()
+        self.receipt(name=name, observed={"observed_state_addresses": [address],
+                                          "observed_state_digests": [recorded]})
+        return self.grade(name)
+
+    def test_a_fragment_digest_reads_current_and_survives_a_sibling_edit(self) -> None:
+        self.assertEqual(self.member_receipt()["verdict"], record_grader.CURRENT)
+        self.collection["members"][1]["note"] = "moved"
+        self.collection["members"].append({"address": "c"})
+        self.write_collection()
+        self.assertEqual(self.member_receipt()["verdict"], record_grader.CURRENT)
+
+    def test_the_members_own_edit_reads_stale_subject(self) -> None:
+        self.collection["members"][0]["note"] = "moved"
+        self.write_collection()
+        result = self.member_receipt()
+        self.assertEqual(result["verdict"], record_grader.STALE_SUBJECT)
+        self.assertEqual(result["graded"], 1)
+
+    def test_a_fragment_that_no_longer_resolves_is_drift_not_a_broken_receipt(self) -> None:
+        del self.collection["members"][0]
+        self.write_collection()
+        result = self.member_receipt()
+        self.assertEqual(result["verdict"], record_grader.STALE_SUBJECT)
+        self.assertEqual(result["graded"], 0)
+        self.assertIn("gone from the tree", result["moved"][0])
+
+    def test_a_malformed_fragment_is_invalid(self) -> None:
+        result = self.observing("subject/c.json#members[", text="x")
+        self.assertEqual(result["verdict"], record_grader.INVALID)
+
+    def test_the_fragment_is_digested_not_the_whole_file(self) -> None:
+        whole = digest(json.dumps(self.collection) + LF)
+        self.receipt(observed={"observed_state_addresses": ["subject/c.json#/members[address=a]"],
+                               "observed_state_digests": [whole]})
+        self.assertEqual(self.grade()["verdict"], record_grader.STALE_SUBJECT)
+
+    def test_containment_applies_to_the_path_half(self) -> None:
+        result = self.observing("../outside.json#/x", text="x")
+        self.assertEqual(result["verdict"], record_grader.INVALID)
+        result = self.observing("subject/c.json#/members/../x", text="x")
+        self.assertNotEqual(result["verdict"], record_grader.CURRENT)
+
+
 class UngradeableReceipts(TreeCase):
     """Every shape that would let a receipt pass while measuring nothing."""
 

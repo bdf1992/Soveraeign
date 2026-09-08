@@ -123,6 +123,91 @@ class CandidateEffects(unittest.TestCase):
                 candidates._candidate_integrity(candidate)
             self.assertEqual(candidate["changed_paths"], ["z.py"])
 
+    def test_freeze_measures_the_committed_tree_not_the_one_before_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self.make_repo(Path(tmp))
+            (root / "x.py").write_text("candidate\n", encoding="utf-8")
+            seen: list[str] = []
+
+            def checks_read_head(_skip, _paths):
+                seen.append(repo.head_commit("HEAD"))
+                return {"verify": "PASS", "lint": "PASS"}, {}
+
+            with (
+                mock.patch.object(repo, "ROOT", root),
+                mock.patch.object(tree, "_held_elsewhere", return_value=[]),
+                mock.patch.object(tree, "gather_checks", side_effect=checks_read_head),
+                mock.patch.object(authority, "evaluate", return_value=self.permitted()),
+            ):
+                candidate, _result, _reading = candidates.freeze(self.freeze_args(), [])
+            self.assertEqual(seen, [candidate["candidate_commit"]])
+
+    def test_a_scope_refusal_lands_before_the_commit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self.make_repo(Path(tmp))
+            (root / "x.py").write_text("candidate\n", encoding="utf-8")
+            before = subprocess.run(["git", "rev-parse", "work"], cwd=root, check=True,
+                                    capture_output=True, text=True).stdout.strip()
+            refused = dict(self.permitted(), verdict="REFUSED", code=authority.AUTHORITY_REFUSED,
+                           detail="grant:test: path outside scope")
+            with (
+                mock.patch.object(repo, "ROOT", root),
+                mock.patch.object(tree, "_held_elsewhere", return_value=[]),
+                mock.patch.object(tree, "gather_checks",
+                                  return_value=({"verify": "PASS", "lint": "PASS"}, {})),
+                mock.patch.object(authority, "evaluate", return_value=refused),
+            ):
+                with self.assertRaises(candidates.CandidateRefused):
+                    candidates.freeze(self.freeze_args(), [])
+                after = repo.head_commit("work")
+            self.assertEqual(after, before)
+
+    def test_checks_that_modify_the_checked_paths_refuse_after_the_commit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self.make_repo(Path(tmp))
+            (root / "x.py").write_text("candidate\n", encoding="utf-8")
+
+            def checks_that_rewrite(_skip, _paths):
+                (root / "x.py").write_text("rewritten by a check\n", encoding="utf-8")
+                return {"verify": "PASS", "lint": "PASS"}, {}
+
+            def evaluate(_grants, request):
+                if not request["evidence"]["checks"]:
+                    return dict(self.permitted(), verdict="REFUSED",
+                                code=authority.MISSING_PRECONDITION, detail="no checks yet")
+                return self.permitted()
+
+            with (
+                mock.patch.object(repo, "ROOT", root),
+                mock.patch.object(tree, "_held_elsewhere", return_value=[]),
+                mock.patch.object(tree, "gather_checks", side_effect=checks_that_rewrite),
+                mock.patch.object(authority, "evaluate", side_effect=evaluate),
+            ):
+                with self.assertRaises(candidates.CandidateRefused) as raised:
+                    candidates.freeze(self.freeze_args(), [])
+            self.assertIn("modified the paths they checked", str(raised.exception))
+
+    def test_a_check_that_fails_on_the_commit_refuses_and_writes_no_record(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self.make_repo(Path(tmp))
+            (root / "x.py").write_text("candidate\n", encoding="utf-8")
+            refused = dict(self.permitted(), verdict="REFUSED", code="MISSING_PRECONDITION",
+                           detail="required check 'verify' reads 'FAIL'")
+            with (
+                mock.patch.object(repo, "ROOT", root),
+                mock.patch.object(tree, "_held_elsewhere", return_value=[]),
+                mock.patch.object(tree, "gather_checks",
+                                  return_value=({"verify": "FAIL", "lint": "PASS"}, {})),
+                mock.patch.object(authority, "evaluate", return_value=refused),
+            ):
+                with self.assertRaises(candidates.CandidateRefused) as raised:
+                    candidates.freeze(self.freeze_args(), [])
+                head = repo.head_commit("work")
+            self.assertIn("no candidate record written", str(raised.exception))
+            self.assertIn(head[:12], str(raised.exception))
+            self.assertFalse(list((root / ".local" / "candidates").glob("*.json"))
+                             if (root / ".local" / "candidates").exists() else False)
+
     def test_land_candidate_preserves_frozen_sha_as_merge_parent(self):
         with tempfile.TemporaryDirectory() as tmp:
             parent = Path(tmp)

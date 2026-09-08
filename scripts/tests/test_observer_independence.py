@@ -48,7 +48,8 @@ GRANT = {
 }
 
 
-def request(observation: dict | None, paths: list[str] | None = None) -> dict:
+def request(observation: dict | None, paths: list[str] | None = None,
+            observation_path: str | None = None) -> dict:
     return {
         "request_schema": "soveraeign-authority-request/v1",
         "actor_id": "sov",
@@ -57,6 +58,7 @@ def request(observation: dict | None, paths: list[str] | None = None) -> dict:
         "at": "2026-09-08T00:00:00Z",
         "branch": "main",
         "paths": paths if paths is not None else ["scripts/thing.py"],
+        "observation_path": observation_path,
         "spend": {"unit": "agent_invocations", "amount": 3},
         "evidence": {"checks": {"verify": "PASS", "lint": "PASS"},
                      "observation": observation},
@@ -64,13 +66,14 @@ def request(observation: dict | None, paths: list[str] | None = None) -> dict:
 
 
 CLEAN = {"observer_id": "witness:governance", "verdict": "CONFIRMED",
-         "contributed_to_build": False,
-         "observation_file": "reports/observations/2026-09-08-thing.json"}
+         "contributed_to_build": False}
+WRITTEN = "reports/observations/2026-09-08-thing.json"
 
 
 class TheGateMeasuresWhatItCan(unittest.TestCase):
-    def verdict(self, observation, paths=None):
-        return authority._observation_verdict(GRANT, request(observation, paths))
+    def verdict(self, observation, paths=None, observation_path=None):
+        return authority._observation_verdict(
+            GRANT, request(observation, paths, observation_path))
 
     def test_an_independent_observation_passes(self):
         """Without this the refusals below could all come from a gate that refuses all."""
@@ -91,13 +94,26 @@ class TheGateMeasuresWhatItCan(unittest.TestCase):
         self.assertIn("cannot", detail)
 
     def test_an_observation_among_the_landed_paths_is_inside_the_change(self):
-        """Measured, not declared: the observation is in the set of paths being landed."""
-        reason, _ = self.verdict(
-            CLEAN, ["scripts/thing.py", "reports/observations/2026-09-08-thing.json"])
+        """Measured, not declared: the path comes from the landing tool, not the observer."""
+        reason, _ = self.verdict(CLEAN, ["scripts/thing.py", WRITTEN], WRITTEN)
+        self.assertEqual(reason, authority.OBSERVER_NOT_INDEPENDENT)
+
+    def test_a_landed_directory_containing_the_observation_is_inside_the_change(self):
+        """Landing the directory lands the file in it."""
+        reason, _ = self.verdict(CLEAN, ["reports/observations"], WRITTEN)
         self.assertEqual(reason, authority.OBSERVER_NOT_INDEPENDENT)
 
     def test_an_observation_outside_the_landed_paths_is_not_refused_for_that(self):
-        self.assertIsNone(self.verdict(CLEAN, ["scripts/thing.py"]))
+        self.assertIsNone(self.verdict(CLEAN, ["scripts/thing.py"], WRITTEN))
+
+    def test_a_path_merely_ending_in_the_same_name_is_not_a_match(self):
+        """An unanchored suffix match refused a landing over a file it never touched:
+        docs/release-notes.json read as covering notes.json."""
+        self.assertIsNone(self.verdict(CLEAN, ["docs/release-notes.json"], "notes.json"))
+
+    def test_the_spelling_of_a_path_does_not_decide_the_answer(self):
+        reason, _ = self.verdict(CLEAN, ["./reports/observations/"], WRITTEN)
+        self.assertEqual(reason, authority.OBSERVER_NOT_INDEPENDENT)
 
     def test_the_declared_boolean_still_refuses(self):
         """The declaration is weaker evidence, not no evidence; it still refuses."""
@@ -111,18 +127,26 @@ class TheGateMeasuresWhatItCan(unittest.TestCase):
 
 class TheBasisIsRecordedRatherThanBlurred(unittest.TestCase):
     def test_a_reading_resting_on_the_observers_word_says_so(self):
+        """No observation path on the request: the relation was never read."""
         self.assertEqual(authority.independence_basis(request(CLEAN)), "DECLARED_ONLY")
 
-    def test_a_structurally_readable_observer_is_measured(self):
-        """When the observer names a path the request carries, the relation is readable
-        from the request rather than taken on trust."""
-        observation = {**CLEAN, "observer_id": "scripts/thing.py"}
-        self.assertEqual(authority.independence_basis(request(observation)), "MEASURED")
-
-    def test_the_basis_never_silently_claims_more_than_it_read(self):
-        """The point of the field: an unmeasurable reading must not record as measured."""
+    def test_a_request_carrying_the_observations_path_is_measured(self):
+        """The landing tool knows where the observation lives, so the relation is read
+        rather than taken on trust. An earlier form reached MEASURED only when the
+        observer was named after a file, which no participant is."""
         self.assertEqual(
-            authority.independence_basis(request(CLEAN, paths=[])), "DECLARED_ONLY")
+            authority.independence_basis(request(CLEAN, observation_path=WRITTEN)),
+            "MEASURED")
+
+    def test_measured_is_reachable_by_an_ordinarily_named_observer(self):
+        """The defect this replaced: MEASURED was unreachable in practice."""
+        ordinary = {**CLEAN, "observer_id": "witness:governance"}
+        self.assertEqual(
+            authority.independence_basis(request(ordinary, observation_path=WRITTEN)),
+            "MEASURED")
+
+    def test_a_request_with_no_observation_at_all_is_not_measured(self):
+        self.assertEqual(authority.independence_basis(request(None)), "DECLARED_ONLY")
 
 
 if __name__ == "__main__":

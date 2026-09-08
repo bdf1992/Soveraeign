@@ -124,18 +124,6 @@ def interpolated(prompt: str) -> list[str]:
     return out
 
 
-BROKEN_CONCAT = re.compile(r"['\"]\s*\+\s*\+\s*['\"]")
-
-
-def broken_concatenation(source: str) -> bool:
-    """`'a' + + 'b'` parses and yields NaN in the middle of a prompt.
-
-    A syntax check passes it. Nothing lints these files. This is the one shape that bit
-    while repairing them, so it is the one shape that is now refused.
-    """
-    return bool(BROKEN_CONCAT.search(source))
-
-
 CALL = re.compile(r"^\s*([A-Za-z_$][\w$]*)\s*\(")
 
 

@@ -4,31 +4,30 @@
 `.claude/workflows/` holds twenty-three JavaScript files that assemble every prompt this
 repository sends an agent. `scripts/lint.py` covers `.md`, `.py`, `.json`, `.yaml`, `.yml`
 and `.toml`; `.js` is in none of them, so about four thousand lines of the harness were
-graded by nothing at all. A repair made in this repository on 2026-09-08 shipped
-`'a' + + 'b'`, which parses cleanly and puts the string `NaN` in the middle of a prompt an
-agent then reads as instructions. Only a hand-run syntax check stood between that and a
-landing, and a hand-run check is not a check.
+graded by nothing at all.
 
-Four readings, each of bytes:
+An earlier version of this file shipped two byte-level readings and recorded a ceiling as
+the reason there were not more: that without expression context a reader cannot tell a
+regex literal from division, so string termination and bracket balance could not be
+graded. That was convenient rather than true. An independent reading refuted it in about
+ninety lines of standard library, and while the claim stood, two of the twenty-three files
+were unparseable JavaScript that this check reported as clean - `sov-trust.js` closed a
+string on the apostrophe in "workflow's", and `sov-coldstart.js` held three strings broken
+across raw newlines. Both are documented launch paths. A false all-clear is worse than the
+silence it replaced.
 
+Three readings now, each of what the file is rather than what anyone says about it:
+
+    readable     it lexes as JavaScript: strings close, brackets match their openers
     endings      the repository pins LF in .gitattributes, and lint never saw these files
     concat       `'a' + + 'b'`, a syntax-clean expression that yields NaN inside a prompt
 
-Two readings, and the reason there are only two is worth stating once. Three further
-checks were written and withdrawn - bracket balance, prose-stripped source, and a count of
-dispatches naming no agentType - because each was defeated by the same thing: without
-expression context a reader cannot tell a regex literal from division, and cannot tell
-`agent(` in code from "judging agent(s)" in a sentence. Both shapes are in this
-repository's own workflows. `AGENTS.md` keeps this surface dependency free and a check
-that skips when a runtime is absent is not a check (`CLAUDE.md`, trap T5), so no engine is
-invoked; that is the ceiling, and a check that reports defects which are not there is
-worse than no check at all.
-
-What survives reads bytes and is certain. What it cannot see is everything about meaning:
-a workflow that is valid and wrong passes here. Classifying dispatches by a *named* agent
-type is sound and is done in `scripts/tests/test_witness_context_provenance.py`, because
-asking whether a specific agentType is present excludes the noise that asking "is anything
-anonymous" collects. Nothing here settles standing.
+`sovharness/lexer.py` owns the reading and states its own limit: it is a lexer, so a
+grammar error whose tokens are all well formed passes here. `node --check` is not a
+substitute and was the thing that missed both defects - these files open with `export`,
+so it parses them as scripts and reports nothing. `AGENTS.md` keeps this surface
+dependency free and a check that skips when a runtime is absent is not a check
+(`CLAUDE.md`, trap T5), so no engine is invoked here either. Nothing here settles standing.
 """
 
 from __future__ import annotations
@@ -41,7 +40,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
-from sovharness.dispatch import broken_concatenation  # noqa: E402
+from sovharness.lexer import broken_concatenation, unreadable  # noqa: E402
 
 WORKFLOWS = ROOT / ".claude" / "workflows"
 def grade(path: Path) -> list[str]:
@@ -51,11 +50,13 @@ def grade(path: Path) -> list[str]:
     if b"\r\n" in raw:
         defects.append("CRLF line endings; .gitattributes pins LF")
     text = raw.decode("utf-8", errors="replace")
+    cannot_read = unreadable(text)
+    if cannot_read:
+        defects.append(cannot_read)
     if broken_concatenation(text):
         defects.append("a concatenation of the shape 'a' + + 'b', which evaluates to NaN "
                        "inside a prompt while parsing cleanly")
     return defects
-
 
 def main(argv: list[str] | None = None) -> int:
     """Grade every workflow and refuse when any carries a defect."""
@@ -76,9 +77,9 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"       {defect}")
     verdict = "FAIL" if failing else "PASS"
     print(f"{verdict}: {len(paths)} workflow(s) read, {failing} carrying a defect. "
-          "Structure only: a workflow that is valid and wrong passes here.")
+          "Lexical only: a workflow whose tokens are all well formed and whose meaning "
+          "is wrong passes here.")
     return 1 if failing else 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

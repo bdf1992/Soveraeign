@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import sov_workflows  # noqa: E402
+from sovharness.lexer import unreadable  # noqa: E402
 
 CLEAN = "const x = await agent('a prompt', { agentType: 'sov-witness' })\n"
 
@@ -73,12 +74,81 @@ class TheRealTreeIsRead(unittest.TestCase):
                 self.assertEqual(sov_workflows.grade(path), [])
 
     def test_a_regex_literal_does_not_produce_a_false_defect(self):
-        """`.replace(/"/g, "'")` in the loop defeated three earlier readings. The two that
-        shipped read bytes, so it must not defeat them."""
+        """The construction named as the reason three checks were withdrawn.
+
+        The earlier form of this case asserted only that two byte-level greps stayed quiet
+        on the loop, which was trivially true and guarded nothing: it would have stayed
+        green with a bracket reader reintroduced, because it never ran one. It now asserts
+        the lexer reads this file, which is the thing that was said to be impossible.
+        """
         loop = ROOT / ".claude" / "workflows" / "sov-loop.js"
-        self.assertIn('replace(/"/g', loop.read_text(encoding="utf-8"),
+        text = loop.read_text(encoding="utf-8")
+        self.assertIn('replace(/"/g', text,
                       "this case is vacuous without the construction it guards against")
+        self.assertIsNone(unreadable(text))
         self.assertEqual(sov_workflows.grade(loop), [])
+
+    def test_a_call_written_in_prose_does_not_produce_a_false_defect(self):
+        """The other named defense: "judging agent(s)" inside a sentence."""
+        backlog = ROOT / ".claude" / "workflows" / "sov-backlog.js"
+        text = backlog.read_text(encoding="utf-8")
+        self.assertIn("agent(s)", text,
+                      "this case is vacuous without the construction it guards against")
+        self.assertIsNone(unreadable(text))
+        self.assertEqual(sov_workflows.grade(backlog), [])
+
+
+class TheReadingIsLexicalAndSaysSo(unittest.TestCase):
+    """Each defect the reader claims to see, shown on a file built to carry it.
+
+    Two of these shapes were live in this repository while an earlier version of this
+    check reported every workflow clean: an apostrophe closing a single-quoted string, and
+    a string broken across raw newlines. A green suite asserted it.
+    """
+
+    def setUp(self):
+        self.tmp = TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.addCleanup(self.tmp.cleanup)
+
+    def unread(self, source: str) -> str | None:
+        return unreadable(source)
+
+    def test_an_apostrophe_closing_a_string_is_caught(self):
+        """sov-trust.js line 39 held exactly this, and shipped as clean."""
+        found = self.unread("const p = 'This workflow's envelope is local' + x\n")
+        self.assertIsNotNone(found)
+        self.assertIn("not closed", found)
+
+    def test_a_string_broken_across_raw_newlines_is_caught(self):
+        """sov-coldstart.js held three of these."""
+        found = self.unread('const p = \'a\' + "\n\n" + \'b\'\n')
+        self.assertIsNotNone(found)
+
+    def test_an_unbalanced_bracket_is_caught(self):
+        self.assertIsNotNone(self.unread("const x = foo(1, 2\n"))
+
+    def test_a_bracket_closing_the_wrong_opener_is_caught(self):
+        found = self.unread("const x = [1, 2)\n")
+        self.assertIsNotNone(found)
+        self.assertIn("closes the", found)
+
+    def test_an_unterminated_block_comment_is_caught(self):
+        self.assertIsNotNone(self.unread("/* opened and never closed\nconst x = 1\n"))
+
+    def test_division_is_not_read_as_a_regex(self):
+        """The distinction the withdrawal claimed could not be made."""
+        self.assertIsNone(self.unread("const half = total / 2\nconst q = (a + b) / c\n"))
+
+    def test_a_regex_holding_its_own_delimiter_is_read(self):
+        self.assertIsNone(self.unread('const s = t.replace(/[/"]/g, "-")\n'))
+
+    def test_a_template_literal_may_span_lines(self):
+        self.assertIsNone(self.unread("const t = `line one\nline two`\n"))
+
+    def test_a_grammar_error_with_well_formed_tokens_passes_as_declared(self):
+        """The limit, asserted so it is not later mistaken for coverage."""
+        self.assertIsNone(self.unread("const x = 1 2 3\n"))
 
 
 if __name__ == "__main__":

@@ -134,41 +134,60 @@ def _preconditions(grant: dict, request: dict) -> dict:
     }
 
 
-def independence_basis(request: dict) -> str:
-    """How well this request can establish that its observer stayed outside the build.
+def _norm(path: str) -> str:
+    """One spelling of a repository path, so a comparison is not decided by punctuation."""
+    cleaned = str(path).replace("\\", "/").strip()
+    while cleaned.startswith("./"):
+        cleaned = cleaned[2:]
+    return cleaned.strip("/")
 
-    `contributed_to_build` is a boolean the observer sets about itself. A gate that reads
-    it and nothing else grades a declaration where it could measure, which is the defect
-    this repository keeps finding in its own checks. Three things here are measurable from
-    the request alone and are measured; the rest is declaration, and the difference is
-    reported rather than blurred.
 
-    Returns `MEASURED` when a structural reading was available and clean, and
-    `DECLARED_ONLY` when the only evidence of independence is the observer's own word.
-    Nothing here reads the session registry: that store is per-machine and gitignored, so
-    a check joining on it would pass vacuously wherever it is absent, which is the skipped
-    check that satisfies its own requirement (`CLAUDE.md`, trap T5).
+def _covers(landed: str, target: str) -> bool:
+    """Whether a landed path is, or contains, the target file.
+
+    Compared on whole segments. An unanchored suffix match reads `docs/release-notes.json`
+    as covering `notes.json`, refusing a landing over a file it never touched.
     """
-    observation = (request.get("evidence") or {}).get("observation") or {}
-    paths = [str(path) for path in (request.get("paths") or [])]
-    observer = str(observation.get("observer_id") or "")
-    if observer and paths and any(observer == path or observer in path for path in paths):
-        return "MEASURED"
-    return "DECLARED_ONLY"
+    landed, target = _norm(landed), _norm(target)
+    if not landed or not target:
+        return False
+    return landed == target or target.startswith(landed + "/")
 
 
-def _observed_path(observation: dict, paths: list[str]) -> str | None:
-    """The changed path that is the observation itself, if the request carries one.
+def independence_basis(request: dict) -> str:
+    """How this request established that its observer stayed outside the change.
+
+    `contributed_to_build` is a boolean the observer sets about itself, and a gate reading
+    it alone grades a declaration where a measurement was available.
+
+    An earlier form returned MEASURED when the observer's own id appeared inside one of the
+    landed paths. That read entanglement as evidence of independence - the same relation
+    the refusal below treats as disqualifying - and was unreachable by any observer not
+    named after a file. It now reports MEASURED only when the request carried the
+    observation's real path, which is what turns the inside-the-change reading into a
+    measurement rather than an account.
+    """
+    if not (request.get("evidence") or {}).get("observation"):
+        return "DECLARED_ONLY"
+    return "MEASURED" if _norm(str(request.get("observation_path") or "")) else "DECLARED_ONLY"
+
+
+def _observed_path(request: dict) -> str | None:
+    """The landed path that is, or contains, the observation file itself.
 
     An observation written into the set of paths being landed is inside the change it is
-    offered as the reading of. That is measurable without trusting anyone's account.
+    offered as the reading of. The path comes from the request, which the landing tool
+    knows. It never comes from a field inside the observation:
+    `contracts/observation.schema.json` sets additionalProperties false, so an
+    `observation_file` key cannot legitimately be there and the refusal that read one
+    could never fire.
     """
-    written = str(observation.get("observation_file") or "")
+    written = _norm(str(request.get("observation_path") or ""))
     if not written:
         return None
-    for path in paths:
-        if path == written or path.endswith(written) or written.endswith(path):
-            return path
+    for path in (request.get("paths") or []):
+        if _covers(str(path), written):
+            return str(path)
     return None
 
 
@@ -192,7 +211,7 @@ def _observation_verdict(grant: dict, request: dict) -> tuple[str, str] | None:
         return (OBSERVER_NOT_INDEPENDENT,
                 f"observer {observer!r} is the actor exercising this grant; a build cannot "
                 "witness itself")
-    inside = _observed_path(observation, [str(p) for p in (request.get("paths") or [])])
+    inside = _observed_path(request)
     if inside:
         return (OBSERVER_NOT_INDEPENDENT,
                 f"the observation at {inside!r} is among the paths being landed, so it is "

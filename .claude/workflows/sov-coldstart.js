@@ -104,9 +104,7 @@ phase('Paper')
 
 const paper = await agent(
   'Run exactly this from the repository root and return what it printed, parsed: '
-  + 'python scripts/sov_coldstart.py paper' + "
-
-"
+  + 'python scripts/sov_coldstart.py paper' + '\n\n'
   + 'That command emits the benchmark questions with every answer, probe and rationale stripped out. '
   + 'Do not open scripts/sovcoldstart/corpus.json, and do not answer any of the questions - you are fetching the paper, not sitting it. '
   + 'Then run: python -c "import datetime; print(datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat())" '
@@ -142,9 +140,7 @@ phase('Integrity')
 // reading that asks whether the corpus still describes the world.
 const integrityRun = agent(
   'Run exactly this from the repository root: '
-  + 'python scripts/sov_coldstart.py' + fastFlag + sectionFlags + ' --record' + atFlag + ' run' + "
-
-"
+  + 'python scripts/sov_coldstart.py' + fastFlag + sectionFlags + ' --record' + atFlag + ' run' + '\n\n'
   + 'Report the real exit code, the VERDICT line, the path the run recorded (the line beginning "recorded "), '
   + 'every DRIFT line as "<id>: expected <x> / probe <y>", and every ERROR line. '
   + 'Do not repair anything, do not rebase any expectation, and do not edit the corpus. '
@@ -226,11 +222,7 @@ const recordPath = graded && typeof graded.record_path === 'string'
 const confirmed = recordPath ? await agent(
   'Read the JSON file at ' + recordPath + ' and return exactly what it contains: '
   + 'verdict, standing, mode, the corpus digest, and the tier 0 row as hit/scored. '
-  + "
-
-Then run: python scripts/sov_coldstart.py history
-
-"
+  + '\n\nThen run: python scripts/sov_coldstart.py history\n\n'
   + 'You did not produce this record and you must not edit it, re-run the benchmark, or '
   + 'repair anything. If the file is not there, say so; if history flags it with a defect '
   + 'code, report the code. Do not report what you expected to find.',

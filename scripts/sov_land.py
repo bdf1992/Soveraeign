@@ -37,11 +37,21 @@ DEFAULT_TARGET = "main"
 def build_request(args: argparse.Namespace, paths: list[str], checks: dict[str, str]) -> dict:
     """Assemble the legacy mutable-tree landing request."""
     observation = None
+    observation_path = None
     if args.observation:
         source = Path(args.observation)
         if not source.is_absolute():
             source = ROOT / source
         observation = json.loads(source.read_text(encoding="utf-8"))
+        # Where the observation lives is a fact this tool holds. Carrying it on the
+        # request rather than reading a field out of the observation is what makes the
+        # inside-the-change reading a measurement instead of the observer's own account;
+        # contracts/observation.schema.json forbids extra keys, so no such field can
+        # legitimately exist inside one.
+        try:
+            observation_path = source.resolve().relative_to(ROOT.resolve()).as_posix()
+        except ValueError:
+            observation_path = source.as_posix()
     return {
         "request_schema": "soveraeign-authority-request/v1",
         "actor_id": args.actor,
@@ -51,6 +61,7 @@ def build_request(args: argparse.Namespace, paths: list[str], checks: dict[str, 
         "branch": args.target,
         "paths": paths,
         "spend": {"unit": "agent_invocations", "amount": args.spend},
+        "observation_path": observation_path,
         "evidence": {"checks": checks, "observation": observation},
     }
 

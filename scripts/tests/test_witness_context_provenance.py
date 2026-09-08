@@ -8,7 +8,7 @@ The first version of this module read the workflow's bytes and matched prose sub
 An independent reading defeated it five ways, the worst being a frame replaced entirely by
 the defect with the graded phrases left behind in a comment. That is the defect this
 repository keeps finding in itself: a check that reads a declaration where it could
-measure. These cases render what a witness is actually handed - `sovharness.prompts`
+measure. These cases render what a witness is actually handed - `sovharness.render`
 joins the string literals a function returns, so a comment and a dead constant contribute
 nothing - and grade the rendered text, its ordering, and every dispatch that reaches a
 witness anywhere under `.claude/workflows/`.
@@ -28,8 +28,9 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from sovharness.dispatch import (  # noqa: E402
-    broken_concatenation, dispatches, interpolated, prompt_of, resolved_prompt,
+    dispatches, interpolated, prompt_of, resolved_prompt,
 )
+from sovharness.lexer import broken_concatenation  # noqa: E402
 from sovharness.render import blocks, rendered  # noqa: E402
 
 WORKFLOWS = ROOT / ".claude" / "workflows"

@@ -1,0 +1,123 @@
+{
+  "case_id": "COUNTED-POPULATIONS-WITNESS-PASS-5",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08",
+  "artifact_revision": "42c8ed2185f5ee83c8bd757bdcd834495fb38bba",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "counted populations: grade every hand-written count in live prose against a deterministic counter",
+    "verdict": "REPRODUCED_WITH_RESIDUALS",
+    "standing_supported": "BUILT -> WITNESSED",
+    "supersedes": "reports/observations/2026-09-07-counted-populations-witness-observation-2.json, which pins d12d01fd1dc03d334698934973785b757a3b3594. That commit is no longer reachable on this branch: the branch was rebased onto 1ebe47d after main moved, which rewrote every SHA. The record is left unedited because reports/ is append-preserving. A reader who cannot resolve its artifact_revision should learn the reason here rather than from git: the attestation was not withdrawn and was not falsified, its subject was reconciled out from under it, and this record re-establishes the same finding against the reachable head after re-measuring rather than translating.",
+    "supersedes_chain": [
+      "reports/observations/2026-09-07-counted-populations-witness-observation.json (b93a721, unreachable)",
+      "reports/observations/2026-09-07-counted-populations-witness-observation-2.json (d12d01f, unreachable)"
+    ],
+    "standing_binds": "contracts/counted-populations.json, scripts/sov_counts.py, scripts/sovcounts/, scripts/sovverify/staleness.py, scripts/tests/test_sov_counts.py, and the two staleness entries plus the capability-map entry in scripts/sovverify/checks.py, at 42c8ed2 only.",
+    "standing_note": "An observation, not a settlement and not a ratification. Supports the standing proposal BUILT -> WITNESSED for the mechanism as built at this revision.",
+    "candidate_commit": "42c8ed2185f5ee83c8bd757bdcd834495fb38bba",
+    "candidate_tree": "40ddd49e86102b38712029bd6bf7ac7bf160fe3c",
+    "base_commit": "1ebe47d",
+    "prior_base_commit": "b1448eeb458afa4a8c60b57c1cb46906246af7f7",
+    "observed_at": "2026-09-08",
+    "observer_id": "claude-opus-5/sov-witness@2026-09-08",
+    "observer_relation": "INDEPENDENT_OF_BUILDER",
+    "contributed_to_build": false,
+    "observer_independence_basis": "Separate launched witness invocation that did not build, edit, stage, commit, merge, reset or rebase any part of the subject. Every reading was taken in isolated full clones checked out at a pinned commit; all mutation testing was done in throwaway copies so the frozen clone stayed byte-identical to its commit. No builder report or acceptance packet was read as evidence. The rebase was not accepted as content-preserving on the builder's word: the branch's own patch was recomputed against both bases and compared file by file. The only files this witness wrote are its three observation records.",
+    "independence_caveat": "The build commits carry the host trailer Claude-Session: https://claude.ai/code/session_01NibVQxHqhE4JevvzTwuUek, the same session identifier this witness invocation's own host attribution names. Raised as J1; not this witness's to settle.",
+    "tree_state": "Measured at five successive heads as the branch moved: 56d45e5, 488c8a3, b93a721, d12d01f, and 42c8ed2 attested here. The first four are unreachable after the rebase. git status --porcelain empty in the clone and in the shared working tree before and after every command in this pass; HEAD 42c8ed2 at the start and end of the pass.",
+    "rebase_equivalence": {
+      "method": "The branch delta was recomputed against each base and compared per file, rather than diffing the two heads, because a head diff cannot separate what main brought from what the rebase did. diff(b1448ee..d12d01f) has 26 paths; diff(1ebe47d..42c8ed2) has 28.",
+      "identical_patch": "23 of 26 paths carry a byte-identical branch patch across the rebase.",
+      "differences_and_their_attribution": [
+        "scripts/tests/test_sov_counts.py - not a rebase artifact. main never touched this file (diff b1448ee..1ebe47d on it is empty). The change is the F14 repair this witness asked for at pass 4: the docstring line claiming a word suppressing a DRIFT is load-bearing is replaced by an explicit statement that the test grades what the guards cost in coverage and never what they let through, with the 'remaining twelve service manifests' case named. Verified as the repair, not as drift.",
+        ".clarity/coverage.json and docs/documentation.html - regenerated digests only; no non-digest line differs except one clarity 'changed' flag, which records a review that was performed.",
+        "OPEN-SEAMS.md - new, carries S29.",
+        "reports/observations/...-observation-2.json - new, this witness's pass-4 record, committed by the builder."
+      ],
+      "conclusion": "The rebase preserved every line of the work attested at d12d01f. This is nevertheless a fresh attestation and not a SHA translation, because the base moved and one file inside the attested subject changed on purpose."
+    },
+    "commands": {
+      "freeze": "git clone --no-hardlinks <repository root> <scratch outside the tree>; git checkout 42c8ed2; git status --porcelain -> empty; tree 40ddd49",
+      "verify": "python scripts/verify.py -> exit 0; PASS: 55 checks in 15.155s wall",
+      "lint": "python scripts/lint.py -> exit 0",
+      "clarity": "python scripts/sov_clarity.py check -> exit 0",
+      "counts": "python scripts/sov_counts.py check -> exit 0; PASS: 32 stated count(s) match, across 15 population(s) that bind prose (20 declared)",
+      "unit": "python -m unittest discover -s scripts/tests -p test_sov_counts.py -> exit 0; Ran 18 tests in 0.255s",
+      "witness_layer": "python scripts/sov_witness_layer.py records -> exit 0; probes -> exit 0"
+    },
+    "predicate_results": {
+      "every_count_re_derived_at_this_head": {
+        "held": true,
+        "detail": "workflows 23, skills 31, agents 5, sov_*.py entrypoints 60, service manifests 10, summed manifest operations 135, capability map 135, decision records 90, reports 32, diagram views 8, GROUND headings 16, CHECKS 55. Unchanged from d12d01f and each agrees with the prose stating it."
+      },
+      "main_did_not_move_command_entrypoints": {
+        "held": true,
+        "detail": "Verified rather than taken from the builder's reading. fnmatch('scripts/sovaddress.py', 'scripts/sov_*.py') is False because the glob requires the underscore and the module has none; scripts/sovclarity/digests.py is False for the same reason and for its depth. The count stays 60 and scripts/README.md still says Sixty."
+      },
+      "nothing_main_brought_interacts_with_the_count_check": {
+        "held": true,
+        "detail": "sovaddress.py, sovclarity/digests.py and the edits to sov_clarity.py, sov_diagrams.py, sovland/candidates.py, sovwitness/records.py and sovwitness/shape.py were read against the subject. None is imported by sov_counts.py or sovcounts/. main's change to sovwitness/shape.py concerns address fragments after '#'. sovwitness grades witness/observations/ only - records.py observations_dir returns root/'witness'/'observations' - so it does not read this witness's records under reports/observations/, and both witness-layer checks pass."
+      },
+      "every_defeating_case_still_fires_on_the_rebased_head": {
+        "held": true,
+        "detail": "Nine original drifts still caught; live-document drift exit 1; stale Ground count exit 1; frozen-path plant exit 0; global scanner decay SELFCHECK FAIL exit 1; guard test with 'of the' reintroduced exit 1 naming the three files; guard test with 'its' and 'of its' reintroduced exit 1 reporting {'unattributed': [('AGENTS.md', 78, 16, 'ground-claims')]}; capability map stale exit 1; unreviewed prose edit fails clarity exit 1."
+      },
+      "f14_is_repaired": {
+        "held": true,
+        "detail": "The docstring no longer claims the stronger property and names the escape hatch with the worked case. The mechanism is unchanged, which is correct: the finding was that the wording overstated the verdict, not that the verdict was wrong."
+      },
+      "s29_is_recorded_accurately": {
+        "held": true,
+        "detail": "OPEN-SEAMS.md S29 states the conflict correctly and carries the two guardrails that matter: no implementation may resolve it by writing the forbidden fields into a record and calling it conforming, and no reader may take the gate's refusal as evidence that no observation exists. Its scope claim is narrower than this witness's measurement and is true as written: over reports/observations/ at this head, 54 records, 2 schema-valid, 5 gate-satisfying, intersection 0. Across all three observation directories, 86 records, 34 schema-valid, 5 gate-satisfying, intersection 0."
+      },
+      "the_rebase_crossed_rewrite_work_never_evidence": {
+        "held": false,
+        "detail": "It did not, and the builder's reading of the prohibition is correct. contracts/repository-candidate-lifecycle.json lists 'rebase-onto-current-target' under rewrite_policy.mutable_allowed, and 'rebase' under frozen_forbidden. sov_candidate.py judge grades RECONCILE from MUTABLE with code null and from FROZEN with INVALID_STATE. No rule was broken."
+      },
+      "the_rebase_was_therefore_without_cost": {
+        "held": false,
+        "detail": "The same contract declares the cost in the same object. operations.RECONCILE carries evidence_effect: 'INVALIDATE_SUBJECT_EVIDENCE'. The contract does not say the evidence survives a reconcile; it says the opposite, and the invalidation of the pass-4 attestation is what the contract predicted rather than an accident. The defect is not the rebase but the sequencing before it: AGENTS.md requires a freeze before witness evidence is used as evidence for a repository candidate, and operations.QUALIFY is available only from FROZEN and requires_exact_subject_match, so none of the four attestations taken against this MUTABLE carrier could ever have qualified it. Had the carrier been frozen before witness, the base move would have been handled by SUPERSEDE, whose evidence_effect is PRESERVE_OLD_EVIDENCE and which requires_new_candidate, followed by a fresh FREEZE: the same tree, with an explicit superseded subject instead of an orphaned SHA."
+      },
+      "the_carrier_state_is_independently_readable": {
+        "held": false,
+        "detail": "It is not. sov_candidate.py exposes only show, judge and selfcheck; judge grades a state the caller asserts. No candidate or carrier state is persisted anywhere in scripts/, contracts/ or .local/. So 'the carrier is MUTABLE' is an assertion no artifact can contradict, because nothing records that a FREEZE ever occurred, and INVALIDATE_SUBJECT_EVIDENCE fires silently without naming the evidence it invalidated. That is why this orphaning had to be noticed by a person and why this record is the only artifact that will tell a reader the earlier revisions are unreachable."
+      }
+    },
+    "findings": [
+      "F1 F3 F5 F7 F9 F10 F11 F12 RESOLVED and re-verified at this head.",
+      "F2 RESOLVED IN PART AND HONESTLY SCOPED.",
+      "F4 RECORDED, NOT CLOSED.",
+      "F6 RETRACTED at pass 3; the builder's clarity reading was correct and this witness's was not.",
+      "F8 NOT A DEFECT.",
+      "F11a CORRECTION OF THIS WITNESS, standing: per-word ablation is blind to two words redundantly hiding one sentence, which is why this witness confirmed the builder's incorrect reading that 'its' cost nothing.",
+      "F14 RESOLVED at this head.",
+      "F15 OPEN, MEDIUM, OUTSIDE THIS CONCERN, now carried as OPEN-SEAMS.md S29.",
+      "F16 OPEN, MEDIUM, OUTSIDE THIS CONCERN. The repository candidate lifecycle declares four states and five operations with explicit evidence effects, and persists no state. Nothing records a FREEZE, nothing can refuse a witness taken against a MUTABLE carrier, and a RECONCILE that the contract says invalidates subject evidence leaves no trace naming what it invalidated. This is the mechanism that orphaned two attestations in this concern.",
+      "F17 OPEN, LOW. This witness's three records sit in reports/observations/, where 52 of 54 records use the gate-shaped convention and only these conform to the schema. Schema conformance was chosen over local convention deliberately, but the directory now holds two incompatible shapes with nothing marking which is which."
+    ],
+    "residuals": [
+      "This record conforms to contracts/participant-observation.schema.json and is therefore refused by the landing gate, which requires a top-level verdict of CONFIRMED that the schema forbids. Recorded as S29; this witness did not add the forbidden fields, because shipping a knowingly invalid artifact to make a gate pass is weakening an oracle so a participant passes.",
+      "Two earlier attestations pin unreachable commits. Their content is carried forward here after re-measurement, not by assertion.",
+      "919 count-shaped sentences remain ungraded and are listed by `debt`. Silence there is coverage, not confirmation.",
+      "Five declared populations bind no claim in current prose.",
+      "CI on 42c8ed2 was running when this pass closed and its result is not part of this observation.",
+      "No clarity review for this record; reports/ is outside the clarity scope."
+    ],
+    "judgement_items": [
+      "J1 Does an independent witness invocation carrying the same host Claude-Session identifier as the build satisfy the independent-observation precondition of grant:standing-landing-loop?",
+      "J2 Which of contracts/participant-observation.schema.json and scripts/sovkernel/authority.py yields, given that no record satisfies both? Carried as S29.",
+      "J3 Should this concern's carrier be frozen before any further witness evidence is taken against it, given that RECONCILE from MUTABLE is contractually licensed to invalidate that evidence and has now done so twice?"
+    ],
+    "not_settled_by_this_observation": [
+      "Whether any number this check does not reach is correct.",
+      "Whether the sentences around the graded numbers are true.",
+      "Any service, requirement, or phase standing.",
+      "Whether this change may land. The gate is not satisfied by this record, for the reason recorded in S29."
+    ]
+  },
+  "telemetry": {
+    "method": "Five isolated full clones at pinned commits under a scratch directory outside the repository; mutation testing in throwaway copies only. Verdicts read from process exit codes, never from stdout. Rebase equivalence established by recomputing the branch patch against both bases rather than by diffing heads.",
+    "host": "Linux, Python 3.11, shared host with sibling sessions writing the tree",
+    "writes_by_this_witness": "this record and the two it supersedes; no work, fixture, contract, test, or implementation file was edited at any point"
+  }
+}

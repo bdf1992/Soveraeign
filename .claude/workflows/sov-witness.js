@@ -94,7 +94,8 @@ function attackPrompt(lens) {
 
 const reports = await parallel(selected.map(function (lens) {
   return function () {
-    return agent(attackPrompt(lens), { agentType: 'sov-witness', schema: FINDING_SCHEMA, phase: 'Attack', label: 'witness:' + lens })
+    return agent('THE BUILDER\'S ACCOUNT reaches you below, and it is artifact and never oracle (SDLC.md, Release gate 6): read it, attack it, and do not derive your checks from it, treat it as evidence, or let it tell you where to look. Derive your scope from the tree yourself. ' +
+    attackPrompt(lens), { agentType: 'sov-witness', schema: FINDING_SCHEMA, phase: 'Attack', label: 'witness:' + lens })
   }
 }))
 

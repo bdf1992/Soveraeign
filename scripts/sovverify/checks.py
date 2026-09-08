@@ -16,12 +16,13 @@ from __future__ import annotations
 
 import sys
 
+from sovverify.crossings import CROSSING_CHECKS
 from sovverify.harness import HARNESS_CHECKS
 from sovverify.participants import PARTICIPANT_CHECKS
 from sovverify.staleness import STALENESS_CHECKS
 from sovverify.shape import ROOT, Check
 
-REPOSITORY_CHECKS = STALENESS_CHECKS + (
+REPOSITORY_CHECKS = STALENESS_CHECKS + CROSSING_CHECKS + (
     Check("repository hygiene", [sys.executable, "scripts/lint.py"], ROOT,
           "reads repository bytes directly with read_bytes, never a build report, and never "
           "Path.read_text whose newline translation would hide the defect it looks for",

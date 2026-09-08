@@ -35,6 +35,21 @@ HARNESS_CHECKS = (
           "surface in this repository with no grader",
           (".claude", "services", "CLAUDE.md", "STATUS.yaml", "contracts/harness-hosts.json",
            "contracts/harness-claims.json", "scripts/sov_harness.py", "scripts/sovharness")),
+    Check("communications claims", [sys.executable, "scripts/sov_comms.py"], ROOT,
+          "reads the agent definitions for behavioural figures and asks each paragraph for "
+          "something runnable that derives them, and grades every witnessed claim against "
+          "scripts/sov_standing.py, which reads STATUS.yaml and the witness records by paths "
+          "this grader never touches; Communications is the only surface a person reads and "
+          "was the only claim surface here with no grader, which is how a breakdown of 379 of "
+          "the owner's turns survived against no transcript corpus at all",
+          (".claude/agents", "contracts/comms-claims.json", "scripts/sov_comms.py",
+           "scripts/sovcomms", "STATUS.yaml")),
+    Check("communications claim refusals fire",
+          [sys.executable, "scripts/sov_comms.py", "selfcheck"], ROOT,
+          "grades cases the module carries itself and never reads .claude/, so repairing the "
+          "live surfaces cannot stop a refusal being proved; it also asserts that a recorded "
+          "historical sentence clears only itself and that NOT_WITNESSED is read as denial",
+          ("scripts/sov_comms.py", "scripts/sovcomms", "contracts/comms-claims.json")),
     Check("harness claim refusals fire",
           [sys.executable, "scripts/sov_harness.py", "selfcheck"], ROOT,
           "builds a tree carrying one unsupported claim of each kind and asserts the matching "

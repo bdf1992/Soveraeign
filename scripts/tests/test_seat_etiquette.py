@@ -28,6 +28,11 @@ FIXTURES = CONTRACTS / "fixtures"
 SEAT_SCHEMA = json.loads((CONTRACTS / "seat-registry.schema.json").read_text("utf-8"))
 ETIQUETTE = json.loads((CONTRACTS / "seat-etiquette.json").read_text("utf-8"))
 TOPOLOGY = json.loads((FIXTURES / "seat-topology.reference.json").read_text("utf-8"))
+#: decisions/0048 ID-1: a renderer resolves to a registered principal or it is not
+#: attribution. The checker cannot grade that without the registry, and does not
+#: pretend to when a caller supplies none.
+PRINCIPALS = {p["principal_id"] for p in
+              json.loads((CONTRACTS / "principals.json").read_text("utf-8"))["principals"]}
 ENTRIES = json.loads((FIXTURES / "seat-message.fixtures.json").read_text("utf-8"))
 GRADED = [entry for entry in ENTRIES if "expected_etiquette" in entry]
 
@@ -45,7 +50,8 @@ class SeatEtiquetteFixtures(unittest.TestCase):
         self.assertGreaterEqual(len(GRADED), 2)
         for entry in GRADED:
             with self.subTest(case=entry["id"]):
-                defects = conversation_defects(_conversation(entry), TOPOLOGY, ETIQUETTE)
+                defects = conversation_defects(_conversation(entry), TOPOLOGY, ETIQUETTE,
+                                               PRINCIPALS)
                 if entry["expected_etiquette"]:
                     self.assertEqual(defects, [], entry["id"])
                 else:
@@ -69,7 +75,7 @@ class SeatEtiquetteFixtures(unittest.TestCase):
         spoken = {message["act"] for entry in ENTRIES for message in _conversation(entry)}
         unexercised = sorted(set(ETIQUETTE["acts"]) - spoken)
         self.assertEqual(
-            unexercised, ["ACCEPT", "ASK", "DISPATCH", "PLAN", "REFUSE", "UNATTESTABLE"],
+            unexercised, ["ACCEPT", "ASK", "PLAN", "REFUSE", "UNATTESTABLE"],
             "the set of acts with no fixture changed; extend the corpus or update this list")
 
     def test_every_carriage_duty_is_implemented_by_the_checker(self) -> None:
@@ -77,20 +83,23 @@ class SeatEtiquetteFixtures(unittest.TestCase):
         probe = {
             "message_schema": "soveraeign-seat-message/v1", "message_id": "msg:probe",
             "sent_at": "2026-08-23T12:00:00Z",
-            "speaker": {"seat_id": "seat:worker-1", "seat_type": "work",
-                        "actor_id": "probe@1", "actor_kind": "MODEL",
+            # The seat's declared occupant, because SPEAKER_IS_THE_OCCUPANT refuses a
+            # speaker who is not - a synthetic name here would trip the duty this probe
+            # exists to prove is implemented.
+            "speaker": {"seat_id": "seat:witness-1", "seat_type": "work",
+                        "actor_id": "sov-witness@1", "actor_kind": "MODEL",
                         "relation_to_subject": "INDEPENDENT"},
             "to_seat": "seat:orchestrator-1", "act": "ATTEST",
             "subject": {"operation_id": "OP-PROBE"}, "body": "probe",
             "standing_proposed": {"from": "BUILT", "to": "WITNESSED"},
             "carries": {"judgement_items": [], "dissents": [], "residuals": [], "stalls": []},
         }
-        self.assertEqual(conversation_defects([probe], TOPOLOGY, ETIQUETTE), [])
+        self.assertEqual(conversation_defects([probe], TOPOLOGY, ETIQUETTE, PRINCIPALS), [])
         etiquette = json.loads(json.dumps(ETIQUETTE))
         etiquette["carriage_duties"].append(
             {"duty": "UNIMPLEMENTED_DUTY", "applies_to_act": "ATTEST", "kinds": [],
              "rule": "a duty this checker has never heard of", "plain_english": "probe"})
-        defects = conversation_defects([probe], TOPOLOGY, etiquette)
+        defects = conversation_defects([probe], TOPOLOGY, etiquette, PRINCIPALS)
         self.assertTrue(any("UNIMPLEMENTED_DUTY" in defect for defect in defects),
                         "the checker passed a duty it does not implement")
 

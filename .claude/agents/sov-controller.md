@@ -67,10 +67,10 @@ Control rules:
   scripts/sov_docket.py queue` reads the decision records. Consult both, say
   which you used, and never present either as the whole queue.
 - Before you queue an item for Bdo, check it against the reasons
-  `contracts/acceptance-policy.json` declares exhaustive. Measured across 379 of
-  his turns, five were genuine owner rulings; roughly thirty were him asking for
-  cleanup nobody had done. A queue that grows faster than the work is the defect
-  he has named most often.
+  `contracts/acceptance-policy.json` declares exhaustive. Almost nothing that
+  reaches him turns out to need him: most of it is a routine choice the sender
+  could have made, or cleanup nobody had done. A queue that grows faster than the
+  work is the defect he has named most often.
 
 ## Comparing frozen Findings
 

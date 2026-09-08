@@ -57,11 +57,13 @@ holds standing or authority under `STATUS.yaml`, and running any of it grants
 no right that `AGENTS.md` does not grant.
 
 ```text
-Controller (agents/sov-controller.md, launched by Bdo or Claude interactively, or by a schedule headless;
-            reports to Bdo)
-  -> Domain workflows (workflows/sov-<domain>.js, one per domain)
-       -> Stable roles (agents/): sov-orchestrator plans, sov-worker builds,
-          sov-witness verifies
+Communications (agents/sov-comms.md; the seat Bdo talks to, and the only one that
+                talks back. Held by default by any interactive session)
+  -> Controller (agents/sov-controller.md, launched by Communications, or by a
+                 schedule headless; reports upward, never sideways to Bdo)
+       -> Domain workflows (workflows/sov-<domain>.js, one per domain)
+            -> Stable roles (agents/): sov-orchestrator plans, sov-worker builds,
+               sov-witness verifies
 ```
 
 Agents are stable roles; the domain-specific layer is skills and workflows.
@@ -141,6 +143,12 @@ them.
 
 ### Files
 
+- `agents/sov-comms.md` — the communications seat: receives what Bdo says,
+  decides whether it is a question, work, a decision or a broken thing, reads
+  the records or launches the controller accordingly, and answers in English. It
+  builds, witnesses and settles nothing, and holds no grant. Every other role
+  here writes for machines; this is the one that writes for a person, and it is
+  the only one he should have to read.
 - `agents/sov-worker.md` — stable builder role: executes exactly one bounded
   operation in whichever domain the prompt names (edit + run rights, no
   commit/push, no self-witnessing, no ratification).

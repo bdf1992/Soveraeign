@@ -22,19 +22,44 @@ def _seat_index(topology: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return {seat["seat_id"]: seat for seat in topology.get("seats", [])}
 
 
+def _declared_edge(topology: dict[str, Any], speaker: str, kind: str, target: str) -> bool:
+    """Whether the topology declares an edge of this type from speaker to target."""
+    for edge in topology.get("relations", []):
+        if edge["from"] == speaker and edge["type"] == kind and edge["to"] == target:
+            return True
+    return False
+
+
 def _direction_defects(message: dict[str, Any], act: dict[str, Any],
-                       seats: dict[str, dict[str, Any]], label: str) -> list[str]:
-    """UPWARD reaches the speaker's owner seat; DOWNWARD reaches a seat the speaker owns."""
+                       seats: dict[str, dict[str, Any]], topology: dict[str, Any],
+                       label: str) -> list[str]:
+    """Where a statement may travel.
+
+    Two graphs, kept apart. `owner_seat` is the delegation graph and carries authority:
+    UPWARD reaches the speaker's delegator, DOWNWARD reaches a seat it delegates to. An
+    act may also name a `travels_relation`, and then a typed edge of that kind declared
+    in the topology is an equally admissible route - which is how a witness observes a
+    controller's act without being owned by it, and how a rendering reaches a reader that
+    the speaker does not report to.
+
+    A typed edge is a route and never a grant. It is consulted only for the act that names
+    it, so no edge licenses an act that did not ask for one, and DISPATCH names none.
+    """
     speaker_id = message["speaker"]["seat_id"]
     target_id = message["to_seat"]
     if target_id not in seats:
         return [f"{label}: addressed to {target_id}, which is not a seat in the topology"]
+    kind = act.get("travels_relation")
+    if kind and _declared_edge(topology, speaker_id, kind, target_id):
+        return []
     if act["direction"] == "UPWARD":
         owner = seats[speaker_id].get("owner_seat")
         if owner is None:
             return [f"{label}: {speaker_id} has no owner seat, so it cannot speak upward"]
         if target_id != owner:
-            return [f"{label}: {message['act']} travels upward to {owner}, not to {target_id}"]
+            detail = (f" and no {kind} edge to it is declared" if kind else "")
+            return [f"{label}: {message['act']} travels upward to {owner}, not to "
+                    f"{target_id}{detail}"]
         return []
     if seats[target_id].get("owner_seat") != speaker_id:
         return [f"{label}: {message['act']} travels downward, but {speaker_id} does not own "
@@ -58,6 +83,7 @@ def _standing_defects(message: dict[str, Any], act: dict[str, Any], label: str) 
 
 
 def _message_defects(message: dict[str, Any], etiquette: dict[str, Any],
+                     topology: dict[str, Any],
                      seats: dict[str, dict[str, Any]], label: str) -> list[str]:
     """Seat occupancy, admissible act, required relation, direction, and standing ceiling."""
     defects: list[str] = []
@@ -82,7 +108,7 @@ def _message_defects(message: dict[str, Any], etiquette: dict[str, Any],
     if required != RELATION_ANY and speaker["relation_to_subject"] != required:
         defects.append(f"{label}: {act_name} requires relation {required}, but the speaker "
                        f"declares {speaker['relation_to_subject']}")
-    defects.extend(_direction_defects(message, act, seats, label))
+    defects.extend(_direction_defects(message, act, seats, topology, label))
     defects.extend(_standing_defects(message, act, label))
     return defects
 
@@ -129,8 +155,45 @@ def _self_witness_defects(message: dict[str, Any], earlier: list[dict[str, Any]]
     return []
 
 
+def _occupant_defects(message: dict[str, Any], seats: dict[str, dict[str, Any]],
+                      label: str) -> list[str]:
+    """Nobody speaks from a seat they do not occupy.
+
+    A participant that phrased another seat's statement belongs in `rendered_by`. Putting
+    it in `speaker` reads as that seat itself speaking, and every standing and authority
+    rule downstream is then applied to the wrong participant.
+    """
+    speaker = message["speaker"]
+    seat = seats.get(speaker["seat_id"])
+    if seat is None:
+        return []
+    occupant = (seat.get("occupant") or {}).get("actor_id")
+    if occupant is None or speaker["actor_id"] == occupant:
+        return []
+    return [f"{label}: {speaker['actor_id']} speaks from {speaker['seat_id']}, which "
+            f"{occupant} occupies; a participant that only phrased this belongs in rendered_by"]
+
+
+def _renderer_defects(message: dict[str, Any], principals: set[str] | None,
+                      label: str) -> list[str]:
+    """A named renderer resolves to a registered principal, or it is not attribution.
+
+    `decisions/0048` ID-1 admits no orphan actors. A caller that supplies no registry
+    cannot check this and does not pretend to.
+    """
+    rendered_by = message.get("rendered_by")
+    if not rendered_by or principals is None:
+        return []
+    named = rendered_by.get("principal_id")
+    if named in principals:
+        return []
+    return [f"{label}: rendered_by names {named}, which is not a registered principal "
+            f"(decisions/0048 ID-1, no orphan actors)"]
+
+
 def _duty_defects(message: dict[str, Any], earlier: list[dict[str, Any]],
                   by_id: dict[str, dict[str, Any]], etiquette: dict[str, Any],
+                  seats: dict[str, dict[str, Any]], principals: set[str] | None,
                   label: str) -> list[str]:
     """Dispatch the declared carriage duties. An undeclared duty name is itself a defect."""
     defects: list[str] = []
@@ -138,11 +201,19 @@ def _duty_defects(message: dict[str, Any], earlier: list[dict[str, Any]],
     no_edit_kinds: list[str] = []
     for duty in etiquette["carriage_duties"]:
         name = duty["duty"]
-        if name == "NO_SELF_WITNESS":
+        if name == "RELATION_GRANTS_NOTHING":
+            # Enforced where routes are decided: _direction_defects consults a typed edge
+            # only for the act that names one, so no edge licenses an act that did not ask.
+            continue
+        if name == "RENDERER_IS_A_REGISTERED_PRINCIPAL":
+            defects.extend(_renderer_defects(message, principals, label))
+        elif name == "SPEAKER_IS_THE_OCCUPANT":
+            defects.extend(_occupant_defects(message, seats, label))
+        elif name == "NO_SELF_WITNESS":
             if message["speaker"]["relation_to_subject"] == duty.get("applies_to_relation"):
                 defects.extend(_self_witness_defects(message, earlier, label))
         elif name in {"CARRY_EVERYTHING_RECEIVED", "NO_EDIT_IN_TRANSIT"}:
-            if message["act"] != duty.get("applies_to_act"):
+            if message["act"] not in duty.get("applies_to_acts", []):
                 continue
             (carry_kinds if name == "CARRY_EVERYTHING_RECEIVED" else no_edit_kinds).extend(
                 duty["kinds"])
@@ -156,7 +227,8 @@ def _duty_defects(message: dict[str, Any], earlier: list[dict[str, Any]],
 
 
 def conversation_defects(conversation: list[dict[str, Any]], topology: dict[str, Any],
-                         etiquette: dict[str, Any]) -> list[str]:
+                         etiquette: dict[str, Any],
+                         principals: set[str] | None = None) -> list[str]:
     """Every etiquette defect in a conversation, in the order the statements were made.
 
     An empty list means every statement was one its speaker was entitled to make. It does
@@ -167,7 +239,8 @@ def conversation_defects(conversation: list[dict[str, Any]], topology: dict[str,
     defects: list[str] = []
     for index, message in enumerate(conversation):
         label = f"{message.get('message_id', index)}"
-        defects.extend(_message_defects(message, etiquette, seats, label))
-        defects.extend(_duty_defects(message, conversation[:index], by_id, etiquette, label))
+        defects.extend(_message_defects(message, etiquette, topology, seats, label))
+        defects.extend(_duty_defects(message, conversation[:index], by_id, etiquette,
+                                     seats, principals, label))
         by_id[message["message_id"]] = message
     return defects

@@ -34,6 +34,8 @@ FIXTURES = CONTRACTS / "fixtures"
 ETIQUETTE = json.loads((CONTRACTS / "seat-etiquette.json").read_text(encoding="utf-8"))
 TOPOLOGY = json.loads((FIXTURES / "seat-topology.reference.json").read_text(encoding="utf-8"))
 ENTRIES = json.loads((FIXTURES / "seat-message.fixtures.json").read_text(encoding="utf-8"))
+PRINCIPALS = {p["principal_id"] for p in json.loads(
+    (CONTRACTS / "principals.json").read_text(encoding="utf-8"))["principals"]}
 BY_ID = {entry["id"]: entry for entry in ENTRIES}
 
 # A proven BLOCKED claim carries all seven fields or it is a gate, not a block.
@@ -72,7 +74,7 @@ def conversation(entry: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def defects(statements: list[dict[str, Any]]) -> list[str]:
-    return list(conversation_defects(statements, TOPOLOGY, ETIQUETTE))
+    return list(conversation_defects(statements, TOPOLOGY, ETIQUETTE, PRINCIPALS))
 
 
 def seat(message: dict[str, Any], seat_id: str, seat_type: str) -> None:
@@ -128,6 +130,33 @@ def observe() -> int:
           lambda m: m.__setitem__("act", "ASK"))
     press(observed, "SEATMSG-POS-WORK-REPORT", "a work seat may not DISPATCH",
           lambda m: m.__setitem__("act", "DISPATCH"))
+
+    # Nobody speaks from a seat they do not occupy. This is the defect the first draft of
+    # the Communications work shipped in its own fixtures: a communications actor placed in
+    # the control seat, which reads as the controller speaking.
+    press(observed, "SEATMSG-POS-CONTROL-AGGREGATE",
+          "a participant may not speak from a seat it does not occupy",
+          lambda m: m["speaker"].__setitem__("actor_id", "sov-comms@1"))
+    press(observed, "SEATMSG-POS-WORK-REPORT",
+          "naming a renderer does not license impersonating the speaker",
+          lambda m: (m.__setitem__("rendered_by", {"actor_id": "sov-comms@1",
+                                                   "actor_kind": "MODEL"}),
+                     m["speaker"].__setitem__("actor_id", "sov-comms@1")))
+
+    press(observed, "SEATMSG-POS-RENDERED-AGGREGATE",
+          "a renderer nobody registered is not attribution",
+          lambda m: m.__setitem__("rendered_by", {"principal_id": "whoever@1"}))
+
+    # A typed edge is a route and never a grant. Ownership is one graph among several,
+    # and no edge in another may be read as authority.
+    press(observed, "SEATMSG-POS-WITNESS-OBSERVES-CONTROL",
+          "a witnesses edge does not license dispatching along it",
+          lambda m: (m.__setitem__("act", "DISPATCH"),
+                     m["speaker"].__setitem__("relation_to_subject", "PERFORMED"),
+                     m.__setitem__("standing_proposed", None)))
+    press(observed, "SEATMSG-POS-WITNESS-OBSERVES-CONTROL",
+          "an act naming a relation still needs a declared edge",
+          lambda m: m.__setitem__("to_seat", "seat:worker-1"))
 
     # The relation each act requires.
     press(observed, "SEATMSG-POS-CONTROL-AGGREGATE", "an AGGREGATE claiming PERFORMED is refused",

@@ -8,6 +8,61 @@ Claude Code is one host binding for Soveraeign. An interactive Claude session is
 not Sov and does not silently occupy Controller, Orchestrator, Worker, or Witness.
 Those are explicit launched roles.
 
+What an interactive session does hold, by default and for its whole life, is
+**Communications**: the seat Bdo talks to. It is the only seat that speaks to a
+person, and it is the only seat a person should have to read. Controller,
+Orchestrator, Worker and Witness sit underneath it, write for machines and for
+each other, and reach him only through it.
+
+So an interactive session does not narrate its way through work in the register
+those roles use. It receives what Bdo says, decides whether that is a question,
+work, a decision or a broken thing, reads the records when the answer is already
+there, launches the Controller or a workflow when it is not, and answers in
+English.
+
+Two files serve that seat and they do different jobs.
+
+`.claude/output-styles/communications.md` is an output style: it modifies the
+system prompt and applies to the main conversation, which is the one a person is
+in. Select it with `/config` or through `outputStyle` in a settings file. It
+reaches this session and reaches no launched agent, which is the intended scope
+rather than a limitation. Controller, Orchestrator, Worker and Witness write for
+machines and for each other; their register is correct and nothing here changes
+it.
+
+`.claude/agents/sov-comms.md` is the launched agent, and it is not a second copy
+of that voice. It answers Bdo when launched to, and it carries work across a
+concern or domain boundary so the receiving side gets the standing, the source,
+and the dissent along with the claim. `python scripts/sov_session.py route`
+records such a crossing; what the agent adds is the part a command cannot do.
+
+Communications is not a fifth seat type and needed no act of its own, and it is not a
+rung. Ownership is one graph; concern ownership, work dependency, orchestration,
+communication, observation, custody and settlement are others, and the same participants
+appear in several with edges that mean different things. A witness may witness a
+controller. An orchestrator may coordinate a communications effort. Communications may
+route between two domains and gain neither domain's authority. Do not infer hierarchy
+from interaction.
+
+`contracts/fixtures/seat-topology.reference.json` declares typed edges beside ownership —
+`witnesses`, `renders-for`, `asks` — and an act names the relation it travels.
+`owner_seat` still derives delegation and remains the only graph carrying authority. A
+typed edge is a route and never a grant (`RELATION_GRANTS_NOTHING`): a seat that renders
+for the root does not report to it, and a seat that witnesses a controller cannot direct
+it.
+
+`AGGREGATE` does the carrying — relation `FORWARDED`, no standing proposed, every carried
+judgement item, dissent, residual and stall owed onward verbatim, and a `body` no checker
+reads. A plain-English rendering is that body. `rendered_by` names the participant that
+chose the words, against a principal registered in `contracts/principals.json`; the
+speaker keeps the claim and its standing. `SPEAKER_IS_THE_OCCUPANT` refuses anyone
+speaking from a seat they do not occupy. `python scripts/witness_seats.py` enforces all of
+it in the gate, and `decisions/0104` records the model.
+
+Communications carries no authority, no grant, and no standing. Speaking for the
+system is not permission to act for it, and being the only voice Bdo hears makes
+accuracy more load-bearing rather than less.
+
 `AGENTS.md` governs direct repository work. Host capabilities do not create
 authority: use only the tools, permissions, model, and live grants present in the
 current invocation. A gate is a missing precondition, not permission to invent a

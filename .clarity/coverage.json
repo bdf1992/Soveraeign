@@ -1,7 +1,7 @@
 {
   "reviews": {
     ".claude/README.md": {
-      "artifact_digest": "sha256:a0d40acfa69b0d825610e48c36d86a7bbfd42376135b5843d78e7ffc89b471ad",
+      "artifact_digest": "sha256:6cc61c2e1ca0b20d885688b54a3a70be1d413587724284f9446b6d284e88aa30",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",
@@ -15,7 +15,7 @@
       "changed": true
     },
     ".claude/agents/sov-controller.md": {
-      "artifact_digest": "sha256:a85fba75be703d59a835250dc9e7c7061e45e7d700002661b5f4a554284f6bae",
+      "artifact_digest": "sha256:ec7615f051399d2eea0e8b184fa9d59eb99e796dd9f41ea8d15581acad2b1aa9",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",
@@ -71,7 +71,7 @@
       "changed": true
     },
     ".claude/agents/sov.md": {
-      "artifact_digest": "sha256:818c8368906b08e1cf8a98b17c2c49af50db287a830a5523dbe51e13868e8fea",
+      "artifact_digest": "sha256:be07a0749444f5779029d9cc8c6edb318e610df06eb5d9f55395700b1800b20d",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",
@@ -679,7 +679,7 @@
       "changed": false
     },
     "CLAUDE.md": {
-      "artifact_digest": "sha256:ab65833af4d0e453d380801a68e7fb0f3c758ef7a59618552a0dfdff3f2dbb45",
+      "artifact_digest": "sha256:501c7ac93c4964132135297687a6c3eb79c5a7f9acfbeb302497f2cd65377f72",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",
@@ -1223,7 +1223,7 @@
       "changed": false
     },
     "scripts/README.md": {
-      "artifact_digest": "sha256:b0b69baa28b68db1ce9defad9f96536f8893d86cec2834ee6a2189c57cfe9e3e",
+      "artifact_digest": "sha256:329021e2de56c3d27d5978dd46f88af7ed47e85dcb535f80fbdc1324ea5b8d90",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",

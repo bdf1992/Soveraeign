@@ -215,10 +215,19 @@ to be edited when it changes. The check still grades every count this page does
 state, and still refuses a count deleted without this paragraph naming the
 command that replaces it.
 
-## Host facts (Claude Code on Windows)
+## Host facts (Claude Code, any platform)
 
-- Shell: PowerShell 5.1 is primary (no `&&`/`||`); a Git Bash tool also
-  exists. Use absolute paths; do not `cd`.
+- Shell: reached through the `Bash` tool, on every platform this repository is
+  worked on. Do not assume which shell is behind it: on a Windows host it is Git
+  Bash beside PowerShell, where `&&` and `||` may not chain, and on Linux it is
+  the system shell. Use absolute paths; do not `cd`. This section named
+  PowerShell as the primary shell until 2026-09-08, which was a fact about one
+  session's host written down as a fact about the repository; four agent
+  definitions had copied it into their declared tool list, where no invocation
+  could grant it. `contracts/harness-hosts.json` now declares the tool surface an
+  agent definition may name and `python scripts/sov_harness.py` refuses one that
+  names a tool no supported host provides, so the claim is graded rather than
+  asserted.
 - Line endings: the repository pins LF via `.gitattributes`, and
   `scripts/lint.py` checks working-tree bytes. The host's Write/Edit tools can
   emit CRLF, so run `python scripts/lint.py` after editing repository text. A
@@ -243,7 +252,7 @@ command that replaces it.
 | --- | --- |
 | Which tier settles a decision | `decisions/0033-close-the-founding-docket.md`, Ruling 1 |
 | Whether something is built/witnessed | `STATUS.yaml`, `services/README.md` |
-| Product requirement | `PRD.md`, `contracts/requirements.json` |
+| Product requirement | `PRD.md`, `conformance/requirements.py` |
 | Product semantics / architecture | `SPEC.md`, `SYSTEM.md`, `CLASSIFICATION.md` |
 | Operation / capability shape | `contracts/capability-map.schema.json`, `contracts/fixtures/capability-map.reference.json` |
 | Whether an operation is reachable | `contracts/fixtures/node-interface.reference.json`, `docs/surface.html` |

@@ -62,15 +62,6 @@ class ToolingPartition(unittest.TestCase):
         finally:
             run_tooling_tests.MODULE_WEIGHTS = original
 
-    def peers(self, module: str) -> int:
-        """How many modules share this module's shard of the real corpus."""
-        modules = run_tooling_tests.test_modules()
-        buckets = run_tooling_tests.partition(modules, run_tooling_tests.DEFAULT_WORKERS)
-        return len(next(
-            bucket for bucket in buckets
-            if any(item.name == module for item in bucket)
-        ))
-
     def test_a_module_with_no_declared_weight_counts_as_one(self):
         self.assertEqual(run_tooling_tests.module_weight(Path("test_a.py")), 1)
         self.assertGreater(run_tooling_tests.module_weight(Path(heaviest_declared())), 1)

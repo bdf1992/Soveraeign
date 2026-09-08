@@ -223,5 +223,34 @@
   ],
   "judgement_items": [
     "For the root seat, not asked and not blocking: whether an exit clause may be served by an instrument one of whose halves is an asserted, written-down mapping. This participant's answer, taken as its own reversible decision under decisions/0033 Ruling 1, is that it may, provided the assertion is named as one and the property that grades the clause is measured separately. That is what f43ee9a does. A seat that disagrees defeats the member by saying so; the pairing table is ten lines and each is challengeable alone."
-  ]
+  ],
+  "corrections": {
+    "note": "Added after the fifth reading (conformance/observations/2026-09-08-definition-recurrence-p15-x4-pass5.json) showed two claims in this record unsupported by the artifact. The original wording is left standing above and withdrawn here rather than edited away, because a record that quietly repairs itself is worth less than one that shows what it got wrong.",
+    "withdrawn": [
+      {
+        "id": "C1",
+        "withdraws": "record_note and independence.container, insofar as they claim this participant shares no model with the builder; and the same claim in the commit messages of f43ee9a (\"from a different model\") and 1ce4d21 (\"the first from outside the builder's model family\").",
+        "why": "Not attestable from the artifact, and the identifiers point the other way. Every commit trailer on this branch reads Claude Opus 5 and all five pass records carry claude-opus-5 participant ids. The delegation that created this session asserted a different model; a delegating prompt is not evidence a later reader can check, and this record repeated it as though it were.",
+        "what_stands": "A separate container, a fresh clone, no shared session, transcript, working tree or memory with the builder of e898d06 or with passes 1 to 3, and a delegating prompt written by the root seat rather than by the builder. That is the independence this reading actually had."
+      },
+      {
+        "id": "C2",
+        "withdraws": "P4-N5: \"All three commissioning checks share the pattern\", and the same sentence in the custody member note.",
+        "why": "False, and re-derived here as false. Deleting contracts/custodies/phase-1-5.json from a copy leaves sov_recurrence.py selfcheck at exit 0 but takes sov_fresh.py selfcheck and sov_reuse.py selfcheck to exit 1; scripts/sovreuse/fixture.py opens the real collection. The blindness is this check's alone.",
+        "what_stands": "P4-N5's finding itself: scripts/verify.py runs this member's selfcheck against a temporary fixture and runs the live reading nowhere, so a green build carries no information about P15-Q4 against this repository. What does not stand is the generalization, which was the stated reason for routing the repair elsewhere. Without it the gap is this concern's, and it is repaired here."
+      },
+      {
+        "id": "C3",
+        "withdraws": "The residual describing contracts/product-canon.schema.json as \"outside every bound primitive's governance\".",
+        "why": "True of the letter and misleading about the governance. contracts/ticket-settlement.json names contracts/product-canon.json in its governed_by, and the closed vocabulary lives in contracts/product-canon.schema.json, the schema of that instance. The link is a filename convention and the instance declares canon_schema: soveraeign-product-canon/v1 rather than a path, so it is still reported and not graded; the reason is now stated where a reader will find it."
+      }
+    ],
+    "findings_the_fifth_reading_added": [
+      "W5-F1 (material): reintroducing the exact title-reading defect this branch repaired left selfcheck at exit 0, because every fixture stub's title carried its own term, so the mispaired stub read `unrelated` and a title-reading reader refused it for the right verdict by the wrong rule. The gate could not see the branch's headline repair while fixture.py said it could. Repaired: stub titles name no primitive, and primitive-mispaired carries a title naming the term it is not paired with, so a title-reading reader fails selfcheck by name.",
+      "W5-F2 (material): the new live-split test asserted that no reported entry contained \"is governed by\", a string the reported branch never writes. It could not fail. Replaced with one that rebuilds the governed set from PRIMITIVES and checks no reported closure sits in a contract a primitive names; it fails under the direct inverse of the repair.",
+      "W5-F5 (observation): the declaration rule was a denylist, and a properties dict inside an examples array was harvested as a declaration, which contradicted the module's own root-only reasoning. examples, example and fixtures are excluded now, and a root identifier carrying whitespace is not read as an identifier.",
+      "W5-F6 (observation): the closure scan read contracts/** only, so a primitive governed by a contract under services/ would be missed. Found while still vacuous and closed anyway; the scan is now contracts/** plus every .json a bound primitive names.",
+      "W5-F8 (method, not a finding against the work): verify.py exits 1 against a git archive copy because parts of it need .git. The fifth reading established that as its own copy's defect before recording."
+    ]
+  }
 }

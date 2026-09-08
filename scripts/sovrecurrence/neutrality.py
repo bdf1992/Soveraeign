@@ -24,6 +24,8 @@ from pathlib import Path
 from typing import Any
 import json
 
+from sovrecurrence.declaration import declares
+
 PROVING_ROLES = frozenset({"CONTROLLER", "ORCHESTRATOR", "WORKER", "WITNESS"})
 """The four commissioning roles. A vocabulary closed to these cannot admit a Phase II
 institution, which is the defeating condition `contracts/custodies/phase-1-5.json` states
@@ -138,63 +140,6 @@ def _closed_enums(node: Any, path: str) -> list[tuple[str, list[str]]]:
     return found
 
 
-DECLARED_NAME_KEYS = ("$defs", "definitions", "properties", "patternProperties")
-"""Where a contract declares names rather than describing itself."""
-
-
-def _identity_names(document: Any) -> set[str]:
-    """A contract's own declared identity, read at the document root only.
-
-    `$id` for a JSON Schema, and a root-level `_id` or `_schema` value for the policy and
-    circuit files that carry no `$id`. Root only, because a contract's identity is declared
-    where the contract begins; an identifier nested in example data belongs to the example.
-    """
-    if not isinstance(document, dict):
-        return set()
-    names = set()
-    for key, value in document.items():
-        if not isinstance(value, str):
-            continue
-        if key == "$id" or key.endswith("_id") or key.endswith("_schema"):
-            names.add(value)
-    return names
-
-
-def _structural_names(document: Any) -> set[str]:
-    """The names a contract declares: its own identity, and the names it defines.
-
-    Prose is excluded on purpose, and `title` and `name` are prose. An earlier revision read
-    them as structure, which let a title sentence stand in for a declaration in both
-    directions - one pairing resolved because a title happened to contain its term, another
-    failed because its file had no title - and a witness flipped both with an edit that
-    changed nothing structural.
-    """
-    names: set[str] = _identity_names(document)
-
-    def walk(node: Any) -> None:
-        if isinstance(node, dict):
-            for key, value in node.items():
-                if key in DECLARED_NAME_KEYS and isinstance(value, dict):
-                    names.update(value)
-                    walk(value)
-                elif key not in ("description", "note", "$comment", "warrant", "enum",
-                                 "title", "name"):
-                    walk(value)
-        elif isinstance(node, list):
-            for value in node:
-                walk(value)
-
-    walk(document)
-    return {str(name).lower().replace("_", "").replace("-", "").replace(" ", "")
-            for name in names}
-
-
-def _declares(document: Any, primitive: str) -> bool:
-    """True when the contract declares the primitive structurally, not merely mentions it."""
-    wanted = primitive.replace("_", "")
-    return any(wanted in name for name in _structural_names(document))
-
-
 def _governing_index(root: Path, bound: dict[str, str]) -> dict[str, set[str]]:
     """Which primitives name which other contract as their own `governed_by`.
 
@@ -228,13 +173,25 @@ def _closures_beyond(root: Path, bound: dict[str, str]) -> tuple[list[str], list
 
     A closure in a contract no bound primitive names is still only reported. Grading follows
     the primitives, and an unrelated contract's role vocabulary defeats none of them.
+
+    The scan is `contracts/**` plus every `.json` a bound primitive actually names, so a
+    primitive governed by a contract under `services/` is graded rather than silently missed.
+    A fifth witness found that gap while it was still vacuous, which is the cheapest time.
+
+    What this does not follow is an instance to its schema. `settlement` names
+    `contracts/product-canon.json`, and the closed vocabulary lives in
+    `contracts/product-canon.schema.json`, which that instance does not name; the link is a
+    filename convention and not a declaration, so it is reported and not graded.
     """
     governed = _governing_index(root, bound)
     graded: list[str] = []
     reported: list[str] = []
-    for path in sorted((root / "contracts").rglob("*.json")):
-        relative = str(path.relative_to(root)).replace("\\", "/")
-        if relative in bound.values():
+    scanned = {str(path.relative_to(root)).replace("\\", "/")
+               for path in (root / "contracts").rglob("*.json")}
+    scanned |= {name for name in governed if name.endswith(".json")}
+    for relative in sorted(scanned):
+        path = root / relative
+        if relative in bound.values() or not path.is_file():
             continue
         try:
             document = json.loads(path.read_text(encoding="utf-8"))
@@ -270,7 +227,7 @@ def read(root: Path) -> dict[str, Any]:
         except (OSError, ValueError):
             unresolved.append(f"{primitive} declared at {relative}, which is absent or unreadable")
             continue
-        if not _declares(document, term):
+        if not declares(document, term):
             unresolved.append(f"{primitive} is paired with {relative} as `{term}`, which that "
                               "contract does not declare structurally, so the pairing asserts "
                               "a declaration the contract does not make")

@@ -33,12 +33,20 @@ CLOSED_ROLES = ("worker", "orchestrator", "controller", "owner")
 def _stub(term: str, **extra: Any) -> dict[str, Any]:
     """A fixture contract that declares `term` the way a real one does: in its own identity.
 
-    The declaration lives in `$id` and not in a comment, because a comment is prose and the
-    reader stopped reading prose.
+    The declaration lives in `$id` and not in a comment or a title, because both are prose
+    and the reader stopped reading prose.
+
+    The title deliberately names no primitive. A fifth witness showed why it must: while
+    every stub's title carried its own term, reintroducing the exact title-reading defect
+    this branch repaired left `selfcheck` at exit 0, because the mispaired stub's title said
+    `unrelated` and a title-reading reader refused it for the right verdict by the wrong
+    rule. `primitive-mispaired` now carries a title that names the term it is *not* paired
+    with, so a reader that reads titles resolves it, the declared defeat does not fire, and
+    the self-check goes red.
     """
     stub: dict[str, Any] = {
         "$id": f"https://soveraeign.local/contracts/fixture-{term}.schema.json",
-        "title": f"Fixture {term} declaration",
+        "title": "Fixture contract, whose title names no primitive",
         "properties": {"actor_id": {"type": "string"}},
     }
     stub.update(extra)
@@ -84,7 +92,9 @@ An earlier fixture wrote `"$comment": "declares the {primitive} primitive"` into
 which meant the fixture could never disagree with a binding: whatever path `PRIMITIVES`
 named, the stub written there declared the term. A witness named that gap and it is closed
 here - `primitive-mispaired` writes a contract that parses and declares structure that is
-simply not the term it is paired with, which is the case a real mispairing produces.
+simply not the term it is paired with, which is the case a real mispairing produces, under a
+title that names the term it is not paired with, so that a reader which reads titles fails
+this self-check by name.
 """
 
 
@@ -170,7 +180,8 @@ def _defeat_root(root: Path, variant: str) -> None:
     if variant == "primitive-undeclared":
         (root / neutrality.PRIMITIVES["custody"][0]).unlink()
     elif variant == "primitive-mispaired":
-        _write(root / neutrality.PRIMITIVES["custody"][0], _stub("unrelated"))
+        _write(root / neutrality.PRIMITIVES["custody"][0],
+               _stub("unrelated", title="Fixture custody declaration"))
     elif variant == "role-vocabulary-closed":
         _write(root / neutrality.PRIMITIVES["finding"][0],
                _stub("finding", properties={"evaluator_role": {

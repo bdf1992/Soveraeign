@@ -16,8 +16,9 @@ admitted, and no independent attribution exists here to refuse it.
 
 `selfcheck` proves the reader discriminates against a fixture basis under a fixture root:
 the positive variant passes, cites no member nobody witnessed, and each defeating variant
-fails exactly the predicates it declares. Neither command witnesses anything; a passing run
-is a build claim.
+fails exactly the predicates it declares. It then checks that the live reading reaches this
+repository at all, which the fixture alone cannot tell you. Neither command witnesses
+anything; a passing run is a build claim.
 """
 
 from __future__ import annotations
@@ -32,7 +33,42 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
-from sovrecurrence import fixture, recurrence  # noqa: E402
+from sovrecurrence import experience, fixture, neutrality, recurrence  # noqa: E402
+
+
+def _live_reading_is_reachable() -> list[str]:
+    """Check that the live reading reaches this repository, without pinning its verdict.
+
+    A fifth witness established that this member's registered check read a temporary fixture
+    and nothing else: deleting `contracts/custodies/phase-1-5.json` left it at exit 0, while
+    the sibling commissioning checks for P15-Q1 and P15-Q3 both went red. A fourth reading
+    had excused that as a pattern shared by all three checks, which was simply false, so the
+    gap is this member's and is closed here.
+
+    What is checked is that the reading is reachable and internally consistent: the custody
+    collection parses, the basis names addresses that exist, a candidate is synthesized, and
+    every unresolved pairing names a contract present in the tree. What is deliberately not
+    checked is whether the clause holds. Asserting that would pin a failing reading into the
+    build, so satisfying P15-Q4 would turn the suite red - the defect an independent witness
+    demonstrated against an earlier revision of the unit tests.
+    """
+    failures: list[str] = []
+    gathered = experience.gather(ROOT)
+    failures += [f"live basis: {defect}" for defect in gathered["defects"]]
+    if not gathered["sources"]:
+        failures.append("live basis: the custody collection yielded no settled member, so the "
+                        "reading is not reaching this repository")
+    reading = recurrence.observe(ROOT)
+    if not reading["observed"]["candidate"].get("proposal_id"):
+        failures.append("live reading: no candidate Definition was synthesized")
+    for entry in reading["composition"]["unresolved"]:
+        if "is paired with" not in entry:
+            failures.append(f"live reading: an unresolved pairing does not name its contract "
+                            f"and term: {entry}")
+    for primitive, (relative, _) in neutrality.PRIMITIVES.items():
+        if not (ROOT / relative).exists():
+            failures.append(f"live reading: {primitive} names {relative}, which is not present")
+    return failures
 
 
 def _render(result: dict) -> str:
@@ -76,13 +112,15 @@ def cmd_selfcheck(args: argparse.Namespace) -> int:
                 if defects != expected.get(predicate, []):
                     failures.append(f"{variant}: {predicate} read {defects}; declared "
                                     f"{expected.get(predicate, [])}")
+    failures += _live_reading_is_reachable()
     if failures:
         print("FAIL: definition recurrence probe does not discriminate")
         print("\n".join("  " + line for line in failures))
         return 1
     print(f"PASS: definition recurrence closes on the positive variant, cites no unwitnessed "
-          f"member, and {len(fixture.EXPECTED_FAILURES)} defeating variants each fail their own "
-          "predicates for exactly the defects they declare")
+          f"member, {len(fixture.EXPECTED_FAILURES)} defeating variants each fail their own "
+          "predicates for exactly the defects they declare, and the live reading reaches this "
+          "repository")
     return 0
 
 

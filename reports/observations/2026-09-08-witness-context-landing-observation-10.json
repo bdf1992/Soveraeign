@@ -1,0 +1,202 @@
+{
+  "observation_schema": "soveraeign-participant-observation/v1",
+  "observation_id": "obs:witness-context-landing:10",
+  "observer_id": "claude-opus-5/sov-witness@2026-09-08T20:10Z#10",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "candidate_commit": "065b3c149249399e09447a715e001c5f90a70a14",
+  "candidate_tree": "d920139a7e5a1cc940e6f7904cbc0b244c9ac38c",
+  "base_commit": "05a5dde34cac94d40def28b3aedd01e6af26a75a",
+  "concern": "concern:harness/witness-context",
+  "schema_conformance": {
+    "state": "NOT_SCHEMA_VALID",
+    "note": "contracts/participant-observation.schema.json sets additionalProperties false and admits none of observer_id, contributed_to_build, verdict, candidate_commit, candidate_tree or base_commit. The landing gate reads exactly those six at the top level. No schema in contracts/ admits both, and nothing grades reports/observations/ against a schema, so this file is gate-readable and not schema-valid. Recorded rather than smoothed."
+  },
+  "method": {
+    "independence": "No file of the subject was edited by this observer. Read in a fresh full clone detached at the pinned commit, not the shared working tree.",
+    "own_method": [
+      "Mutation testing of the checker: each refusal-emitting statement in scripts/sovprompts/audit.py was neutered in a throwaway copy and the witness-context suite re-run. A surviving mutant is a behaviour the corpus does not pin. A second pass mutated the checker's data (FRAME_OWNERS entries, the ordering pair, the block-count floor, the INVERTED constant) rather than its statements.",
+      "An oracle outside the package: node v22.22.2 parsed all 23 live workflows and all 41 corpus mutations under the host's wrapper shape, and executed all 23 with recording stubs so the literal prompt text delivered to each sov-witness dispatch could be read, with every agent-produced value tagged at its offset.",
+      "Adversarial dispatch generation: 23 constructions were generated, each executed in node to prove the dispatch really fires, then graded by sovprompts.audit.violations."
+    ],
+    "self_correction": "A first parse sweep reported all 23 workflows and 40 of 41 corpus cases as node-invalid. That was this observer's harness, not the subject: the wrapper injected parameter names colliding with each file's own declarations. Corrected, node and scripts/sovprompts/lexer.py agree on every one of the 64 sources. Recorded because the uncorrected run would have been a false finding."
+  },
+  "claim": {
+    "asserted_by": "the builder of concern:harness/witness-context, in the handoff accompanying candidate 065b3c1",
+    "claims": [
+      "C1 Every witness prompt this repository can dispatch reaches its evaluator with the builder's account demoted, and nothing an earlier agent produced precedes that demotion.",
+      "C2 scripts/tests/fixtures/witness-context-defeats.json holds 41 constructions, each declaring the refusal it must produce, run in both directions; no declared refusal branch lacks a case.",
+      "C3 `agent` reaching a call through an expression no name resolves is refused as a class by escaped_agent_references.",
+      "C4 The classifier refuses a dispatch it cannot read once and one it can read two ways; agent names resolve to a fixpoint.",
+      "C5 Every changed path lies inside grant:standing-landing-loop.",
+      "C6 verify and lint pass at the commit.",
+      "C7 The candidate is linear on its base, carries no merge commit, and its declared tree is the tree git holds."
+    ]
+  },
+  "observed": {
+    "commands": [
+      {
+        "command": "git clone --no-local <repo> <clean>; git checkout --detach 065b3c1",
+        "exit_code": 0,
+        "result": "HEAD 065b3c1, tree d920139a7e5a1cc940e6f7904cbc0b244c9ac38c, git status empty"
+      },
+      {
+        "command": "python scripts/verify.py (clean checkout, run 1)",
+        "exit_code": 0,
+        "excerpt": "PASS: 61 checks in 26.522s wall; DEBT: no wall-clock grade at 26.522s; BUDGET DEBT: 18 check(s) over ceiling, 54.607s above budget"
+      },
+      {
+        "command": "python scripts/verify.py (clean checkout, run 2)",
+        "exit_code": 0,
+        "excerpt": "PASS: 61 checks in 23.922s wall"
+      },
+      {
+        "command": "python scripts/lint.py (clean checkout, runs 1 and 2)",
+        "exit_code": 0,
+        "excerpt": "PASS: repository hygiene (1310 text files, 606 Python modules, 10 named debt)"
+      },
+      {
+        "command": "git status --porcelain and git rev-parse HEAD^{tree} after both runs",
+        "exit_code": 0,
+        "result": "tree still d920139; the checks did not write the tree they graded"
+      },
+      {
+        "command": "python scripts/run_tooling_tests.py",
+        "exit_code": 0,
+        "excerpt": "PASS: repository tooling tests (120 modules, 4 shards); the three new witness-context modules are inside it"
+      },
+      {
+        "command": "python scripts/sov_tooling_population.py",
+        "exit_code": 0,
+        "excerpt": "PASS: tooling population (120 modules; independent listing agrees)"
+      },
+      {
+        "command": "sovkernel.scope.out_of_scope(grant:standing-landing-loop, each of 39 changed paths)",
+        "exit_code": 0,
+        "result": "None for all 39, individually and as one request"
+      },
+      {
+        "command": "git rev-list --merges 05a5dde..065b3c1 | wc -l",
+        "exit_code": 0,
+        "result": "0"
+      },
+      {
+        "command": "git rev-list 05a5dde..065b3c1 | wc -l",
+        "exit_code": 0,
+        "result": "1"
+      },
+      {
+        "command": "git merge-base --is-ancestor 05a5dde 065b3c1",
+        "exit_code": 0,
+        "result": "base is an ancestor"
+      },
+      {
+        "command": "node --check over 23 live workflows and 41 corpus mutations, host wrapper shape",
+        "exit_code": 0,
+        "result": "node and scripts/sovprompts/lexer.py agree on all 64; D31 is genuinely invalid JavaScript, as it claims"
+      },
+      {
+        "command": "node execution of all 23 workflows with recording stubs",
+        "exit_code": 0,
+        "result": "15 sov-witness dispatches reached; 14 satisfy the demotion ordering; sov-loop.js does not"
+      },
+      {
+        "command": "mutation testing: 18 statement mutants + 12 data mutants of scripts/sovprompts/audit.py",
+        "exit_code": 0,
+        "result": "6 survivors, all in the frame path"
+      }
+    ]
+  },
+  "reproduced": [
+    {
+      "claim": "C5",
+      "basis": "All 39 changed paths return None from sovkernel.scope.out_of_scope against grant:standing-landing-loop, checked one at a time and together. diagrams/ is absent from the candidate, which is what the ninth reading's blocking finding required."
+    },
+    {
+      "claim": "C6",
+      "basis": "verify exit 0 and lint exit 0, twice each, in a clean clone detached at 065b3c1 with nothing else present. The candidate record was not consulted for this. The tree hash was identical before and after both runs, so no check wrote what it graded. This is the claim the ninth reading defeated on the previous candidate; it holds on this one."
+    },
+    {
+      "claim": "C7",
+      "basis": "One commit in the range, zero merges, base is an ancestor, and git's tree for 065b3c1 is d920139a7e5a1cc940e6f7904cbc0b244c9ac38c as declared."
+    },
+    {
+      "claim": "C4",
+      "basis": "Six probes: an agentType read from an opaque expression, a concatenated type, a duplicate agentType key in one object literal, a stale write into a reused options binding, a spread decoy, and a three-hop alias. The first five are refused with 'an agent type this cannot read once'; the sixth resolves - _agent_names returns {agent,h1,h2,h3} - and the substantive label rule then fires on it. Neutering the kind-is-None branch is killed by the corpus."
+    },
+    {
+      "claim": "C2, in part",
+      "basis": "The corpus holds 41 cases with unique ids, each naming its expected refusal, and the test requires that named refusal rather than counting violations. Under node's own parser every one of the 41 is valid JavaScript except D31, which claims to be invalid and is. No case now passes on the readability branch while claiming another. That specific ninth-reading defect is closed."
+    }
+  ],
+  "dissented": [
+    {
+      "claim": "C1",
+      "finding": "The frame's interior is not graded, so the mechanism C1 names as its primary route cannot see the defect this concern exists to refuse.",
+      "cause": "In scripts/sovprompts/audit.py, _dispatch_violations grades only prompt[:prompt.index('witnessFrame(')] and then continues. Everything interpolated inside the frame's own blocks is skipped by the position rule, the label rule, the INVERTED check and the provenance check alike. scripts/tests/test_witness_context_provenance.py, test_nothing_is_concatenated_before_the_frame, is bounded the same way.",
+      "evidence": [
+        "Splicing built.summary into the SUBJECT block of witnessFrame in .claude/workflows/sov-loop.js, introduced by the sentence 'Start from what the builder concluded, which settles it:', yields violations() == [] - zero.",
+        "Executed in node with recording stubs, that same mutation delivers to the sov-witness dispatch a prompt whose first 66 characters are the builder's own summary named as settling, with the demotion sentence at offset 2356.",
+        "Placing the inverted sentence 'oracle and never artifact' inside a frame block also yields zero violations: audit.py's INVERTED check sits after the continue and is unreachable on the frame path.",
+        "The unmutated tree already shows the narrower form: sov-loop.js's SCOPE block interpolates built.changed_paths, which an earlier agent produced, at offset 789, while the demotion sentence sits at 2271. The surrounding prose does demote it in place - 'Those paths may locate the work and are not evidence' - so the design intent is served, but C1 as written says nothing an earlier agent produced precedes the demotion, and something does."
+      ],
+      "history": "This is not new. The third reading recorded 'Any witness prompt whose text contains witnessFrame( is skipped by the repository-wide rule.' It is still true at 065b3c1, six candidates later, and the corpus contains no case for it. Found here independently by executing the workflows before any prior observation was read."
+    },
+    {
+      "claim": "C3",
+      "finding": "escaped_agent_references refuses a class narrower than the one claimed. It refuses a name reaching a call it cannot follow; it does not refuse a dispatch reaching `agent` with no name involved.",
+      "evidence": [
+        "eval('agent')(prompt, { agentType: 'sov-witness' }) appended to sov-loop.js yields violations() == [] and, executed in node against a lexically scoped `agent`, dispatches a real witness call carrying built.summary undemoted. Direct eval sees lexical scope, so this does not depend on how the host provides `agent`.",
+        "The same holds for eval('ag'+'ent') and for eval of the whole call text.",
+        "scripts/sovprompts/scan.py masked() blanks string contents by design, so the token `agent` inside a string literal is invisible to every reader in the package and no occurrence exists for the class rule to report.",
+        "Sixteen other constructions were generated and each executed in node - computed member, comma operator, array index, bind, conditional, object member read back, parameter passthrough, optional call, spread, Reflect.apply, getter, Map lookup, destructured alias, double alias, array destructure, Function.prototype.call - and all sixteen are reported. The class rule is strong; its stated boundary is wrong."
+      ],
+      "reachability": "No workflow uses eval today, and this is an adversarial construction rather than plausible drift. It is recorded because the docstring's claim is 'this refuses the class', and a stated ceiling that is wrong is the defect three docstrings in this package were already rewritten for."
+    },
+    {
+      "claim": "C2, in part",
+      "finding": "One declared refusal branch still has no case, and three of the four frame requirements plus both halves of the ordering rule are individually unpinned.",
+      "evidence": [
+        "Deleting audit.py's 'the frame has no {head} block' append leaves the entire witness-context suite green. It is the sole refusal for renaming a frame block's head: renaming SCOPE, CHECKS or STATE produces exactly that one violation and nothing else.",
+        "Deleting the SCOPE, CHECKS or STATE entry from FRAME_OWNERS each leaves the suite green. Only SUBJECT is pinned, by D09. All three are live code: moving 'git status', 'scripts/verify.py' or 'committed bytes' out of its owning block produces the corresponding refusal today.",
+        "Dropping either 'CONTRACT' or 'CHECKS' from the ordering pair leaves the suite green, because D41 moves the account ahead of both and the survivor still fires. A single-element regression there would be invisible.",
+        "Renaming the CHECKS head is the sharpest case: it silently disables both the required-phrase check and the ordering check for that block, and only the unpinned branch catches it."
+      ],
+      "history": "The eighth reading found five refusal branches with no case; four were closed with D18, D30, D40 and D41. The class recurred one level finer - at the data the branches read rather than at the branches themselves - and audit.py's own docstring names the consequence: 'A repair that closes a defeat without a corpus entry is a repair nothing will notice losing.'"
+    }
+  ],
+  "unattestable": [
+    {
+      "subject": "the withdrawn portion of the concern",
+      "reason": "acceptance/A25.json and decisions/0104-the-landing-grant-admits-prose-it-cannot-land.md are not in tree d920139. They exist only in commits descending from the candidate. Whether the withdrawal was the right call cannot be graded against this pinned subject, because the artifacts stating it are outside it. The exclusion itself is coherent: the standing grant excludes decisions/ and the root governing documents, so that material could not have been landed here."
+    },
+    {
+      "subject": "the globalThis escape",
+      "reason": "globalThis['agent'](prompt, {agentType:'sov-witness'}) and three variants dispatch and are unreported, but only where the host binds `agent` as a global property. globalThis appears nowhere in this repository and no document records how a workflow receives `agent`, so whether this route is reachable cannot be established from the artifact. Recorded as conditional, not as a defeat."
+    }
+  ],
+  "residuals": [
+    "independence_basis, MEASURED and DECLARED_ONLY are new in this candidate and are written into an append-preserving operational ledger. soveraeign-landing-ledger/v1 has no schema in contracts/ - the id exists only in scripts/sovland/ledger.py - and neither the term nor its values appear in CLASSIFICATION.md. AGENTS.md requires JSON Schema at machine boundaries and requires enum values to match the vocabulary documents. The function's docstring honestly withdraws the claim that it measures independence; the field name in the record does not, and a later reader of the ledger sees a name that asserts more than the value means.",
+    "observation_resolved is set by both callers as (observation_path is not None), the same fact independence_basis has already tested one line earlier. On both real call paths it is a second spelling of a check that has already run, so it grades nothing an attacker controls separately. It guards only a hand-assembled request.",
+    "Four files on the landing and authority path changed - scripts/sov_land.py, scripts/sovkernel/authority.py, scripts/sovland/candidates.py, scripts/sovland/ledger.py - and the builder's account describes none of them. Two are new refusals in the gate that grades this very observation: an empty observer_id, and an observation among the paths being landed. Both are genuine measurements and are welcome; they are recorded here because a witness should not learn from the diff what the account omitted.",
+    "scripts/sovprompts/render.py states that anything outside string literals, concatenation and array joins 'is reported as unreadable rather than silently passing'. A template literal is not: it renders as the marker <expr> and contributes nothing. In the frame path the structural checks catch the consequence, so it fails closed - but by a different refusal than the docstring promises, and one of the two that catch it is the unpinned branch above.",
+    "scripts/sovprompts/lexer.py, the comment at lines 262 to 273, is garbled: a clause ending 'so this reader and the mask' is followed by a restarted sentence. The paragraph is load-bearing - it is where the withdrawal of the 'cannot drift apart' claim is recorded - and it does not currently read.",
+    "scripts/sovprompts/bindings.py is 299 lines against the 300-line ceiling in ENGINEERING.md. One line of headroom on the module every other reader in the package depends on. Already recorded by the ninth reading; repeated because it is unchanged.",
+    "Both new witness-context test modules read .claude/workflows/*.js from the working tree rather than from committed bytes. Recorded by the ninth reading and still true at this candidate. It did not affect this reading, which ran in a clean detached checkout where the two are identical.",
+    "verify records budget debt: 18 checks over ceiling, 54.6s above budget on the first run. Attributed debt, not a refusal, per contracts/verification-budget.json. Noted so the number is on the record rather than absent from it."
+  ],
+  "design_judgement": {
+    "question": "coherent design, or an accumulation that passes its own tests",
+    "reading": "Coherent in its centre and accumulated at its edge. The centre is genuinely well-made: one mask rather than eight private scanners, provenance followed to bindings rather than name lists matched, a fixpoint rather than a pattern, fail-closed classification, and a corpus that names the refusal each case must produce rather than counting them. Those are the right shapes and they survived every attack this reading generated except one. The edge is accumulated: the frame path is a special case that skips four rules, and it is the path the primary claim depends on. Ten of the eleven survivors and near-misses found here sit in that one branch. The structural work readings six through nine split over - making the frame the only way to build a witness prompt - is not what this reading finds owed. What is owed is narrower and needs no cross-file imports: the frame path currently returns early, and everything that returns early is ungraded.",
+    "stated_ceiling": "The builder's stated ceiling - that these checks read whether a phrase is present and where it sits, not what a prompt means - is accurate and was confirmed rather than defeated. It is also not the ceiling that bit here. The frame interior is not a limit of reading meaning; it is a branch that stops reading."
+  },
+  "standing_supported": {
+    "transition": "NONE",
+    "note": "This observation supports no standing transition. BUILT -> WITNESSED is not supported while the primary claim's own mechanism cannot see the defect the concern exists to refuse. The work remains BUILT. Nothing here settles or ratifies anything, and an observation is not a settlement."
+  },
+  "judgement_items": [
+    "Does SDLC.md Release gate item 6, written about an independent evaluator in a Red engagement, govern every sov-witness dispatch this harness makes? The seventh reading raised this and it is unanswered at the tenth. It sets whether the frame is required or merely offered, and this observer cannot settle it.",
+    "Should a repository record carry a field named independence_basis whose function docstring states it does not measure independence? Naming in a persisted operational record is owner-held.",
+    "Is a landing admissible on a witness observation that cannot be schema-valid, given that no schema in contracts/ admits the six keys the gate requires? Every one of the ten observations in this directory has the same defect, and nothing grades the directory."
+  ]
+}

@@ -22,7 +22,7 @@ for this clause."""
 
 PRIMITIVES: dict[str, str] = {
     "identity": "contracts/principal.schema.json",
-    "session": "contracts/source.schema.json",
+    "session": "services/console/contracts/operator-session.schema.json",
     "authority": "contracts/authority-grant.schema.json",
     "work": "contracts/work-circuit.json",
     "custody": "contracts/custody.schema.json",
@@ -33,8 +33,16 @@ PRIMITIVES: dict[str, str] = {
     "discovery": "contracts/node-interface.schema.json",
 }
 """The ten primitives `conformance/commissioning.py` requires, each with the contract that
-declares it generically. The name on the left is the primitive; the path on the right is
-where a participant reads what it is, and is checked to exist rather than assumed."""
+declares it. The name on the left is the primitive; the path on the right is where a
+participant reads what it is, and is checked to exist rather than assumed.
+
+`session` binds to the Console Service's operator session because that is the only contract
+in the repository that declares a session object. It is service-scoped rather than kernel
+scoped, which is a real residual: an earlier revision bound `contracts/source.schema.json`,
+which declares the SPEC Source information object - an immutable captured input - and is
+not a session at all. An independent witness read that as a synonym for an existing domain
+term, which `AGENTS.md` forbids, and it was. A kernel-level session contract does not
+exist; when one lands, this binding moves to it."""
 
 ALTERNATE_INSTITUTION = {
     "institution": "institution:procurement",
@@ -45,14 +53,54 @@ examples. Its role names share nothing with the proving four; if the primitives 
 under it, they do not depend on the commissioning instance."""
 
 
+def _alternate_tokens() -> set[str]:
+    """The alternate institution's role names, normalised the way a vocabulary would spell them."""
+    tokens = set()
+    for role in ALTERNATE_INSTITUTION["roles"]:
+        upper = role.upper()
+        tokens |= {upper, upper.replace("-", "_"), upper.replace("-", "")}
+    return tokens
+
+
+def _closes(values: list[Any]) -> bool:
+    """True when this vocabulary admits a proving role and admits no alternate one.
+
+    An earlier revision asked whether *every* value was a proving-role name. That reads a
+    vocabulary of exactly the four as closed and one of the four plus any fifth name as
+    open, which is the wrong question: what matters is whether an institution the founder
+    did not predict can fill the field. `["worker", "orchestrator", "controller", "owner"]`
+    admits no `procurement-steward` and is closed against it, though it is not four-of-four.
+    An independent witness found that gap with exactly that example.
+
+    Two of the four are required, not one, and that is a judgement worth stating. `WORKER`
+    alone is also an actor *kind*: `["HUMAN", "MODEL", "WORKER", "SYSTEM"]` in
+    `contracts/principal.schema.json` is a taxonomy of what sort of thing acts, not a
+    roster of the commissioning institution, and a procurement steward is a `HUMAN` or a
+    `MODEL` in it. Reading that as closed would report institution-neutrality defeated by a
+    vocabulary that has nothing to do with institutions. Two or more of the specific four
+    is the point at which a field is naming the proving roles rather than overlapping one
+    word with them. What would defeat this rule: a real vocabulary that closes against an
+    alternate institution using exactly one proving-role name and no other.
+    """
+    spelled = {str(value).upper().replace("-", "_") for value in values}
+    return len(spelled & PROVING_ROLES) >= 2 and not (spelled & _alternate_tokens())
+
+
 def _closed_enums(node: Any, path: str) -> list[tuple[str, list[str]]]:
-    """Every `enum` under `node` whose values are all proving-role names, with its path."""
+    """Every closed vocabulary under `node`, with its path.
+
+    Known gap, stated rather than hidden: a JSON Schema `const`, a `pattern` regex, and a
+    required-property closure can each pin a field to one role, and none is read here. A
+    `const` cannot be read at all under the two-role rule above, since a vocabulary of one
+    can never hold two. An earlier revision scanned `const` anyway; a unit test proved the
+    branch unreachable, so it is gone rather than left looking like coverage. What this
+    reader measures is enum closure in the ten bound contracts, and nothing wider.
+    """
     found: list[tuple[str, list[str]]] = []
     if isinstance(node, dict):
         values = node.get("enum")
-        if isinstance(values, list) and values:
-            if {str(value).upper() for value in values} <= PROVING_ROLES:
-                found.append((path, [str(value) for value in values]))
+        if isinstance(values, list) and values and _closes(values):
+            found.append((path, [str(value) for value in values]))
         for key, value in node.items():
             found += _closed_enums(value, f"{path}/{key}")
     elif isinstance(node, list):

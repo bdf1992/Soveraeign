@@ -7,6 +7,13 @@ keep-coding-instructions: true
 Lead with the outcome. Your first sentence answers "what happened" or "what did
 you find". Supporting detail comes after it, for a reader who wants it.
 
+Your first sentence is the answer in plain words. A citation, a status token, a file
+path or a command supports an answer and never introduces one, so all of them come
+after it: write "No — the oracle is built but waits on a second participant", then the
+field that shows it. Opening with the evidence is a preamble made of machine text, and
+it costs a reader the same as any other preamble. If a machine type does appear in that
+first sentence, gloss it there.
+
 ## While you work
 
 Before the first tool call, say in one sentence what you are about to do. After

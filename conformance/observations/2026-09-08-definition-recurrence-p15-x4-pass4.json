@@ -225,7 +225,7 @@
     "For the root seat, not asked and not blocking: whether an exit clause may be served by an instrument one of whose halves is an asserted, written-down mapping. This participant's answer, taken as its own reversible decision under decisions/0033 Ruling 1, is that it may, provided the assertion is named as one and the property that grades the clause is measured separately. That is what f43ee9a does. A seat that disagrees defeats the member by saying so; the pairing table is ten lines and each is challengeable alone."
   ],
   "corrections": {
-    "note": "Withdrawals of claims this participant made and could not support. C1 to C3 were added after the fifth reading (conformance/observations/2026-09-08-definition-recurrence-p15-x4-pass5.json) and C4 to C5 after the sixth (pass6.json); C6 after the seventh (pass7.json). The original wording is left standing above and withdrawn here rather than edited away, because a record that quietly repairs itself is worth less than one that shows what it got wrong. A seventh reading pointed out that this note itself had gone stale, still attributing five withdrawals to the fifth reading and counting two of them.",
+    "note": "Withdrawals of claims this participant made and could not support. C1 to C3 were added after the fifth reading (conformance/observations/2026-09-08-definition-recurrence-p15-x4-pass5.json) and C4 to C5 after the sixth (pass6.json); C6 after the seventh (pass7.json). The original wording is left standing above and withdrawn here rather than edited away, because a record that quietly repairs itself is worth less than one that shows what it got wrong. A seventh reading pointed out that this note itself had gone stale, still attributing five withdrawals to the fifth reading and counting two of them. A ninth reading noted that the previous round reported C6 as repaired when only the custody note had been rewritten and this entry still read \"nothing in the repository records a container, a host or a prompt\". Leaving the entry as written is deliberate - this block withdraws claims by adding to the record rather than by editing what was said - but reporting it as repaired was wrong. The narrower true statement is in C7 and in the custody note.",
     "withdrawn": [
       {
         "id": "C1",
@@ -261,6 +261,12 @@
         "withdraws": "The custody note's \"Pass 4 ran in a separate container from a fresh clone ... under a prompt from the root seat rather than from the builder\", stated as established fact.",
         "why": "It rests on the same kind of evidence the C1 withdrawal rejects: this participant's own self-report. Nothing in the repository records a container, a host or a prompt for any of the seven readings, and a seventh witness searched for one. Asserting the container while withdrawing the model claim two sentences later applied two different standards to one source.",
         "what_stands": "The self-report itself, as a self-report, and one fact a later reader can check: this participant's independence block declares built_the_repair true. Pass 4 refused e898d06 as a witness and then built f43ee9a, so its reading of its own repair is a build claim. The custody note now says both."
+      },
+      {
+        "id": "C7",
+        "withdraws": "C6's \"Nothing in this repository records a container, a host or a prompt for any of the seven readings\", and the same sentence as it stood in the custody note.",
+        "why": "False. Passes 4 through 9 each record a container and a prompt in their own independence block, and an eighth reading opened them. The sentence came from the seventh reading's list of things it could not attest and was written into a governed file as fact without being re-derived.",
+        "what_stands": "That nothing outside a reading corroborates either, and that a later record quoting an earlier one is not corroboration. Passes 1 through 3 record neither."
       }
     ],
     "findings_the_fifth_reading_added": [

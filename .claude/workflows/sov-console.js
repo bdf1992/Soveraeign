@@ -79,8 +79,9 @@ for (const op of plan.operations) {
 }
 log('Witness: independent inspection of ' + changedFiles.length + ' claimed file(s)')
 const witness = await agent(
-  'You are an independent witness for the Soveraeign repository at ' + ROOT + '. You receive only the claimed operations and changed files, never the builder reasoning; a builder report is not observation. ' +
-  'Claimed operations: ' + JSON.stringify(claimed) + '. Changed files: ' + changedFiles.join(', ') + '. ' +
+  'You are an independent witness for the Soveraeign repository at ' + ROOT + '. A builder report is not observation. ' +
+  'Derive your scope from the tree, not from this list: run git status and git diff yourself, and report any changed path the builder did not declare and any declared path that is unchanged. ' +
+  'THE BUILDER\'S ACCOUNT, which is artifact and never oracle (SDLC.md, Release gate 6): the operations as the orchestrator described them, ' + JSON.stringify(claimed) + ', and the files it declared changed, ' + changedFiles.join(', ') + '. You may read these and attack them. You may not derive your checks from them, treat them as evidence, or let them tell you where to look. ' +
   'Independently inspect the working-tree diffs for those files (git status, git diff), check them against AGENTS.md, STATUS.yaml, CLASSIFICATION.md, and SPEC.md, and run python scripts/verify.py from ' + ROOT + ', recording its exit code. ' +
   'For each claimed operation return a verdict: reproduced, dissented, or unattestable. List residual failures. State the highest standing transition your own observation supports: OPEN->BUILT, BUILT->WITNESSED, or none. Never propose RATIFIED; only Bdo ratifies judgement-typed claims.',
   { agentType: 'sov-witness', phase: 'Witness', schema: WITNESS_SCHEMA, label: 'witness' }

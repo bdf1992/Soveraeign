@@ -1,0 +1,22 @@
+{
+  "record_schema": "soveraeign-lease-settlement/v1",
+  "lease_id": "lease:concern-soveraeign-lease-settlement-record-2",
+  "concern": "concern:soveraeign/lease-settlement-record-2",
+  "concern_kind": "concern",
+  "held_by": "urn:soveraeign:principal:instance:session-6352b5",
+  "parent_lease": null,
+  "definition": "reconnaissance-lap/settlement-record",
+  "definition_provenance": "USER_AUTHORED",
+  "closure_condition": "closing a lease writes a committed settlement record carrying the closure's own terms",
+  "defeating_condition": "a field the lease carries reads as null in the record",
+  "grant_id": null,
+  "effect_ceiling": "RECORD_LOCAL",
+  "receipt_id": "receipt:soveraeign/lease-settlement-record",
+  "standing_reached": "BUILT",
+  "evidence_addresses": [
+    "scripts/sovlease/settlement.py",
+    "scripts/tests/test_lease_settlement.py"
+  ],
+  "witnessed_by": null,
+  "closed_at": "2026-09-08T18:14:58.386484Z"
+}

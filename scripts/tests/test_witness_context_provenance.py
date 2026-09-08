@@ -27,10 +27,10 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from sovharness.prompts import (  # noqa: E402
-    blocks, broken_concatenation, dispatches, interpolated, prompt_of, rendered,
-    resolved_prompt,
+from sovharness.dispatch import (  # noqa: E402
+    broken_concatenation, dispatches, interpolated, prompt_of, resolved_prompt,
 )
+from sovharness.render import blocks, rendered  # noqa: E402
 
 WORKFLOWS = ROOT / ".claude" / "workflows"
 LOOP = WORKFLOWS / "sov-loop.js"

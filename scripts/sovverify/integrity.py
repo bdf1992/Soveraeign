@@ -9,6 +9,16 @@ from sovverify.shape import ROOT, Check
 
 INTEGRITY_CHECKS = (
     Check(
+        "harness workflow integrity",
+        [sys.executable, "scripts/sov_workflows.py"],
+        ROOT,
+        "reads the bytes of every .claude/workflows/*.js file at the moment of the check. "
+        "lint covers no .js suffix, so the twenty-three files that assemble every prompt "
+        "this repository sends an agent were graded by nothing at all. It reads the two "
+        "shapes it can be certain of and claims no reading of meaning",
+        (".claude/workflows",),
+    ),
+    Check(
         "tooling population integrity",
         [sys.executable, "scripts/sov_tooling_population.py"],
         ROOT,

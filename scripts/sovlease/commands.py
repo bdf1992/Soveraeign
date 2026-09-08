@@ -19,6 +19,7 @@ import json
 
 from sovkernel import lease_budget
 from sovkernel import work_lease
+from sovlease import settlement
 from sovlease import store
 from sovsession import commands as session_commands
 from sovsession import store as session_store
@@ -231,7 +232,14 @@ def cmd_close(args: argparse.Namespace) -> int:
     store.append(directory, store.LEASES_LOG,
                  {"event": "close", "lease_id": args.lease,
                   "closure_evidence": candidate["closure_evidence"]})
-    _emit(candidate, args.as_json, f"{args.lease} closed at {args.standing}")
+    # The lease log lives under the common git directory and travels with no clone, so a
+    # closure also writes a committed record. Liveness stays uncommitted; a settlement
+    # does not. See sovlease/settlement.py.
+    written = settlement.write(candidate, Path.cwd())
+    detail = f"{args.lease} closed at {args.standing}"
+    if written is not None:
+        detail += f"; settlement recorded at {written.relative_to(Path.cwd()).as_posix()}"
+    _emit(candidate, args.as_json, detail)
     return 0
 
 

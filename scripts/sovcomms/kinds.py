@@ -18,7 +18,7 @@ import sys
 #: in a grant description out of the population this grades.
 MEASURE_MARKER = re.compile(
     r"\b(measured|measurement|measurements|on average|averaged?|median|percent|"
-    r"turns?|sessions?|tool calls?|invocations measured|runs\b|times\b|"
+    r"sessions?|tool calls?|invocations measured|runs\b|times\b|"
     r"of all|of his|of her|of their|of the ten|of the twenty)\b",
     re.I)
 

@@ -81,6 +81,35 @@ class UnglossedToken(unittest.TestCase):
         self.assertEqual(2, len(check_unglossed_token("t", "WITNESSED here, and UNATTESTABLE too.")))
 
 
+class HumanSurfaces(unittest.TestCase):
+    """The gloss rule runs somewhere real, not only on text submitted by hand.
+
+    A rule whose grader nothing invokes is the shape that already failed once on this
+    branch: the UserPromptSubmit hook was configured, wrong, and silent for every turn.
+    """
+
+    def test_grade_covers_the_declared_human_surfaces(self):
+        import sov_comms
+        declared = sov_comms.contract()["subjects"]["human_surfaces"]
+        self.assertIn("acceptance", declared["glob"])
+        self.assertIn("claim", declared["prose_fields"])
+
+    def test_the_live_packets_are_graded_and_clean(self):
+        import sov_comms
+        self.assertEqual([], sov_comms.grade_human_surfaces())
+
+    def test_settled_packets_are_exempt(self):
+        """Grading an accepted packet would edit the record of a past presentation."""
+        import sov_comms
+        exempt = sov_comms.contract()["subjects"]["human_surfaces"]["exempt"]
+        self.assertIn("acceptance/accepted/", exempt)
+
+    def test_a_verb_beside_a_pronoun_is_not_a_measurement(self):
+        """`turn one on or off` is a switch, not a count of anyone's turns."""
+        text = "You look at every schedule and turn one on or off without editing JSON."
+        self.assertEqual([], check_unsourced_number("t", text))
+
+
 class UnsupportedStanding(unittest.TestCase):
     """A witnessed claim is graded against the witness records, not itself."""
 

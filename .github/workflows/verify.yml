@@ -8,6 +8,31 @@ name: verify
 # The protected branch already names the repository matrix checks explicitly,
 # so their names remain stable while candidate evidence is added beside them.
 # Neither result transfers to the other subject.
+#
+# Every verification job writes its per-check Observation records and retains them.
+# An exit code is one bit, and one bit cannot tell a defective change from a busy
+# host from another session writing the tree mid-run. `verify.py --observe` already
+# emits one record per check against `contracts/observation.schema.json`, carrying
+# the addresses that check read, their digests, and both its clocks. Retaining that
+# file is what lets a later reader attribute a red run instead of guessing, the way
+# `scripts/sovland/isolation.py` attributes one at the landing gate. The records are
+# kept when the run fails as well: that is the run whose attribution matters, and a
+# job that keeps evidence only on the passing path answers the easy question only.
+#
+# The retention step refuses an absent file rather than warning. A green verify that
+# produced no records is the case worth catching, and warning about it leaves the
+# guarantee unenforced at runtime - the permissive direction, and the opposite of
+# what the module cited above does with its own uncertainty.
+#
+# The condition is `!cancelled()` rather than `always()`, and that costs something
+# rather than nothing: with `fail-fast: true`, a matrix leg cancelled after its own
+# verify finished loses records `always()` would have kept. The trade is that every
+# leg cancelled before verify ran would otherwise fail its upload under the `error`
+# above, adding a red step to runs already being read for the failure that caused
+# the cancellation. Cancellation reaches a leg by two routes here, `fail-fast` and
+# the `cancel-in-progress` on this workflow's concurrency group, and the loss is the
+# same on both. Independent witnesses are why this states the trade twice over
+# rather than claiming a cancelled leg has nothing to lose.
 on:
   pull_request:
   push:
@@ -53,7 +78,15 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Verify candidate repository
-        run: python scripts/verify.py
+        run: python scripts/verify.py --observe "$RUNNER_TEMP/candidate-observations.json"
+      - name: Retain what the candidate verification observed
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidate-observations-${{ github.event.pull_request.head.sha }}-py${{ matrix.python-version }}
+          path: ${{ runner.temp }}/candidate-observations.json
+          if-no-files-found: error
+          retention-days: 30
       - name: State the evidence subject
         if: always()
         run: |
@@ -95,7 +128,15 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Verify repository
-        run: python scripts/verify.py
+        run: python scripts/verify.py --observe "$RUNNER_TEMP/repository-observations.json"
+      - name: Retain what the repository verification observed
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: repository-observations-${{ github.sha }}-py${{ matrix.python-version }}
+          path: ${{ runner.temp }}/repository-observations.json
+          if-no-files-found: error
+          retention-days: 30
       - name: State the evidence subject
         if: always() && github.event_name == 'pull_request'
         run: |

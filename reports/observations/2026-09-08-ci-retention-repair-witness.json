@@ -1,0 +1,131 @@
+{
+  "observer": "sov-witness (independent; did not build, edit, advise on, or review any observed file before this reading; no helper was recruited)",
+  "concern": "verification / CI observation retention repair on claude/exit-zero-logging-imw5wu",
+  "timestamp": "2026-09-08",
+  "witnessed_subject": {
+    "branch": "claude/exit-zero-logging-imw5wu",
+    "pull_request": 232,
+    "base_commit": "d00f46ad38448856fa692399d12cf0a324266004",
+    "candidate_commit": "77dfd82515607f126e7c977f7cfa24765e3a7cdd",
+    "candidate_tree": "36f22c8ea4270dd8e5e562fad0fd272841bca2de",
+    "construction_commits": ["5d55a7a", "fa8ec9a", "77dfd82"],
+    "working_tree_state": "git status --porcelain empty before and after every probe; HEAD^{tree} read 36f22c8e at both ends; two full verify runs produced identical observed_state_digests for all 55 subjects, so the tree did not move underneath this reading (trap T6 checked, not assumed).",
+    "prior_witness": "reports/observations/2026-09-08-ci-observation-retention-witness.json, committed at fa8ec9a, attests candidate 714337aebd21948742746f8fc5c4957f4788dbca. That commit is NOT an ancestor of this head; the branch was rebased and 5d55a7a carries the equivalent work. Checked rather than assumed: git diff 714337a 5d55a7a -- .github/ scripts/tests/test_repository_ci_workflows.py is empty, so the prior dissent transfers byte-for-byte to this branch's first commit."
+  },
+  "no_finding_envelope": "No contract-typed Finding (contracts/finding.schema.json) is emitted. That schema requires record_projection_id; no RecordProjection was supplied with this task and none can be reconstructed at a declared cutoff. A projection id will not be invented to satisfy the schema. This record is an Observation. It interprets evidence, settles nothing, and ratifies nothing.",
+  "claim_under_witness": "Every scripts/verify.py invocation in .github/workflows writes its per-check Observation records and the job that wrote them retains that exact file unconditionally and refusingly; and scripts/tests/test_repository_ci_workflows.py now refuses the ways of writing a verify step that the previous guard let through.",
+  "method": "Read the prior witness record first, then git diff 5d55a7a..77dfd82. Every mutation below was constructed by hand against a throwaway copy of .github/workflows in the scratchpad, with the guard module's WORKFLOWS constant re-pointed at the copy, or by calling unretained() directly on constructed text. The new test cases' own assertions were not relied on as evidence for any verdict. No repository file was read as a report about the artifact where the artifact itself was readable. No repository file was modified except this record.",
+  "claims": [
+    {
+      "claim": "1. The eight bypasses the prior witness reported are now refused",
+      "verdict": "REPRODUCED",
+      "evidence": "Control first: unmutated copy PASSES. Then eight hand-built mutations of the real verify.yml candidate step or the real workflow directory: P1 `run: >-` folded scalar REFUSED; P2 `run: |` literal block REFUSED; P3 `bash -lc \"...\"` REFUSED; P4 `python3` REFUSED; P5 `cd \"$GITHUB_WORKSPACE\" && ` REFUSED; P6 a new .github/workflows/extra.yaml carrying a bare verify step REFUSED, and its --observe-but-unuploaded variant REFUSED; P11b the retention step moved into a second job REFUSED; P12 a retention step with no `- name:` REFUSED. The two further forms that witness named separately are also refused: `always() && github.event_name == 'push'` REFUSED, and `if-no-files-found: warn` REFUSED."
+    },
+    {
+      "claim": "2. The refusals hold for all four real retention steps, not only the one the tests exercise",
+      "verdict": "REPRODUCED",
+      "evidence": "Swept verify.candidate, verify.repository, qa-lanes.blue and hygiene-repair.hygiene. For each, three independent defeats against the real file: --observe deleted from that step, the retention step's `if:` deleted, and that step's `if-no-files-found` flipped to warn. Twelve of twelve REFUSED."
+    },
+    {
+      "claim": "3. The workflow changes are exactly what the commit message says",
+      "verdict": "REPRODUCED",
+      "evidence": "git diff 5d55a7a..77dfd82 -- .github/ is four `if: always()` -> `if: ${{ !cancelled() }}`, four `if-no-files-found: warn` -> `error`, and a seven-line comment block in verify.yml. Nothing else. At head, `if: ${{ !cancelled() }}` occurs exactly four times across ten workflows (verify.yml 2, qa-lanes.yml 1, hygiene-repair.yml 1) and no `if-no-files-found: warn` remains anywhere in .github/. The neighbouring `if: always()` on the step-summary and standing steps is untouched. Whole-branch git diff d00f46a..77dfd82 -- .github/ is three files, +59 -4: no job added, renamed or re-gated, no permissions block, no timeout, no checkout ref changed."
+    },
+    {
+      "claim": "4. python scripts/verify.py --observe writes a real, schema-shaped file",
+      "verdict": "REPRODUCED",
+      "evidence": "Exit 0, twice. 55 records, 55 distinct subjects, one shared run_id, all PASS, zero records with an empty address list. jsonschema is absent, so contracts/observation.schema.json was applied by hand: all eight required keys present, addresses aligned positionally with digests, every digest matching ^sha256:[0-9a-f]{64}$: zero violations across 55 records. No /home/ path and no drive letter appears in the serialized payload. The FAIL lines in the verify log are the CONF-I*-DEF defeating fixtures failing as declared; the run's exit is 0 (trap T2: green means unchanged, not qualified)."
+    },
+    {
+      "claim": "5. python scripts/lint.py passes and the new modules run inside verify",
+      "verdict": "REPRODUCED",
+      "evidence": "lint exit 0; PASS: repository hygiene (1254 text files, 575 Python modules, 10 named debt). The two WARN entries are pre-existing named debt in witness/probes/. Both test modules are in run_tooling_tests.test_modules() (114 modules), and the verify log records PASS: repository tooling tests (114 modules, 4 shards), so both execute under scripts/verify.py and therefore in every CI job that runs it. test_repository_ci_workflows.py is 269 lines, under the 300-line ceiling."
+    },
+    {
+      "claim": "6. Both test modules pass",
+      "verdict": "REPRODUCED",
+      "evidence": "python -m unittest scripts.tests.test_repository_ci_workflows -v: Ran 16 tests, OK, exit 0. python -m unittest scripts.tests.test_verify_observe_cli -v: Ran 4 tests, OK, exit 0. scripts.tests.test_verify_observations: Ran 33 tests, OK."
+    },
+    {
+      "claim": "7. test_verify_observe_cli.py proves what it claims; patching verify.CHECKS does not let it pass over a broken CLI",
+      "verdict": "REPRODUCED",
+      "evidence": "Copied scripts/, contracts/ and AGENTS.md into a scratch root and broke main()'s --observe six ways in the copy, restoring between each. B1 `if False and args.observe` (silent no-op): FAILED, 2 failures 2 errors. B2 `if args.observe and not failed` (records on the passing path only): FAILED, and specifically test_a_failing_run_still_leaves_its_records. B3 mkdir(parents=True) removed: FAILED, and specifically test_a_missing_directory_is_created_rather_than_losing_the_run. B4 flag renamed to --observations with dest preserved: FAILED, all four. B5 observed_state_addresses emptied: FAILED. B6 `failed = []` (exit code always 0): FAILED. The patch replaces the module attribute CHECKS, which main() resolves at call time, so argparse, the mkdir, the write ordering relative to the non-zero return, the record shape and the exit code are all really exercised. It is not a tautology."
+    },
+    {
+      "claim": "8. The guard refuses ANY future verify step that does not retain its observations",
+      "verdict": "DISSENTED",
+      "evidence": "Five shapes pass the guard while defeating the property it names. Confirmed by executing them, not by reading the regex. (N15) `continue-on-error: true` on the retention step: PASS. This is the one that matters, because the repair made `if-no-files-found: error` the load-bearing runtime enforcement, and continue-on-error neuters exactly that - the upload fails, the job does not. (N9) `continue-on-error: true` at the job level: PASS, same effect on all four. (N19) `if-no-files-found: error` present only as a `#` comment while the live value is `warn`: PASS. `\"if-no-files-found: error\" not in keeper` is a plain substring test over the whole step block, so a commented-out line satisfies it. (N13) `if:` misplaced inside the `with:` block, leaving the step with no condition at all: PASS, because CONDITION.search takes the first `if:` anywhere in the block rather than the step's own key. (N2b/N2c) `--observe` appearing only inside a `#` comment or a heredoc body of a literal `run:` block, with the named file produced by a neighbouring shell step: PASS, and `if-no-files-found: error` does not catch it at runtime either because the file exists. All four workflow steps remain gradeable through these."
+    },
+    {
+      "claim": "9. The textual job/step reader sees every workflow shape it must",
+      "verdict": "DISSENTED",
+      "evidence": "Robust where the prior witness attacked: `jobs:` with a trailing space REFUSES correctly, and a dash at the same indent as `steps:` REFUSES correctly. But three reader-blind shapes pass, and a new workflow file carrying them does not move the graded count of 4 that would otherwise catch them. (N3b) a job head with a trailing comment, `  more:  # a note`: the heads regex requires rstrip().endswith(':'), so the job is invisible and its verify step ungraded. (N3d) a quoted top-level `\"jobs\":` key: the whole file is invisible, because jobs_of requires line.rstrip() == 'jobs:' exactly. (N3e) `steps: *anchor`: no line ends with `steps:`, so no steps are found - though GitHub Actions rejects YAML anchors in workflow files, so this one is theoretical rather than live. The assertEqual(4, graded) line is a real and well-placed anchor and it caught several of my mutations, but it only protects the four existing steps; it cannot see a fifth verify step the reader never found."
+    },
+    {
+      "claim": "10. Every path by which CI could run verify is graded",
+      "verdict": "DISSENTED (reach, not subject)",
+      "evidence": "Three ungraded routes, each passing: a composite action step (`uses: ./.github/actions/verify`) - .github/actions does not exist today and is not globbed at all, so creating it is an ungraded path; a reusable-workflow call to another repository (`uses: other/repo/.github/workflows/verify.yml@main`); and any indirection whose text is not `scripts/verify.py`, e.g. `run: make verify`. The first two are genuinely undetectable by a text reader over .github/workflows/*.yml. This is the guard's reach, not its subject: it does read the bytes GitHub executes, which is the right side of the AGENTS.md line."
+    },
+    {
+      "claim": "11. Retention is unconditional",
+      "verdict": "REPRODUCED WITH QUALIFICATION",
+      "evidence": "`!cancelled()` is not unconditional, and the guard's own constant is named UNCONDITIONAL while admitting it. All four matrices set fail-fast: true and verify.yml sets concurrency cancel-in-progress: true. A 3.12 leg that has already completed verify and written its records, then is cancelled because the 3.11 leg failed, drops those records under `!cancelled()` where `always()` would have kept them. The builder's reasoning - that with `error` in place, `always()` turns a leg cancelled before verify into a job reported as having lost records - is sound, and the trade is defensible. But the workflow comment's premise, 'a cancelled matrix leg has no records to lose', is not true in the fail-fast-after-completion case, and the claim word 'unconditionally' is not exactly true at head."
+    },
+    {
+      "claim": "12. Nothing else was changed, weakened, or drifted",
+      "verdict": "REPRODUCED",
+      "evidence": "The whole branch touches six files: three workflows, two test modules, and reports/observations/2026-09-08-ci-observation-retention-witness.json (the prior witness's own record, committed by the builder at fa8ec9a - consistent with the existing practice in that directory). No contract, schema, fixture or oracle changed; contracts/repository-ci-evidence.json producer_intent is untouched and test_contract_and_workflows_agree_on_producer_kind still passes. No oracle was weakened: the repair adds nine refusal cases and relaxes exactly one thing, the matrix-templated --observe path the prior witness reported as over-refused. No secret, credential or host path appears in the diff or in the 55 records. No module exceeds 300 lines. The four pre-existing RepositoryCIWorkflowIdentity cases are unchanged."
+    },
+    {
+      "claim": "13. The concern's terminal is a presented, evidenced result rather than a filing",
+      "verdict": "REPRODUCED",
+      "evidence": "The prior witness's dissent was repaired in place inside the same concern, on the same branch, with no new ticket minted for it - which is what AGENTS.md Closure ownership requires. The commit message names its own residual (nothing consumes the artifacts) and holds it as a residual rather than filing it. The one item it hands upward, hygiene-repair.hygiene's missing sov_ci_subject binding, is correctly named as pre-existing and out of scope."
+    }
+  ],
+  "commands": [
+    {"command": "git status --porcelain; git rev-parse HEAD^{tree}", "exit_code": 0, "result": "clean; 36f22c8e, identical before and after all probes"},
+    {"command": "git diff 5d55a7a..77dfd82 -- .github/", "exit_code": 0, "result": "4x if: always() -> ${{ !cancelled() }}, 4x warn -> error, 7-line comment; nothing else"},
+    {"command": "git diff 714337a 5d55a7a -- .github/ scripts/tests/test_repository_ci_workflows.py", "exit_code": 0, "result": "empty; the rebased first commit is byte-identical to the previously witnessed one for these paths"},
+    {"command": "python scripts/verify.py --observe <scratch>/obs1.json", "exit_code": 0, "result": "PASS; 17.3s wall; 55 records; 5 attributed budget debts, not refusing"},
+    {"command": "python scripts/verify.py --observe <scratch>/obs2.json (re-run per procedure 6b)", "exit_code": 0, "result": "PASS; observed_state_digests identical to run 1 for all 55 subjects"},
+    {"command": "hand validation of 55 records against contracts/observation.schema.json", "exit_code": 0, "result": "0 violations; required keys, address/digest alignment, sha256 pattern"},
+    {"command": "python scripts/lint.py", "exit_code": 0, "result": "PASS: repository hygiene (1254 text files, 575 Python modules, 10 named debt)"},
+    {"command": "python -m unittest scripts.tests.test_repository_ci_workflows -v", "exit_code": 0, "result": "Ran 16 tests, OK"},
+    {"command": "python -m unittest scripts.tests.test_verify_observe_cli -v", "exit_code": 0, "result": "Ran 4 tests, OK"},
+    {"command": "python -m unittest scripts.tests.test_verify_observations", "exit_code": 0, "result": "Ran 33 tests, OK"},
+    {"command": "10 hand-built mutations of the real workflow copy replaying the prior witness's eight bypasses", "exit_code": 0, "result": "control PASS; all 8 REFUSED, plus narrowed-always and warn REFUSED"},
+    {"command": "12-cell sweep: --observe dropped / if: dropped / error->warn, across all four real retention steps", "exit_code": 0, "result": "12 of 12 REFUSED"},
+    {"command": "17 new adversarial shapes graded through unretained() and through the class", "exit_code": 0, "result": "5 pass while defeating the property; 3 reader-blind shapes pass; 3 ungraded routes pass; 3 legal forms over-refused"},
+    {"command": "6 breakages of main()'s --observe in a copied tree, restored between each", "exit_code": 0, "result": "all 6 caught by the four CLI cases"},
+    {"command": "git status --porcelain (after all probes)", "exit_code": 0, "result": "clean apart from this record; no work, fixture, contract or implementation file was modified by this witnessing"}
+  ],
+  "unclaimed_findings": [
+    "The dominant residual is the one AGENTS.md procedure 6a names: the guard's newly load-bearing predicate reads a declaration where it could measure an effect. `if-no-files-found: error` is graded by `\"if-no-files-found: error\" not in keeper`, a substring test over the whole step block. A commented-out line satisfies it. `continue-on-error: true` beside it satisfies it while removing the step's power to fail the job. The step's condition is likewise taken from the first `if:` anywhere in the block rather than from the step's own key. Each is currently correct in the four real workflows; each is a finding anyway.",
+    "Three legal forms are over-refused, conservative rather than dangerous, but each forecloses a shape a future author would reasonably reach for: a quoted condition `if: \"${{ !cancelled() }}\"`; the argparse-legal `--observe=PATH`; and an unnamed retention step whose `if:` sits on the dash line (`- if: ${{ !cancelled() }}`). The last matters because test_a_retention_step_without_a_name_is_still_graded asserts a refusal message and reads as though it proves the guard grades unnamed steps. It does not: an unnamed step whose first key is `if:` is refused whatever its condition. The guard does grade an unnamed step correctly when `if:` is not the first key (`- uses: ...` then `if:` on its own line), which I confirmed passes.",
+    "An observe path that is not under $RUNNER_TEMP, and an upload `path:` given as a glob that does cover the file, are both refused. Legal, conservative.",
+    "An upload whose path merely begins with the observe name (`${{ runner.temp }}/obs.json.bak` for an observe target of `obs.json`) satisfies the keeper search. Substring rather than path equality.",
+    "The four CLI cases never cross the process boundary. They call verify.main([...]) in-process, so `if __name__ == \"__main__\": raise SystemExit(main())` is unexercised by them. I confirmed by hand that `python scripts/verify.py --help` and two full `--observe` runs work as processes, but nothing in the suite would catch a break in that wiring, and the workflows invoke it only as a process.",
+    "Still nothing reads the retained artifacts. The builder names this as an unrepaired residual, correctly. What changed is that absence is now caught at upload time by `error` instead of being silent - a real improvement over the prior state, and the whole of the runtime enforcement, which is why continue-on-error defeating it is the finding it is.",
+    "The prior witness's record is committed on a branch that no longer contains the commit it attests. The content is provably identical for the paths it graded, so nothing is lost here, but a record whose declared candidate_commit is unreachable from the branch carrying it is a record defect in the general case, and AGENTS.md 'Rewrite work, never evidence' is the rule it sits against. Naming it, not converting it into a ticket.",
+    "The verify run records five attributed budget debts (documentation reader 2.313s over, tooling verdict integrity 1.660s over, operation surface page 0.872s over, automation health 0.749s over, witness receipts 0.669s over). Pre-existing, attributed, non-refusing, and not this change's."
+  ],
+  "residuals": [
+    "The claim's refusal half is materially stronger than at 5d55a7a and is not fully reproduced. All eight reported bypasses close. Five new ones open or remain, and the most consequential - `continue-on-error: true` on the retention step - is newly consequential precisely because the repair made `if-no-files-found: error` the mechanism that enforces retention at runtime. A guard that requires `error` and does not refuse `continue-on-error` beside it grades the word and not the effect.",
+    "The claim word 'unconditionally' is qualified by `!cancelled()` under fail-fast: true and cancel-in-progress: true. A leg cancelled after its verify completed loses its records.",
+    "This reading is entirely local. It says nothing about the hosted runners. The builder's report of 18 checks, 17 success, 1 skipped and eight published artifacts was taken as given per the task and is not evidence I re-derived; on trap T5 a skipped required check satisfies a ruleset, so 'skipped' there is not something I can read as passing.",
+    "I did not read any Orchestrator, Controller or builder evaluative conclusion before freezing the verdicts above. I read the two commit messages, which are part of the artifact, after completing every probe."
+  ],
+  "observed_files": {
+    ".github/workflows/verify.yml": "sha256:367d09e5c1a09dc480154431f7947d6433b310edd6976a2ced0f775e4f47b322",
+    ".github/workflows/qa-lanes.yml": "sha256:1555b3038bdd0d2f174dcd629af4c5f2fd5c1eca9176e739790c333ddd023c2a",
+    ".github/workflows/hygiene-repair.yml": "sha256:f508140d753fcd1bd6e35c2fdc30348f1b4ded2da6aeb82a86517cd5b8593493",
+    "scripts/tests/test_repository_ci_workflows.py": "sha256:42d5599e5327c771d9e193f66ed5fb4258808e285fe2230b13546dcda206d98d",
+    "scripts/tests/test_verify_observe_cli.py": "sha256:f328e8192ad77c82faf0ba55ba1d91c7b34ed6c6a7e174e33956ef69dde229be",
+    "scripts/verify.py": "sha256:e5d9cb750636c3828cb7e58f007fda6b4bd4b30af242fb7fdfba8d3088384364"
+  },
+  "standing_supported": "NONE at this reading. The retention half is reproduced and strengthened; the refusal half is dissented again on narrower ground. BUILT -> WITNESSED is not supported for the claim as stated, because the claim says the guard refuses the ways of writing a verify step that the previous guard let through AND that retention is unconditional and refusing, and five executable shapes still defeat the refusing half. It would be supported for a claim scoped to the eight named bypasses, all of which close. This observation is not a settlement and not a ratification.",
+  "judgement_items": [
+    "None. Every item above is an engineering repair inside the concern that owns it and belongs to the builder. Nothing here reaches product intent, naming, an external effect, a secret, a resource commitment, or destructive administration. The one thing that is arguably not the builder's - whether a committed observation record may attest a commit the branch no longer contains - is a record-hygiene question already governed by AGENTS.md 'Rewrite work, never evidence', not a new judgement."
+  ],
+  "overall_verdict": "PARTIALLY REPRODUCED, WITH NARROWED DISSENT. The repair is real and substantial. All eight bypasses the prior witness executed are refused, verified by re-constructing each mutation by hand rather than by trusting the new cases; the refusals hold across all four real retention steps under three independent defeats each; the two workflow changes are exactly the four steps the commit message names and nothing else; the new CLI module survives six deliberate breakages of the flag it grades and is not a tautology; and `if-no-files-found: error` converts a static-text-only guarantee into one CI enforces at upload time. The refusal half still does not fully hold. `continue-on-error: true` on the retention step passes the guard and removes the enforcement the repair just added; `if-no-files-found: error` and the step condition are read as substrings anywhere in the step block, so a comment satisfies the first and a misplaced key satisfies the second; `--observe` inside a comment or heredoc satisfies the flag search; and a job head with a trailing comment or a quoted `jobs:` key makes a whole job invisible to the reader without moving the graded count of four. Those go back to the builder for repair inside this concern."
+}

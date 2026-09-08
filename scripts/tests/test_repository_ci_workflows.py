@@ -1,9 +1,18 @@
+"""Cases for the two CI evidence subjects a pull request produces.
+
+`CI(C)` checks the exact candidate commit and `CI(B,C)` checks its composition
+with the target base; `contracts/repository-ci-evidence.json` owns that
+distinction and these cases hold the workflows to it. The retention guard's cases
+live beside it in `scripts/tests/test_ci_retention_guard.py`.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path
 import json
 import re
 import unittest
+
 
 ROOT = Path(__file__).resolve().parents[2]
 VERIFY = ROOT / ".github" / "workflows" / "verify.yml"

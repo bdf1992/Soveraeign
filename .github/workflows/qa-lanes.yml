@@ -17,6 +17,9 @@ name: qa lanes
 # admits the exact candidate mutation work quickly; `.github/workflows/mutation-evidence.yml`
 # performs the expensive experiments asynchronously against landed immutable bytes.
 # No job here ratifies.
+#
+# Blue retains its per-check Observation records rather than reducing the lane to
+# an exit code; see the header of `.github/workflows/verify.yml` for why.
 
 on:
   pull_request:
@@ -59,7 +62,15 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Repository verification
-        run: python scripts/verify.py
+        run: python scripts/verify.py --observe "$RUNNER_TEMP/blue-observations.json"
+      - name: Retain what the Blue verification observed
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: blue-observations-${{ github.event.pull_request.head.sha }}-py${{ matrix.python-version }}
+          path: ${{ runner.temp }}/blue-observations.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Record the standing this establishes
         if: always()
         run: |

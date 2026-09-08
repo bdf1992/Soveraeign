@@ -22,9 +22,15 @@ name: verify
 # The retention step refuses an absent file rather than warning. A green verify that
 # produced no records is the case worth catching, and warning about it leaves the
 # guarantee unenforced at runtime - the permissive direction, and the opposite of
-# what the module cited above does with its own uncertainty. `!cancelled()` rather
-# than `always()` for the same reason read the other way: a cancelled matrix leg has
-# no records to lose and should not be reported as a job that lost them.
+# what the module cited above does with its own uncertainty.
+#
+# The condition is `!cancelled()` rather than `always()`, and that costs something
+# rather than nothing: with `fail-fast: true`, a matrix leg cancelled after its own
+# verify finished loses records `always()` would have kept. The trade is that every
+# leg cancelled before verify ran would otherwise fail its upload under the `error`
+# above, adding a red step to runs already being read for the failure that caused
+# the cancellation. An independent witness is why this says so rather than claiming
+# a cancelled leg has nothing to lose.
 on:
   pull_request:
   push:

@@ -9,9 +9,11 @@ Every address is resolved to bytes under `root` and digested. An address a membe
 that is not present is reported as a defect rather than skipped, because a basis that
 silently shrinks is what P15-Q4.1 is written against.
 
-Two limits, stated because a reader would otherwise assume otherwise. The standing and the
+Three limits, stated because a reader would otherwise assume otherwise. The standing and the
 work state are taken from the custody record itself; nothing here corroborates them, so a
-member falsely written as settled is admitted. And in the live path the addresses gathered
+member falsely written as settled is admitted. A directory member is digested from the files
+under it that are not known tool output, which is a list of names rather than a rule, so a
+generator writing somewhere unnamed would move the identity. And in the live path the addresses gathered
 here are both the basis and what the candidate cites, so P15-Q4.1 grades whether synthesis
 preserved what it was given, not whether the gathering was right. That the predicate can
 fail at all is proved by the fixture's `basis-dropped` and `no-sources` variants, not by
@@ -36,17 +38,47 @@ a `NOT_WITNESSED` member for that reason, and the self-check refuses a reading t
 it; a sixth witness pointed out that the rule was asserted here with nothing proving it."""
 
 
+GENERATED_DIRS = frozenset({"__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache",
+                            ".ipynb_checkpoints", ".tox", ".venv", "node_modules"})
+"""Directory names holding output a tool produced, not content the repository declares."""
+
+GENERATED_SUFFIXES = frozenset({".pyc", ".pyo", ".pyd"})
+"""File suffixes of the same kind."""
+
+
+def _is_artifact(entry: Path, base: Path) -> bool:
+    """True when this file is part of what the member declares, rather than tool output.
+
+    A ninth witness showed why this exists. A directory member digested every file beneath
+    it, so importing the service wrote `__pycache__` and the candidate's identity moved:
+    three clean checkouts of one commit, each reporting no modified files, produced three
+    different proposal ids, and running the repository's own verification command changed it
+    again. An identity that is not a function of the artifact cannot be cited as evidence
+    about the artifact, and two records had already cited a value the ordinary workflow does
+    not reproduce.
+
+    This is a list of names and not a rule, and the difference matters: without reading git
+    there is no way to ask what the repository tracks, so what is excluded is what is known
+    to be generated. A tool writing somewhere not named here would move the identity again.
+    Recorded as a limit rather than described as a guarantee.
+    """
+    relative = entry.relative_to(base).parts
+    return (not any(part in GENERATED_DIRS for part in relative)
+            and entry.suffix not in GENERATED_SUFFIXES)
+
+
 def digest(path: Path) -> str | None:
     """The sha256 at `path`, or None when nothing is readable there.
 
-    A directory digests as its tree: every file under it, in sorted relative-path order,
-    each contributing its path and its bytes. A member whose address is a service is then
-    pinned by what the service contains, not merely by the fact that a directory exists.
+    A directory digests as its tree: every declared file under it, in sorted relative-path
+    order, each contributing its path and its bytes. A member whose address is a service is
+    then pinned by what the service contains, not merely by the fact that a directory
+    exists, and not by what a tool left there.
     """
     if path.is_dir():
         rolling = sha256()
         for entry in sorted(path.rglob("*")):
-            if not entry.is_file():
+            if not entry.is_file() or not _is_artifact(entry, path):
                 continue
             rolling.update(str(entry.relative_to(path)).replace("\\", "/").encode("utf-8"))
             try:

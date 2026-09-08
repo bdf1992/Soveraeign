@@ -67,8 +67,12 @@ def _mispaired(term: str) -> dict[str, Any]:
     left the self-check green.
 
     So every prose key says the term at the root and again below it, every instance key carries
-    an instance that declares it at the root and again below it, and `sections` holds it as an
-    ordinary dict key that no schema keyword reaches. A reader that reads any of those resolves
+    an instance that declares it at the root, below the root, and inside a declared-name
+    subtree, `sections` holds it as an ordinary dict key that no schema keyword reaches, and a
+    contract identifier naming it sits below the root in three places. The last two directions
+    a ninth witness found open: the nested instance data sat outside `properties`, which is the
+    shape a real schema puts examples in, and identity read below the root had no refusal case
+    at all. A reader that reads any of those resolves
     this contract, the declared defeat does not fire, and `selfcheck` fails by name.
 
     The limit of that, stated because an eighth witness measured it: both lists are pinned to
@@ -84,11 +88,14 @@ def _mispaired(term: str) -> dict[str, Any]:
     nested: dict[str, Any] = {}
     for key in INSTANCE_KEYS:
         nested[key] = [dict(instance)] if key.endswith("s") else dict(instance)
+    below_root_identity = {"policy_id": f"soveraeign-{term}/v1",
+                           "$id": f"https://soveraeign.local/contracts/{term}.schema.json"}
     stub: dict[str, Any] = {
         "$id": "https://soveraeign.local/contracts/fixture-unrelated.schema.json",
-        "properties": {"actor_id": dict({"type": "string"}, **prose)},
-        "sections": {term: {"kind": "string"}},
-        "elsewhere": dict(prose, **{"deeper": dict(nested)}),
+        "properties": {"actor_id": dict({"type": "string"}, **prose, **nested,
+                                        **below_root_identity)},
+        "sections": dict({term: {"kind": "string"}}, **below_root_identity),
+        "elsewhere": dict(prose, **{"deeper": dict(nested)}, **below_root_identity),
     }
     stub.update(prose)
     stub.update(nested)

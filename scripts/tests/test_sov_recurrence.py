@@ -264,18 +264,51 @@ class InstitutionNeutrality(unittest.TestCase):
         self.assertTrue(read["fixed_role_names_required"])
         self.assertTrue(any("is governed by" in item for item in read["closed_vocabularies"]))
 
-    def test_every_excluded_instance_key_is_exercised_by_the_mispaired_variant(self) -> None:
+    def test_the_mispaired_variant_exercises_every_key_the_rule_excludes(self) -> None:
         """The fixture may not be derived from the rule it exists to refuse.
 
         `_mispaired` fills a written-out list of instance keys, not `EXAMPLE_KEYS` itself,
         because a variant built from the constant empties itself when the constant is
-        narrowed - which is exactly the regression the variant is there to catch. The two
-        lists must still name the same keys: a key the rule reads would make the variant
+        narrowed - which is exactly the regression the variant is there to catch. Both lists
+        must still name the same keys as the rule: a key the rule reads would make the variant
         resolve legitimately, and a key the rule excludes but the fixture skips is a hole.
-        Narrowing `EXAMPLE_KEYS` fails the self-check; widening it fails here.
+
+        The two halves are not symmetric and a ninth witness was right to say so. Narrowing
+        `EXAMPLE_KEYS` fails the self-check and widening it fails here. Narrowing `PROSE_KEYS`
+        is inert on its own, because that tuple governs recursion and every prose value in the
+        variant is a string, so only this test catches it.
         """
         self.assertEqual(set(declaration.EXAMPLE_KEYS), set(fixture.INSTANCE_KEYS))
         self.assertEqual(set(declaration.PROSE_KEYS), set(fixture.PROSE_KEYS))
+
+    def test_an_identifier_below_the_root_is_not_the_contract_identity(self) -> None:
+        """Identity is declared where a contract begins, and nowhere else in it."""
+        path = self.root / neutrality.PRIMITIVES["finding"][0]
+        path.write_text(json.dumps({"$id": "unrelated", "parts": {
+            "policy_id": "soveraeign-finding/v1"}}), encoding="utf-8", newline="\n")
+        self.assertTrue(any("finding" in item
+                            for item in neutrality.read(self.root)["unresolved"]))
+
+    def test_a_directory_member_is_not_digested_from_tool_output(self) -> None:
+        """A ninth witness found three identities for one commit across three clean checkouts."""
+        member = self.root / "services/fixture_member"
+        (member / "src").mkdir(parents=True, exist_ok=True)
+        (member / "src/thing.py").write_text("x = 1\n", encoding="utf-8", newline="\n")
+        before = experience.digest(member)
+        cache = member / "src/__pycache__"
+        cache.mkdir(parents=True, exist_ok=True)
+        (cache / "thing.cpython-311.pyc").write_bytes(b"\x00compiled at some moment")
+        self.assertEqual(before, experience.digest(member), "the suffix rule and the directory "
+                         "rule together must ignore a compiled module")
+        (cache / "index").write_bytes(b"a cache entry with no telling suffix")
+        self.assertEqual(before, experience.digest(member), "the directory rule alone must "
+                         "ignore tool output that carries no generated suffix")
+        (member / "src/thing.pyc").write_bytes(b"\x00compiled beside its source")
+        self.assertEqual(before, experience.digest(member), "the suffix rule alone must ignore "
+                         "a compiled module outside a cache directory")
+        (member / "src/thing.py").write_text("x = 2\n", encoding="utf-8", newline="\n")
+        self.assertNotEqual(before, experience.digest(member), "a real source change must move "
+                            "the digest, or the exclusions have eaten the member")
 
     def test_a_properties_dict_inside_an_example_declares_nothing(self) -> None:
         """Identity is read at the root; declared names must follow the same line."""

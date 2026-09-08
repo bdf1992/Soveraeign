@@ -29,8 +29,10 @@ name: verify
 # verify finished loses records `always()` would have kept. The trade is that every
 # leg cancelled before verify ran would otherwise fail its upload under the `error`
 # above, adding a red step to runs already being read for the failure that caused
-# the cancellation. An independent witness is why this says so rather than claiming
-# a cancelled leg has nothing to lose.
+# the cancellation. Cancellation reaches a leg by two routes here, `fail-fast` and
+# the `cancel-in-progress` on this workflow's concurrency group, and the loss is the
+# same on both. Independent witnesses are why this states the trade twice over
+# rather than claiming a cancelled leg has nothing to lose.
 on:
   pull_request:
   push:

@@ -1,34 +1,33 @@
+"""Cases for the CI evidence subjects, and for the guard that keeps their records.
+
+The reader these cases exercise lives in `scripts/sovverify/workflows.py`, not
+here. A third independent witness pointed out that a hundred lines of hand-rolled
+YAML reading had been sitting under `scripts/tests/`, the one tree `scripts/lint.py`
+is written not to grade, so the guard now lives where the size and hygiene checks
+can see it and this module holds only its cases.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path
 import json
 import re
+import sys
 import unittest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from sovverify.workflows import graded_steps, jobs_of, unretained  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 VERIFY = ROOT / ".github" / "workflows" / "verify.yml"
 QA = ROOT / ".github" / "workflows" / "qa-lanes.yml"
 CONTRACT = ROOT / "contracts" / "repository-ci-evidence.json"
 HEAD_REF = "ref: ${{ github.event.pull_request.head.sha }}"
-# `.github/actions` is swept as well. Nothing there runs the verifier today, and a
-# composite action is written with `runs:` rather than `jobs:`, so this reader finds
-# no steps in one. That is deliberate: the unreadable-file rule in `unretained` turns
-# "the reader cannot see this" into a refusal, so putting a verify step somewhere new
-# fails loudly rather than passing quietly until someone teaches the reader its shape.
+# `.github/actions` is swept as well. A composite action is written with `runs:`
+# rather than `jobs:`, so the reader finds no jobs in one; naming the verifier there
+# refuses rather than passing, which is the point.
 SWEPT = (ROOT / ".github" / "workflows", ROOT / ".github" / "actions")
-OBSERVE_TARGET = re.compile(
-    r"--observe[\s=]+(?:\"\$RUNNER_TEMP/(?P<quoted>[^\"]+)\"|\$RUNNER_TEMP/(?P<bare>\S+))")
-PAIR = re.compile(r"^\s*-?\s*\"?(?P<key>[A-Za-z_][\w-]*)\"?:\s*(?P<value>.*?)\s*$")
-# A step that runs whenever the job reached it, however the author spelled it.
-# `always()` also runs when the job is cancelled; `!cancelled()` does not. The
-# workflows use `!cancelled()`, and its cost is real rather than nil: with
-# `fail-fast: true`, a matrix leg cancelled after its own verify finished loses
-# records `always()` would have kept. The trade is that every leg cancelled before
-# verify ran would otherwise fail its upload under `if-no-files-found: error`, adding
-# a red step to runs already being read for the failure that caused the cancellation.
-# Either spelling is accepted here.
-UNCONDITIONAL = frozenset({"always()", "${{ always() }}",
-                           "!cancelled()", "${{ !cancelled() }}"})
 
 
 class RepositoryCIWorkflowIdentity(unittest.TestCase):
@@ -75,170 +74,9 @@ class RepositoryCIWorkflowIdentity(unittest.TestCase):
                     self.assertIn("sov_ci_subject.py candidate", text)
 
 
-def _unquoted(value: str) -> str:
-    """One scalar with its surrounding quotes removed, if it carries a matched pair."""
-    if len(value) > 1 and value[0] == value[-1] and value[0] in "\"'":
-        return value[1:-1].strip()
-    return value
-
-
-def mapping_at(lines: list[str], start: int, depth: int) -> dict[str, str]:
-    """The `key: value` pairs written at exactly `depth`, until the block ends.
-
-    Comment lines and deeper blocks are skipped rather than read, which is what
-    separates a step's own keys from the keys of its `with:` block. An earlier
-    version of this module tested for `if-no-files-found: error` by substring over
-    the whole step, and an independent witness passed it by leaving that text in a
-    `#` comment while the live value read `warn`.
-    """
-    found = {}
-    for line in lines[start:]:
-        if not line.strip() or line.lstrip().startswith("#"):
-            continue
-        here = len(line) - len(line.lstrip())
-        if here < depth:
-            break
-        if here != depth:
-            continue
-        pair = PAIR.match(line)
-        if pair:
-            found[pair.group("key")] = _unquoted(pair.group("value"))
-    return found
-
-
-def keys_of(step: str) -> dict[str, str]:
-    """One step's own mapping keys, including any written on the dash line."""
-    lines = step.splitlines()
-    depth = len(lines[0]) - len(lines[0].lstrip()) + 2
-    found = {}
-    first = PAIR.match(lines[0])
-    if first:
-        found[first.group("key")] = _unquoted(first.group("value"))
-    found.update(mapping_at(lines, 1, depth))
-    return found
-
-
-def with_of(step: str) -> dict[str, str]:
-    """One step's `with:` block, read at its own indent rather than by substring."""
-    lines = step.splitlines()
-    depth = len(lines[0]) - len(lines[0].lstrip()) + 2
-    for index, line in enumerate(lines):
-        if line.lstrip().startswith("#"):
-            continue
-        if len(line) - len(line.lstrip()) == depth and line.strip() == "with:":
-            return mapping_at(lines, index + 1, depth + 2)
-    return {}
-
-
-def steps_of(block: list[str]) -> list[str]:
-    """The step blocks of one job, split on the dash indent its own `steps:` uses."""
-    try:
-        start = next(i for i, line in enumerate(block)
-                     if not line.lstrip().startswith("#") and line.rstrip().endswith("steps:"))
-    except StopIteration:
-        return []
-    marks = [i for i in range(start + 1, len(block)) if re.match(r"^ +- ", block[i])]
-    if not marks:
-        return []
-    depth = len(block[marks[0]]) - len(block[marks[0]].lstrip())
-    marks = [i for i in marks if len(block[i]) - len(block[i].lstrip()) == depth]
-    return ["\n".join(block[a:b]) for a, b in zip(marks, marks[1:] + [len(block)])]
-
-
-def jobs_of(text: str) -> dict[str, tuple[str, list[str]]]:
-    """Split one workflow into job name -> (job text, step blocks), without a parser.
-
-    PyYAML is not in the standard library and CI installs a bare interpreter, so
-    reading these files textually is a constraint rather than a shortcut. This reader
-    knows the one shape a workflow has: jobs at a fixed indent under `jobs:`, a
-    `steps:` list in each, steps at a fixed deeper dash indent. What it cannot split
-    it reports as nothing, and `unretained` turns that silence into a refusal for any
-    file that mentions the verifier at all.
-    """
-    lines = text.splitlines()
-    try:
-        start = next(i for i, line in enumerate(lines)
-                     if re.match(r"^\"?jobs\"?:\s*(#.*)?$", line.rstrip()))
-    except StopIteration:
-        return {}
-    body = []
-    for line in lines[start + 1:]:
-        if line.strip() and not line.startswith(" ") and not line.lstrip().startswith("#"):
-            break
-        body.append(line)
-    heads = [i for i, line in enumerate(body)
-             if re.match(r"^ {2}\"?[A-Za-z_][\w-]*\"?:\s*(#.*)?$", line.rstrip())]
-    jobs = {}
-    for position, head in enumerate(heads):
-        end = heads[position + 1] if position + 1 < len(heads) else len(body)
-        name = _unquoted(body[head].split("#", 1)[0].strip().rstrip(":"))
-        jobs[name] = ("\n".join(body[head:end]), steps_of(body[head:end]))
-    return jobs
-
-
-def unretained(text: str) -> list[str]:
-    """Every `scripts/verify.py` step in one workflow that keeps only its exit code.
-
-    A verify run already builds one Observation per check against
-    `contracts/observation.schema.json`, carrying the addresses that check read. A
-    job that runs it and keeps one bit cannot tell a defective change from a busy
-    host from another session writing the tree. A step is retained when it writes
-    the records and the job that wrote them uploads that exact file:
-    unconditionally, refusing an absent file, and without a `continue-on-error`
-    that would turn that refusal back into a warning.
-
-    Two independent witnesses have attacked this. The first defeated a per-line
-    reader eight ways - a folded `run: >-` scalar (the idiom in these same files), a
-    `run: |` block, `python3`, a `bash -lc` wrapper, a `cd && ` prefix, a `.yaml`
-    extension, an upload from another job, and a step with no `- name:` line. The
-    second defeated the per-step reader that replaced it five more - a
-    `continue-on-error` on the retention step, the required value present only in a
-    comment, an `if:` misplaced inside `with:`, `--observe` inside a comment, and job
-    heads the reader could not see. Every one of those is a case in this module.
-
-    The last of those is why an unreadable file refuses rather than passing: the
-    supply of shapes nobody has thought of is not exhausted by thirteen of them.
-
-    The known limit, stated here rather than found later: `--observe` inside a
-    heredoc body still reads as an argument. Nothing here parses shell.
-    """
-    missing = []
-    graded = 0
-    for job, (block, steps) in jobs_of(text).items():
-        settings = mapping_at(block.splitlines(), 1, 4)
-        uploads = [step for step in steps if "upload-artifact@" in step]
-        for step in steps:
-            live = "\n".join(line for line in step.splitlines()
-                             if not line.lstrip().startswith("#"))
-            if "scripts/verify.py" not in live:
-                continue
-            graded += 1
-            found = OBSERVE_TARGET.search(live)
-            if found is None:
-                missing.append(f"{job}: a verify step does not pass --observe")
-                continue
-            name = found.group("quoted") or found.group("bare")
-            keepers = [one for one in uploads if "runner.temp }}/" + name in one]
-            if not keepers:
-                missing.append(f"{job}: {name} is written and no step in that job uploads it")
-                continue
-            for keeper in keepers:
-                if keys_of(keeper).get("if") not in UNCONDITIONAL:
-                    missing.append(f"{job}: {name} is kept only when the job goes well")
-                if with_of(keeper).get("if-no-files-found") != "error":
-                    missing.append(f"{job}: {name} may go missing without refusing")
-                if "true" in (keys_of(keeper).get("continue-on-error"),
-                              settings.get("continue-on-error")):
-                    missing.append(f"{job}: {name} refuses an absent file and nothing listens")
-    if not graded and "scripts/verify.py" in text:
-        missing.append("this file runs the verifier in a shape the reader cannot see")
-    return missing
-
-
-def workflow(steps: str) -> str:
+def workflow(steps: str, head: str = "  only:\n") -> str:
     """A miniature workflow carrying `steps`, for grading `unretained` on one shape."""
-    return ("name: probe\n\njobs:\n  only:\n    runs-on: ubuntu-latest\n"
-            "    steps:\n" + steps)
+    return "name: probe\n\njobs:\n" + head + "    runs-on: ubuntu-latest\n    steps:\n" + steps
 
 
 VERIFY_STEP = '      - run: python scripts/verify.py --observe "$RUNNER_TEMP/obs.json"\n'
@@ -254,7 +92,9 @@ NOT_UPLOADED = ["only: obs.json is written and no step in that job uploads it"]
 ONLY_WHEN_WELL = ["only: obs.json is kept only when the job goes well"]
 MAY_GO_MISSING = ["only: obs.json may go missing without refusing"]
 NOBODY_LISTENS = ["only: obs.json refuses an absent file and nothing listens"]
-UNREADABLE = ["this file runs the verifier in a shape the reader cannot see"]
+THROUGH_SHELL = ["only: a verify step runs through shell this cannot read"]
+UNSEEN_JOB = "shadow: runs the verifier in a shape the reader cannot see"
+UNSEEN_FILE = "this file runs the verifier in a shape the reader cannot see"
 
 
 class VerificationRunsLeaveARecord(unittest.TestCase):
@@ -270,16 +110,16 @@ class VerificationRunsLeaveARecord(unittest.TestCase):
         self.assertEqual([], unretained(workflow(VERIFY_STEP + RETAIN)))
 
     def test_every_workflow_verify_step_retains_its_observations(self):
-        graded = 0
         for path in self.workflows():
-            text = path.read_text(encoding="utf-8")
-            self.assertEqual([], unretained(text), f"{path.name} keeps only an exit code")
-            graded += sum("scripts/verify.py" in step
-                          for _, steps in jobs_of(text).values() for step in steps)
-        # A reader that found nothing would satisfy every assertion above. Four verify
-        # steps exist across these files; dropping one is a change to this line, not a
-        # silently smaller sweep.
-        self.assertEqual(4, graded, "the reader found a different number of verify steps")
+            self.assertEqual([], unretained(path.read_text(encoding="utf-8")),
+                             f"{path.name} keeps only an exit code")
+
+    def test_the_reader_still_reaches_all_four_live_steps(self):
+        """A count, and only a count. A witness showed that a reader returning each
+        job as one opaque step hits this number exactly, so this is an anchor against
+        a step quietly disappearing, never evidence that the reader can see."""
+        self.assertEqual(4, sum(graded_steps(path.read_text(encoding="utf-8"))
+                                for path in self.workflows()))
 
     def test_each_property_is_load_bearing_on_each_real_step(self):
         """Grade the four live steps, not only the miniature. Deleting any one of
@@ -334,6 +174,17 @@ class VerificationRunsLeaveARecord(unittest.TestCase):
                 self.assertEqual(NO_OBSERVE,
                                  unretained(workflow("      - name: Verify\n" + line)))
 
+    def test_a_heredoc_refuses_rather_than_reading_its_body_as_arguments(self):
+        """`--observe` inside a heredoc is not an argument, and nothing parses shell.
+        A neighbouring line can also fabricate the named file, so `error` would not
+        catch it at runtime either. The only safe reading is to refuse."""
+        self.assertEqual(THROUGH_SHELL, unretained(workflow(
+            "      - run: |\n"
+            "          cat <<EOF\n"
+            '          --observe "$RUNNER_TEMP/obs.json"\n'
+            "          EOF\n"
+            "          python scripts/verify.py\n" + RETAIN)))
+
     def test_an_upload_from_another_job_does_not_count(self):
         """A different job is a different runner, so its $RUNNER_TEMP is another disk."""
         self.assertEqual(NOT_UPLOADED, unretained(
@@ -342,10 +193,8 @@ class VerificationRunsLeaveARecord(unittest.TestCase):
 
     def test_a_retention_step_without_a_name_is_still_graded(self):
         """Both shapes: the condition on the dash line, and the condition below it."""
-        for unnamed in ('      - if: success()\n'
-                        '        uses: actions/upload-artifact@v4\n',
-                        '      - uses: actions/upload-artifact@v4\n'
-                        '        if: success()\n'):
+        for unnamed in ('      - if: success()\n        uses: actions/upload-artifact@v4\n',
+                        '      - uses: actions/upload-artifact@v4\n        if: success()\n'):
             with self.subTest(dash=unnamed.splitlines()[0].strip()):
                 tail = ('        with:\n'
                         '          path: ${{ runner.temp }}/obs.json\n'
@@ -364,17 +213,28 @@ class VerificationRunsLeaveARecord(unittest.TestCase):
             VERIFY_STEP + RETAIN.replace("if-no-files-found: error",
                                          "if-no-files-found: warn"))))
 
-    def test_a_continue_on_error_takes_the_refusal_back(self):
-        """`if-no-files-found: error` is the runtime half of this guarantee, and
-        `continue-on-error` neuters exactly it: the upload fails, the job does not."""
-        step = workflow(VERIFY_STEP + RETAIN.replace(
-            "        uses: actions/upload-artifact@v4\n",
-            "        continue-on-error: true\n        uses: actions/upload-artifact@v4\n"))
-        self.assertEqual(NOBODY_LISTENS, unretained(step))
-        job = workflow(VERIFY_STEP + RETAIN).replace(
-            "    runs-on: ubuntu-latest\n",
-            "    runs-on: ubuntu-latest\n    continue-on-error: true\n")
-        self.assertEqual(NOBODY_LISTENS, unretained(job))
+    def test_every_truthy_continue_on_error_takes_the_refusal_back(self):
+        """`if-no-files-found: error` is the whole of the runtime enforcement, and
+        `continue-on-error` neuters exactly it. It takes an expression, so testing
+        for the string `true` caught one spelling of four."""
+        for value in ("true", "True", "TRUE", "${{ true }}",
+                      "${{ github.event_name == 'push' }}"):
+            step = RETAIN.replace("        uses: actions/upload-artifact@v4\n",
+                                  f"        continue-on-error: {value}\n"
+                                  "        uses: actions/upload-artifact@v4\n")
+            with self.subTest(where="step", value=value):
+                self.assertEqual(NOBODY_LISTENS, unretained(workflow(VERIFY_STEP + step)))
+            with self.subTest(where="job", value=value):
+                self.assertEqual(NOBODY_LISTENS, unretained(
+                    workflow(VERIFY_STEP + RETAIN).replace(
+                        "    runs-on: ubuntu-latest\n",
+                        f"    runs-on: ubuntu-latest\n    continue-on-error: {value}\n")))
+
+    def test_a_continue_on_error_that_is_plainly_off_is_accepted(self):
+        self.assertEqual([], unretained(workflow(
+            VERIFY_STEP + RETAIN.replace("        uses: actions/upload-artifact@v4\n",
+                                         "        continue-on-error: false\n"
+                                         "        uses: actions/upload-artifact@v4\n"))))
 
     def test_a_required_value_present_only_in_a_comment_is_refused(self):
         self.assertEqual(MAY_GO_MISSING, unretained(workflow(
@@ -396,31 +256,53 @@ class VerificationRunsLeaveARecord(unittest.TestCase):
             .replace("          name: probe\n",
                      "          name: probe\n          if: ${{ !cancelled() }}\n"))))
 
-    def test_a_shape_the_reader_cannot_see_refuses_rather_than_passes(self):
-        """Reader blindness has to be loud. A file that runs the verifier in a shape
-        the split cannot reach must fail, not read as an empty and therefore clean
-        file. This is the rule that covers the shapes nobody has thought of yet."""
-        self.assertEqual(UNREADABLE, unretained(
-            workflow(VERIFY_STEP).replace("jobs:\n", "JOBS:\n")))
-        self.assertEqual(UNREADABLE, unretained(
-            "runs:\n  using: composite\n  steps:\n" + VERIFY_STEP))
+    def test_a_hidden_job_beside_a_clean_one_is_refused(self):
+        """The rule that covers unenumerated shapes has to survive being hidden
+        beside a step it can see. It was once per file and gated on the file
+        grading nothing, so appending either of these to a real workflow put a bare
+        verify step into CI and passed. Both are valid YAML and both run it."""
+        clean = workflow(VERIFY_STEP + RETAIN)
+        for label, shadow in (
+                ("a trailing comment on steps:",
+                 "  shadow:\n    runs-on: ubuntu-latest\n    steps:  # run it\n"
+                 "      - run: python scripts/verify.py\n"),
+                ("a flow sequence of steps",
+                 "  shadow:\n    runs-on: ubuntu-latest\n"
+                 "    steps: [{run: python scripts/verify.py}]\n")):
+            with self.subTest(shape=label):
+                found = unretained(clean + shadow)
+                self.assertTrue(found, f"{label} hid a verify step")
+                self.assertTrue(any(entry.startswith("shadow:") for entry in found), found)
+
+    def test_a_file_with_no_readable_job_at_all_is_refused(self):
+        for text in (workflow(VERIFY_STEP).replace("jobs:\n", "JOBS:\n"),
+                     "runs:\n  using: composite\n  steps:\n" + VERIFY_STEP):
+            with self.subTest(text=text.splitlines()[0]):
+                self.assertEqual([UNSEEN_FILE], unretained(text))
 
     def test_a_job_head_with_a_trailing_comment_or_quotes_is_still_read(self):
-        for head in ('  only:  # a note\n', '  "only":\n'):
+        for head in ('  only:  # a note\n', '  "only":\n', "  'only':\n"):
             with self.subTest(head=head.strip()):
-                self.assertEqual(NOT_UPLOADED, unretained(
-                    "name: probe\n\njobs:\n" + head + "    runs-on: ubuntu-latest\n"
-                    "    steps:\n" + VERIFY_STEP))
+                self.assertEqual(NOT_UPLOADED, unretained(workflow(VERIFY_STEP, head)))
 
     def test_legal_spellings_are_not_over_refused(self):
-        """Three forms the previous reader refused for being written differently."""
-        for was, now in (("if: ${{ !cancelled() }}", 'if: "${{ !cancelled() }}"'),
-                         ("if: ${{ !cancelled() }}", "if: always()"),
-                         ('--observe "$RUNNER_TEMP/obs.json"',
-                          '--observe="$RUNNER_TEMP/obs.json"')):
+        """Twelve forms earlier readers refused for being written differently. Each
+        was found by an independent witness rather than imagined here."""
+        clean = workflow(VERIFY_STEP + RETAIN)
+        for was, now in (
+                ("if: ${{ !cancelled() }}", 'if: "${{ !cancelled() }}"'),
+                ("if: ${{ !cancelled() }}", "if: '${{ !cancelled() }}'"),
+                ("if: ${{ !cancelled() }}", "if: always()"),
+                ("if: ${{ !cancelled() }}", "if: ${{ !cancelled() }}  # keep these"),
+                ("if-no-files-found: error", "if-no-files-found: error  # refuse an absence"),
+                ("if-no-files-found: error", 'if-no-files-found: "error"'),
+                ("${{ runner.temp }}", "${{runner.temp}}"),
+                ('--observe "$RUNNER_TEMP/obs.json"', '--observe="$RUNNER_TEMP/obs.json"'),
+                ('--observe "$RUNNER_TEMP/obs.json"', "--observe '$RUNNER_TEMP/obs.json'"),
+                ('--observe "$RUNNER_TEMP/obs.json"',
+                 '--observe "${{ runner.temp }}/obs.json"')):
             with self.subTest(now=now):
-                self.assertEqual([], unretained(
-                    workflow(VERIFY_STEP + RETAIN).replace(was, now)))
+                self.assertEqual([], unretained(clean.replace(was, now)))
 
     def test_a_templated_observe_path_is_accepted(self):
         """The guard must not refuse a legal matrix-scoped filename."""

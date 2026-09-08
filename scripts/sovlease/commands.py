@@ -229,13 +229,16 @@ def cmd_close(args: argparse.Namespace) -> int:
         _emit([defect._asdict() for defect in defects], args.as_json,
               "\n".join(f"REFUSED {d.code}: {d.message}" for d in defects))
         return 1
+    # Written before the closure is appended: a failure here leaves the lease HELD and
+    # nothing recorded, rather than a log marking it COMPLETED with no record a clone
+    # can read. See sovlease/settlement.py for the refusals.
+    written, defect = settlement.record_closure(candidate, Path.cwd())
+    if defect is not None:
+        _emit([defect], args.as_json, f"REFUSED {defect['code']}: {defect['message']}")
+        return 1
     store.append(directory, store.LEASES_LOG,
                  {"event": "close", "lease_id": args.lease,
                   "closure_evidence": candidate["closure_evidence"]})
-    # The lease log lives under the common git directory and travels with no clone, so a
-    # closure also writes a committed record. Liveness stays uncommitted; a settlement
-    # does not. See sovlease/settlement.py.
-    written = settlement.write(candidate, Path.cwd())
     detail = f"{args.lease} closed at {args.standing}"
     if written is not None:
         detail += f"; settlement recorded at {written.relative_to(Path.cwd()).as_posix()}"

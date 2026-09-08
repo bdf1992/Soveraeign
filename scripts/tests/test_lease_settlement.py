@@ -74,6 +74,39 @@ class SettlementRecord(unittest.TestCase):
             written = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual("receipt:example/thing", written["receipt_id"])
 
+    def test_refuses_to_overwrite_a_different_settlement(self) -> None:
+        """Found by closing a COMPLETED lease again: the first record was destroyed.
+
+        A closure is a governed claim carrying a receipt and evidence addresses. The
+        first version replaced one settlement's claim with another's silently, which is
+        the erasure AGENTS.md forbids of a retraction.
+        """
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "reports").mkdir()
+            settlement.write(CLOSED, root, now=datetime(2026, 9, 8, tzinfo=timezone.utc))
+            amended = json.loads(json.dumps(CLOSED))
+            amended["closure_evidence"]["receipt_id"] = "receipt:example/second"
+            with self.assertRaises(settlement.SettlementRefused) as refusal:
+                settlement.write(amended, root, now=datetime(2026, 9, 8, tzinfo=timezone.utc))
+            self.assertIn("receipt:example/thing", str(refusal.exception))
+            standing = json.loads(next(
+                (root / settlement.SETTLEMENTS).glob("*.json")).read_text(encoding="utf-8"))
+            self.assertEqual("receipt:example/thing", standing["receipt_id"])
+
+    def test_re_running_the_same_closure_is_idempotent(self) -> None:
+        """A close retried after a partial failure must not be refused as an amendment."""
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "reports").mkdir()
+            first = settlement.write(CLOSED, root,
+                                     now=datetime(2026, 9, 8, 9, tzinfo=timezone.utc))
+            second = settlement.write(CLOSED, root,
+                                      now=datetime(2026, 9, 8, 17, tzinfo=timezone.utc))
+            self.assertEqual(first, second)
+            written = json.loads(Path(str(second)).read_text(encoding="utf-8"))
+            self.assertEqual("2026-09-08T09:00:00Z", written["closed_at"])
+
     def test_writes_nothing_outside_a_repository_tree(self) -> None:
         """A lease command run from an unrelated checkout must not create a stray tree."""
         with tempfile.TemporaryDirectory() as raw:
@@ -83,3 +116,29 @@ class SettlementRecord(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ClosureOrdering(unittest.TestCase):
+    """The committed record is written before the closure is appended to the log."""
+
+    def test_an_unwritable_record_leaves_the_lease_held(self) -> None:
+        """Found by injecting a write failure: the log said COMPLETED and no record existed.
+
+        Appending first marks the lease closed in a log that travels with no clone while
+        the record a clone can read does not exist, and nothing reconciles the two.
+        """
+        source = (Path(__file__).resolve().parents[1] / "sovlease" / "commands.py").read_text(
+            encoding="utf-8")
+        # Scoped to cmd_close's own body: cmd_take appends to the same log earlier in the
+        # file, and a first version of this test read that occurrence and failed the
+        # correct implementation.
+        start = source.index("def cmd_close(")
+        body = source[start:source.index("\ndef ", start)]
+        write_at = body.index("settlement.record_closure(candidate")
+        append_at = body.index("store.append(directory, store.LEASES_LOG")
+        self.assertLess(write_at, append_at,
+                        "the settlement record must be written before the close is appended")
+        policy = (Path(__file__).resolve().parents[1] / "sovlease" / "settlement.py").read_text(
+            encoding="utf-8")
+        self.assertIn("SETTLEMENT_UNWRITABLE", policy)
+        self.assertIn("SETTLEMENT_ALREADY_RECORDED", policy)

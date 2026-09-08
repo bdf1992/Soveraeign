@@ -71,11 +71,27 @@ def record(lease: dict[str, Any], *, now: datetime | None = None) -> dict[str, A
     }
 
 
+class SettlementRefused(RuntimeError):
+    """A settlement record cannot be written without destroying one already there."""
+
+
+def _comparable(entry: dict[str, Any]) -> dict[str, Any]:
+    """The record without its timestamp, so a re-run compares as the same settlement."""
+    return {key: value for key, value in entry.items() if key != "closed_at"}
+
+
 def write(lease: dict[str, Any], root: Path, *, now: datetime | None = None) -> Path | None:
     """Write the settlement record under `root`, returning the path, or None outside a tree.
 
     Returns None when `root` carries no `reports/` directory, so running a lease command
     from an unrelated checkout writes nothing rather than creating a stray tree.
+
+    Refuses to replace a record that already stands for this lease and says something
+    different. A closure is a governed claim, and `AGENTS.md` has retraction add a
+    counter-record rather than erase the original; overwriting one settlement's receipt
+    and evidence addresses with another's is that erasure. A re-run of the same closure
+    is not: an identical record apart from its timestamp returns the existing path
+    unchanged, so a close retried after a partial failure is idempotent.
     """
     if not (root / "reports").is_dir():
         return None
@@ -84,5 +100,30 @@ def write(lease: dict[str, Any], root: Path, *, now: datetime | None = None) -> 
     directory.mkdir(parents=True, exist_ok=True)
     stem = f"{entry['closed_at'][:10]}-{_slug(str(entry['lease_id'] or 'lease'))}"
     path = directory / f"{stem}.json"
+    if path.exists():
+        standing = json.loads(path.read_text(encoding="utf-8"))
+        if _comparable(standing) == _comparable(entry):
+            return path
+        raise SettlementRefused(
+            f"{path.relative_to(root).as_posix()} already records a different settlement "
+            f"for {entry['lease_id']} (receipt {standing.get('receipt_id')!r}, this close "
+            f"carries {entry['receipt_id']!r}). A closure is not amended in place: retract "
+            "with a counter-record, or close a successor lease."
+        )
     path.write_text(json.dumps(entry, indent=2) + "\n", encoding="utf-8", newline="\n")
     return path
+
+
+def record_closure(lease: dict[str, Any], root: Path) -> tuple[Path | None, dict[str, str] | None]:
+    """Write the closure's committed record, or return the defect that refuses the close.
+
+    The caller appends the closure to the lease log only when this returns no defect, so
+    a failure here leaves the lease held and nothing recorded in either place.
+    """
+    try:
+        return write(lease, root), None
+    except SettlementRefused as refusal:
+        return None, {"code": "SETTLEMENT_ALREADY_RECORDED", "message": str(refusal)}
+    except OSError as error:
+        return None, {"code": "SETTLEMENT_UNWRITABLE",
+                      "message": f"{error}. The lease is still held; nothing was recorded."}

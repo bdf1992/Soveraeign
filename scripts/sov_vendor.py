@@ -19,10 +19,21 @@ answers it with a plain digest of the bytes.
 Two directions, because one is silence:
 
   rows -> tree   every digest the decision records still matches its file
-  tree -> rows   every skill declaring bdos provenance has a row
+  tree -> rows   every skill *declaring* bdos provenance has a row
 
-Without the second, a third core could arrive carrying no decision at all and
-the check would pass by never looking at it.
+The second reads a declaration rather than measuring, and its reach stops there:
+a copy that arrives without the `bdos: true` marker is not looked at either, and
+the carrier who declines to write a decision row is the same one who declines to
+write the marker. A witness confirmed that by carrying a third core in with the
+marker stripped. Catching that needs the upstream tree to compare against, so it
+lives in `sync`, which has one.
+
+Neither direction is provenance. Both files can move in a single commit, so the
+offline half grades internal consistency: a row rewritten to match a rewritten
+copy passes, and a pin rewritten to another commit passes. What stops the first
+outside this check is that `decisions/` is excluded from
+`grant:standing-landing-loop`, so a table edit cannot land under the standing
+grant; what catches the second is `sync`.
 
 `sync` is the attended half. Whether bdos has since edited a core cannot be
 answered from this repository alone; it needs the upstream tree, and CI does not
@@ -88,8 +99,31 @@ def check(root: Path = ROOT, decision: Path | None = None) -> list[str]:
     for skill in declares_provenance(root):
         if skill not in rows:
             defects.append(f"{skill}: declares bdos provenance and no decision row carries "
-                           f"it; a copy that arrived without a decision")
+                           f"it. This direction reads the declaration; a copy carried in "
+                           f"without the marker is caught by `sync`, not here")
     return defects
+
+
+def _unrecorded_copies(upstream: Path, root_skills: Path,
+                       rows: dict[str, str]) -> list[tuple[str, str]]:
+    """Skills byte-identical to an upstream core that no decision row carries.
+
+    The measurement the offline `tree -> rows` direction cannot make. It selects
+    on the `bdos: true` marker, so a copy carried in without the marker is
+    invisible to it; here the upstream tree is present, so the comparison is
+    against bytes rather than against what the copy says about itself.
+    """
+    cores = {}
+    for core in sorted((upstream / "cores").glob("*/SKILL.md")):
+        cores[hashlib.sha256(core.read_bytes()).hexdigest()] = core.parent.name
+    found = []
+    for skill in sorted(root_skills.glob("*/SKILL.md")):
+        if skill.parent.name in rows:
+            continue
+        core = cores.get(hashlib.sha256(skill.read_bytes()).hexdigest())
+        if core:
+            found.append((skill.parent.name, core))
+    return found
 
 
 def sync(upstream: Path) -> int:
@@ -107,29 +141,54 @@ def sync(upstream: Path) -> int:
         print(f"UNREACHABLE: {upstream} is not a git tree. Silence here is not confirmation.")
         return 1
 
+    remotes = subprocess.run(["git", "remote", "-v"], cwd=upstream, capture_output=True,
+                             text=True).stdout
+    if repo.lower() not in remotes.lower():
+        print(f"UNVERIFIED TREE: no remote here names {repo}. Any tree holding "
+              f"cores/<skill>/SKILL.md at a commit spelled {commit} would print the same "
+              f"rows, so this run establishes nothing about {repo}.")
+        return 1
+
     def show(ref: str, path: str) -> str | None:
         out = subprocess.run(["git", "show", f"{ref}:{path}"], cwd=upstream,
                              capture_output=True)
         return hashlib.sha256(out.stdout).hexdigest() if out.returncode == 0 else None
 
     head = subprocess.run(["git", "rev-parse", "--short", "origin/main"], cwd=upstream,
-                          capture_output=True, text=True).stdout.strip() or "?"
-    moved = 0
+                          capture_output=True, text=True).stdout.strip()
+    moved = unreadable = 0
     for skill, recorded in sorted(rows.items()):
         path = f"cores/{skill}/SKILL.md"
-        at_pin, at_head = show(commit, path), show("origin/main", path)
+        at_pin = show(commit, path)
+        at_head = show("origin/main", path) if head else None
         if at_pin is None:
-            print(f"  {skill:<18} UNREACHABLE at {commit}")
+            print(f"  {skill:<18} UNREADABLE at {commit}")
+            unreadable += 1
         elif at_pin != recorded:
             print(f"  {skill:<18} PIN MISMATCH: the decision's digest is not what {commit} holds")
             moved += 1
+        elif at_head is None:
+            # A ref this tree does not hold is a measurement not taken. Reporting it as
+            # movement is how a missing reading becomes a positive finding.
+            print(f"  {skill:<18} PIN MATCHES; origin/main UNREADABLE, so movement is unknown")
+            unreadable += 1
         elif at_head != recorded:
             print(f"  {skill:<18} UPSTREAM MOVED: {commit} matches, origin/main ({head}) does not")
             moved += 1
         else:
             print(f"  {skill:<18} IN SYNC at {commit} and origin/main ({head})")
-    print(f"\n{len(rows)} carried core(s), {moved} moved upstream. This is an observation, "
-          f"not a gate: a moved core is a decision to take, not a build to fail.")
+
+    stray = _unrecorded_copies(upstream, root_skills=ROOT / ".claude" / "skills", rows=rows)
+    for skill, core in stray:
+        print(f"  {skill:<18} UNRECORDED: byte-identical to upstream cores/{core}, no row "
+              f"carries it")
+
+    tail = f", {unreadable} not readable" if unreadable else ""
+    print(f"\n{len(rows)} carried core(s), {moved} moved upstream{tail}; "
+          f"{len(stray)} unrecorded cop{'y' if len(stray) == 1 else 'ies'} found. An "
+          f"observation, not a gate: a moved core is a decision to take, not a build to "
+          f"fail. A count of zero moved is not confirmation when a reading could not be "
+          f"taken.")
     return 0
 
 
@@ -173,11 +232,27 @@ def selfcheck() -> int:
         ("drifted", {"recorded": "0" * 64}, "drifted from the digest at carry",
          "the defeating condition decisions/0103 names for itself"),
         ("unrecorded", {"extra_skill": "arrived"}, "declares bdos provenance and no decision",
-         "a core that arrived carrying no decision at all"),
+         "a core that declares provenance and no row carries it"),
         ("no pin", {"commit": "none"}, "names no upstream commit",
          "a copy with no pinned source cannot be compared to anything"),
     ]
     failures = []
+    # The measurement the offline half cannot make, covered where it lives. No git
+    # tree is needed: _unrecorded_copies compares bytes, not refs.
+    with tempfile.TemporaryDirectory() as tmp:
+        upstream = Path(tmp) / "up" / "cores" / "unmarked"
+        upstream.mkdir(parents=True)
+        (upstream / "SKILL.md").write_text("carried verbatim, no marker\n", encoding="utf-8")
+        skills = Path(tmp) / "skills" / "unmarked"
+        skills.mkdir(parents=True)
+        (skills / "SKILL.md").write_text("carried verbatim, no marker\n", encoding="utf-8")
+        stray = _unrecorded_copies(Path(tmp) / "up", skills.parent, {})
+        if stray != [("unmarked", "unmarked")]:
+            failures.append(f"unmarked copy: sync did not find it; got {stray}")
+        else:
+            print(f"  {'unmarked':<12} {'found':<8} a copy carried in without the marker is "
+                  f"invisible to check() and is caught by sync")
+
     for name, kwargs, expect, why in cases:
         with tempfile.TemporaryDirectory() as tmp:
             root, decision = _fixture(Path(tmp), **kwargs)
@@ -192,7 +267,9 @@ def selfcheck() -> int:
         for line in failures:
             print(f"  {line}")
         return 1
-    print(f"carried-core refusals: {len(cases)} cases, every declared refusal fires")
+    print(f"carried-core refusals: {len(cases) + 1} cases, every declared refusal fires; "
+          f"the reach of each direction is stated in the module docstring, not implied by "
+          f"a green run")
     return 0
 
 

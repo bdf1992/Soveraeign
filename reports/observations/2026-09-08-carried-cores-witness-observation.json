@@ -1,0 +1,128 @@
+{
+  "case_id": "CARRIED-CORES-WITNESS-1",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08",
+  "artifact_revision": "25d54bffb7c9759f4f2494dfda7876a6a1462a2d",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "enforce the carry ruling that decisions/0103 wrote and nothing performed (branch claude/bdos-digest-sync): scripts/sov_vendor.py added as a two-direction grader over the decision's digest table plus an attended `sync` half, registered as two checks in scripts/sovverify/harness.py, with scripts/README.md, docs/documentation.html and .clarity/coverage.json updated to match",
+    "verdict": "REPRODUCED_WITH_RESIDUALS",
+    "standing_supported": "BUILT -> WITNESSED",
+    "standing_note": "An observation, not a settlement and not a ratification. Nothing here accepts the change, closes decisions/0103, or authorises a landing.",
+    "candidate_commit": "25d54bffb7c9759f4f2494dfda7876a6a1462a2d",
+    "candidate_tree": "63145f1d423d20fdbab7c23155473efe4b6fa53a",
+    "base_commit": "97a2d558753ae66948d214ab63d52104d90f9907",
+    "base_tree": "47bcdc3769ed0b0bbfd8d6b6cc6ddfa888bddd2d",
+    "observed_at": "2026-09-08",
+    "observer_id": "claude-opus-5/sov-witness@2026-09-08",
+    "observer_relation": "INDEPENDENT_OF_BUILDER",
+    "contributed_to_build": false,
+    "observer_independence_basis": "Separate launched witness invocation. Built, edited, staged, committed, merged or rebased nothing in the subject tree; the only file written is this observation. Every mutation test was performed on copies under a scratch directory, never on the repository. The builder's shipped selfcheck fixtures were read but not relied on as evidence: all eleven adversarial cases were written by this witness and run against copies of the real .claude/skills tree and the real decisions/0103, not the synthetic single-skill tree the shipped fixtures build. The commit message and the module docstring were read only in order to test their sentences against measurement. No orchestrator or controller conclusion was read before this finding froze.",
+    "tree_state": "git status --porcelain empty at the start of the pass and again after the second verify run; HEAD 25d54bf and tree 63145f1 unchanged across both runs. The subject did not move underneath this witness.",
+    "commands": {
+      "verify_run_1": "python scripts/verify.py -> exit 0; 'PASS: 59 checks in 14.541s wall; 49.015s of check wall, 43.630s of check cpu'; GRADE SILVER; BUDGET DEBT 10 checks over ceiling, attributed and not refusing",
+      "verify_run_2": "python scripts/verify.py -> exit 0; 'PASS: 59 checks in 13.681s wall'; identical check set; re-run taken per CLAUDE.md trap T6",
+      "lint": "python scripts/lint.py -> exit 0; 'PASS: repository hygiene (1274 text files, 585 Python modules, 10 named debt)'; 8 duplicate-key WARNs and 2 module-size debt WARNs, all pre-existing on origin/main",
+      "execution_audit": "grep -c '^== ' of the verify transcript -> 71; TIME lines -> 60; the 12 headers with no TIME line are nested (4 tooling shards, 1 shard-cost line, 1 isolated re-read, 6 sub-sections of the signpost check), giving 59 top-level checks. '== carried cores ==' and '== carried core refusals fire ==' are both present with their own TIME lines in both runs, so both registered checks execute; measured from the transcript, not the import list",
+      "verdict_source": "scripts/verify.py line 97: outcome is 'PASS' if reading.exit_code == 0 else 'FAIL'; line 206 collects failures by reading.exit_code. The verdict is the exit code, not stdout",
+      "vendor": "python scripts/sov_vendor.py -> exit 0; '2 core(s) match the digests decisions/0103-carry-two-bdos-cores.md recorded at carry'",
+      "vendor_selfcheck": "python scripts/sov_vendor.py selfcheck -> exit 0; 4 cases (control, drifted, unrecorded, no pin), every declared refusal fires",
+      "vendor_sync": "python scripts/sov_vendor.py sync <bdos-worktree> -> exit 0; both cores 'IN SYNC at e715cb11 and origin/main (e715cb1)'",
+      "independent_digests": "sha256sum .claude/skills/can-it-run-doom/SKILL.md -> 3336bb53892b1bac4fdb72b6531654acd38cab03116c2c2b463425e2387a495d; .claude/skills/draw-the-owl/SKILL.md -> 4796bd13a76da28b7b0392df104ef276360788b867262195ec7fbf528907b7b7; both equal the decision's table, computed by a tool that is not the subject",
+      "independent_upstream": "in <bdos-worktree>: git show e715cb11:cores/<skill>/SKILL.md | sha256sum and git show origin/main:... | sha256sum -> both equal the recorded digests for both skills; git rev-parse origin/main -> e715cb1153b4e309901594aa54e5d5094b40bf4c == the pinned commit; .git/FETCH_HEAD dated 2026-09-08 14:36, clone depth 50",
+      "process_exit_on_drift": "a minimal skeleton copy (scripts/ + .claude/skills + decisions/0103) with one byte appended to draw-the-owl/SKILL.md -> exit 1 with the drift message; the clean copy -> exit 0. The registered check therefore genuinely gates",
+      "adversarial_fixtures": "11 cases written by this witness against copies of the real tree; 8 refused as expected, 3 passed unrefused (c4b, c6, c7 below)",
+      "landing_scope": "scripts/sovkernel/authority.evaluate against contracts/standing-grants.json with the five changed paths -> REFUSED, 'grant:standing-landing-loop: .clarity/coverage.json is outside every path prefix the grant admits'; same request minus that one path -> PERMITTED for repository.commit",
+      "prior_branch": "git rev-list --count origin/gap/derive-bdos-core-digest-check..origin/main -> 88, matching the commit message; the branch still exists on origin at a6f2fcd and is not retired by this change",
+      "digest_rule_comparison": "bdos digest_text(without_currency(...)) reimplemented locally from <bdos-worktree>/bdos/core.py lines 227-254 and 358-362 (pydantic is not installed, so bdos could not be imported) -> can-it-run-doom sha256:d40530e146175304e0c868b75cdc69c27faa0d3c4940cf5e2441d244f315c489, draw-the-owl sha256:3297ffdb4caca46971c25eca310518dba37f6073c1782934315b759de8c8f4de; neither equals the plain byte digest sov_vendor uses"
+    },
+    "predicate_results": {
+      "both_registered_checks_actually_execute": {
+        "held": true,
+        "detail": "Measured from the verify transcript in two independent runs, not from the import list. Both '== carried cores ==' and '== carried core refusals fire ==' appear as top-level sections with their own TIME lines. Check count rose 57 -> 59 against origin/main, matching the two Check( entries added to HARNESS_CHECKS. Verify's verdict is taken from the subprocess exit code, and sov_vendor.py returns 1 on defect at process level, confirmed on a skeleton copy. This is not the registered-but-never-run defect."
+      },
+      "the_central_claim_reproduces_under_the_witness_own_fixtures": {
+        "held": true,
+        "detail": "Eight of eleven adversarial cases refused correctly, each against a copy of the real .claude/skills tree and the real decisions/0103 rather than the shipped synthetic fixture. Refused: a one-byte XOR flip inside draw-the-owl; a bare trailing newline appended to can-it-run-doom; deletion of the draw-the-owl row (caught by the tree->rows direction with rows->tree clean); deletion of both rows (caught fail-closed as an unparseable table); a third skill declaring bdos: true with no row; the pin stripped of its commit; and a carried file deleted from the tree. The digests the decision records were also recomputed with sha256sum, a tool that is not the subject, and both match."
+      },
+      "the_two_directions_are_genuinely_two_and_neither_masks_the_other": {
+        "held": true,
+        "detail": "Asked directly. In the case where the draw-the-owl row is deleted, the rows->tree loop is entirely clean (the one surviving row, can-it-run-doom, matches) and the only defect returned is 'draw-the-owl: declares bdos provenance and no decision row carries it'. A third skill with no row produces the same direction firing with both existing rows clean. check() has exactly one early return, on an unparseable table, and it is fail-closed: it returns a defect and exits 1. Nothing masks the second direction."
+      },
+      "it_does_not_reimplement_bdos_artifact_digest": {
+        "held": true,
+        "detail": "The claim is honest and demonstrable on these very files. bdos artifact_digest = 'sha256:' + sha256 of the newline-normalised, BOM-stripped text with the currency block elided; sov_vendor = sha256 of the raw bytes with no prefix. Both carried cores contain a currency block upstream (cores/can-it-run-doom/SKILL.md:53, cores/draw-the-owl/SKILL.md:43), so the two rules diverge here rather than coinciding by accident: the values differ for both files, and a simulated pure currency re-stamp changes the sov_vendor digest while leaving the bdos digest fixed. This is a different rule answering a different question, not a fork under another name."
+      },
+      "the_sync_report_reproduces_against_the_upstream_tree": {
+        "held": true,
+        "detail": "Reproduced with this witness's own git commands rather than the tool's. In <bdos-worktree>, the bytes of cores/can-it-run-doom/SKILL.md and cores/draw-the-owl/SKILL.md at both e715cb11 and origin/main sha256 exactly to the two digests decisions/0103 records, and origin/main resolves to e715cb1153b4e309901594aa54e5d5094b40bf4c, which is the pinned commit. The sentence in the commit message is accurate for that tree at that moment."
+      },
+      "reports_never_refuses_is_the_right_call_for_sync": {
+        "held": true,
+        "detail": "Judged as asked, and it is the right call rather than an evasion. CI has no upstream tree, so a refusing sync would either be unrunnable in CI or would make the build depend on a network read; and a core that has moved upstream is a decision for a person to take, not a defect in this tree. The separation is clean: the refusing half reads only bytes this repository holds, the reporting half reads bytes it does not. What is wrong is not the reporting posture but two specific reporting defects, recorded as residuals R3 and R4."
+      },
+      "the_prior_branch_insight_is_kept_and_nothing_it_asserted_is_lost": {
+        "held": true,
+        "detail": "origin/gap/derive-bdos-core-digest-check (a6f2fcd, one commit, a 39-line test) asserted exactly three things: the decision's table parses to at least one row, each recorded skill's SKILL.md exists, and each digest matches. All three are present in sov_vendor.check() with the same ROW regex character for character, and the derive-from-the-decision insight is carried into the new docstring. Nothing the old test asserted is absent. One incidental difference favours the new code: the old test read the decision with read_bytes().decode('utf-8'), which would fail to parse any row on a CRLF checkout, while read_text normalises. The 88-commits-behind figure in the commit message is exact."
+      },
+      "the_change_as_committed_can_land_under_the_standing_grant": {
+        "held": false,
+        "detail": "It cannot, and this is recorded as an observation about the terminal rather than as the builder's defect. The repository's own evaluator refuses it: scripts/sovkernel/authority.evaluate over contracts/standing-grants.json returns REFUSED with 'grant:standing-landing-loop: .clarity/coverage.json is outside every path prefix the grant admits'. The grant's scope.paths lists services/, contracts/, conformance/, scripts/, .claude/, adapters/, bindings/, workers/, diagrams/ and docs/, and .clarity/ is under none of them. Attribution matters here: .clarity/coverage.json has landed on main repeatedly, including in the immediately preceding commit b8b6e00, so this is a pre-existing condition of the grant's path list and not something this change introduced. Removing the .clarity/ edit makes the same request PERMITTED for repository.commit."
+      },
+      "the_clarity_receipt_re_stamp_is_witnessable": {
+        "held": false,
+        "detail": "It is not. The commit rewrites the artifact_digest for scripts/README.md in .clarity/coverage.json from 21810274... to 4a7ae5af..., which is an assertion that a completed clarity review was performed over the new bytes. Nothing in the artifact distinguishes a performed review from a re-stamped field. The re-stamp was also unforced: sov_clarity.py check does compare the receipt against the file and would report TEXT_STALE, but grep across scripts/, sovverify/ and the workflows finds no caller of sov_clarity in verify.py or in the landing path, so no gate required the update. The basis digests (AGENTS.md, STATUS.yaml) are unchanged and consistent, and the README edit is one table row and one numeral, so the review is plausible; it is simply not observable. Recorded as residual R7, not as dissent."
+      },
+      "the_commit_message_and_docstring_overstate_nothing": {
+        "held": false,
+        "detail": "One sentence overstates, in both the commit message and the module docstring: 'Without the second a third core could arrive carrying no decision at all and the check would pass by never looking at it.' The second direction only looks at skills whose own bytes contain the literal string 'bdos: true'. A third core carried in with that marker absent is not looked at either, which this witness confirmed: a skill added at .claude/skills/smuggled-quiet/SKILL.md with a verbatim body and no bdos marker passes unrefused. The direction that exists to catch an unfaithful carry is itself conditional on the carrier's own declaration. Every other sentence tested holds."
+      }
+    },
+    "residuals": [
+      "R1 (material, tree->rows reads a declaration where it could have measured). declares_provenance() selects on the substring 'bdos: true' being present anywhere in a SKILL.md. A third carried core whose metadata block is stripped or never included is invisible to the check, and it is precisely the carrier who declines to write a decision row who would decline to write the marker. The false-positive side is live too: any SKILL.md that mentions the literal string in prose, including a page documenting this check, would be reported as an unrecorded carried core. Today only the two carried files contain it, so the check is currently correct; the reading is still a declaration rather than a measurement. Noted for fairness: scripts/sovharness/provenance.py already selects the same way, so this is the repository's existing pattern rather than a new one.",
+      "R2 (material, the offline check verifies internal consistency, not provenance). Two adversarial cases pass unrefused. A pin rewritten to a different commit with the digest table untouched is accepted, because the offline half grades the pin for well-formedness only and never for correspondence. A carried file rewritten wholesale with its row updated in the same edit is also accepted. Both are the same limit: the check reads two files that one commit can move together, so it detects accidental or silent drift and cannot detect a co-edit. Two things mitigate it and should be recorded rather than assumed: decisions/ is excluded from grant:standing-landing-loop, so a table edit cannot be landed under the standing grant; and `sync` catches the wrong-pin case as PIN MISMATCH when a person runs it. Neither mitigation is in the check itself.",
+      "R3 (sync reports a missing measurement as a positive finding). In sync(), at_pin has an explicit UNREACHABLE branch and at_head has none. Against a git tree where the pinned commit resolves but origin/main does not exist, both cores were reported as 'UPSTREAM MOVED: e715cb11 matches, origin/main (?) does not' and the summary counted '2 moved upstream'. Nothing upstream had moved; the ref was simply absent. The only tell is the '?' inside the sentence.",
+      "R4 (sync's summary line does not count what it could not read). Against a git tree not containing the pinned commit, every core printed 'UNREACHABLE at e715cb11' and the run still ended with '2 carried core(s), 0 moved upstream' and exit 0. The docstring's 'silence is not confirmation' is right, but that closing line is not silence, it is an affirmative count that reads as reassurance. The summary counts `moved` and never counts unreachable.",
+      "R5 (sync never checks that the tree it was handed is the repository the pin names). The PIN regex captures a repo group, and after the opening print that group is unused. Pointed at any git tree containing cores/<skill>/SKILL.md at a commit spelled e715cb11, sync would print IN SYNC under bdos's name. It also reads the local origin/main remote-tracking ref without fetching and without reporting how old that ref is; here it had been fetched the same day at depth 50, which this witness checked separately and which the tool does not report.",
+      "R6 (decisions/0103 is unamended and is now load-bearing for CI). The decision is untouched by this commit. Its Constraints section still describes the digest table as something 'a later reader can tell whether the copy still matches' by; a reader of the decision alone learns nothing about scripts/sov_vendor.py, and nothing warns that editing that table is now a build-affecting act. The decision's status is still OWNER-DIRECTED / PROPOSED and it carries an open judgement item for Bdo. decisions/ is excluded from grant:standing-landing-loop, so the amendment is not the builder's to land silently; it is an ACCEPTANCE_SEAM ask that the commit message does not name.",
+      "R7 (the clarity receipt for scripts/README.md was re-stamped, unforced and unwitnessable). See the predicate of the same name. Not dissent; recorded because a receipt whose only evidence is the digest it was updated to match cannot be verified by an independent reader.",
+      "R8 (two digests now exist for the same file under two rules, and the reader-facing record explains only one). Each carried SKILL.md contains its own artifact_digest field from bdos (sha256:d40530e1... and sha256:3297ffdb...), while decisions/0103 records different values for the same files (3336bb53... and 4796bd13...). The distinction is stated in sov_vendor.py's docstring and in the Check relation string; it is absent from the decision, which is where a reader who notices the two numbers will look.",
+      "R9 (the prior branch is not retired by anything in the tree). origin/gap/derive-bdos-core-digest-check still exists at a6f2fcd carrying scripts/tests/test_bdos_core_provenance.py. Its insight is genuinely kept, but if it later lands the rows->tree direction exists twice. Only the commit message mentions the branch; no repository record supersedes it.",
+      "R10 (pre-existing, not this change). scripts/sovharness/provenance.py states as its reason for grading presence only: 'Recomputing the digest means reimplementing the origin repository's rule here... Verifying it is a DEPENDENCY_SEAM.' That seam is now partly closed by a different rule under a different owner, which this witness judges honest. Whether the seam should now be recorded as narrowed, and whether provenance.py's docstring should say so, is not settled by this commit."
+    ],
+    "judgement_items": [
+      "Should decisions/0103 be amended to record that its digest table is now enforced by scripts/sov_vendor.py inside scripts/verify.py, so that a reader of the decision learns that editing a row changes what the build will accept? decisions/ sits outside grant:standing-landing-loop, so this is an owner-seat question and not the builder's to settle.",
+      "decisions/0103 remains OWNER-DIRECTED / PROPOSED with an open question of whether the other fourteen cores should be carried or whether the repository should depend on bdos's installer and carry none. A build-failing gate now derives from that proposed decision's table. Is that acceptable, or should the gate wait on the ruling?",
+      "The change as committed is refused by grant:standing-landing-loop because .clarity/coverage.json falls outside the grant's declared path prefixes, yet that file has landed on main repeatedly. Should the grant's scope be widened to admit .clarity/, or should clarity receipts stop being carried in landings that go through the standing loop?"
+    ],
+    "not_observed": [
+      "Whether a clarity review of the new scripts/README.md bytes was actually performed. Only the recorded digest is observable.",
+      "Whether bdos's remote main has moved since <bdos-worktree> was fetched at 2026-09-08 14:36. This witness read the same local remote-tracking ref the tool reads and did not fetch.",
+      "Any GitHub check-run, ruleset or PR state. No network read of the Soveraeign remote was taken."
+    ]
+  },
+  "observed_state_addresses": [
+    "scripts/sov_vendor.py",
+    "scripts/sovverify/harness.py",
+    "decisions/0103-carry-two-bdos-cores.md",
+    ".claude/skills/can-it-run-doom/SKILL.md",
+    ".claude/skills/draw-the-owl/SKILL.md",
+    "scripts/README.md",
+    ".clarity/coverage.json",
+    "docs/documentation.html",
+    "scripts/sovharness/provenance.py"
+  ],
+  "observed_state_digests": [
+    "sha256:2db873069d29305b",
+    "sha256:bdf2fe110e78f300",
+    "sha256:7e347f540eb9aa4b",
+    "sha256:3336bb53892b1bac",
+    "sha256:4796bd13a76da28b",
+    "sha256:4a7ae5afc7e14ea0",
+    "sha256:d549adfad8a85741",
+    "sha256:3f487d4e3c2de1ec",
+    "sha256:577ac2541dad9efd"
+  ],
+  "digest_note": "Leading 16 hex characters of the sha256 of the file bytes at tree 63145f1d423d20fdbab7c23155473efe4b6fa53a, in the same order as observed_state_addresses.",
+  "observer_relation": "INDEPENDENT_OF_BUILDER",
+  "observed_at": "2026-09-08"
+}

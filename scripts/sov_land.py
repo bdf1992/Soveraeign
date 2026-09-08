@@ -30,18 +30,39 @@ from sovland import repo  # noqa: E402
 from sovland import tree  # noqa: E402
 import sov_grant  # noqa: E402
 
-ROOT = repo.ROOT
+def _root() -> Path:
+    """The repository this landing acts on, read at the moment it is needed.
+
+    `sovland.repo` owns the root and its git calls read it at call time, so a test that
+    points `repo.ROOT` at a temporary repository moves the git operations there. Binding a
+    module-level copy here did not move with it: git ran against the temporary repository
+    while the landing ledger was written into the real checkout, so a verification run
+    appended rows to operational accounting. That is one effective root now, and
+    `scripts/tests/test_landing_ledger_isolation.py` holds it to that.
+    """
+    return repo.ROOT
+
 DEFAULT_TARGET = "main"
 
 
 def build_request(args: argparse.Namespace, paths: list[str], checks: dict[str, str]) -> dict:
     """Assemble the legacy mutable-tree landing request."""
     observation = None
+    observation_path = None
     if args.observation:
         source = Path(args.observation)
         if not source.is_absolute():
-            source = ROOT / source
+            source = _root() / source
         observation = json.loads(source.read_text(encoding="utf-8"))
+        # Where the observation lives is a fact this tool holds. Carrying it on the
+        # request rather than reading a field out of the observation is what makes the
+        # inside-the-change reading a measurement instead of the observer's own account;
+        # contracts/observation.schema.json forbids extra keys, so no such field can
+        # legitimately exist inside one.
+        try:
+            observation_path = source.resolve().relative_to(_root().resolve()).as_posix()
+        except ValueError:
+            observation_path = source.as_posix()
     return {
         "request_schema": "soveraeign-authority-request/v1",
         "actor_id": args.actor,
@@ -51,6 +72,9 @@ def build_request(args: argparse.Namespace, paths: list[str], checks: dict[str, 
         "branch": args.target,
         "paths": paths,
         "spend": {"unit": "agent_invocations", "amount": args.spend},
+        "observation_path": observation_path,
+        # Read from that path just above, so this asserts what this module knows.
+        "observation_resolved": observation_path is not None,
         "evidence": {"checks": checks, "observation": observation},
     }
 
@@ -117,7 +141,7 @@ def cmd_plan(args: argparse.Namespace) -> int:
         print("\nHeld by another live session in this shared tree:")
         for line in held:
             print(f"  {line}")
-    print(ledger.record(ROOT, request, result, branch,
+    print(ledger.record(_root(), request, result, branch,
                         ledger.LANDED if result["verdict"] == authority.PERMITTED
                         else ledger.REFUSED_AUTHORITY, dry=True, reading=reading))
     return 0 if result["verdict"] == authority.PERMITTED else 1
@@ -157,7 +181,7 @@ def cmd_land(args: argparse.Namespace) -> int:
     outcome, code, facts = _land(args)
     if facts is not None:
         request, result, branch, merge_commit, detail, reading = facts
-        print(ledger.record(ROOT, request, result, branch, outcome,
+        print(ledger.record(_root(), request, result, branch, outcome,
                             merge_commit=merge_commit, refusal_detail=detail,
                             reading=reading))
     return code

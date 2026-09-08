@@ -808,7 +808,7 @@
       "changed": false
     },
     "README.md": {
-      "artifact_digest": "sha256:a423b77709314e80680e5109c11a3a4bee424dc886c23cd44106d6e0477373a7",
+      "artifact_digest": "sha256:d0c1ac8189e4cfee8dc4c1dc40ceed7841bdcf5ca9c19838ab4c1063ba57f876",
       "basis": [
         {
           "digest": "sha256:43d7c7a888ac8b42ea4bd73edc2a1b19ac66be167cc5b8ac2190c02356801d73",
@@ -827,7 +827,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "ROADMAP.md": {
       "artifact_digest": "sha256:c7e6e971392c1680d6078b7c7166cca259c12c56df63b753606064b06714e8c4",

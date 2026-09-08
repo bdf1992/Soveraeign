@@ -3,6 +3,12 @@
 **A local-first system where people and AI work through the same records, permissions,
 operations, and history.**
 
+**Status: experimental reference implementation.** Phase 1.5, Operational
+Commissioning, is open; none of its six exit clauses has been earned. This repository
+contains working local service examples, contracts, and verification tools. It is not
+a production-ready node. See [current state](#current-state) and
+[known asset-service gaps](services/asset/KNOWN-GAPS.md).
+
 Soveraeign is built for work shared by people and models. They may use different
 interfaces, but neither gets a separate copy of the enterprise or a private path around
 its rules.
@@ -10,6 +16,26 @@ its rules.
 The node keeps its authoritative records and permissions under the owner's control. A
 model can inspect, propose, build, verify, and act when a live grant allows it. Producing
 a good answer or successfully running code does not create authority.
+
+## Try a local example
+
+With Python 3.11 or newer, run this from the repository root:
+
+```sh
+python services/asset/scripts/demo.py
+```
+
+The example ingests a file, creates a metadata derivative, and prints the resulting
+receipts. It uses temporary local storage and needs no model or external service.
+It demonstrates the reference participant; it does not establish independent observation
+or product qualification. The [Asset Service guide](services/asset/README.md) covers its
+tests and limitations.
+
+| To explore | Start here |
+| --- | --- |
+| Architecture and implementation choices | [System](SYSTEM.md) · [Engineering](ENGINEERING.md) |
+| Current standing and planning forecasts | [Status](STATUS.yaml) · [Candidate roadmap](ROADMAP.md) |
+| Contributing or operating as a model participant | [Contributor guide](CONTRIBUTING.md) · [Live discovery](#start-here) |
 
 ## What the product is trying to guarantee
 
@@ -104,21 +130,15 @@ Those distinctions are part of the product, not implementation detail.
 
 ## Current state
 
-Phase I is closed. `contracts/phases.json` records its terminal state as
-`CLOSED_INCOMPLETE`: the phase ended without earning its qualification exit. Phase 1.5,
-Operational Commissioning, was opened by the owner on 2026-09-03
-(`decisions/0102-open-phase-1-5.md`); none of its six exit clauses is earned.
+[STATUS.yaml](STATUS.yaml) and [the phase record](contracts/phases.json) identify the
+active campaign and its standing. Phase 1.5, Operational Commissioning, was opened by the
+owner on 2026-09-03 ([decision 0102](decisions/0102-open-phase-1-5.md)). Its definition is
+pinned under `archives/`; [the exit custodies](contracts/custodies/phase-1-5.json) carry
+the unfinished work. No exit clause has been earned.
 
-That result is intentional. The repository keeps partial implementation evidence without
-rounding it up to acceptance. Opening a phase is an explicit owner action, and opening one
-settles nothing: the Phase 1.5 definition is pinned under `archives/` and every unmet exit
-clause is carried by a live custody in `contracts/custodies/phase-1-5.json`. Candidate
-future work, including issue #173, is not phase authority merely because it exists.
-
-`STATUS.yaml` is the machine-readable source for current standing and owner-held items.
-`contracts/SUCCESSOR-PREP.md` records the closed-books residue and carried seams the phase
-was opened against; it grants no phase standing.
-Issue #148 is the Phase-I boundary-closure ledger.
+Phase I ended as `CLOSED_INCOMPLETE`: it closed without earning its qualification exit.
+Its partial evidence remains available in [successor preparation](contracts/SUCCESSOR-PREP.md).
+Historical evidence and future plans do not acquire phase authority through publication.
 
 ## Start here
 
@@ -157,9 +177,9 @@ into permission.
 Once an operation is relevant, inspect that operation directly:
 
 ```sh
-python scripts/sov_interface.py show <operation-id> --binding human
+python scripts/sov_interface.py show <operation-id> --binding HUMAN
 # or
-python scripts/sov_interface.py show <operation-id> --binding model
+python scripts/sov_interface.py show <operation-id> --binding MODEL
 ```
 
 Human and model bindings read the same operation. The rendering may differ; the operation,

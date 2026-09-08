@@ -1,6 +1,6 @@
 # Command surface
 
-Sixty `sov_*.py` entrypoints plus the two verification commands. This is the
+Sixty-one `sov_*.py` entrypoints plus the two verification commands. This is the
 whole of how the node is operated from a terminal, and it is the index
 `contracts/publication-surface.json` requires: an entrypoint absent from this
 page is unreachable by anyone who did not write it.
@@ -71,6 +71,7 @@ Run any of them with `--help` for exact arguments.
 | `sov_docs.py` | `ingest` `build` `check` | The node's own documentation reader, with each document's custody shown beside it. |
 | `sov_baseline.py` | — | Holds the Asset Service to its recorded conformance baseline. |
 | `sov_mutate.py` | `sites` `run` `selfcheck` | How much the test suite actually asserts, by mutating what it tests. |
+| `sov_observations.py` | `read` `compare` | What a verification run observed, from the records it retained. `compare` reads two runs against each other, attributing a difference to the digests each check read and to both its clocks, and naming the cause it cannot determine. |
 | `sov_trace.py` | `up` | One measured execution, walked up to the product intention that justified it. |
 | `sov_f2_gate.py` | — | The F2 milestone gate, exactly as `SPEC.md` states it. |
 

@@ -28,7 +28,7 @@ import sov_observations as reader  # noqa: E402
 
 
 def record(subject="a check", run="run_one", outcome="PASS", wall=1.0, cpu=1.0,
-           addresses=("AGENTS.md",), digests=("sha256:aa",)):
+           addresses=("AGENTS.md",), digests=("sha256:aa",), source="posix-wait4-rusage"):
     """One observation record shaped like the ones `verify.py` emits."""
     return {
         "observation_id": f"observation_{subject}",
@@ -38,7 +38,8 @@ def record(subject="a check", run="run_one", outcome="PASS", wall=1.0, cpu=1.0,
         "observed_state_addresses": list(addresses),
         "observed_state_digests": list(digests),
         "predicate_results": {"outcome": outcome, "exit_code": 0 if outcome == "PASS" else 1,
-                              "elapsed_seconds": wall, "cpu_seconds": cpu},
+                              "elapsed_seconds": wall, "cpu_seconds": cpu,
+                              "cpu_source": source},
         "observed_at": "2026-09-08T00:00:00+00:00",
         "subject": subject,
     }
@@ -65,13 +66,44 @@ class LoadRefusesWhatIsNotOneRun(unittest.TestCase):
         self.assertEqual(["a check"], [row["subject"] for row in rows])
 
     def test_a_mapping_is_not_a_run(self):
-        self.assertEqual("NOT_A_RUN", self.refusal({"subject": "a check"}))
+        """The message must name the file's own shape, not a record's. Asserting the
+        code alone let this pass with the guard it is named for deleted, because a
+        dict falls through to the per-record check and refuses for another reason."""
+        with self.assertRaises(reader.Refusal) as caught:
+            reader.load(written({"subject": "a check"}))
+        self.assertIn("holds dict, not a list of records", str(caught.exception))
+
+    def test_the_required_keys_come_from_the_contract_not_from_this_module(self):
+        """Every key the contract requires, and no key it does not."""
+        self.assertEqual(tuple(json.loads(reader.CONTRACT.read_text(encoding="utf-8"))
+                               ["required"]), reader.required())
+        self.assertNotIn("subject", reader.required())
+
+    def test_a_record_that_never_came_from_a_verification_run_is_refused(self):
+        """A witness reached a summary with a row about quarterly revenue, because
+        this module checked five keys of its own rather than the contract's eight."""
+        self.assertEqual("NOT_A_RUN", self.refusal(
+            [{"subject": "quarterly revenue",
+              "predicate_results": {"outcome": "GREAT", "exit_code": 0}}]))
+
+    def test_a_record_with_no_subject_is_refused_by_its_own_code(self):
+        """The contract marks `subject` optional; this reader compares on it. The
+        refusal is named separately so it never claims the contract demanded it."""
+        headless = record()
+        del headless["subject"]
+        self.assertEqual("NO_SUBJECT", self.refusal([headless]))
+
+    def test_addresses_and_digests_of_different_lengths_are_refused(self):
+        """`zip` truncates in silence: three addresses against no digests compared
+        equal to any other record, so two runs reading different trees read alike."""
+        self.assertEqual("MISALIGNED", self.refusal(
+            [record(addresses=("a", "b", "c"), digests=())]))
 
     def test_an_empty_file_is_refused_rather_than_read_as_a_clean_run(self):
         self.assertEqual("EMPTY_RUN", self.refusal([]))
 
     def test_a_record_missing_a_required_key_is_refused(self):
-        for key in reader.REQUIRED:
+        for key in reader.required():
             broken = record()
             del broken[key]
             with self.subTest(missing=key):
@@ -101,11 +133,19 @@ class CostIsReadWithItsDirection(unittest.TestCase):
         self.assertEqual("faster", reader.moved(3.0, 0.5))
         self.assertEqual("slower", reader.moved(0.5, 3.0))
 
-    def test_a_small_change_is_jitter_on_any_host(self):
-        self.assertEqual("", reader.moved(1.0, 1.2))
+    def test_a_change_below_the_floor_is_not_a_reading(self):
+        """Only the absolute floor suppresses this: the ratio is 2.4."""
+        self.assertEqual("", reader.moved(0.05, 0.12))
 
-    def test_a_large_absolute_change_that_is_a_small_ratio_is_not_a_reading(self):
+    def test_a_change_below_the_ratio_is_not_a_reading(self):
+        """Only the ratio suppresses this: the absolute move is 20 seconds."""
         self.assertEqual("", reader.moved(100.0, 120.0))
+
+    def test_the_floor_is_low_enough_to_see_a_real_regression(self):
+        """43 of 55 checks run under a quarter-second of CPU. A floor that a
+        threefold regression on those cannot reach hides what it exists to show."""
+        self.assertLessEqual(reader.MATERIAL_SECONDS, 0.25)
+        self.assertEqual("slower", reader.moved(0.20, 0.60))
 
     def test_an_unmeasured_clock_yields_no_reading_rather_than_a_guess(self):
         self.assertEqual("", reader.moved(None, 3.0))
@@ -135,20 +175,41 @@ class CompareAttributesWhatTheRecordsCarry(unittest.TestCase):
         found = reader.compare([record(run="a", cpu=1.0, wall=1.0)],
                                [record(run="b", cpu=9.0, wall=9.0, digests=("sha256:bb",))])
         self.assertEqual(["a check"], found["content_changed"])
-        self.assertEqual([], found["cost_changed_same_content"])
-        self.assertEqual([], found["waited_longer_same_work"])
+        self.assertEqual([], found["cost_changed"])
 
-    def test_identical_bytes_costing_more_cpu_read_as_more_work(self):
+    def test_a_cost_change_carries_both_clocks_and_asserts_no_cause(self):
+        """`clocks.py` says a CPU rise is more work or more competition and never
+        proof of the first; `decisions/0071` measured 2.12x from saturation alone.
+        So the pair is reported and the cause is not chosen."""
         found = reader.compare([record(run="a", cpu=1.0, wall=1.0)],
-                               [record(run="b", cpu=9.0, wall=9.0)])
-        self.assertEqual(["a check"], [e["subject"] for e in found["cost_changed_same_content"]])
-        self.assertEqual("slower", found["cost_changed_same_content"][0]["direction"])
+                               [record(run="b", cpu=2.12, wall=2.12)])
+        entry = found["cost_changed"][0]
+        self.assertEqual("slower", entry["direction"])
+        self.assertTrue(entry["measured"])
+        self.assertEqual([1.0, 2.12], entry["cpu"])
+        spoken = "\n".join(reader.compare_lines(found))
+        self.assertIn("more work or more competition", spoken)
+        self.assertNotIn("cost more work", spoken)
 
-    def test_identical_bytes_and_cpu_with_a_longer_wall_read_as_the_host(self):
-        found = reader.compare([record(run="a", cpu=1.0, wall=1.0)],
-                               [record(run="b", cpu=1.0, wall=9.0)])
-        self.assertEqual([], found["cost_changed_same_content"])
-        self.assertEqual(["a check"], [e["subject"] for e in found["waited_longer_same_work"]])
+    def test_a_missing_cpu_clock_attributes_nothing_to_the_host(self):
+        """The witness quadrupled every wall with no CPU reading at all and got the
+        module's most confident sentence back, on zero CPU evidence."""
+        found = reader.compare(
+            [record(run="a", cpu=1.0, wall=1.0)],
+            [record(run="b", cpu=None, wall=4.0, source="UNMEASURED:job-query-refused")])
+        entry = found["cost_changed"][0]
+        self.assertFalse(entry["measured"])
+        spoken = "\n".join(reader.compare_lines(found))
+        self.assertIn("the wall alone attributes nothing", spoken)
+        self.assertIn("UNMEASURED:job-query-refused", spoken)
+        self.assertNotIn("about the host", spoken)
+
+    def test_an_outcome_that_moved_with_nothing_behind_it_is_named(self):
+        """Content moves only where a check declares what it reads, so this reader
+        seeing no reason is not the same fact as there being none."""
+        found = reader.compare([record(run="a")], [record(run="b", outcome="FAIL")])
+        self.assertEqual(["a check"], found["unexplained"])
+        self.assertIn("cannot see why", "\n".join(reader.compare_lines(found)))
 
     def test_checks_added_and_removed_are_named(self):
         found = reader.compare([record(run="a", subject="was here")],

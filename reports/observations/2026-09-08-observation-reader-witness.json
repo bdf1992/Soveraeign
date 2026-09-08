@@ -1,0 +1,132 @@
+{
+  "observer": "sov-witness (independent; did not build, edit, or advise on scripts/sov_observations.py or scripts/tests/test_sov_observations.py; no helper was recruited; no Orchestrator, Controller or builder evaluative conclusion was read before every probe below was executed and its verdict frozen)",
+  "concern": "verification / a reader for the retained verification records, on claude/exit-zero-logging-imw5wu",
+  "timestamp": "2026-09-08",
+  "witnessed_subject": {
+    "branch": "claude/exit-zero-logging-imw5wu",
+    "base_commit": "48a0f57",
+    "candidate_commit": "e11ecc5052242b36fa3b9ade8f54ab6246dd1e12",
+    "changed_files": [
+      "scripts/sov_observations.py (new, 252 lines)",
+      "scripts/tests/test_sov_observations.py (new, 206 lines)"
+    ],
+    "working_tree_state": "`git status --porcelain` empty and `HEAD` == e11ecc5 at the start, at three points during, and at the end of this witness. No unrelated file changed. Two full `python scripts/verify.py --observe` runs over this tree produced byte-identical observed_state_digests for all 55 subjects and the same single failing check, so the tree did not move underneath this reading (trap T6 satisfied; the verdict is attestable).",
+    "method": "Both modules read whole, not as a diff. Every adversarial probe was constructed here by hand from two real 55-record runs I generated myself, and executed either against the module in place (read-only) or against copies in a scratch directory. Mutation testing was performed on a copy of the module outside the repository. The end-to-end exercise used a `cp -a` copy of the whole tree in scratch; the repository under witness was never modified. The module's own cases were never taken as evidence for any verdict. The commit message was read for the claim only, not as evidence."
+  },
+  "no_finding_envelope": "No contract-typed Finding (contracts/finding.schema.json) is emitted. That schema requires `record_projection_id`; no RecordProjection was supplied with this task and none can be reconstructed at a declared cutoff, so a Finding would require inventing a projection id. This record is therefore an observation and nothing more. It settles nothing, ratifies nothing, and is not a witness receipt.",
+
+  "claim_under_witness": "read <file> summarises one retained run without saying more than the record carries; compare <before> <after> attributes each difference to what the records themselves hold (digests moved = the repository changed under that check; identical digests with materially more CPU = the same bytes cost more work; identical digests with a longer wall and flat CPU = a reading about the host); a check whose content moved is not also reported as a cost change; a file that is not one run of observations refuses by a named code rather than being summarised.",
+
+  "commands_run": [
+    {"command": "python scripts/tests/test_sov_observations.py -v", "exit_code": 0, "observed": "Ran 24 tests, OK"},
+    {"command": "python scripts/lint.py", "exit_code": 0, "observed": "PASS: repository hygiene (1263 text files, 580 Python modules, 10 named debt)"},
+    {"command": "python scripts/verify.py --observe <tmp>/run_a.json", "exit_code": 1, "observed": "FAIL: counted populations. 55 checks in 15.799s wall. Reason: scripts/README.md:3 states 60 sov_*.py entrypoints, the record holds 61 (command-entrypoints)."},
+    {"command": "python scripts/verify.py --observe <tmp>/run_b.json (re-run, clean tree, HEAD unmoved)", "exit_code": 1, "observed": "FAIL: counted populations. Identical failure; deterministic, not a racing session."},
+    {"command": "python scripts/run_tooling_tests.py", "exit_code": 0, "observed": "test_sov_observations present in tooling shard 2/4; 116 modules, 4 shards; PASS. The new module IS reached by the suite verify.py runs."},
+    {"command": "python scripts/sov_observations.py read <tmp>/run_a.json", "exit_code": 0, "observed": "Correctly named the one failing check, its exit code, its four declared addresses, the slowest five, and no unmeasured CPU."},
+    {"command": "python scripts/sov_observations.py compare run_a.json run_b.json", "exit_code": 0, "observed": "'no check changed outcome, content or cost between these runs' - correct for two runs of one unchanged tree."},
+    {"command": "python scripts/sov_observations.py read|compare on each of 5 constructed refusal inputs", "exit_code": 2, "observed": "NOT_A_RUN, EMPTY_RUN, UNREADABLE, MIXED_RUNS, SAME_RUN each fire by name on stderr, stdout empty, exit 2. All five are constructible."},
+    {"command": "12 hand-built mutants of moved/compare/load/content run against the case module (isolated copy)", "exit_code": 0, "observed": "10 of 12 killed. M3 (delete MATERIAL_SECONDS floor) and M11 (delete the isinstance-list guard) both SURVIVE."}
+  ],
+
+  "reproduced": [
+    "compare correctly ignores a reordering of observed_state_addresses when digests stay positionally aligned. content() sorts the zipped pairs; verified directly.",
+    "A check whose content moved is not also reported as a cost change. Mutant M5 (remove the `continue`) is killed by test_content_that_moved_is_not_also_read_as_a_cost_change.",
+    "Direction is carried. Mutant M1 (restore the absolute-difference bug) is killed by test_a_check_that_got_faster_is_not_read_as_slower. The named defeating case is genuine and does the work claimed for it.",
+    "Positive polarity on real data: appending a comment to scripts/lint.py, an address 'repository hygiene' declares, produced exactly one reading - 'content moved: repository hygiene read different bytes'. That is the reading I would have written by hand.",
+    "The declared observes-tuple limit is real and live: no check in the 55-check table declares AGENTS.md at all. Appending a line to AGENTS.md in a copied tree flipped 'documentation reader' and 'repository tooling tests' PASS->FAIL, and compare reported the two outcome flips with no content change and no cost change.",
+    "read <file> on a genuine verify record says only what the record carries and is useful.",
+    "Style and hygiene: 252 and 206 lines (under the 300 ceiling), `from __future__ import annotations` present, max line 97, LF endings, no secrets, no absolute paths. Nothing unrelated changed; no oracle weakened; no vocabulary drift."
+  ],
+
+  "dissented": [
+    {
+      "claim": "identical digests with materially more CPU means the same bytes cost more work",
+      "verdict": "DISSENT - this reading is contradicted by the module that produces the number, and I reproduced the wrong reading on real records.",
+      "evidence": "scripts/sovverify/clocks.py, the source of cpu_seconds, states: 'What CPU time is not is a stable measure of the work a check asks for. Measured on a 32-core host, saturating it inflated a fixed-work child's wall by 2.19x and its own CPU by 2.12x... Read a rise in CPU as either more work or more competition, never as proof of the first.' decisions/0071 carries the measurement under 'What would defeat this'. 2.12x is above MATERIAL_RATIO 1.5, so contention alone reliably trips the branch. Applying exactly that measured saturation factor to my real run_a (identical digests throughout), compare reported EIGHT checks as 'same bytes cost more work', including 'repository tooling tests 31.776s -> 72.055s'. The repository did not change and no check did more work. No threshold pair repairs this: contention exceeds any usable ratio."
+    },
+    {
+      "claim": "identical digests with a longer wall and flat CPU is a reading about the host",
+      "verdict": "DISSENT - 'flat CPU' and 'no CPU clock' are conflated, and the tool makes its most confident assertion precisely where the evidence for it is absent.",
+      "evidence": "moved() returns '' both when the clocks are flat and when either clock is None. compare() treats '' as 'CPU flat' and falls through to the waiting branch. I took run_b, set cpu_seconds to null with cpu_source 'unmeasured:...' (a real state verify.py emits; clocks.py documents Windows refusing a reading), and quadrupled every wall. compare printed 'waited longer for the same work ... - a reading about the host, not the repository' for every check, on a run carrying no CPU evidence at all. summarise() reports unmeasured_cpu; compare() has no such field in its human or --json output, so a consumer cannot tell. This is the cross-host case (Windows dev vs ubuntu-latest CI) the design most needs to survive.",
+      "aggravating": "verify.py emits cpu_source, whose whole purpose is to name why a CPU number is missing, and cpu_ratio. The reader references NEITHER field anywhere. The record carries the evidence that would have prevented the wrong reading and the reader does not read it. That is the direct negation of 'says no more than the record carries'."
+    },
+    {
+      "claim": "a file that is not one run of observations refuses by a named code rather than being summarised",
+      "verdict": "DISSENT - a file that never came from verify.py reaches a summary.",
+      "evidence": "A one-record array {subject: 'quarterly revenue', run_id: 'sales-q3', observed_state_addresses: ['ledger.xlsx'], observed_state_digests: ['not-a-digest'], predicate_results: {outcome: 'GREAT', exit_code: 0, elapsed_seconds: 9.0}} loads and prints: 'run sales-q3 at None: 1 checks, 1 failing / FAIL quarterly revenue (exit 0) read ledger.xlsx'. Internally contradictory (FAIL at exit 0), 'at None' for a missing timestamp, and confidently rendered. Structural cause: load() validates against neither the owning contract nor verify.py's emitted shape. It ignores all four identity fields contracts/observation.schema.json marks required (observation_id, observer_id, observer_relation, observed_at) and requires `subject`, which that contract marks OPTIONAL - so it also refuses NOT_A_RUN on a contract-valid observation that omits subject. Checking observer_id, which verify.py always writes as 'scripts/verify.py@<digest>', would have refused the alien file by name."
+    },
+    {
+      "claim": "digests moved means the repository changed under that check (as a complete content oracle)",
+      "verdict": "PARTIAL DISSENT - a positional-alignment violation fails open silently.",
+      "evidence": "content() is `sorted(zip(addresses, digests))`. zip truncates to the shorter list without complaint. A record with three addresses and an empty digests list is accepted by load() (both keys present) and yields content() == []. Two runs whose checks read COMPLETELY DIFFERENT address sets were reported as content-unchanged and fell through to the cost branch. A record one digest short silently drops the last pair, so a real digest change on that address is not reported. The schema says the two arrays are positionally aligned; a file violating that is not one run of observations and is summarised anyway."
+    }
+  ],
+
+  "residuals": [
+    {
+      "id": "R1",
+      "severity": "blocking for landing",
+      "statement": "`python scripts/verify.py` exits 1 at e11ecc5 and the failure is this change's. The build reports 'verify exit 0 (55 checks, 15.116s)'. Reproduced twice on a clean unmoved tree. This change adds the 61st scripts/sov_*.py entrypoint; scripts/README.md line 3 still reads 'Sixty ... entrypoints' and the `counted populations` check grades that prose against the record. Base 48a0f57 holds 60 and passes. grant:standing-landing-loop requires verify PASS, so the change is not landable as it stands. Repair is inside this concern: update scripts/README.md's count and add sov_observations.py to that index."
+    },
+    {
+      "id": "R2",
+      "severity": "material",
+      "statement": "The undeclared limit that fails open, and the answer to 'is there a second limit'. The module docstring names exactly one limit (content is visible only at declared addresses) and presents it as THE limit. There are at least two more, and both produce a positive assertion of the wrong cause rather than silence: (a) CPU contention read as work, contradicting clocks.py and decisions/0071 (dissent 1); (b) an absent CPU clock read as a flat CPU clock (dissent 2). A third, lesser one: verify.py's digest() skips SKIP_PARTS ({.git, .venv, __pycache__, .local, worktrees}) inside a directory address, and 40 of 55 checks observe at least one directory, so content can move unseen even at a declared address."
+    },
+    {
+      "id": "R3",
+      "severity": "material",
+      "statement": "The output does not carry the limit the docstring declares. In my real AGENTS.md run, two checks flipped PASS->FAIL and compare reported no content change and no cost change. Per the module's own stated reading table, a consumer of that output would conclude the repository did not change under those checks - the opposite of the truth. The limit is stated in the source and never in the artifact the reader actually sees. A line such as 'outcome moved with no content change: this reader could not see why' would close it."
+    },
+    {
+      "id": "R4",
+      "severity": "material",
+      "statement": "Thresholds. MATERIAL_SECONDS = 0.5 is untested and blinds most of the suite. Mutant M3, deleting the absolute floor entirely, kills NO case: test_a_small_change_is_jitter_on_any_host (1.0 -> 1.2) is suppressed by the ratio gate alone. There is no case only the floor can pass. Measured direction it hides real change: 43 of 55 checks read under 0.25s CPU and 47 of 55 under 0.5s, so for 78% of the suite a genuine 3x regression cannot reach the floor; on 'kernel transition contract' (0.073s CPU) a regression must be 7.8x before it is visible. Measured direction it reports noise: on two runs of one unchanged tree the largest CPU ratio anywhere was 1.35 and the largest absolute delta among all 49 sub-second checks was 0.082s; floors of 0.5, 0.25, 0.1 and even 0.05 all produced ZERO false readings, because the ratio gate does all the discrimination. Recommendation with those numbers: move MATERIAL_SECONDS from 0.5 to 0.10 and keep MATERIAL_RATIO at 1.5 - still zero false positives on my two real runs, while a 2.4x regression on a 0.073s check becomes visible instead of needing 7.8x. Add a case only the floor can pass, e.g. moved(0.1, 0.3) == '' (ratio 3.0, absolute 0.2). None of this repairs the contention misattribution in R2, which is an attribution defect, not a threshold one."
+    },
+    {
+      "id": "R5",
+      "severity": "minor",
+      "statement": "A non-discriminating case. Mutant M11, deleting `if not isinstance(rows, list)`, survives the suite. test_a_mapping_is_not_a_run passes a dict; without the guard, iteration falls through to the per-record isinstance check and yields NOT_A_RUN anyway, so the case passes for a different reason than the one it is named for and cannot tell the two apart. It asserts only the first token of the refusal. It is not strictly a tautology, but it does not defend the guard it is written for."
+    },
+    {
+      "id": "R6",
+      "severity": "minor",
+      "statement": "Two runs from different repositories or different verify.py versions compare without warning. Observation records carry no commit identifier, and compare ignores observer_id, so 'the repository changed under that check' cannot be tied to a revision. I compared a fabricated foreign run against a real one: 55 'content moved' lines, no signal that the observer differed."
+    },
+    {
+      "id": "R7",
+      "severity": "minor / pre-existing, NOT this builder's",
+      "statement": "scripts/sov_observations.py is indexed in no markdown, json or yaml file in the tree, so contracts/publication-surface.json's entrypoint_index rule is unmet for it. verify.py runs `sov_publication.py selfcheck`, which grades sixteen synthetic fixtures and never runs `audit` against the real tree - a check that grades its own fixtures rather than the artifact. `python scripts/sov_publication.py audit` reports ENTRYPOINT_UNINDEXED for dozens of pre-existing entrypoints and exits 0. Recorded as context for R1 and as a standing gap in the checking layer; it is not attributable to this change."
+    },
+    {
+      "id": "R8",
+      "severity": "carried, correctly declared by the builder",
+      "statement": "Nothing in CI or the landing gate calls this reader. It remains a tool a person runs, so the retained artifacts still have no automatic consumer. The builder declares this and it is accurate."
+    }
+  ],
+
+  "helper_and_terminal_check": [
+    "No helper was declared by the builder and none is recorded, so contracts/closure-ownership.json HELPER_AS_WITNESS is not engaged.",
+    "The commit message reports residuals in place rather than filing them as tickets, which is the terminal Closure ownership requires. No concern was converted into an issue.",
+    "No build report, decision record, acceptance packet or STATUS.yaml entry exists for this change; the commit message is the report. Appropriate for RECORD_LOCAL work whose standing claim is BUILT."
+  ],
+
+  "standing_supported": {
+    "transition": "OPEN -> BUILT",
+    "supported": true,
+    "note": "The two modules exist, the 24 cases pass, the tooling suite reaches them, lint passes, and the central mechanism works on real data in both polarities."
+  },
+  "standing_not_supported": {
+    "transition": "BUILT -> WITNESSED",
+    "supported": false,
+    "reason": "Three of the four attributions in the claim are defeated by probes I constructed and ran against real records, and verify.py does not pass at this commit. Recording this as a dissent, not a settlement."
+  },
+
+  "accurate_wording_offered": "If the builder prefers to narrow the claim rather than repair, the wording I could witness today is: '`read <file>` summarises one run of records emitted by this repository's verify.py, and `compare <before> <after>` reports, per check, outcome changes, and content movement at the addresses that check declares. Content movement is reported only where a check names the address; a check whose outcome moved with no content reported means this reader could not see why. The cost readings are reported as correlations and not attributed to a cause: clocks.py and decisions/0071 measure contention buying 2.12x real CPU for identical bytes, so a CPU rise is more work OR more competition and this reader cannot tell them apart, and a run whose cpu_source is unmeasured carries no cost reading at all. Files are refused by name for shape defects this module checks; it does not validate against contracts/observation.schema.json and does not confirm a file came from verify.py.' That claim is true of the code as it stands. The claim as written is not.",
+
+  "judgement_items": [
+    "Should a reader that cannot distinguish more work from more competition print a causal sentence at all? Bdo's call whether compare drops 'cost_changed_same_content' and 'waited_longer_same_work' as causal labels and reports the two clocks as an uninterpreted pair, given that decisions/0071 is PROPOSED and unruled and its measurement is the thing that defeats the causal reading.",
+    "Does an entrypoint added under grant:standing-landing-loop owe an entry in scripts/README.md, given that contracts/publication-surface.json declares that index but verify.py runs only sov_publication's fixture selfcheck and never audits the tree? R7 is a check that grades a declaration where it could have measured; whether closing it belongs to this concern or a separate one is a scoping judgement I do not hold."
+  ]
+}

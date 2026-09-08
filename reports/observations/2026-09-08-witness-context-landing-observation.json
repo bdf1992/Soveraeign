@@ -1,0 +1,152 @@
+{
+  "candidate_commit": "ab3f473ad0663ea347c9d56ebf814ea9f611e18b",
+  "candidate_tree": "4d9432f3fe131e09dcb8ed965192de5432c1f339",
+  "base_commit": "d00f46ad38448856fa692399d12cf0a324266004",
+  "observer_id": "claude-opus-5/sov-witness@2026-09-08T13:10Z",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+
+  "case_id": "WITNESS-CONTEXT-LANDING-OBSERVATION-1",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08T13:10Z",
+  "artifact_revision": "ab3f473ad0663ea347c9d56ebf814ea9f611e18b",
+  "participant_claim": "FAILED",
+  "observer_relation": "Independent evaluator of WORK. Did not plan, build, edit, review or advise on any file in this candidate. All readings taken in an isolated full clone under a scratch directory outside the shared checkout; mutation testing done in throwaway copies of that clone. Scope derived from `git diff --name-only d00f46a..ab3f473`, never from the candidate record's changed_paths list. Verdicts read from process exit codes, never from stdout text. Every prompt claim was settled by executing JavaScript and reading the resulting string, not by reading or grepping the source that builds it. The builder's account was read only after this reading was complete.",
+  "concern": "concern:harness/witness-context",
+  "standing_supported": "NONE",
+
+  "subject_re_freeze": {
+    "note": "The subject was re-frozen for commit identity mid-reading. Prior commit 8abdc9c92fb904c840cd7b8e2aeb11def12e20e2 was superseded by ab3f473ad0663ea347c9d56ebf814ea9f611e18b.",
+    "independently_confirmed": "`git diff --stat 8abdc9c ab3f473` is empty (exit 0); both commits name tree 4d9432f3fe131e09dcb8ed965192de5432c1f339 and parent d00f46a; `git log -1 --format=%B` is byte-identical between them; `git cat-file commit` shows the only difference is author/committer identity (bdf1992.fb@gmail.com -> noreply@anthropic.com) and timestamp. Every file-content, rendering, parsing, mutation and scope reading taken against 8abdc9c therefore holds unchanged against ab3f473.",
+    "shared_tree_state_when_finding_froze": "branch claude/witness-context-handoff-n8lk0h at ab3f473, `git status --porcelain` empty, at 2026-09-08T13:10:27Z. The tree did not move under this reading."
+  },
+
+  "observed": {
+    "method": "Isolated full clone (`git clone --no-hardlinks <repository root>`) checked out at the pinned commit; verify, lint, the full tooling suite and every mutation run inside that clone or a throwaway copy of it. No file in the subject was edited, staged, committed, merged, reset or rebased anywhere.",
+
+    "claim_1_every_witness_prompt_opens_with_the_subject_and_demotes_the_builder": {
+      "verdict": "DISSENTED",
+      "how_measured": "Wrote an independent balanced-paren scanner (Python) over `.claude/workflows/*.js` that blanks string and comment bodies before scanning structure, found every `agent(...)` call, split prompt from options, and resolved `agentType` through `const` indirection. Then evaluated each prompt expression in node v22.22.2 via `new Function` with `with(<proxy>)`, so free identifiers render as marked placeholders and concatenation/array-join run under real JavaScript semantics. This renders the string a witness receives; it does not read the source that builds it.",
+      "population": "82 agent dispatches across 23 workflow files; 30 of them reach agentType 'sov-witness', in 22 files. All 82 rendered without error.",
+      "finding_a": "Only 2 of the 30 rendered witness prompts open with the SUBJECT block: the two in `.claude/workflows/sov-loop.js` that call `witnessFrame(...)`. The other 28 open with a role sentence and never pin a subject. The claim that 'every witness prompt this repository can dispatch now opens with the subject' is false as measured.",
+      "finding_b": "Three witness dispatches splice the builder's own account into the prompt with no artifact/oracle label: `.claude/workflows/sov-asset.js` ('Claimed operations and changed files: ' + JSON.stringify(claims)), `.claude/workflows/sov-byom.js` (JSON.stringify(claimed)), `.claude/workflows/sov-librarian.js` ('The curator claims: ' + JSON.stringify(curated)). None contains the string 'artifact and never oracle'.",
+      "finding_c": "Those three, plus `.claude/workflows/sov-contracts.js` (which does carry the label), assemble the prompt into `const witnessPrompt = ...` and dispatch `agent(witnessPrompt, ...)`. `sovprompts.dispatch.resolved_prompt` follows one level of `helper(args)` call indirection but not a bare identifier, so `interpolated('witnessPrompt')` returns ['witnessPrompt'], matches none of the builder's tokens, and the repo-wide test skips the dispatch entirely.",
+      "coverage_of_the_repo_wide_rule": "Replaying the builder's own predicate over all 30 witness dispatches: 2 FRAMED (sov-loop), 8 GRADED, 20 SKIPPED. The rule the test presents as repository-wide reaches 8 of 28 unframed dispatches."
+    },
+
+    "claim_2_the_provenance_test_refuses_the_defect_coming_back": {
+      "verdict": "DISSENTED",
+      "how_measured": "Fourteen mutations, each applied to a fresh throwaway copy of the pinned clone, then `python3 scripts/tests/test_witness_context_provenance.py`; verdict read from the process exit code.",
+      "baseline": "unmutated copy: exit 0, 10 tests, OK",
+      "refused_as_it_should": [
+        "M1 frame gutted, graded phrases left in a comment -> exit 1",
+        "M2 THE BUILDER'S ACCOUNT block moved to first position -> exit 1",
+        "M4 'artifact and never oracle' deleted from the frame -> exit 1",
+        "M5 label stripped from a graded file (sov-trust.js) -> exit 1",
+        "M8 new workflow, unlabelled builder account inline in the call -> exit 1",
+        "M10 second loop dispatch bypasses witnessFrame -> exit 1",
+        "M11 render reader weakened to return raw source -> exit 1",
+        "M14 extra loop witness dispatch added bypassing the frame -> exit 1"
+      ],
+      "defect_reintroduced_and_the_test_still_passed": [
+        "M12 (decisive): `const acct = built` and `'THE BUILD REPORT, which is your oracle: ' + acct.summary + ' Derive your checks from it. ' + witnessFrame(...)` prepended to the evidence-mode dispatch -> exit 0. `test_nothing_is_concatenated_before_the_frame` bans the literal substrings 'plan.', 'built.' and 'orchestrationReview' in the text before the frame, so a one-line alias defeats it. This is the exact defect the concern names, placed ahead of SUBJECT, and the test passes.",
+        "M3 SUBJECT block moved to last position in witnessFrame -> exit 0. Nothing grades where SUBJECT sits; `test_the_frame_pins_a_subject...` only asserts four phrases appear somewhere in the joined text.",
+        "M13 SUBJECT block deleted entirely, its four graded phrases folded into the SCOPE sentence -> exit 0.",
+        "M6 label inverted in sov-contracts.js to 'THE BUILDER'S ACCOUNT, which is your oracle - derive your checks from it and look where it tells you' -> exit 0. sov-contracts.js is a path this candidate itself changes.",
+        "M9 'THE ORCHESTRATOR SAYS: ' + selected.rationale + ' Start from that. ' prepended to both loop frames -> exit 0.",
+        "M7 new workflow with an unlabelled oracle-framed builder account assembled into a `const` -> exit 0."
+      ],
+      "conclusion": "The test refuses the specific shapes an earlier reading defeated it with. It does not refuse the class. Six distinct reintroductions pass, two of them single-line edits to files inside this candidate."
+    },
+
+    "claim_3_workflows_parse_as_javascript": {
+      "verdict": "REPRODUCED",
+      "how_measured": "`node --input-type=module --check` on a wrapper that rewrites `export const` to `const` and encloses the file as an async function body, because these files use top-level `return` and are executed by the host as a function body, not as a module. Applied to all 23 workflow files at the candidate and at the base commit.",
+      "result": "23 of 23 parse at ab3f473 (exit 0 each). At d00f46a, 2 fail: sov-coldstart.js (three strings broken across raw newlines, line 107) and sov-trust.js (apostrophe in \"workflow's\" closing a single-quoted string, line 39). The repair is real and covers every workflow file, not only those two.",
+      "trap_confirmed": "`node --check <file>` returns exit 0 on all 23 and also returns exit 0 on a file containing `export const meta = {}` followed by `this is (((( not javascript`. The script-mode check cannot see these files."
+    },
+
+    "claim_4_root_at_call_time_and_ledger_untouched": {
+      "verdict": "REPRODUCED",
+      "how_measured": "Read `scripts/sov_land.py`: module-level `ROOT = repo.ROOT` is gone, replaced by `_root()` returning `repo.ROOT` at call time, and both `ledger.record(...)` call sites use it. Then seeded `.local/landing/ledger.ndjson` in the clone with known bytes (sha256 cf67e6b871347f619188030fc30fb4ac8346d0deb53cc3e33aca0ddf15889986), ran `python3 scripts/run_tooling_tests.py` (exit 0, 116 modules, 4 shards) and `python3 scripts/verify.py` (exit 0), and re-digested.",
+      "result": "Digest identical before, after the full tooling suite, and after full verify. One line, unchanged.",
+      "residual": "`test_the_tooling_suite_appends_no_row` states in its docstring that it runs 'the whole suite' as a subprocess; the code runs three named modules (test_repository_candidate_effects, test_landing_ledger, test_landing_isolation). The property holds when measured over the real whole suite, but the test's own description overstates what the test reads."
+    },
+
+    "claim_5_authority_measures_what_it_reports_as_measured": {
+      "verdict": "DISSENTED_IN_PART",
+      "how_measured": "Read `independence_basis` and `_observed_path`, then evaluated four requests against the real `grant:standing-landing-loop` loaded from contracts/standing-grants.json.",
+      "finding": "`independence_basis` returns MEASURED whenever `request['observation_path']` is a non-empty string, independently of whether any measurement fired. The measurement it is named for - `_observed_path`, the observation file being among the paths being landed - is structurally unreachable under the only RATIFIED grant. Observations live in `reports/observations/`, which `sovkernel.scope` reports as 'outside every path prefix the grant admits', so a request that lands its own observation is refused as out of scope by `_grant_unavailable` before `_observation_verdict` is ever reached. Measured directly: paths ['scripts/x.py'] + observation_path 'reports/observations/o.json' -> PERMITTED, independence_basis MEASURED; paths ['scripts/x.py','reports/observations/o.json'] -> REFUSED for scope, not for entanglement, independence_basis still MEASURED; paths ['scripts/x.py','scripts/o.json'] -> the entanglement refusal does fire, but only for an observation written somewhere the repository does not write observations.",
+      "consequence": "For every real landing under this grant the ledger will record independence_basis MEASURED while the whole substance of the independence verdict is the observer's own `contributed_to_build: false` - the declaration the field was added to stop being filed as measured. That includes this landing.",
+      "secondary": "`independence_basis` is a pure function of the request dict and any caller can set `observation_path` to an arbitrary string to obtain MEASURED. Only `sov_land.build_request` happens to derive it from a file it actually read.",
+      "held": "The three new refusals themselves are real and correctly implemented: empty observer_id, observer equal to the landing actor, and observation inside the landed paths. `scripts/tests/test_observer_independence.py` exercises them, though against a synthetic grant scoped to `scripts/` rather than against the grant that governs landings."
+    },
+
+    "claim_6_every_changed_path_is_in_grant_scope": {
+      "verdict": "REPRODUCED",
+      "how_measured": "`scripts/sovkernel/scope.py:out_of_scope` applied to the 24 paths from `git diff --name-only d00f46a..ab3f473`, against grant:standing-landing-loop loaded from contracts/standing-grants.json.",
+      "result": "out_of_scope returned None for the whole set and for each path individually. All 24 sit under `.claude/` or `scripts/`; none selects an excluded prefix."
+    },
+
+    "claim_7_verify_and_lint_pass_at_the_commit": {
+      "verdict": "REPRODUCED",
+      "commands": [
+        "git checkout ab3f473 in an isolated clone; `git status --porcelain` empty before and after",
+        "python3 scripts/verify.py -> exit 0; 'PASS: 55 checks in 19.122s wall'; DEBT: no wall-clock grade at 19.122s; BUDGET DEBT: 11 checks over ceiling, 29.547s above budget, attributed and not refusing",
+        "python3 scripts/lint.py -> exit 0; 'PASS: repository hygiene (1259 text files, 581 Python modules, 10 named debt)'",
+        "python3 scripts/run_tooling_tests.py -> exit 0; 116 modules, 4 shards",
+        "python3 scripts/tests/test_witness_context_provenance.py -> exit 0, 10 tests"
+      ],
+      "committed_bytes": "The clone was checked out at the commit with a clean tree, so both runs read committed bytes; the working tree and the commit are the same object here.",
+      "qualification": "CLAUDE.md T2: verify exiting 0 means unchanged, not qualified. Two FAIL: lines appear inside verify's stdout ('declared refusals no case fires: SELF_GRADED' and 'docs/documentation.html is stale'); both are self-check fixtures asserting their own defeating cases, and the run's verdict is its exit code, which is 0.",
+      "new_tests_are_reached": "run_tooling_tests.test_modules() discovers all three new test modules."
+    },
+
+    "claim_8_linear_no_merge_declared_tree_is_real": {
+      "verdict": "REPRODUCED",
+      "result": "`git rev-list --parents -n1 ab3f473` shows exactly one parent, d00f46ad38448856fa692399d12cf0a324266004, which is the tip of main; no merge commit. `git rev-parse HEAD^{tree}` is 4d9432f3fe131e09dcb8ed965192de5432c1f339, matching the declared candidate_tree. The candidate record's 24 changed_paths compare set-equal to `git diff --name-only d00f46a..ab3f473`, with no declared-only and no git-only entry."
+    },
+
+    "builder_claim_this_is_the_largest_admissible_subset": {
+      "verdict": "DISSENTED",
+      "structural_hole_confirmed": "The `.clarity/coverage.json` hole is real and independently reproduced. `scripts/sovkernel/scope.py` reports `.clarity/coverage.json` as 'outside every path prefix the grant admits' - it is not on excluded_paths, it is simply not admitted. In a throwaway copy, appending one sentence to `.claude/skills/unslop/SKILL.md` (a path inside the grant's scope) took `python3 scripts/sov_clarity.py check` to exit 1 with 'STALE: .claude/skills/unslop/SKILL.md: TEXT_STALE' and `python3 scripts/verify.py` to exit 1. Restoring green requires re-recording the receipt into `.clarity/coverage.json`, which the grant cannot carry. So clarity-covered prose inside grant scope is genuinely unlandable under this grant.",
+      "but_a_larger_admissible_subset_exists": "Three files withdrawn from the handoff branch (5cee66c) are all inside `scripts/` and touch nothing excluded: `scripts/sov_workflows.py`, `scripts/tests/test_sov_workflows.py`, and the `scripts/sovverify/integrity.py` hunk that registers the check. Applied to a throwaway copy of the candidate: `python3 scripts/sov_workflows.py` exit 0 ('PASS: 23 workflow(s) read, 0 carrying a defect'), `python3 scripts/tests/test_sov_workflows.py` exit 0 (22 tests), `python3 scripts/verify.py` exit 0 with 'harness workflow integrity' running as a registered check, `python3 scripts/lint.py` exit 0. `sovkernel.scope.out_of_scope` returns None for all three paths against the real grant.",
+      "why_this_matters_beyond_size": "The withdrawn file is the check that refuses the return of the defect this candidate repairs. `scripts/sovprompts/lexer.py` ships in this candidate with `unreadable()` - the function that detects both base-commit breakages, confirmed by running it against the base tree - and `grep -rn 'unreadable(' scripts/` finds no caller anywhere outside the module itself. No test module exercises it. `scripts/lint.py` grades no `.js` suffix. So the candidate lands the repair and withdraws the guard: the moment a workflow string breaks again, nothing in verify or lint sees it, and 170 lines of the shipped package are unreachable from any verdict."
+    },
+
+    "what_the_builder_did_not_report": {
+      "dead_assignment": "`scripts/tests/test_run_tooling_tests.py` adds `REAL_WEIGHTS = dict(run_tooling_tests.MODULE_WEIGHTS)` at line 29. It has exactly one occurrence in the file and no reader. New dead code in a changed path, named in neither the commit message nor the candidate record.",
+      "unreferenced_module": "`scripts/sovprompts/lexer.py` (170 lines) has one consumer, `broken_concatenation`, used by one test assertion. `unreadable()`, `significant()`, `_regex()` and `_string()` are reachable from nothing in the repository.",
+      "pre_existing_not_this_candidates_defect": "The sov-loop controller prompt enumerates the grant's admitted prefixes and omits `docs/`, which contracts/standing-grants.json admits. That line is unchanged by this diff; recorded as a residual, not attributed here.",
+      "no_secrets_found": "No credential shapes, absolute host paths, tokens or `.env` content in the 24 changed files; `scripts/lint.py` secret-shape pass exit 0.",
+      "module_sizes": "All new modules under the 300-line ceiling: sovprompts 8/145/170/152, tests 151/153/85."
+    },
+
+    "schema_conflict_recorded": {
+      "note": "This record cannot simultaneously validate against `contracts/participant-observation.schema.json` and be readable by the landing gate. That schema sets `additionalProperties: false` over {case_id, participant_id, artifact_revision, observed, participant_claim, telemetry}. `scripts/sovkernel/authority.py` reads top-level `observer_id`, `contributed_to_build` and `verdict`, and the candidate reader reads top-level `candidate_commit`, `candidate_tree` and `base_commit`. `contracts/observation.schema.json` also sets additionalProperties false and admits none of those six either. This file carries the six the gate reads and is therefore not schema-valid under either observation contract. Nothing under `reports/observations/` is graded against a schema by any check, so this does not turn verify red; it is recorded as a finding about the contracts, not smoothed over."
+    }
+  },
+
+  "residuals": [
+    "The repo-wide labelling rule reaches 8 of 28 unframed witness dispatches; 20 are skipped because their prompt is a bare identifier or a helper call whose interpolations match none of six hardcoded tokens.",
+    "sov-asset.js, sov-byom.js and sov-librarian.js splice the builder's claim list into a witness prompt with no artifact/oracle label, and no check in this candidate can see them.",
+    "Six distinct reintroductions of the defect pass scripts/tests/test_witness_context_provenance.py.",
+    "sovprompts/lexer.unreadable() has no caller and no test; the guard against the repaired defect is not wired to any verdict.",
+    "independence_basis records MEASURED for landings whose only genuine measurement is unreachable under the governing grant.",
+    "REAL_WEIGHTS is dead in scripts/tests/test_run_tooling_tests.py.",
+    "test_landing_ledger_isolation's docstring claims it runs the whole suite; it runs three modules.",
+    "No observation contract in contracts/ admits the shape the landing gate reads."
+  ],
+
+  "judgement_items": [
+    "Does SDLC.md Release gate 6 bind every witness dispatch in .claude/workflows/, or only the sov-loop path? The candidate repairs 13 workflows and leaves 3 unlabelled builder-account splices standing; whether that is a partial repair or an out-of-scope remainder is a judgement, not a measurement.",
+    "grant:standing-landing-loop admits `.claude/` and `scripts/` prose but not `.clarity/coverage.json`, so clarity-covered prose inside its own scope cannot be landed under it. Widening the grant is Bdo's, not a builder's or a witness's.",
+    "No observation contract admits the six top-level fields the landing gate reads. Which side is wrong - the gate or the schemas - is a contract question."
+  ],
+
+  "telemetry": {
+    "host": "Linux, Python 3.11.x, node v22.22.2, shared host with sibling sessions writing the tree",
+    "method": "Isolated full clone at the pinned commit outside the shared checkout; 14 mutations each in a fresh throwaway copy; prompts rendered by executing JavaScript, never by grepping source; verdicts read from exit codes.",
+    "writes_by_this_witness": "this file only; no work, fixture, contract, test, workflow or implementation file was edited, staged, committed, merged, reset or rebased at any point, in the shared tree or anywhere else",
+    "helpers_recruited": "none; this reading was taken in-session"
+  }
+}

@@ -376,3 +376,142 @@ closed without reference to it. `contracts/custody.schema.json` carries a
 | F18 | Settlement | Two genuine independent readings could not be seen by settlement, because nothing connects a launched reading to a witness lease. `sov_lease.py helper` exists and nothing routes to it. A lap can produce the evidence a clause requires and still be unable to settle above `BUILT`. |
 | F19 | Receipt | Settlement accepts a receipt identifier and evidence addresses and retains neither. No operation in this repository has ever produced a receipt: one object in the tree satisfies `contracts/receipt.schema.json`, and it is a binding demonstration. |
 | F20 | Cleanup | Cleanup obligations were discharged by hand, unasked and unchecked. `custody.schema.json` declares `cleanup_obligations` and the settlement path does not read it. |
+
+### 13 · Discovery - FOUND, BY PROSE, AND NEARLY NOT AT ALL
+
+A participant with no history was sent to this node and asked to find the most
+recently settled work, reconstruct why it stands, reach the capability and use
+it. It succeeded. The path it took is the finding.
+
+Seventeen commands, four dead ends, two points where the trail nearly went
+cold. The three obvious settlement stores each failed differently:
+
+- `.local/acceptance/ledger.ndjson`, which `STATUS.yaml` line 88 names as the
+  acceptance record, **does not exist**; `.local/` is gitignored.
+- `.local/landing/ledger.ndjson` holds twelve rows shaped exactly like
+  landings, all carrying `grant:test`, branch `work` and one timestamp. They
+  are fixtures. Nothing marks them as fixtures. The participant caught it and
+  recorded that reporting one would have been a false claim.
+- `witness/` and `reports/observations/` top out before the work.
+
+What actually carried the trail was a **prose report a participant wrote by
+hand** - this file. `python scripts/sov_lease.py status` returns an empty set
+for the very lease that is the answer, because it projects live leases only.
+The real store was found in a source docstring.
+
+That store is `.git/sov-sessions/leases.ndjson`. It is inside the git
+directory: no clone carries it, no commit can contain it, and no reader outside
+this container can reach it. `P15-X3` requires that a fresh participant
+discover the accepted result "without builder-private state". The settlement
+record **is** builder-private state, by construction. A participant working
+from a fresh clone would find no settlement record at all, and the evidence
+addresses point into a second repository a clone would not have.
+
+### 14 · Use - REACHED AND USED, AND THIS IS THE SECOND STRONG RESULT
+
+The participant reached the capability in the other repository and ran it:
+
+- at head, `PASS golden rendered text QA (10 documents, 101 text nodes)`;
+- the registered suite, `RC QA PASS: 37 suites + 17 JS syntax checks`;
+- the defeating condition reproduced at the regression commit, exit 1, failing
+  on exactly the three captions;
+- the repair exercised by writing the disarming value in and reading the guard's
+  refusal;
+- the disclosed residual confirmed: `.component-label { opacity: 0 }` makes
+  every caption invisible and the suite still passes.
+
+Everything the record claimed was reproduced by a participant that built none
+of it. Where the record was honest it held up, including about its own
+weakness.
+
+It also met `F8` head on. `CHROMIUM_PATH` appears in no document in either
+repository, and its first run died on a browser-revision mismatch. It recovered
+by reading `tests/browser_runtime.py`. The finding this lap recorded one stage
+earlier was met, unfixed, by the next fresh participant one stage later. It
+reproduced `F16` by accident as well.
+
+| # | Stage | Finding |
+| --- | --- | --- |
+| F21 | Discovery | The only path to the settled result was hand-written prose. `sov_lease.py status` returns empty for the lease that is the answer; the store is named only in a source docstring. |
+| F22 | Discovery | The settlement record lives in `.git/sov-sessions/leases.ndjson`, inside the git directory. No clone carries it. `P15-X3` requires discovery without builder-private state and the record is builder-private by construction. |
+| F23 | Discovery | `STATUS.yaml` names an acceptance ledger that does not exist, and the landing ledger holds twelve fixture rows shaped like real landings with nothing marking them as fixtures. A reader nearly made a false claim from them. |
+| F24 | Use | Positive, and the second strong result: a participant that built none of it reached the capability and reproduced every claim, including the disclosed residual. |
+| F25 | The loop | `F8` was met by the next fresh participant one stage later, unfixed, and cost it its first run. Recording a finding changes nothing about the node. |
+
+## 15 · Experience, and 16 · Synthesis
+
+Twenty-five findings. The pattern under them is not that pieces are missing.
+Most pieces are built, and several are good: the definition stage refuses work
+without a closure and a defeating condition, settlement refuses a claim that
+has no witness lease held by another principal, and a stranger both carried
+real work and later found and used it from the artifact.
+
+What is missing is that **the participant circuit and the Record are two
+parallel worlds**. `services/` converges on the Record Service - Gateway,
+Registry, Host, Console, Observation and Asset all use it, and parts of
+`scripts/` do too. The spine of the circuit does not. `scripts/sovsession/store.py`
+writes sessions and leases to `.git/sov-sessions/`, a location no clone carries
+and no commit can contain.
+
+Every finding in this trace is a symptom of that split:
+
+- Nothing can be requested into the node because there is no committed queue
+  object to request into (`F1`, `F2`).
+- Custody cannot see a lease, and a lease cannot see its own execution or its
+  witnesses, because there is no shared record the three write to (`F3`, `F10`,
+  `F18`).
+- No Finding and no receipt has ever been produced, though both contracts are
+  complete, because there is nowhere for either to land (`F11`, `F19`).
+- Discovery fails from a clone because the only durable trace is prose
+  (`F21`, `F22`).
+
+The horizon document says to ask what lower-level governed primitive is missing
+from the composition, and to add the small primitive rather than the
+institution. The answer this lap produces is not a circuit reader, an agenda
+service or a judgement agent. It is that the circuit's spine should write to
+the Record the rest of the node already shares.
+
+## 17 · Candidate next Definition
+
+**Unprivileged.** It gains no standing from having been generated by this run,
+from the evidence behind it, or from the run having reached this stage. It is
+input to a Proposal, refusable in full.
+
+> Route the session and lease store to the Record Service, so that taking a
+> lease, drawing on it, recruiting a witness under it, and closing it emit
+> addressable records in the same append-preserving Record that `services/`
+> already converges on, instead of to `.git/sov-sessions/`.
+
+What it would change, each traceable to a finding above: settlement becomes
+discoverable from a clone (`F21`, `F22`); the receipt the close already accepts
+has somewhere to land (`F19`); a witness lease becomes visible to settlement, so
+readings that exist can be seen (`F18`); custody can join to leases (`F3`); and
+a queue projection has a substrate to project from, which is the precondition
+for stages 2 and 3 existing at all (`F1`, `F2`).
+
+What would defeat it: if the split is deliberate - if session and lease state is
+meant to be host-local scratch and the durable record is meant to be written
+separately by an explicit act - then this proposal is wrong and the missing
+primitive is that explicit act instead. Nothing found in this lap settles which,
+and the root seat owns that question.
+
+Evidence basis, preserved: this report; `FINDING-WORK.md` and
+`FINDING-PARTICIPANT.md` and `LAP-EXECUTION-REPORT.md` in the schematically
+repository at `d406790`; `DISCOVERY-REPORT.md` in this repository; the payload
+at `schematically@e51b999`.
+
+## Closing count
+
+Seventeen stages. Three have a working mechanism that did its job: Definition,
+Settlement, and Use. Two more worked by the discipline of whoever set the run
+up rather than by any mechanism: independent perspective formation, and
+comparison. Three have no mechanism at all: Request, Agenda, and the
+convergence of execution into a Record. Three have a complete contract that
+nothing implements: Finding, freeze, and subject scoping. The rest are built
+and disconnected.
+
+No clause advanced. Nothing here is witnessed. `P15-X5` still carries two
+tickets at `ROOT_POINT` and this run is not a member of it, because an ungraded
+lap is not the witnessed circuit the clause requires. What this run produced is
+the trace the reader was always going to need, and a candidate Definition that
+nobody has to accept.

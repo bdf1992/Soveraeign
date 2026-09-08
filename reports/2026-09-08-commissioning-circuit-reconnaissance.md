@@ -212,3 +212,31 @@ freeze before comparison, and its custody reads two members at `VERTICAL_SLICE`.
 | F10 | Record / Lease | The lease recorded nothing about the work done under it. `sov_lease.py draw` exists and nothing called it; the executing participant was never told the lease existed. |
 | F11 | Frozen Findings | `contracts/finding.schema.json` is complete and requires `frozen_at`. No Finding instance exists anywhere in the tree and no code produces one; `finding_schema` appears only in the schema and one fixture. |
 | F12 | Frozen Findings | The freeze `P15-X2` requires is asserted to the oracle as a boolean and performed by nothing. In this lap it is a discipline of the launcher, not a property of the system. |
+
+### 8 · Independent perspective formation, partial - THE SUBJECTS COLLAPSED
+
+The first of the two readings returned. Before its content is used, one
+property of the stage itself is already visible and does not depend on what it
+concluded.
+
+The reading commissioned on the participant's *carrying* of the assignment
+spent a substantial part of its effort reproducing the closure condition of the
+*work*: it re-ran the suite, reproduced the failure at the regression commit,
+and ran a counterfactual the builder had not run. That counterfactual was
+valuable and independent. It is also the other reading's subject.
+
+`P15-X2` requires that "work quality and participant conduct are judged as
+different subjects". `contracts/finding.schema.json` has `subject` and `scope`
+fields for exactly this. Nothing implements them, so nothing scoped either
+reading to its subject, and the two collapsed toward the same one. A comparator
+that receives two readings of the same subject cannot attribute a defect to
+work rather than participant, which is the discrimination the clause exists to
+make.
+
+This is not a defect in the reading, which was asked an open question and
+answered it well. It is the absence of the mechanism that would have held it to
+its subject.
+
+| # | Stage | Finding |
+| --- | --- | --- |
+| F13 | Independent perspective formation | Nothing scopes a reading to its subject. Commissioned on the participant, one reading spent much of its effort on the work. The `subject` and `scope` fields exist in the Finding contract and are unimplemented, so the discrimination `P15-X2` requires is left to the prompt. |

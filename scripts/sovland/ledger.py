@@ -33,6 +33,8 @@ import hashlib
 import json
 import sys
 
+from sovkernel.authority import independence_basis
+
 LEDGER_SCHEMA = "soveraeign-landing-ledger/v1"
 LEDGER_PATH = Path(".local") / "landing" / "ledger.ndjson"
 
@@ -98,6 +100,11 @@ def _observation(request: dict[str, Any]) -> dict[str, Any] | None:
         "verdict": observation.get("verdict"),
         "contributed_to_build": bool(observation.get("contributed_to_build")),
         "observation_id": observation.get("observation_id"),
+        # How the independence above was established, not merely what was claimed. A
+        # DECLARED_ONLY landing rests on the observer's own word about itself, and a
+        # ledger that recorded it identically to a measured one would hide the
+        # difference this field exists to keep.
+        "independence_basis": independence_basis(request),
     }
 
 

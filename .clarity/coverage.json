@@ -309,7 +309,7 @@
       "changed": true
     },
     ".claude/skills/sov-byom/SKILL.md": {
-      "artifact_digest": "sha256:de817d38e9488515d49ff1bb9f5243641e1481a57a2ed6f7d3170dcce9b344ce",
+      "artifact_digest": "sha256:5b084206cf98f0ad013492e4cb4849e55dc5bdb798928c16940ee48992151c10",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",
@@ -679,7 +679,7 @@
       "changed": false
     },
     "CLAUDE.md": {
-      "artifact_digest": "sha256:2bc256ffd9c0d654aefb8c5a29cde45a00d22d252f8a60dcc9e27b7676e426f4",
+      "artifact_digest": "sha256:8dbdc7c19489e5215eea67dbc6348b60ec3f2e557d31745151bbc21872099af3",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",
@@ -1223,7 +1223,7 @@
       "changed": false
     },
     "scripts/README.md": {
-      "artifact_digest": "sha256:176cc8940aa52a4fd6ae5419422a9cd2d1ab89d2ef8c6ebba83723485ac3f7d0",
+      "artifact_digest": "sha256:21810274f86de23ee2a20c45b8676a326e5f802e36ba5b122e8cb3dadb5dd648",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",

@@ -1,6 +1,6 @@
 {
   "corpus_id": "soveraeign-cold-start/v1",
-  "note": "Questions a participant arriving cold should be able to answer, each paired with a deterministic probe that recomputes the answer from the live system. `expected` is the value at capture; the probe is the authority. A mismatch means the world moved or the expectation was wrong - never widen a tolerance to hide one.",
+  "note": "Questions a participant arriving cold should be able to answer, each paired with a deterministic probe that recomputes the answer from the live system. `expected` is the value at capture; the probe is the authority. A mismatch means the world moved or the expectation was wrong - never widen a tolerance to hide one. The `host` section records one workstation's facts - CPU, RAM, installed versions, PowerShell chaining - and most of its questions carry no probe, so it cannot detect its own drift and did not catch the PowerShell assumption that reached four agent definitions. A36 and A37 grade repository declarations instead, and are not a fix for that section.",
   "captured_at": "2026-08-26",
   "captured_against": {
     "head": "5b2923a1adcbf5a1f88a665302f1886cb2b3c026",
@@ -4081,7 +4081,7 @@
         "kind": "regex_first",
         "scope": "tracked",
         "file": "CLAUDE.md",
-        "pattern": "^- Shell: reached through the `(\\w+)` tool",
+        "pattern": "^- Shell: use the `(\\w+)` tool",
         "group": 1
       },
       "source": "CLAUDE.md, Host facts",

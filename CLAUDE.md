@@ -217,17 +217,10 @@ command that replaces it.
 
 ## Host facts (Claude Code, any platform)
 
-- Shell: reached through the `Bash` tool, on every platform this repository is
-  worked on. Do not assume which shell is behind it: on a Windows host it is Git
-  Bash beside PowerShell, where `&&` and `||` may not chain, and on Linux it is
-  the system shell. Use absolute paths; do not `cd`. This section named
-  PowerShell as the primary shell until 2026-09-08, which was a fact about one
-  session's host written down as a fact about the repository; four agent
-  definitions had copied it into their declared tool list, where no invocation
-  could grant it. `contracts/harness-hosts.json` now declares the tool surface an
-  agent definition may name and `python scripts/sov_harness.py` refuses one that
-  names a tool no supported host provides, so the claim is graded rather than
-  asserted.
+- Shell: use the `Bash` tool. Do not assume which shell is behind it, or that
+  `&&` chains; read the invocation, not this file. Use absolute paths; do not
+  `cd`. `contracts/harness-hosts.json` declares the tool surface an agent
+  definition may name and `python scripts/sov_harness.py` grades it.
 - Line endings: the repository pins LF via `.gitattributes`, and
   `scripts/lint.py` checks working-tree bytes. The host's Write/Edit tools can
   emit CRLF, so run `python scripts/lint.py` after editing repository text. A

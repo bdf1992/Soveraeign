@@ -1,0 +1,114 @@
+{
+  "observer": "sov-witness (independent; did not build, edit, or advise on any observed file; no helper was recruited)",
+  "concern": "verification / CI observation retention on claude/exit-zero-logging-imw5wu",
+  "timestamp": "2026-09-08",
+  "witnessed_subject": {
+    "branch": "claude/exit-zero-logging-imw5wu",
+    "base_commit": "2069976",
+    "candidate_commit": "714337aebd21948742746f8fc5c4957f4788dbca",
+    "candidate_tree": "c950212ca05317c00b31babc89e176789d071a38",
+    "working_tree_state": "git status --porcelain empty; git diff --quiet 714337a returns IDENTICAL at first read and after the second verify run",
+    "tree_stability": "Two full verify runs produced identical observed_state_digests for all 52 subjects, so the tree did not move underneath this witnessing (trap T6 checked, not assumed).",
+    "note": "The task named base as `main (2069976)`. 2069976 is the candidate's parent, but the ref `main` now resolves to b1448ee and `git merge-base main 714337a` is b1448ee. The label moved; the SHAs witnessed are the frozen ones."
+  },
+  "no_finding_envelope": "No contract-typed Finding (contracts/finding.schema.json) is emitted. That schema requires `record_projection_id`, no RecordProjection was supplied with this task, and none can be reconstructed from the repository at the declared cutoff. A projection id will not be invented to satisfy the schema. This record is an Observation in the established reports/observations/ shape and interprets evidence; it settles nothing and ratifies nothing.",
+  "claim_under_witness": "Every scripts/verify.py invocation in .github/workflows now writes its per-check Observation records with --observe and retains them as a build artifact unconditionally, and a new test class refuses any future verify step that does not.",
+  "claims": [
+    {
+      "claim": "1. Every scripts/verify.py invocation under .github/workflows passes --observe",
+      "verdict": "REPRODUCED",
+      "evidence": "git grep -n 'verify.py' 714337a -- .github/ returns exactly four executable invocations (hygiene-repair.yml:34, qa-lanes.yml:65, verify.yml:66, verify.yml:116) plus one comment line; all four carry --observe \"$RUNNER_TEMP/<name>.json\". git ls-tree lists ten workflow files; the other seven invoke no verifier. .github holds no composite actions directory."
+    },
+    {
+      "claim": "2. Each observe target is uploaded with if: always() and the path matches the file written",
+      "verdict": "REPRODUCED",
+      "evidence": "Read all three workflow files in full at 714337a. Each of the four run steps is followed by an actions/upload-artifact@v4 step carrying `if: always()`, `path: ${{ runner.temp }}/<same name>`, `if-no-files-found: warn`, `retention-days: 30`. $RUNNER_TEMP and ${{ runner.temp }} are the same value, so the written path and the uploaded path are the same file."
+    },
+    {
+      "claim": "3. verify.py --observe produces a real, well-formed file that satisfies contracts/observation.schema.json",
+      "verdict": "REPRODUCED",
+      "evidence": "python scripts/verify.py --observe <tmp> exit 0 (twice). 52 records, 52 distinct subjects, one shared run_id, zero records with an empty observed_state_addresses list. jsonschema is not installed, so the schema was applied by hand: required keys, additionalProperties, minLength, the ^sha256:[0-9a-f]{64}$ digest pattern, RFC3339 observed_at with explicit offset, and positional alignment of addresses to digests. Zero violations across all 52 records. No host absolute path appears in the payload."
+    },
+    {
+      "claim": "4. The records survive a failing run, so if: always() has something to upload",
+      "verdict": "REPRODUCED",
+      "evidence": "Independent probe, no repository file edited: imported scripts/verify.py, replaced CHECKS with one real check plus a synthetic Check whose command raises SystemExit(3), and called main(['--observe', path]). Result: EXIT 1, FILE_EXISTS True, records [('repository hygiene','PASS',0), ('deliberately failing probe','FAIL',3)]. Reading scripts/verify.py confirms the write at lines 208-211 precedes every failure return path."
+    },
+    {
+      "claim": "5. python scripts/lint.py passes",
+      "verdict": "REPRODUCED",
+      "evidence": "Exit 0. PASS: repository hygiene (1229 text files, 566 Python modules, 10 named debt). The STATUS.yaml duplicate-key WARNs and two named module-size debts are pre-existing and non-failing."
+    },
+    {
+      "claim": "6. python -m unittest scripts.tests.test_repository_ci_workflows passes and the new class runs in CI",
+      "verdict": "REPRODUCED",
+      "evidence": "Ran 9 tests, OK, exit 0; the four new VerificationRunsLeaveARecord tests are among them. The module is in the 112-module population that scripts/run_tooling_tests.py discovers, and the verify check 'repository tooling tests' reports the same 112 modules, so the class executes under python scripts/verify.py and therefore in every CI job that runs it."
+    },
+    {
+      "claim": "7. The three declared defeating cases actually defeat when applied to a real workflow file",
+      "verdict": "REPRODUCED",
+      "evidence": "Copied .github/workflows to a throwaway directory, re-pointed the module's WORKFLOWS constant, mutated the copy, ran the class. Control: unmutated tree passes. M1 bare `run: python scripts/verify.py` -> REFUSED by test_every_workflow_verify_step_retains_its_observations. M2 observe target renamed so nobody uploads it -> REFUSED by the same test. M3 `if: always()` deleted from the retention step -> REFUSED by test_the_records_survive_a_failing_run. Nothing was committed and no repository file was modified."
+    },
+    {
+      "claim": "8. The test class refuses any future verify step that does not retain its observations",
+      "verdict": "DISSENTED",
+      "evidence": "Seven legal forms bypass the check and pass the suite. Confirmed by executing them, not by reading the regex: (P1) folded `run: >-` with `python scripts/verify.py` on the next line; (P2) literal block `run: |`; (P3) `run: bash -lc \"python scripts/verify.py\"`; (P4) `run: python3 scripts/verify.py`; (P5) `run: cd \"$GITHUB_WORKSPACE\" && python scripts/verify.py`; (P6) a new .github/workflows/*.yaml file (the glob is *.yml only); (P11b) a verify step in job A whose observe path is uploaded only from a different job, which is a different runner and a different RUNNER_TEMP; (P12) a retention step with no `- name:` of its own, preceded by any step carrying if: always(). P1 is the strongest of these: `run: >-` is already the idiom this very file family uses for its sov_ci_subject.py steps, so the most likely future shape of a verify step is exactly the one the check cannot see. Separately, `if: always() && github.event_name == 'push'` passes test_the_records_survive_a_failing_run while making retention conditional, which is the property that test names. The check is regex-over-raw-text where a YAML parse would measure the same bytes the runner executes."
+    },
+    {
+      "claim": "9. Each retained artifact's name identifies the commit that job actually checked out",
+      "verdict": "REPRODUCED WITH QUALIFICATION",
+      "evidence": "verify.candidate checks out ref github.event.pull_request.head.sha and names that sha; the job is gated `if: github.event_name == 'pull_request'` so the expression is never empty. qa-lanes.blue does the same. verify.repository and hygiene-repair.hygiene use the default checkout and name github.sha, which on pull_request is the synthetic merge commit that is checked out, on push to main is the pushed commit, and on workflow_dispatch is the dispatched ref. In all four cases the name is the commit the job read. Qualification: on pull_request events the merge sha is ephemeral and unreachable in the repository afterwards, so those two artifact names identify a commit a later reader generally cannot fetch."
+    },
+    {
+      "claim": "10. The candidate/integration distinction of contracts/repository-ci-evidence.json survives",
+      "verdict": "REPRODUCED",
+      "evidence": "No job was added, renamed, or re-gated; producer_intent's eight rows are unchanged and still agree with the workflows (test_contract_and_workflows_agree_on_producer_kind passes). CANDIDATE producers name head.sha; INTEGRATION producers name the integration commit. No artifact name asserts candidate identity for an integration job or the reverse."
+    },
+    {
+      "claim": "11. Nothing here weakens an existing check or changes what CI refuses",
+      "verdict": "REPRODUCED",
+      "evidence": "git diff 2069976..714337a -- .github/ removes exactly four lines, all of them the bare `run: python scripts/verify.py`. No existing `if-no-files-found: error` was relaxed, no job name changed (so the protected-branch required checks keep their names), no `permissions:` block changed, no `if:` condition on an existing step changed, and no timeout was raised. The added steps cannot fail a job that would otherwise pass except by an upload-artifact infrastructure error."
+    }
+  ],
+  "commands": [
+    {"command": "git status --porcelain; git rev-parse HEAD", "exit_code": 0, "result": "clean; 714337a"},
+    {"command": "git diff 2069976..714337a", "exit_code": 0, "result": "4 files, +109 -4; every removed line is a bare verify invocation"},
+    {"command": "python scripts/verify.py --observe <tmp>/obs.json", "exit_code": 0, "result": "PASS: 52 checks in 16.4s wall; 52 records written"},
+    {"command": "python scripts/verify.py --observe <tmp>/obs2.json (re-run per 6b)", "exit_code": 0, "result": "PASS; observed_state_digests identical to run 1 for all 52 subjects"},
+    {"command": "python scripts/lint.py", "exit_code": 0, "result": "PASS: repository hygiene (1229 text files, 566 Python modules, 10 named debt)"},
+    {"command": "python -m unittest scripts.tests.test_repository_ci_workflows -v", "exit_code": 0, "result": "Ran 9 tests, OK"},
+    {"command": "python -m unittest scripts.tests.test_verify_observations -v", "exit_code": 0, "result": "Ran 33 tests, OK"},
+    {"command": "hand validation of 52 records against contracts/observation.schema.json", "exit_code": 0, "result": "0 violations; jsonschema absent, so required/additionalProperties/minLength/digest pattern/date-time/alignment applied by hand"},
+    {"command": "synthetic failing-check probe of verify.main(['--observe', path])", "exit_code": 1, "result": "file written; FAIL record present with exit_code 3"},
+    {"command": "13 mutation cases against throwaway copies with WORKFLOWS re-pointed", "exit_code": 0, "result": "3 declared defeating cases refuse; 7 legal forms bypass; 1 legal form over-refuses"},
+    {"command": "git diff --quiet 714337a (after all probes)", "exit_code": 0, "result": "IDENTICAL; no repository file was modified by this witnessing"}
+  ],
+  "unclaimed_findings": [
+    "if-no-files-found: warn makes the retention guarantee unenforced at runtime. Nothing in CI refuses a job that produced no observation records. If verify.py crashes before line 208, if --observe is silently dropped by a future argparse change, or if the matrix's fail-fast cancels a leg before verify runs, the artifact is simply absent and the retention step is green with a warning. Sibling steps in the same three jobs use if-no-files-found: error for their subject receipts, so this is a deliberate asymmetry in the permissive direction. It is also the opposite choice from scripts/sovland/isolation.py, which the workflow header names as the model: isolation.py's fallback on an unreadable observation file makes the gate stricter, explicitly 'so a problem in this module makes the gate stricter rather than more permissive'.",
+    "Nothing anywhere reads the retained artifacts. No check, script, or report consumes a CI observations artifact; scripts/sovland/isolation.py reads its own locally produced file. Retention with no consumer plus if-no-files-found: warn means an empty, truncated, or absent artifact would never be noticed by anything.",
+    "No test exercises the --observe CLI end to end. scripts/tests/test_verify_observations.py calls verify.observe(...) as a function; no test calls main(['--observe', path]) and asserts the file exists and parses. The workflows' whole guarantee depends on that flag surface, and the only thing checking it is the workflow text.",
+    "A legal form is over-refused: an observe path templated from the matrix, e.g. --observe \"$RUNNER_TEMP/${{ matrix.python-version }}-observations.json\", fails OBSERVE_TARGET's [\\w.-]+ and is reported as 'does not pass --observe'. Conservative rather than dangerous, but it forecloses a form a future author would reasonably reach for.",
+    "hygiene-repair.yml is declared INTEGRATION in contracts/repository-ci-evidence.json but has no sov_ci_subject.py binding step, so hygiene-observations-${{ github.sha }} is the first identity assertion that workflow makes and it supplies one of the five elements INTEGRATION required_identity names. Pre-existing, not introduced here, but the new artifact name is what surfaces it.",
+    "The observations artifact and its sibling subject receipt are keyed differently in verify.yml's repository job: repository-observations-<merge sha> against integration-ci-subject-<base>-<head>. They are pairable only because artifacts are scoped to one run. No collision is possible within a run: upload-artifact@v4 rejects duplicate names, and all four names differ by prefix and by python-version suffix.",
+    "'Unconditionally' is true at the step level and not at the run level. verify.yml's candidate job is gated `if: github.event_name == 'pull_request'`, and fail-fast: true can cancel the second matrix leg before its verify step runs. Both are pre-existing job-level facts, not changes made here.",
+    "No secret or host path exposure: the 52 records carry only repository-relative addresses, sha256 digests, exit codes, timings, and observer prose. Checked the serialized payload for /home/ and for drive-letter paths; neither appears."
+  ],
+  "residuals": [
+    "The refusal in claim 8 is the material one. The claim's second half - 'a new test class refuses any future verify step that does not' - is not reproduced. Seven legal YAML or filesystem forms bypass it, one of them (`run: >-`) already the house idiom in the same files. The guard is a regex over raw text where a yaml.safe_load over the same bytes would see every form; the repository pins standard library only, so the tradeoff is real, but the current predicate can be strengthened without a parser: match the verify invocation across folded and literal scalars, glob *.yaml as well as *.yml, and scope the upload search to the same job.",
+    "The check reads the artifact rather than a report about it, which is the right side of the AGENTS.md line: it grades the bytes GitHub will execute. Its defect is reach, not subject.",
+    "This observation was taken against a tree byte-identical to 714337a and confirmed stable across two full verify runs. It says nothing about b1448ee, about the composition of 714337a with current main, or about how CI behaves on a hosted runner; every command here ran locally."
+  ],
+  "observed_files": {
+    ".github/workflows/verify.yml": "sha256:be333890c8f8aff2f0eb075617fea9b526af8c499d4dde7e63808315599e32e0",
+    ".github/workflows/qa-lanes.yml": "sha256:9df4672d5db08bdad7d6c952436cd960e511cedf079743a63c56a8f3b4a96182",
+    ".github/workflows/hygiene-repair.yml": "sha256:a7cafde8cd405ef7f04d6d2904fb2360c24d7b0a93583896d90248249ce99672",
+    "scripts/tests/test_repository_ci_workflows.py": "sha256:9fc29352ca0b9fd61e308f2ec0fb3fa5ae53c8a30d08b9bce951f6ea6719e77d",
+    "contracts/repository-ci-evidence.json": "sha256:e3f5694534f46d615e42a8688ae3a92d3b6bbddd1cb979a53583262f89beb543",
+    "contracts/observation.schema.json": "sha256:a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
+  },
+  "standing_supported": "NONE at this reading. The retention half of the claim is reproduced and would support OPEN -> BUILT for that half; the refusal half is dissented, so BUILT -> WITNESSED is not supported for the claim as stated. This observation is not a settlement and not a ratification.",
+  "judgement_items": [
+    "None. Every item above is an engineering repair inside the concern that owns it and belongs to the builder, not to Bdo. Nothing here reaches product intent, naming, an external effect, a secret, a resource commitment, or destructive administration."
+  ],
+  "overall_verdict": "PARTIALLY REPRODUCED, WITH DISSENT. The retention half of the claim holds under independent reading: four verify invocations, four --observe flags, four matching if: always() uploads, a schema-valid 52-record file, and records that provably survive a failing run. The refusal half does not hold. The three declared defeating cases fire, but the guard they defend is defeatable by seven legal forms, including the folded `run: >-` scalar these same workflows already use for their other multi-word commands. Combined with if-no-files-found: warn and the absence of any consumer for the artifacts, the guarantee is presently static-text-only: nothing at any layer refuses a CI run that produced no observation records. That goes back to the builder for repair inside this concern."
+}

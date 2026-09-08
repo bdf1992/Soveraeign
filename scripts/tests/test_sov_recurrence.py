@@ -158,8 +158,8 @@ class InstitutionNeutrality(unittest.TestCase):
 
     def test_a_vocabulary_closed_to_the_proving_roles_defeats_it(self) -> None:
         path = self.root / neutrality.PRIMITIVES["finding"][0]
-        path.write_text(json.dumps({"title": "finding", "properties": {"role": {"enum": [
-            "CONTROLLER", "ORCHESTRATOR", "WORKER", "WITNESS"]}}}),
+        path.write_text(json.dumps(fixture._stub("finding", properties={"role": {"enum": [
+            "CONTROLLER", "ORCHESTRATOR", "WORKER", "WITNESS"]}})),
             encoding="utf-8", newline="\n")
         read = neutrality.read(self.root)
         self.assertTrue(read["fixed_role_names_required"])
@@ -190,18 +190,64 @@ class InstitutionNeutrality(unittest.TestCase):
         """A const pins a field to one role and this reader does not see it. Held visible
         here so the limitation is a failing assumption if anyone ever fixes it silently."""
         path = self.root / neutrality.PRIMITIVES["finding"][0]
-        path.write_text(json.dumps({"title": "finding",
-                                    "properties": {"a": {"const": "WITNESS"},
-                                                   "b": {"const": "CONTROLLER"}}}),
-                        encoding="utf-8", newline="\n")
+        path.write_text(json.dumps(fixture._stub("finding", properties={
+            "a": {"const": "WITNESS"}, "b": {"const": "CONTROLLER"}})),
+            encoding="utf-8", newline="\n")
         self.assertEqual(neutrality.read(self.root)["closed_vocabularies"], [])
 
     def test_an_open_vocabulary_that_merely_includes_the_roles_does_not(self) -> None:
         path = self.root / neutrality.PRIMITIVES["finding"][0]
-        path.write_text(json.dumps({"title": "finding", "properties": {"role": {"enum": [
-            "CONTROLLER", "WITNESS", "PROCUREMENT_STEWARD"]}}}),
+        path.write_text(json.dumps(fixture._stub("finding", properties={"role": {"enum": [
+            "CONTROLLER", "WITNESS", "PROCUREMENT_STEWARD"]}})),
             encoding="utf-8", newline="\n")
         self.assertFalse(neutrality.read(self.root)["fixed_role_names_required"])
+
+    def test_a_term_in_a_title_is_not_a_declaration(self) -> None:
+        """The fourth witness's plant, both ways, in one test.
+
+        `contracts/work-circuit.json` resolved only because its title is a sentence with the
+        word `work` in it, and `contracts/ticket-settlement.json` failed only because it has
+        no title at all. Both were one-string edits away from the opposite verdict.
+        """
+        path = self.root / neutrality.PRIMITIVES["finding"][0]
+        path.write_text(json.dumps({"title": "A finding is what an evaluator forms",
+                                    "properties": {"actor_id": {"type": "string"}}}),
+                        encoding="utf-8", newline="\n")
+        self.assertTrue(any("finding" in item for item in neutrality.read(self.root)["unresolved"]))
+
+    def test_a_declared_identity_is_a_declaration(self) -> None:
+        """What replaced the title: the identifier a contract gives itself, root level only."""
+        path = self.root / neutrality.PRIMITIVES["finding"][0]
+        path.write_text(json.dumps({"policy_id": "soveraeign-finding/v1"}),
+                        encoding="utf-8", newline="\n")
+        self.assertEqual(neutrality.read(self.root)["unresolved"], [])
+
+    def test_an_identifier_in_example_data_is_not_the_contract_identity(self) -> None:
+        """Root only. An identifier nested in an example belongs to the example."""
+        path = self.root / neutrality.PRIMITIVES["finding"][0]
+        path.write_text(json.dumps({"examples": [{"policy_id": "soveraeign-finding/v1"}]}),
+                        encoding="utf-8", newline="\n")
+        self.assertTrue(any("finding" in item for item in neutrality.read(self.root)["unresolved"]))
+
+    def test_a_closure_a_primitive_names_as_governing_it_is_graded(self) -> None:
+        """The third witness's leak, now graded rather than disclosed."""
+        (self.root / fixture.GOVERNING_STUB).write_text(
+            json.dumps({"$id": "fixture-governing",
+                        "properties": {"filled_by": {"enum": list(fixture.CLOSED_ROLES)}}}),
+            encoding="utf-8", newline="\n")
+        read = neutrality.read(self.root)
+        self.assertTrue(read["fixed_role_names_required"])
+        self.assertTrue(any("is governed by" in item for item in read["closed_vocabularies"]))
+
+    def test_a_closure_no_primitive_names_is_reported_and_not_graded(self) -> None:
+        """Grading follows the primitives; an unrelated contract defeats none of them."""
+        (self.root / "contracts/unrelated.json").write_text(
+            json.dumps({"$id": "unrelated",
+                        "properties": {"filled_by": {"enum": list(fixture.CLOSED_ROLES)}}}),
+            encoding="utf-8", newline="\n")
+        read = neutrality.read(self.root)
+        self.assertFalse(read["fixed_role_names_required"])
+        self.assertTrue(any("unrelated.json" in item for item in read["closed_elsewhere"]))
 
     def test_the_alternate_institution_shares_no_name_with_the_proving_roles(self) -> None:
         alternate = {role.upper().replace("-", "_") for role in neutrality.ALTERNATE_INSTITUTION["roles"]}
@@ -231,9 +277,12 @@ class AgainstThisRepository(unittest.TestCase):
         result = recurrence.run(ROOT)
         self.assertEqual(sorted(result["grades"]), sorted(recurrence.PREDICATES))
 
-    def test_the_live_reading_reports_closures_outside_the_bound_primitives(self) -> None:
-        """Four exist here. Grading is scoped to the primitives; hiding the rest is not."""
-        self.assertTrue(neutrality.read(ROOT)["closed_elsewhere"])
+    def test_the_live_reading_separates_governed_closures_from_unrelated_ones(self) -> None:
+        """Pins the split, not the count: a closure a primitive's own `governed_by` reaches is
+        that primitive's and is graded; one no primitive names is reported and is not."""
+        read = neutrality.read(ROOT)
+        for entry in read["closed_elsewhere"]:
+            self.assertNotIn("is governed by", entry)
 
     def test_the_basis_is_drawn_only_from_settled_members(self) -> None:
         gathered = experience.gather(ROOT)

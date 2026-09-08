@@ -1,12 +1,18 @@
 """Definition recurrence: prove the P15-X4 reading closes, and that it can fail.
 
 `run` is the live reading: settled experience under this repository, meaning the custody
-members an independent participant observed and that landed, together with the witness
-records and receipts those members name; a candidate Definition synthesized from that basis
-and cited back to it; an observation of whether synthesis moved any governing record; and
-the ten governed primitives resolved and composed under an institution the founder did not
-predict. P15-Q4.1 to Q4.3 are graded by `conformance/commissioning.py`, which imports no
-participant code.
+members an independent participant observed and that landed; a candidate Definition
+synthesized from that basis and cited back to it; an observation of whether synthesis moved
+any governing record; and the ten governed primitives resolved and composed under an
+institution the founder did not predict. P15-Q4.1 to Q4.3 are graded by
+`conformance/commissioning.py`, which imports no participant code.
+
+The basis is the settled member addresses and nothing else. An earlier revision also
+scanned the observation directories for records naming a member, which counted a *refusal*
+of one member as evidence that another had been observed; a witness caught it and the scan
+is gone. What that leaves is stated rather than implied: this reader believes the custody
+record's own `standing` and `work_state`. A member falsely written as `WITNESSED` would be
+admitted, and no independent attribution exists here to refuse it.
 
 `selfcheck` proves the reader discriminates against a fixture basis under a fixture root:
 the positive variant passes, cites no member nobody witnessed, and each defeating variant

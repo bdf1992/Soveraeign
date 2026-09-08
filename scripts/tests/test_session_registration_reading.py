@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+import subprocess
 import sys
 import unittest
 
@@ -83,6 +84,48 @@ class CollectSurfacesRegistration(unittest.TestCase):
         rendered: list[str] = []
         brief._registration(rendered, {"registered": registered, "intent": ""})
         return rendered
+
+
+class TrunkReference(unittest.TestCase):
+    """`_position` must name the trunk it read, and prefer the remote one."""
+
+    def setUp(self) -> None:
+        self.tmp = TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.git("init", "-q", "-b", "main")
+        self.git("commit", "-q", "--allow-empty", "-m", "base")
+        self.git("checkout", "-q", "-b", "topic")
+        self.git("commit", "-q", "--allow-empty", "-m", "work")
+
+    def tearDown(self) -> None:
+        self.tmp.cleanup()
+
+    def git(self, *args: str) -> str:
+        result = subprocess.run(
+            ["git", "-c", "user.email=t@t", "-c", "user.name=t",
+             "-c", "commit.gpgsign=false", *args],
+            cwd=str(self.root), capture_output=True, text=True, check=False)
+        return result.stdout.strip()
+
+    def test_local_main_is_used_when_no_remote_trunk_exists(self) -> None:
+        self.assertEqual(brief.trunk_ref(self.root), "main")
+        self.assertIn("ahead of main", brief._position(self.root, "topic"))
+
+    def test_remote_trunk_wins_and_is_named(self) -> None:
+        self.git("update-ref", "refs/remotes/origin/main", "main")
+        self.assertEqual(brief.trunk_ref(self.root), "origin/main")
+        self.assertIn("ahead of origin/main", brief._position(self.root, "topic"))
+
+    def test_a_stale_local_trunk_is_declared(self) -> None:
+        """The defeating case: the reading a clone-time `main` pin used to give."""
+        self.git("update-ref", "refs/remotes/origin/main", "topic")
+        reading = brief._position(self.root, "topic")
+        self.assertIn("origin/main", reading)
+        self.assertIn("local main is behind it", reading)
+
+    def test_no_stale_clause_when_the_two_trunks_agree(self) -> None:
+        self.git("update-ref", "refs/remotes/origin/main", "main")
+        self.assertNotIn("local main is behind it", brief._position(self.root, "topic"))
 
 
 if __name__ == "__main__":

@@ -33,18 +33,43 @@ def branch_of(tree: Path) -> str:
     return name if name and name != "HEAD" else "(detached)"
 
 
+def _resolves(root: Path, ref: str) -> bool:
+    """Whether a ref exists in this tree."""
+    return subprocess.run(["git", "rev-parse", "--verify", "--quiet", ref],
+                          cwd=str(root), capture_output=True, text=True,
+                          check=False).returncode == 0
+
+
+def trunk_ref(root: Path) -> str:
+    """The ref this tree's position should be read against, preferring the remote.
+
+    `main` alone was wrong wherever the local ref is a clone-time pin. A remote
+    container on 2026-09-08 held `main` at the commit its image was built from
+    while `origin/main` had moved eight hours ahead, so the briefing reported a
+    branch 58 commits ahead of a trunk it was one commit ahead of. Nothing in the
+    line said which `main` it meant, so there was nothing to check it against.
+    """
+    return "origin/main" if _resolves(root, "origin/main") else "main"
+
+
 def _position(root: Path, branch: str) -> str:
-    """How this branch stands against main, in one clause."""
+    """How this branch stands against the trunk, in one clause that names it."""
+    ref = trunk_ref(root)
     result = subprocess.run(
-        ["git", "rev-list", "--left-right", "--count", f"main...{branch}"],
+        ["git", "rev-list", "--left-right", "--count", f"{ref}...{branch}"],
         cwd=str(root), capture_output=True, text=True, check=False)
     parts = result.stdout.split()
     if result.returncode != 0 or len(parts) != 2:
         return ""
     behind, ahead = int(parts[0]), int(parts[1])
+    stale = ""
+    if ref == "origin/main" and _resolves(root, "main") and subprocess.run(
+            ["git", "rev-list", "--count", "main..origin/main"], cwd=str(root),
+            capture_output=True, text=True, check=False).stdout.strip() not in ("", "0"):
+        stale = "; local main is behind it"
     if not ahead and not behind:
-        return "level with main"
-    return f"{ahead} ahead of main, {behind} behind"
+        return f"level with {ref}{stale}"
+    return f"{ahead} ahead of {ref}, {behind} behind{stale}"
 
 
 def session_leases(projected: dict[str, dict[str, Any]], session: str,

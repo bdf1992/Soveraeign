@@ -176,14 +176,15 @@ and nothing here reached `main`.
   observation. This is where `ONLY_EXECUTOR_REPORT`'s widening landed. The edge
   itself is unchanged: an inference runs before an observation exists, so the
   relay cannot be seen from there.
-- `tests/test_thin_slice.py`: seven cases added, one per new edge plus the
+- `services/observation/tests/test_thin_slice.py`: seven cases added, one per new edge plus the
   lifecycle-shopping case, the relay refusal, and the case proving a grant
   descending from the run is no longer an edge. 55 tests pass.
-- `contracts/fixtures/relation-inference.fixtures.json`: 12 entries carried onto
+- `services/observation/contracts/fixtures/relation-inference.fixtures.json`: 12 carried onto
   the new vocabulary, 6 added — three positive edges and three defeating cases
   (a narrowed five-edge examination, a retired edge reported as a finding, and
   an undeclared context read as independence).
-- `CHARTER.md`, `KNOWN-GAPS.md`, `STATUS.yaml`.
+- `services/observation/CHARTER.md`, `services/observation/KNOWN-GAPS.md`,
+  `STATUS.yaml`.
 - `AGENTS.md` Closure ownership and `contracts/closure-ownership.json`
   `helper_policy.witness_rule`. Both said a helper that *read* the change is
   inside the build. That reason is wrong — a witness reads the change too — and

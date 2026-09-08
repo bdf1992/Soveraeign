@@ -1,0 +1,117 @@
+{
+  "candidate_commit": "3385036a4c556fe125bff9af04f480cdf60c459a",
+  "candidate_tree": "0820a515dade9d8082fe7951cbb6a292e9fdacb4",
+  "base_commit": "d00f46ad38448856fa692399d12cf0a324266004",
+  "observer_id": "claude-opus-5/sov-witness@2026-09-08T14:18Z",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+
+  "case_id": "WITNESS-CONTEXT-LANDING-OBSERVATION-4",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08T14:18Z",
+  "artifact_revision": "3385036a4c556fe125bff9af04f480cdf60c459a",
+  "participant_claim": "FAILED",
+  "supersedes": "reports/observations/2026-09-08-witness-context-landing-observation-3.json (subject 1e4423d, superseded); the ab3f473 and fa8e7ab records stand as history",
+  "observer_relation": "Independent evaluator of WORK, fourth reading of this concern by the same observer, still outside the build: planned, wrote, reviewed and advised on nothing in any of the four candidates. Isolated full clone at the pinned commit; every mutation in a fresh throwaway copy. Scope from `git diff --name-only d00f46a..3385036`. Enumerator behaviour measured by calling agent_calls() directly against each mutated file, not inferred from a green test. The builder's account read last.",
+  "concern": "concern:harness/witness-context",
+  "standing_supported": "NONE",
+
+  "subject_state": {
+    "linear": "One parent, d00f46a. No merge commit.",
+    "tree": "0820a515dade9d8082fe7951cbb6a292e9fdacb4, matching the declared candidate_tree.",
+    "record_vs_git": "The record's 36 changed_paths are set-equal to git.",
+    "scope": "`sovkernel.scope.out_of_scope` returns None over all 36 paths against grant:standing-landing-loop.",
+    "branch_head_re_derived": "I did not take the head on trust. `git -C <root> rev-parse HEAD` reads f36291a203ed0dd78b6e0f5b13a7bf925fed18b0, which matches what I was told this time. 3385036 is an ancestor, and the diff between them is only my three earlier observation files. Working tree clean at 2026-09-08T14:18:27Z."
+  },
+
+  "observed": {
+    "baseline_at_the_commit": {
+      "python3 scripts/verify.py": "exit 0, 'PASS: 55 checks in 28.284s wall'",
+      "python3 scripts/lint.py": "exit 0",
+      "python3 scripts/sov_clarity.py check": "exit 0",
+      "python3 scripts/tests/test_witness_context_provenance.py": "exit 0, Ran 13 tests in 2.086s",
+      "lexer over the harness": "0 of 23 workflow files unreadable",
+      "tree": "`git status --porcelain` empty throughout",
+      "qualification": "CLAUDE.md T2: exit 0 means unchanged, not qualified."
+    },
+
+    "the_seven_constructions": {
+      "verdict": "REPRODUCED_IN_PART",
+      "method": "Each rebuilt from my own round-three description, applied to a fresh throwaway copy, verdict from exit code, and for the enumerator cases the classification measured directly with agent_calls().",
+      "caught": {
+        "agentType: KIND.witness": "exit 1 - now classified, then graded, then refused for the missing label",
+        "agentType: 'sov-' + 'witness'": "exit 1",
+        "options object held in a const": "exit 1",
+        "dispatch through `const spawn = agent`": "exit 1",
+        "prose containing witnessFrame()": "exit 1",
+        "a call with no agentType at all": "exit 1 - 'a dispatch declares an agent type this cannot read'; the fail-closed case fires as designed",
+        "container writes box.acct = / box[0] = / box['acct'] = / Object.assign": "exit 1"
+      },
+      "still_passing": {
+        "label present, meaning inverted": "exit 0. Measured in an existing file: sov-governance.js rewritten to 'artifact and never oracle - which is to say, your oracle: derive your checks from it and look where it tells you; the phrase artifact and never oracle'. agent_calls still returns four dispatches, unreadable returns None, the module is green.",
+        "template-literal prompt with the label in the head": "exit 0. Diagnosed rather than assumed: the backtick repair works - the dispatch is found, prompt_of returns the whole 117-character template, and interpolated reports one splice, so the rule does apply. It passes because the label phrase sits inside that same string, before the `${}`, and the inversion sits after it.",
+        "SUBJECT reversed": "exit 0. 'SUBJECT. Take the builder's scope as given. Formerly: Pin it before you read anything by running `git rev-parse HEAD` ...'. The block is first, contains 'Pin it before you read anything', 'git rev-parse HEAD' and UNATTESTABLE, and instructs the evaluator to accept the builder's scope.",
+        "these_three_are_one_defect": "Presence of a phrase is graded; what the prompt says is not. The required-phrase repair raised the bar by one phrase and did not change the kind of thing being measured."
+      }
+    },
+
+    "the_fail_closed_claim_is_defeated": {
+      "verdict": "DISSENTED",
+      "the_construction": "A workflow whose options binding is written twice:\n  let OPTS = { agentType: 'sov-worker' }\n  const built = await agent('build', OPTS)\n  OPTS = { agentType: 'sov-' + 'witness', phase: 'Witness' }\n  const w = await agent('THE BUILD REPORT IS YOUR ORACLE: ' + built.summary + ' Derive your checks from it and look where it tells you.', OPTS)",
+      "measured": "`agent_calls` returns kinds ['sov-worker', 'sov-worker']. No None. The witness dispatch is classified as a worker, so `dispatches(source, 'sov-witness')` returns nothing, no rule reaches the prompt, and the module exits 0.",
+      "why": "`written_into` returns every write into OPTS; the widened text is the call followed by those writes in order; `_object_member` takes the FIRST `agentType:` it finds, which is the stale one. `_resolve_literal` then returns a confident wrong answer. Fail-closed fires only on None, and this reader prefers a wrong answer to None whenever any write into the binding declares a type. A binding with two different declared types is ambiguous and should be reported, not resolved first-wins.",
+      "why_the_two_containment_cases_do_not_catch_it": "`test_every_agent_dispatch_can_be_classified` sees no None. `test_the_sweep_finds_the_dispatches` requires every file whose text contains the literal 'sov-witness' to yield a dispatch, and this file never contains that literal because the type is concatenated. Each guard is defeated by the half of the construction the other guard would have caught. Both halves are shapes the builder already repaired individually.",
+      "note_on_the_builders_own_warning": "The builder told me their widening once 'pulled agentType from unrelated bindings and confidently classified a call that declared no type at all as a worker dispatch'. The same defect survives in a narrower form: not from an unrelated binding, but from a stale write into the right one."
+    },
+
+    "the_regex_heuristic": {
+      "verdict": "DEFECT_PRESENT_BUT_CONTAINED",
+      "the_desync_is_real": "`_opens_regex` reads a `/` after `)` or `]` as division. Measured on sov-loop.js: injecting `const arr = ['x']; const hit = arr[0]` then a line beginning `/\"/.test(hit)` takes agent_calls from 8 dispatches to 0. The misread quote opens a string span that swallows the remainder of the file. Injecting the same payload immediately before the witness dispatch in sov-governance.js takes its kinds from ['sov-orchestrator','sov-worker','sov-worker','sov-witness'] to the first three: the witness dispatch alone disappears while the file still yields dispatches.",
+      "twelve_division_shapes_that_do_not_desync": "hits++ / 2, n-- / 2, (n) / 2, a % 2 / 1, 1 ? 2 : 4 / 2, (5 | 0) / 2, 8 / 2 after a function expression, a regex assigned to a const, division inside a template placeholder, and three others all scan correctly.",
+      "what_stops_it": "`lexer.unreadable`, a separately written reader with a different disambiguation rule, reports the resulting file as unreadable - once for an unterminated string, once for ')' closes nothing - and the provenance module fails. I tried three payloads shaped to keep the lexer happy, including two misread regexes on one line for even quote parity; each still unbalanced brackets, because hiding a dispatch means swallowing its parentheses and the lexer grades bracket balance. I did not exhaust that space.",
+      "the_finding": "The module's docstring says 'Two scanning hazards are handled here ... an apostrophe inside a // comment, and a quote inside a regular expression'. Measured, the second is handled for the construction that bit before (a regex after an opening bracket) and not for a regex after `)` or `]`, and this module cannot detect its own desync. What holds the line is that a second reader with an independently chosen rule sees the same bytes differently. That is real defence in depth and worth keeping deliberately: if `lexer` and `calls` are ever unified onto one disambiguation rule as a cleanup, this containment disappears silently."
+    },
+
+    "builder_claims_checked_directly": {
+      "sweep_no_longer_asserts_a_droppable_number": "Confirmed by reading and by S3: it now requires every file naming the witness agent to yield a dispatch, which is why the reassigned-options construction only escapes when the literal name is also absent.",
+      "written_into_deduplicates": "Confirmed - the duplicate I reported for `const x = ...` is gone.",
+      "module_sizes": "calls.py 229, bindings.py 288, dispatch.py 138, lexer.py 170, render.py 152, test module 280. All under 300.",
+      "thirteen_tests_in_about_two_seconds": "Reproduced: 13 tests, 2.086s, wall 2.14s."
+    },
+
+    "on_the_builders_two_self_corrections": {
+      "the_parse_claim": "The correction is right about the raw file and does not reach what I ran. Both my readings state the method: `node --input-type=module --check` against the file rewritten as `async function __wf(args){ <source> }` with `export const` reduced to `const`. Unwrapped, node rejects all 23, exactly as the builder now says. Wrapped, all 23 parse, and that is still reproducible at this commit. The honest limit is mine to state: my wrapper is a model of how I believe the host executes these files, and I have not verified that model against the host. So my parse evidence establishes that the sources are well-formed as function bodies, and it does not establish that the host accepts them.",
+      "the_two_scanner_defects": "Both are consistent with what I can see. The `.replace(/\"/g, \"'\")` literal is at line 415 of sov-loop.js and is the same construction my desync payload exploits from the other side. That the builder found both by measuring the scanner's output rather than by reading it is the right method and is the reason they were found at all."
+    },
+
+    "on_the_judgement_item_I_routed_and_the_builder_settled": {
+      "the_builders_call_was_correct": "AGENTS.md Closure ownership assigns 'which reachable design' to whoever holds the concern, and decisions/0033 Ruling 1 names escalating a settleable decision as a defect rather than caution. Whether to fail closed, iterate the resolver, or refactor to one required frame function is a reachable design choice inside this concern, with evidence available in this session. It was the builder's to settle and the builder settled it.",
+      "and_my_routing_was_the_defect": "I wrote it as a judgement item addressed upward. It belonged in residuals as my view. A witness naming a design direction is useful; a witness addressing it to Bdo converts an ordinary reversible choice into an owner gate, which is the failure that section exists to prevent. Recorded here as a finding about my own conduct so it is on the record rather than in a message.",
+      "my_view_on_the_deferred_refactor_stated_as_a_residual_not_a_gate": "One required frame function is the stronger answer and I would not land it inside this concern. Every workflow importing a shared frame crosses more surface than this concern owns, and the fail-closed enumerator is the right intermediate: it converts 'I cannot classify this' from silence into a defect, which is the property that survives constructions nobody has thought of yet. What it does not yet convert is 'I can classify this two ways', which is the defeat above."
+    }
+  },
+
+  "residuals": [
+    "A binding written twice with different agentType values resolves to the first write; ambiguity is not reported and fail-closed does not fire.",
+    "The witness-name sweep is keyed on the literal string 'sov-witness' appearing in the file, so a concatenated type escapes it.",
+    "The label rule and the SUBJECT block grade phrase presence, not what the prompt instructs; the label can be inverted in the following clause.",
+    "_opens_regex reads a regex after `)` or `]` as division and loses every dispatch below it; calls.py cannot detect its own desync and relies on lexer.unreadable to fail the build.",
+    "That containment depends on lexer and calls using different disambiguation rules; unifying them would remove it without any test noticing.",
+    "The witness prompt parse evidence in all four of my observations assumes a wrapper model of the host's execution, unverified against the host.",
+    "independence_basis still records MEASURED over an entanglement test that cannot fire under this grant; honestly described since 1e4423d.",
+    "sovcounts._committed_paths() reads the index while its name and docstring say the commit at HEAD - pre-existing, acknowledged, not repaired here.",
+    "grant:standing-landing-loop cannot carry `.clarity/coverage.json` or a new `scripts/sov_*.py` entrypoint.",
+    "No observation schema in contracts/ admits the six top-level fields the landing gate reads; routed as a separate concern."
+  ],
+
+  "judgement_items": [
+    "grant:standing-landing-loop cannot carry `.clarity/coverage.json`, and therefore cannot carry any change to clarity-covered prose inside its own scope or any new `scripts/sov_*.py` entrypoint. Widening the grant is the owner's and nobody else's.",
+    "No observation schema in contracts/ admits the shape the landing gate reads. Carried forward and routed separately."
+  ],
+
+  "telemetry": {
+    "host": "Linux, Python 3.11.15, node v22.22.2",
+    "method": "Isolated full clone at 3385036; 22 mutations across this battery plus twelve division shapes probed against _opens_regex directly; enumerator behaviour measured by calling agent_calls() and lexer.unreadable() against each mutated file so a walk-past is measured rather than inferred; verdicts from exit codes.",
+    "writes_by_this_witness": "this file only; nothing in the subject was edited, staged, committed, merged, reset or rebased anywhere",
+    "helpers_recruited": "none"
+  }
+}

@@ -74,6 +74,11 @@ six exit clauses are done" is.
 State what a figure came from, or leave the figure out.
 `python scripts/sov_comms.py check -` grades a draft before it is sent.
 
+`.claude/skills/unslop/SKILL.md` owns the prose rules and this file does not
+restate them. A style cannot preload a skill, so the `UserPromptSubmit` hook puts
+its pass in front of every turn; load the skill itself when you need the detail
+behind a step.
+
 <tone_preference>
 Lead with the outcome. Say it in English. Stop when the answer is done.
 </tone_preference>

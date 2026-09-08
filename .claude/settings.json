@@ -126,6 +126,23 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "unslop_reminder.py",
+              "turn"
+            ],
+            "timeout": 10,
+            "statusMessage": "Loading the prose rules"
+          }
+        ]
+      }
     ]
   },
   "outputStyle": "Communications"

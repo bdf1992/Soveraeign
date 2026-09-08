@@ -1,5 +1,8 @@
 name: hygiene repair
 
+# The root verification here retains its per-check Observation records rather than
+# reducing the run to an exit code; see the header of `.github/workflows/verify.yml`.
+
 on:
   pull_request:
 
@@ -28,4 +31,12 @@ jobs:
       - name: Repository hygiene
         run: python scripts/lint.py
       - name: Root verification
-        run: python scripts/verify.py
+        run: python scripts/verify.py --observe "$RUNNER_TEMP/hygiene-observations.json"
+      - name: Retain what the root verification observed
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hygiene-observations-${{ github.sha }}-py${{ matrix.python-version }}
+          path: ${{ runner.temp }}/hygiene-observations.json
+          if-no-files-found: warn
+          retention-days: 30

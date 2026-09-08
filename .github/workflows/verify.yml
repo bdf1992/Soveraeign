@@ -8,6 +8,16 @@ name: verify
 # The protected branch already names the repository matrix checks explicitly,
 # so their names remain stable while candidate evidence is added beside them.
 # Neither result transfers to the other subject.
+#
+# Every verification job writes its per-check Observation records and retains them.
+# An exit code is one bit, and one bit cannot tell a defective change from a busy
+# host from another session writing the tree mid-run. `verify.py --observe` already
+# emits one record per check against `contracts/observation.schema.json`, carrying
+# the addresses that check read, their digests, and both its clocks. Retaining that
+# file is what lets a later reader attribute a red run instead of guessing, the way
+# `scripts/sovland/isolation.py` attributes one at the landing gate. The records are
+# kept when the run fails as well: that is the run whose attribution matters, and a
+# job that keeps evidence only on the passing path answers the easy question only.
 on:
   pull_request:
   push:
@@ -53,7 +63,15 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Verify candidate repository
-        run: python scripts/verify.py
+        run: python scripts/verify.py --observe "$RUNNER_TEMP/candidate-observations.json"
+      - name: Retain what the candidate verification observed
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidate-observations-${{ github.event.pull_request.head.sha }}-py${{ matrix.python-version }}
+          path: ${{ runner.temp }}/candidate-observations.json
+          if-no-files-found: warn
+          retention-days: 30
       - name: State the evidence subject
         if: always()
         run: |
@@ -95,7 +113,15 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Verify repository
-        run: python scripts/verify.py
+        run: python scripts/verify.py --observe "$RUNNER_TEMP/repository-observations.json"
+      - name: Retain what the repository verification observed
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repository-observations-${{ github.sha }}-py${{ matrix.python-version }}
+          path: ${{ runner.temp }}/repository-observations.json
+          if-no-files-found: warn
+          retention-days: 30
       - name: State the evidence subject
         if: always() && github.event_name == 'pull_request'
         run: |

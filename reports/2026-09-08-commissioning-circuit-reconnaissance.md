@@ -240,3 +240,75 @@ its subject.
 | # | Stage | Finding |
 | --- | --- | --- |
 | F13 | Independent perspective formation | Nothing scopes a reading to its subject. Commissioned on the participant, one reading spent much of its effort on the work. The `subject` and `scope` fields exist in the Finding contract and are unimplemented, so the discrimination `P15-X2` requires is left to the prompt. |
+
+### 10 · Comparison, repair, decision - WORKED, BY DISCIPLINE
+
+Both readings returned frozen, having been launched in parallel with nothing
+relaying between them. They reached different subjects' verdicts - the work
+`MET WITH QUALIFICATION`, the carrying `CARRIED WELL` - and produced defect
+sets that barely overlap. They corroborated on the one thing both tested: each
+independently ran the counterfactual of the nine pre-existing corpus documents
+at the regression commit without the new anchor, and both got a pass, which is
+what makes the corpus extension a build of the check rather than a rig of it.
+
+That is the discrimination `P15-X2` exists to produce, and it was produced. By
+arrangement, not by mechanism: the two subjects, the parallel launch and the
+refusal to relay were the launcher's discipline and are recorded nowhere.
+
+Attribution, which is the part a comparator owes:
+
+| Defect | Attributed to | Reasoning |
+| --- | --- | --- |
+| A caption at `opacity: 0` passes the check | The **definition**, not the work | The closure condition said "compares rendered text" and the work does exactly that. The concern pull request #32 recorded was broader - a check that "would have caught the caption regression" - and an invisibility regression is a different class. The definition was written narrower than the concern and the work satisfied the definition. |
+| The commit subject says "compared by what it draws" | The **work**, minor | What exists compares text, not what a viewer sees. Naming, disclosed in the report body and overstated in the subject line. |
+| The anchor's load-bearing property was unguarded | The **work**, root cause in the **product** | `src/10-model.js` normalises `labelMode` on load, so any open-and-resave silently disarms the demonstration. |
+| The report misstates reciprocity-mark coverage | The **participant**, minor | Reporting accuracy; the reading corrected it against the artifact. |
+| Report file list, an eight-for-nine slip, residue in the repository root | The **participant**, minor | Reporting hygiene. |
+
+**Decision.** Closure accepted with qualification. The anchor defect is
+repaired in the payload repository at `e51b999`, proved by writing the
+disarming value in, reading the refusal, and restoring. The opacity defect is
+recorded as a residual and attributed to the definition rather than carried as
+a repair, because widening from rendered text to rendered visibility is a
+different concern with a different cost, and inventing that scope inside a
+reconnaissance run would be the scope creep the contract names.
+
+One defect was found in the repair while proving it, and removed before commit:
+the first guard also refused an authored label, which fails the correct
+document. Running the defeating case before trusting the change caught it.
+
+### Three more findings, from carrying the repair
+
+**Independence held at the participant and broke at the environment.** The work
+reading recorded that `playwright==1.57.0` was already installed in the
+container by the builder. Both readings ran inside an environment the build had
+mutated. Independence was arranged between participants and unmeasured between
+contexts, which is exactly the axis `decisions/0104` names, and nothing checks
+it.
+
+**Repairing on a finding invalidates the finding, and nothing re-arms it.**
+Both readings are frozen against the subject as it stood before the repair. The
+repair moved the subject. Nothing marks a finding stale when its subject moves,
+and no stage exists to re-form a reading after a repair. The circuit draws
+Comparison to Repair to Settlement as forward motion with no edge back to
+observation, so a repaired defect is settled against evidence that no longer
+describes the thing being settled. This is the same hazard `OPEN-SEAMS.md` S30
+records for repository candidates, met here at a different object.
+
+**Cleanup and work share a namespace.** The payload suite writes its fixtures
+into `tests/`, the directory holding its own source. Restoring the tree after a
+run destroys the change under test. That is not a hypothetical: this session
+ran `git checkout -- tests/` to clear run artifacts and silently reverted its
+own repair, discovering it only because the commit reported nothing staged.
+
+| # | Stage | Finding |
+| --- | --- | --- |
+| F13 | Independent perspective formation | *Refined.* The two subjects collapsed in **effort** - the participant reading spent much of itself reproducing the work's closure - but not in **verdict**: the two returned different subjects' conclusions and near-disjoint defect sets. Nothing scoped either reading; the separation held because the prompts named different subjects. |
+| F14 | Independent perspective formation | Independence was arranged between participants and violated between contexts. Both readings ran in a container the build had mutated, and nothing measures the context axis `decisions/0104` names. |
+| F15 | Comparison / repair | A repair invalidates the findings it answers, and the circuit has no edge back to observation. Nothing marks a finding stale when its subject moves. S30's hazard, met at a different object. |
+| F16 | Cleanup | The payload's suite writes fixtures into the directory holding its source, so restoring the tree after a run destroys the change under test. Observed by doing it. |
+
+Positives so far, kept explicit because a trace of only breakage is not a
+reading: the definition stage is enforced, a stranger carried real work from the
+artifact alone, and two readings on different subjects produced the
+discrimination `P15-X2` asks for.

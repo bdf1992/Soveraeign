@@ -36,10 +36,11 @@ COMMISSIONING_CHECKS = (
           "synthesizes a candidate Definition from settled experience under a fixture root, "
           "grades P15-Q4 through conformance/commissioning.py, and proves the candidate takes "
           "no standing and the primitives compose under an institution the founder did not "
-          "predict; seven defeating variants each fail the predicates they declare, and the "
-          "positive variant is checked for citing no member nobody witnessed",
-          ("scripts/sov_recurrence.py", "scripts/sovrecurrence", "conformance/commissioning.py",
-           "contracts/custodies/phase-1-5.json")),
+          "predict; nine defeating variants each fail the predicates they declare, and the "
+          "positive variant is checked for citing no member nobody witnessed. This grades the "
+          "instrument, not the clause: the fixture root is temporary and the live reading "
+          "against this repository is run by no check here",
+          ("scripts/sov_recurrence.py", "scripts/sovrecurrence", "conformance/commissioning.py")),
     Check("node journal custody", [sys.executable, "scripts/sov_node.py", "journals"], ROOT,
           "replays every journal export under nodes/ with the Record Service's own verifier, "
           "which recomputes each entry digest from its contents, and resolves every "

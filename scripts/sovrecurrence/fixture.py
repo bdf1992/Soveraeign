@@ -1,9 +1,9 @@
 """A fixture basis for the definition-recurrence self-check, and the variants that defeat it.
 
 Everything is built under a temporary root: a fixture custody collection whose clauses carry
-fixture members, fixture witness records and receipts that observe them, and the ten
-contracts that declare the primitives. Nothing here reads or writes the real repository,
-names a real principal, or witnesses anything.
+fixture members, the ten contracts that declare the primitives, and one contract a bound
+primitive names as governing it. Nothing here reads or writes the real repository, names a
+real principal, or witnesses anything.
 
 The collection deliberately carries a member at `BUILT` as well as members at `WITNESSED`.
 A basis that admitted the built one would be citing work nobody independently judged, so
@@ -21,6 +21,28 @@ from sovrecurrence import neutrality, recurrence
 COLLECTION = "contracts/custodies/phase-1-5.json"
 SETTLED = ("P15-F1", "P15-F2")
 BUILT_ONLY_ADDRESS = "scripts/fixture_unwitnessed.py"
+GOVERNING_STUB = "contracts/fixture-governing.json"
+"""A contract the `settlement` stub names in its own `governed_by`. Open by default, so the
+graded-governance path is exercised in both directions rather than only when it fires."""
+OPEN_ROLES = ("procurement-steward", "supplier-liaison", "worker")
+"""One proving-role name and two an alternate institution uses: not a closed vocabulary."""
+CLOSED_ROLES = ("worker", "orchestrator", "controller", "owner")
+"""The vocabulary a third witness found in this repository: closed without being four-of-four."""
+
+
+def _stub(term: str, **extra: Any) -> dict[str, Any]:
+    """A fixture contract that declares `term` the way a real one does: in its own identity.
+
+    The declaration lives in `$id` and not in a comment, because a comment is prose and the
+    reader stopped reading prose.
+    """
+    stub: dict[str, Any] = {
+        "$id": f"https://soveraeign.local/contracts/fixture-{term}.schema.json",
+        "title": f"Fixture {term} declaration",
+        "properties": {"actor_id": {"type": "string"}},
+    }
+    stub.update(extra)
+    return stub
 
 EXPECTED_FAILURES: dict[str, dict[str, list[str]]] = {
     "basis-dropped": {
@@ -35,7 +57,13 @@ EXPECTED_FAILURES: dict[str, dict[str, list[str]]] = {
     "primitive-undeclared": {
         "P15-Q4.3": ["institution-neutral composition lacks governed primitives",
                      "alternate institution cannot compose the same primitives"]},
+    "primitive-mispaired": {
+        "P15-Q4.3": ["institution-neutral composition lacks governed primitives",
+                     "alternate institution cannot compose the same primitives"]},
     "role-vocabulary-closed": {
+        "P15-Q4.3": ["composition depends on fixed proving-role names",
+                     "alternate institution cannot compose the same primitives"]},
+    "governed-vocabulary-closed": {
         "P15-Q4.3": ["composition depends on fixed proving-role names",
                      "alternate institution cannot compose the same primitives"]},
 }
@@ -49,6 +77,14 @@ reader cannot tell which record's movement mattered and does not guess. Removing
 primitive's declaration and closing its vocabulary both defeat the alternate institution,
 because a primitive that cannot be resolved and one that only the proving roles may fill
 are equally uncomposable by an institution the founder did not predict.
+
+`primitive-mispaired` and `governed-vocabulary-closed` cover the two rules a fourth witness
+changed, so that what the repository certifies through `scripts/verify.py` includes them.
+An earlier fixture wrote `"$comment": "declares the {primitive} primitive"` into every stub,
+which meant the fixture could never disagree with a binding: whatever path `PRIMITIVES`
+named, the stub written there declared the term. A witness named that gap and it is closed
+here - `primitive-mispaired` writes a contract that parses and declares structure that is
+simply not the term it is paired with, which is the case a real mispairing produces.
 """
 
 
@@ -95,9 +131,10 @@ def build(root: Path) -> Path:
     _write(root / "STATUS.yaml", "phase: phase:fixture\n")
     _write(root / "contracts/phases.json", {"phases": [{"phase_id": "phase:fixture"}]})
     for primitive, (relative, term) in neutrality.PRIMITIVES.items():
-        _write(root / relative, {"title": f"Fixture {term} declaration",
-                                 "$comment": f"declares the {primitive} primitive",
-                                 "properties": {"actor_id": {"type": "string"}}})
+        extra = {"governed_by": [GOVERNING_STUB]} if primitive == "settlement" else {}
+        _write(root / relative, _stub(term, **extra))
+    _write(root / GOVERNING_STUB, {"$id": "https://soveraeign.local/contracts/fixture-governing",
+                                   "properties": {"filled_by": {"enum": list(OPEN_ROLES)}}})
     return root
 
 
@@ -132,11 +169,16 @@ def _defeat_root(root: Path, variant: str) -> None:
     """Variants that defeat the basis rather than the candidate, applied to the fixture root."""
     if variant == "primitive-undeclared":
         (root / neutrality.PRIMITIVES["custody"][0]).unlink()
+    elif variant == "primitive-mispaired":
+        _write(root / neutrality.PRIMITIVES["custody"][0], _stub("unrelated"))
     elif variant == "role-vocabulary-closed":
         _write(root / neutrality.PRIMITIVES["finding"][0],
-               {"title": "Fixture finding declaration",
-                "properties": {"evaluator_role": {"enum": ["CONTROLLER", "ORCHESTRATOR",
-                                                           "WORKER", "WITNESS"]}}})
+               _stub("finding", properties={"evaluator_role": {
+                   "enum": ["CONTROLLER", "ORCHESTRATOR", "WORKER", "WITNESS"]}}))
+    elif variant == "governed-vocabulary-closed":
+        _write(root / GOVERNING_STUB,
+               {"$id": "https://soveraeign.local/contracts/fixture-governing",
+                "properties": {"filled_by": {"enum": list(CLOSED_ROLES)}}})
 
 
 def run_variant(root: Path, variant: str) -> dict[str, Any]:

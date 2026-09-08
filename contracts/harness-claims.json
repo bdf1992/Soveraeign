@@ -11,7 +11,8 @@
     "derived": {
       "CAPABILITY": "Every tool name in agent frontmatter, against contracts/harness-hosts.json. Generalizes: any tool not in the portable set fails, named or not.",
       "REFERENCE": "Every backticked repository address in an orientation surface, against git ls-files. Generalizes: any address that does not resolve from the repository root, the document's own directory, the harness root, or a service root fails.",
-      "STANDING": "Every `<subject>_status is <TOKEN>` assertion, against STATUS.yaml. Generalizes over subjects and tokens, but ONLY matches that one sentence form."
+      "STANDING": "Every `<subject>_status is <TOKEN>` assertion, against STATUS.yaml. Generalizes over subjects and tokens, but ONLY matches that one sentence form.",
+      "SELFCLAIM": "This contract itself, against the kinds scripts/sov_harness.py actually runs and the drift footprint git's index actually holds. Generalizes: the kind set is read off ALL_CHECKS membership, so a check removed from the module removes its kind and this refuses the contract that still claims it."
     },
     "declared": {
       "VOLATILE": "Standing words in a skill or agent `description:` field. Covers exactly the terms in standing_vocabulary below and no others. A new way of writing 'this service is not built yet' is not caught until it is added here.",

@@ -224,49 +224,44 @@ def check_retired(root: Path = ROOT) -> list[Defect]:
     return defects
 
 
-#: A vendored core carries its origin repository's frontmatter. These are the
-#: fields that make the copy an accountable projection rather than an untracked fork.
-PROVENANCE_FIELDS = ("author", "origin", "adopted", "verified", "artifact_digest")
-
-
 def check_provenance(root: Path = ROOT) -> list[Defect]:
-    """A skill vendored from another repository must declare where it came from.
-
-    Presence, not recomputation. Recomputing the digest means reimplementing the
-    origin repository's rule here, and two implementations of one rule drift into
-    disagreeing about what a copy is. Verifying it is a DEPENDENCY_SEAM.
-    """
-    defects = []
-    for path in sorted((root / ".claude" / "skills").glob("*/SKILL.md")):
-        text = path.read_text(encoding="utf-8")
-        if "bdos: true" not in text:
-            continue
-        missing = [f for f in PROVENANCE_FIELDS if not re.search(rf"^\s*{f}:", text, re.M)]
-        if missing:
-            defects.append(Defect("PROVENANCE", f"{path.relative_to(root)} is vendored",
-                                  f"declares no {', '.join(missing)}; a copy without a source "
-                                  f"is a fork"))
-    return defects
-
-
-ALL_CHECKS = (check_capability, check_standing, check_reference,
-              check_volatile, check_retired, check_provenance)
-
-#: The kinds ALL_CHECKS emits. Held here so the coverage contract can be graded
-#: against what the module does rather than against a second copy of the list.
-KINDS = frozenset({"CAPABILITY", "STANDING", "REFERENCE", "VOLATILE", "RETIRED",
-                   "PROVENANCE"})
+    """A skill vendored from another repository must declare where it came from."""
+    from sovharness.provenance import missing_fields
+    return [Defect("PROVENANCE", f"{path} is vendored",
+                   f"declares no {', '.join(fields)}; a copy without a source is a fork")
+            for path, fields in missing_fields(root)]
 
 
 def check_selfclaim(root: Path = ROOT) -> list[Defect]:
     """The coverage contract must describe the kinds this module actually runs."""
     from sovharness.contract import check_contract
     return [Defect("SELFCLAIM", where, detail)
-            for where, detail in check_contract(root, set(KINDS))]
+            for where, detail in check_contract(root, KINDS)]
+
+
+#: Each check carries the kind it emits, so the kind set is a property of this
+#: tuple rather than a list beside it. Holding the names separately and calling
+#: that derived is the defect a witness proved by deleting check_volatile: the
+#: contract kept claiming VOLATILE coverage, a real VOLATILE defect passed, and
+#: SELFCLAIM stayed silent.
+ALL_CHECKS = (check_capability, check_standing, check_reference, check_volatile,
+              check_retired, check_provenance, check_selfclaim)
+
+for _check, _kind in zip(ALL_CHECKS, ("CAPABILITY", "STANDING", "REFERENCE", "VOLATILE",
+                                      "RETIRED", "PROVENANCE", "SELFCLAIM")):
+    _check.kind = _kind
+
+
+def kinds() -> set[str]:
+    """The kinds this module actually runs, read off ALL_CHECKS membership."""
+    return {check.kind for check in ALL_CHECKS}
+
+
+KINDS = kinds()
 
 
 def grade(root: Path = ROOT) -> list[Defect]:
-    return [d for check in (*ALL_CHECKS, check_selfclaim) for d in check(root)]
+    return [d for check in ALL_CHECKS for d in check(root)]
 
 
 def main() -> int:
@@ -283,7 +278,7 @@ def main() -> int:
               "support. Repair the claim, or the record if the record is what is wrong.\n"
               "What this does and does not reach: contracts/harness-claims.json")
         return 1
-    print(f"harness claims: {graded} files graded across {len(KINDS) + 1} kinds; coverage "
+    print(f"harness claims: {graded} files graded across {len(kinds())} kinds; coverage "
           f"and its limits are declared in contracts/harness-claims.json, which "
           f"SELFCLAIM grades against the kinds this module actually runs")
     return 0

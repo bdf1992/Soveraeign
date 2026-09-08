@@ -26,7 +26,8 @@ import tempfile
 REAL_ROOT = Path(__file__).resolve().parent.parent.parent
 
 CLEAN_DESCRIPTION = "description: Bounded work in the asset domain.\n"
-CLEAN_PROMPT = "'asset_service_status is BUILT_SELF_TESTED_NOT_WITNESSED'\n"
+CLEAN_PROMPT = ("'asset_service_status is BUILT_SELF_TESTED_NOT_WITNESSED'\n"
+                "the PUBLIC-CLEARANCE hold blocks public release only\n")
 CLEAN_ORIENTATION = "see `contracts/harness-claims.json`\n"
 SOURCED = ("---\nmetadata:\n  bdos: true\n  author: a\n  origin: o\n  adopted: 2026-01-01\n"
            "  verified: 2026-01-01\n  artifact_digest: sha256:x\n---\n")
@@ -34,7 +35,8 @@ SOURCED = ("---\nmetadata:\n  bdos: true\n  author: a\n  origin: o\n  adopted: 2
 
 def build(tmp: Path, *, tools: str = "Bash, Read", prompt: str = CLEAN_PROMPT,
           orientation: str = CLEAN_ORIENTATION, description: str = CLEAN_DESCRIPTION,
-          vendored: str = SOURCED, plant: str = "", contract_patch=None) -> Path:
+          vendored: str = SOURCED, plant: str = "", untracked: str = "",
+          contract_patch=None) -> Path:
     """A minimal tree carrying exactly the surfaces the grader reads.
 
     The two contracts are copied from the repository, so a case is graded against
@@ -60,6 +62,10 @@ def build(tmp: Path, *, tools: str = "Bash, Read", prompt: str = CLEAN_PROMPT,
         planted.parent.mkdir(parents=True, exist_ok=True)
         planted.write_text("{}", encoding="utf-8")
     _commit(root)
+    if untracked:
+        loose = root / untracked
+        loose.parent.mkdir(parents=True, exist_ok=True)
+        loose.write_text("{}", encoding="utf-8")
     # The copied contract states the real repository's drift footprint, which this
     # tree does not have. Re-derive it here so the control is self-consistent and a
     # patched case is failing on the patch rather than on the fixture's own shape.
@@ -96,43 +102,68 @@ def _drop_a_kind(claims: dict) -> None:
     claims["coverage"]["derived"].pop("REFERENCE", None)
 
 
+def _add_a_kind(claims: dict) -> None:
+    """A kind the contract describes but the module never runs."""
+    claims["coverage"]["derived"]["IMAGINARY"] = "a kind nothing emits"
+
+
+def _wrong_paths(claims: dict) -> None:
+    """Right counts, wrong paths - what a count-only check would miss."""
+    footprint = claims["known_drift"][0]["footprint"]
+    footprint["paths"] = [f"made/up/{i}.md" for i in range(footprint["files"])]
+
+
+def _drop_footprint(claims: dict) -> None:
+    """Unenforced drift a reader is given no way to size."""
+    claims["known_drift"][0].pop("footprint", None)
+
+
 def _wrong_footprint(claims: dict) -> None:
     """A hand-written population count that the tree contradicts."""
     claims["known_drift"][0]["footprint"]["files"] += 8
 
 
-#: (name, kwargs, expected kind or None for silence, why this case exists). A case
-#: whose `why` names a defect this repository actually shipped is counted as a
-#: regression by `selfcheck`; the count is derived rather than written down,
-#: because a hand-written population count is the defect this module grades.
-SHIPPED = ("CAPABILITY", "STANDING", "REFERENCE", "VOLATILE/unbuilt", "VOLATILE/phase",
-           "RETIRED", "SELFCLAIM/kinds", "SELFCLAIM/footprint")
+#: (name, kwargs, expected kind or None, why, shipped). `shipped` says whether this
+#: case reproduces a defect that actually reached this repository - a historical
+#: fact, declared on the case itself because there is nothing to derive it from.
+#: It was a separate tuple of names beside the cases, which is the shape that
+#: drifts: nothing tied a name in that list to a case, and the comment claimed the
+#: count came from reading `why`, which no code did.
 CASES = (
-    ("control", {}, None, "a supported tree is not refused"),
+    ("control", {}, None, "a supported tree is not refused", False),
     ("CAPABILITY", {"tools": "Bash, PowerShell, Read"}, "CAPABILITY",
-     "four agent definitions declared PowerShell"),
+     "four agent definitions declared PowerShell", True),
     ("STANDING", {"prompt": "'asset_service_status is BUILT_AND_WITNESSED'\n"}, "STANDING",
-     "sov-console.js asserted a token STATUS.yaml contradicts"),
+     "sov-console.js asserted a token STATUS.yaml contradicts", True),
     ("REFERENCE", {"orientation": "see `contracts/gone.json`\n"}, "REFERENCE",
-     "CLAUDE.md named contracts/requirements.json, which does not exist"),
-    ("REFERENCE/collision", {"orientation": "see `contracts/gone.json`\n",
-                             "plant": "archives/old/contracts/gone.json"}, "REFERENCE",
-     "an archived or untracked file must not validate an address"),
+     "CLAUDE.md named contracts/requirements.json, which does not exist", True),
+    ("REFERENCE/tracked-copy", {"orientation": "see `contracts/gone.json`\n",
+                                "plant": "archives/old/contracts/gone.json"}, "REFERENCE",
+     "a tracked archived copy at a colliding suffix must not validate an address", False),
+    ("REFERENCE/untracked", {"orientation": "see `contracts/gone.json`\n",
+                             "untracked": "contracts/gone.json"}, "REFERENCE",
+     "an untracked file at the exact named path must not validate it either", False),
     ("VOLATILE/unbuilt",
      {"description": "description: Charter work while the service is accepted but unbuilt.\n"},
-     "VOLATILE", "sov-console and sov-proofing both said this while Console was built"),
+     "VOLATILE", "sov-console and sov-proofing both said this while Console was built", True),
     ("VOLATILE/phase",
      {"description": "description: Refuse publication while Phase-I boundaries stand.\n"},
-     "VOLATILE", "sdlc-release conditioned a live refusal on a terminal phase"),
+     "VOLATILE", "sdlc-release conditioned a live refusal on a terminal phase", True),
     ("RETIRED",
      {"prompt": "Name no_external_effects_in_phase_i in the refusal.\n"}, "RETIRED",
-     "sdlc-release told participants to cite a record that no longer exists"),
+     "sdlc-release told participants to cite a record that no longer exists", True),
     ("PROVENANCE", {"vendored": "---\nmetadata:\n  bdos: true\n---\n"}, "PROVENANCE",
-     "a vendored copy with no declared source is a fork"),
-    ("SELFCLAIM/kinds", {"contract_patch": _drop_a_kind}, "SELFCLAIM",
-     "the contract said two of five kinds while the module ran six"),
+     "a vendored copy with no declared source is a fork", True),
+    ("SELFCLAIM/kind-missing", {"contract_patch": _drop_a_kind}, "SELFCLAIM",
+     "the contract described a smaller kind set than the module ran", True),
+    ("SELFCLAIM/kind-extra", {"contract_patch": _add_a_kind}, "SELFCLAIM",
+     "a described kind the module does not run reads to a participant as coverage", True),
     ("SELFCLAIM/footprint", {"contract_patch": _wrong_footprint}, "SELFCLAIM",
-     "the contract stated a drift footprint the tree contradicts"),
+     "the contract stated a drift footprint the tree contradicts", True),
+    ("SELFCLAIM/paths", {"contract_patch": _wrong_paths}, "SELFCLAIM",
+     "counts that match while the listed paths do not are still a wrong footprint", False),
+    ("SELFCLAIM/no-footprint", {"contract_patch": _drop_footprint}, "SELFCLAIM",
+     "unenforced drift with no footprint cannot be sized by a reader", False),
 )
 
 
@@ -140,7 +171,7 @@ CASES = (
 def selfcheck(grade: Callable[[Path], list]) -> int:
     """Run every case. A checker that cannot refuse passes every repository."""
     failures = []
-    for name, kwargs, expect, why in CASES:
+    for name, kwargs, expect, why, _shipped in CASES:
         with tempfile.TemporaryDirectory() as tmp:
             found = {d.kind for d in grade(build(Path(tmp), **kwargs))}
         if expect is None and found:
@@ -154,7 +185,7 @@ def selfcheck(grade: Callable[[Path], list]) -> int:
         for line in failures:
             print(f"  {line}")
         return 1
-    regressions = sum(1 for name, _, _, _ in CASES if name in SHIPPED)
+    regressions = sum(1 for case in CASES if case[4])
     print(f"harness claim refusals: {len(CASES)} cases, every declared refusal fires; "
           f"{regressions} are regressions for defects this repository actually shipped")
     return 0

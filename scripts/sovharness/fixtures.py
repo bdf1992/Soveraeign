@@ -1,10 +1,13 @@
 """Cases that prove every declared refusal fires, and that a clean tree does not.
 
-Four of these are regressions for defects that actually shipped in this
-repository, not invented shapes. The first version of the grader passed all of
-them: it recognised only `<subject>_status is <TOKEN>`, so the prose forms it was
-written in response to went straight through. A checker is only worth its green
-run if the cases behind it are the ones that got past a reader.
+Most of these are regressions for defects that actually shipped in this
+repository, not invented shapes; `selfcheck` counts them from the cases rather
+than stating a number here, because a hand-written population count beside the
+thing that computes it is the defect this module exists to grade. The first
+version of the grader passed every one of them: it recognised only
+`<subject>_status is <TOKEN>`, so the prose forms it was written in response to
+went straight through. A checker is only worth its green run if the cases behind
+it are the ones that got past a reader.
 
 The collision case is the sharper one. An earlier REFERENCE rule accepted an
 address if any file anywhere in the tree ended with it, so an untracked cache or
@@ -168,8 +171,9 @@ CASES = (
 
 
 
-def selfcheck(grade: Callable[[Path], list]) -> int:
+def selfcheck(grade: Callable[[Path], list], declared_kinds: set | None = None) -> int:
     """Run every case. A checker that cannot refuse passes every repository."""
+    declared_kinds = set(declared_kinds or ())
     failures = []
     for name, kwargs, expect, why, _shipped in CASES:
         with tempfile.TemporaryDirectory() as tmp:
@@ -180,6 +184,13 @@ def selfcheck(grade: Callable[[Path], list]) -> int:
             failures.append(f"{name}: refusal did not fire; reported {sorted(found) or 'nothing'}")
         else:
             print(f"  {name:<20} {'silent' if expect is None else expect + ' fired':<18} {why}")
+    exercised = {expect for _, _, expect, _, _ in CASES if expect}
+    unexercised = declared_kinds - exercised
+    if unexercised:
+        failures.append(
+            f"{sorted(unexercised)} declared by a check but produced by no case; a kind "
+            f"whose Defect literal is renamed away from its @emits name would go unseen")
+
     if failures:
         print("\nselfcheck FAILED")
         for line in failures:

@@ -38,6 +38,8 @@ import re
 import subprocess
 import sys
 
+from sovharness import emits
+
 ROOT = Path(__file__).resolve().parent.parent
 
 #: Read but not graded. Drafts record what was true when written; grading them
@@ -103,6 +105,7 @@ def _status_claims(root: Path = ROOT) -> dict[str, set[str]]:
     return claims
 
 
+@emits("CAPABILITY")
 def check_capability(root: Path = ROOT) -> list[Defect]:
     """A tool named in agent frontmatter must be one a supported host provides."""
     contract = _contract(root, "harness-hosts.json")
@@ -121,6 +124,7 @@ def check_capability(root: Path = ROOT) -> list[Defect]:
     return defects
 
 
+@emits("STANDING")
 def check_standing(root: Path = ROOT) -> list[Defect]:
     """A standing token asserted in the harness must be one STATUS.yaml declares."""
     claims = _status_claims(root)
@@ -159,6 +163,7 @@ def _tracked(root: Path) -> set[str] | None:
     return set(out.split())
 
 
+@emits("REFERENCE")
 def check_reference(root: Path = ROOT) -> list[Defect]:
     """A repository address named in an orientation surface must resolve."""
     tracked = _tracked(root)
@@ -187,6 +192,7 @@ def check_reference(root: Path = ROOT) -> list[Defect]:
     return defects
 
 
+@emits("VOLATILE")
 def check_volatile(root: Path = ROOT) -> list[Defect]:
     """A description states what a skill is for, never what is built.
 
@@ -210,6 +216,7 @@ def check_volatile(root: Path = ROOT) -> list[Defect]:
     return defects
 
 
+@emits("RETIRED")
 def check_retired(root: Path = ROOT) -> list[Defect]:
     """An identifier cited in the harness must still resolve to a record."""
     contract = _contract(root, "harness-claims.json")
@@ -224,6 +231,7 @@ def check_retired(root: Path = ROOT) -> list[Defect]:
     return defects
 
 
+@emits("PROVENANCE")
 def check_provenance(root: Path = ROOT) -> list[Defect]:
     """A skill vendored from another repository must declare where it came from."""
     from sovharness.provenance import missing_fields
@@ -232,6 +240,7 @@ def check_provenance(root: Path = ROOT) -> list[Defect]:
             for path, fields in missing_fields(root)]
 
 
+@emits("SELFCLAIM")
 def check_selfclaim(root: Path = ROOT) -> list[Defect]:
     """The coverage contract must describe the kinds this module actually runs."""
     from sovharness.contract import check_contract
@@ -239,17 +248,10 @@ def check_selfclaim(root: Path = ROOT) -> list[Defect]:
             for where, detail in check_contract(root, KINDS)]
 
 
-#: Each check carries the kind it emits, so the kind set is a property of this
-#: tuple rather than a list beside it. Holding the names separately and calling
-#: that derived is the defect a witness proved by deleting check_volatile: the
-#: contract kept claiming VOLATILE coverage, a real VOLATILE defect passed, and
-#: SELFCLAIM stayed silent.
+#: Every kind this module runs. Each member was bound to its kind by @emits at
+#: its own definition, so membership is the only thing this tuple decides.
 ALL_CHECKS = (check_capability, check_standing, check_reference, check_volatile,
               check_retired, check_provenance, check_selfclaim)
-
-for _check, _kind in zip(ALL_CHECKS, ("CAPABILITY", "STANDING", "REFERENCE", "VOLATILE",
-                                      "RETIRED", "PROVENANCE", "SELFCLAIM")):
-    _check.kind = _kind
 
 
 def kinds() -> set[str]:
@@ -267,7 +269,7 @@ def grade(root: Path = ROOT) -> list[Defect]:
 def main() -> int:
     if len(sys.argv) > 1 and sys.argv[1] == "selfcheck":
         from sovharness.fixtures import selfcheck
-        return selfcheck(grade)
+        return selfcheck(grade, kinds())
     defects = grade()
     graded = len(_harness_files()) + 1
     if defects:

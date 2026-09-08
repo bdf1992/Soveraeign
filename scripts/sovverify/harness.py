@@ -21,7 +21,7 @@ HARNESS_CHECKS = (
           "for addresses - so no claim can supply the record that would support it; "
           ".claude/ is the surface every launched agent reads and was the only claim "
           "surface in this repository with no grader",
-          (".claude", "CLAUDE.md", "STATUS.yaml", "contracts/harness-hosts.json",
+          (".claude", "services", "CLAUDE.md", "STATUS.yaml", "contracts/harness-hosts.json",
            "contracts/harness-claims.json", "scripts/sov_harness.py", "scripts/sovharness")),
     Check("harness claim refusals fire",
           [sys.executable, "scripts/sov_harness.py", "selfcheck"], ROOT,

@@ -17,7 +17,8 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from sovverify.workflows import graded_steps, jobs_of, unretained  # noqa: E402
+from sovverify.retention import graded_steps, unretained  # noqa: E402
+from sovverify.workflows import jobs_of, strays_of  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 VERIFY = ROOT / ".github" / "workflows" / "verify.yml"
@@ -310,6 +311,86 @@ class VerificationRunsLeaveARecord(unittest.TestCase):
         self.assertEqual([], unretained(workflow(
             VERIFY_STEP.replace("obs.json", name)
             + RETAIN.replace("runner.temp }}/obs.json", "runner.temp }}/" + name))))
+
+
+class TheCountedRuleHoldsItsAttribution(unittest.TestCase):
+    """Counting conserves a total; a refusal needs the total attributed correctly.
+
+    A fourth witness showed that the reader did not drop a job head it could not
+    name - it merged those lines into the job above, which then carried their
+    steps, so the mention count and the graded count rose together and the counted
+    rule stayed silent. Two of these put a bare verifier into this repository's own
+    verify.yml and passed the whole suite.
+    """
+
+    def test_a_job_head_the_reader_cannot_name_refuses_on_its_own_account(self):
+        clean = workflow(VERIFY_STEP + RETAIN)
+        bare = "    runs-on: ubuntu-latest\n    steps:\n      - run: python scripts/verify.py\n"
+        with self.subTest(head="a space before the colon"):
+            self.assertNotEqual([], unretained(clean + "  shadow :\n" + bare))
+        with self.subTest(head="an explicit key"):
+            self.assertNotEqual([], unretained(clean + "  ? shadow\n  :\n" + bare))
+            self.assertTrue(any("cannot be named" in entry
+                                for entry in unretained(clean + "  ? shadow\n  :\n" + bare)))
+
+    def test_the_live_workflows_carry_no_stray_head(self):
+        for path in VerificationRunsLeaveARecord().workflows():
+            with self.subTest(file=path.name):
+                self.assertEqual([], strays_of(path.read_text(encoding="utf-8")))
+
+    def test_an_observe_flag_hidden_in_a_trailing_comment_is_refused(self):
+        """A trailing `#` is a comment in YAML and in shell alike, so a flag read
+        out of one is a bare verifier. Whole-line stripping was not enough."""
+        self.assertEqual(NO_OBSERVE, unretained(workflow(
+            '      - run: python scripts/verify.py  # --observe "$RUNNER_TEMP/obs.json"\n'
+            + RETAIN)))
+
+    def test_spellings_of_the_same_file_are_counted_as_that_file(self):
+        for label, line in (("a dot segment", "      - run: python scripts/./verify.py\n"),
+                            ("a doubled slash", "      - run: python scripts//verify.py\n"),
+                            ("a shell continuation",
+                             "      - run: |\n          python scripts/veri\\\n          fy.py\n")):
+            with self.subTest(spelling=label):
+                self.assertEqual(NO_OBSERVE, unretained(workflow(line + RETAIN)))
+
+    def test_the_keeper_is_found_by_its_own_path_and_not_by_substring(self):
+        for label, keeper in (
+                ("a commented-out path",
+                 RETAIN.replace("          path: ${{ runner.temp }}/obs.json\n",
+                                "          # path: ${{ runner.temp }}/obs.json\n")),
+                ("a longer name sharing the prefix", RETAIN.replace("/obs.json\n",
+                                                                    "/obs.json.bak\n")),
+                ("a match in the artifact name",
+                 RETAIN.replace("          name: probe\n",
+                                "          name: ${{ runner.temp }}/obs.json\n")
+                 .replace("          path: ${{ runner.temp }}/obs.json\n",
+                          "          path: elsewhere/x.json\n"))):
+            with self.subTest(keeper=label):
+                self.assertEqual(NOT_UPLOADED, unretained(workflow(VERIFY_STEP + keeper)))
+
+    def test_only_a_bare_false_reads_as_continue_on_error_being_off(self):
+        """`no` and `off` are YAML 1.1 booleans a 1.2 reader takes as strings, and
+        this key is evaluated as an expression. None of that is settled here, so
+        everything but a bare false fails closed."""
+        for value in ("no", "off", "'false'", '"false"'):
+            with self.subTest(refused=value):
+                self.assertEqual(NOBODY_LISTENS, unretained(workflow(
+                    VERIFY_STEP + RETAIN.replace(
+                        "        uses: actions/upload-artifact@v4\n",
+                        f"        continue-on-error: {value}\n"
+                        "        uses: actions/upload-artifact@v4\n"))))
+        for value in ("false", "False"):
+            with self.subTest(accepted=value):
+                self.assertEqual([], unretained(workflow(
+                    VERIFY_STEP + RETAIN.replace(
+                        "        uses: actions/upload-artifact@v4\n",
+                        f"        continue-on-error: {value}\n"
+                        "        uses: actions/upload-artifact@v4\n"))))
+
+    def test_the_verifier_named_only_in_a_comment_is_not_a_verify_step(self):
+        """The mirror of the refusals above: a comment must not invent a step."""
+        self.assertEqual([], unretained(workflow(
+            VERIFY_STEP + "      - run: echo done  # scripts/verify.py ran above\n" + RETAIN)))
 
 
 if __name__ == "__main__":

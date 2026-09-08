@@ -35,8 +35,6 @@
     "INTERNAL_TOKEN",
     "UNSUPPORTED_STANDING"
   ],
-  "historical_claims": {
-    "379 of his turns": "The statistic itself, quoted inside the rule that forbids it. sov-comms.md records what was removed and why; grading the record of a removed claim would demand deleting the evidence, which is the exemption scripts/sov_harness.py makes for drafts and contracts/counted-populations.json makes for dated readings. Removing this entry is correct only when no surface needs to name the defect any more."
-  },
-  "historical_claims_note": "Exact sentence fragments exempted from UNSOURCED_NUMBER, each with the reason. A fragment here suppresses only the sentence carrying it; every other number on the surface is still graded."
+  "historical_claims_note": "Exact sentence fragments exempted from UNSOURCED_NUMBER, each with its reason. Empty: the rewritten sov-comms.md no longer quotes the statistic it forbids, so the one entry that lived here was removed under its own condition. A fragment here suppresses only the sentence carrying it; every other number on the surface is graded.",
+  "historical_claims": {}
 }

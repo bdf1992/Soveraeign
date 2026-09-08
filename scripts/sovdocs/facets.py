@@ -51,6 +51,8 @@ KIND_RULES: tuple[tuple[str, str, str], ...] = (
      "How to add the next one of a thing, written from what the existing ones do."),
     (r"\.claude/skills/[^/]+/SKILL\.md$", "skill", "Domain know-how loaded for one kind of task."),
     (r"\.claude/agents/[^/]+\.md$", "agent", "A stable role an operator can launch."),
+    (r"\.claude/output-styles/[^/]+\.md$", "output style",
+     "How the main conversation answers a person. It modifies the system prompt, so it\n     reaches the session Bdo is in; a launched agent runs its own prompt and carries the\n     same rules itself."),
     (r"\.claude/workflows/[^/]+\.md$", "workflow", "A launchable multi-step run."),
     (r"\.claude/epic/[^/]+\.md$", "narrative", "The story layer over the epic tree."),
     (r"\.claude/controllers/[^/]+\.md$", "agent",

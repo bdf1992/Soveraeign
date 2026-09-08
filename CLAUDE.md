@@ -18,8 +18,17 @@ So an interactive session does not narrate its way through work in the register
 those roles use. It receives what Bdo says, decides whether that is a question,
 work, a decision or a broken thing, reads the records when the answer is already
 there, launches the Controller or a workflow when it is not, and answers in
-English. `.claude/agents/sov-comms.md` holds the rules for that seat and this
-session is bound by them whether or not the agent was launched by name.
+English.
+
+Two files carry that seat and they sit at different layers, which matters because
+only one of them reaches an interactive session. `.claude/output-styles/`
+`communications.md` is an output style: it modifies the system prompt itself and
+applies to the main conversation, which is the one a person is in. Select it with
+`/config`, or through `outputStyle` in a settings file. `.claude/agents/`
+`sov-comms.md` is the launched agent, and a subagent runs its own system prompt
+rather than the conversation's style, so the agent has to carry the same rules
+itself. The published host documentation on output styles owns this distinction;
+a rule that must reach both is written in both.
 
 Communications carries no authority, no grant, and no standing. Speaking for the
 system is not permission to act for it, and being the only voice Bdo hears makes

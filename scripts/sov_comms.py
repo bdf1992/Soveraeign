@@ -1,28 +1,33 @@
 #!/usr/bin/env python3
-"""Grade what the Communications seat asserts against the records owning it.
+"""Grade the provenance and carriage of what the Communications seat says.
 
-The Communications seat is the only participant that speaks to a person, and it
-was the only claim surface in this repository with no grader. Every rule it
-carries was an instruction, and nothing failed when one was broken: two agent
-definitions asserted a breakdown of 379 of the owner's turns for weeks, against
-no transcript corpus and no command producing any part of it, and the surface
-that repeats a claim to every launched participant is exactly the one where an
-ungraded claim does the most work.
+Be exact about what this is. Two of its three kinds check **provenance**, not truth:
+they ask whether a claim names something that could produce it, and they never run
+that thing or compare its output. `UNSOURCED_FIGURE` asks a paragraph carrying a
+behavioural figure to name something runnable that derives it; a paragraph that cites
+a plausible command and states a wrong number passes here, and calling that "graded
+truth" would be the same overclaim the kind exists to catch. Only
+`UNSUPPORTED_STANDING` reproduces: it runs `scripts/sov_standing.py` and compares a
+witnessed claim against what the witness records actually support.
 
-What this reaches and what it does not is declared in
-`contracts/comms-claims.json`. Three kinds run here. `UNSOURCED_NUMBER` asks a
-paragraph carrying a behavioural figure to name what produces it.
-`INTERNAL_TOKEN` refuses machine vocabulary in a message addressed to a person.
-`UNSUPPORTED_STANDING` grades a witnessed or ratified claim against
-`scripts/sov_standing.py`, which reads STATUS.yaml and the witness records by
-paths this module does not touch.
+The third kind, `UNGLOSSED_TOKEN`, is about disclosure rather than either. A machine
+type in front of a person is not forbidden - forbidding `WITNESSED` would leave a
+reader unable to read anything else in this repository - but its first use owes a
+gloss. `WITNESSED (independently confirmed)` teaches the vocabulary; a bare token
+assumes it. Only the first use is asked, and the check reads a marker followed by two
+words, so a determined non-gloss passes. It is a prompt to disclose, not a proof of
+having disclosed.
 
-This does not grade whether prose is clear, whether it answered the question, or
-whether it is too long. No oracle exists for any of the three, a phrasing list
-would be a declared case pretending to be a net, and a global brevity rule was
-measured as harmful upstream and withdrawn. What is enforceable here is truth,
-not style, and the contract's `not_covered` says so rather than leaving the
-silence to be read as coverage.
+What none of this reaches, and what the seat's real duty is, lives elsewhere.
+`contracts/seat-etiquette.json` owns the carriage duties - every judgement item,
+dissent, residual and stall a participant received is owed onward verbatim - and
+`scripts/witness_seats.py` enforces them over `contracts/seat-message.schema.json`.
+That is the modeled half of Communications and it is where standing is protected. This
+module grades the harness prose that sits outside any message envelope.
+
+Coverage and its limits are declared in `contracts/comms-claims.json`, including the
+three things no oracle here reaches: whether prose is clear, whether it answered the
+question, whether it is too long.
 
 Usage:
     python scripts/sov_comms.py                 grade the declared surfaces
@@ -36,7 +41,7 @@ from pathlib import Path
 import json
 import sys
 
-from sovcomms.kinds import (Defect, check_internal_token, check_unsourced_number,
+from sovcomms.kinds import (Defect, check_unglossed_token, check_unsourced_number,
                             check_unsupported_standing, supported_standing)
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -70,7 +75,7 @@ def grade_surfaces(root: Path = ROOT) -> list[Defect]:
 def grade_message(where: str, text: str, root: Path = ROOT) -> list[Defect]:
     """Grade one drafted message: every kind applies, internal vocabulary included."""
     return (check_unsourced_number(where, text)
-            + check_internal_token(where, text)
+            + check_unglossed_token(where, text)
             + check_unsupported_standing(where, text, supported_standing(root)))
 
 
@@ -83,15 +88,15 @@ def selfcheck() -> list[str]:
     """
     failures: list[str] = []
     cases = [
-        ("UNSOURCED_NUMBER",
+        ("UNSOURCED_FIGURE",
          "Measured against 379 of his turns: five were genuine owner rulings.",
          check_unsourced_number),
-        ("UNSOURCED_NUMBER",
+        ("UNSOURCED_FIGURE",
          "Across 68 measured sessions, 72% of all tool calls were reading.",
          check_unsourced_number),
-        ("INTERNAL_TOKEN",
+        ("UNGLOSSED_TOKEN",
          "The asset slice is WITNESSED and the rest is UNATTESTABLE.",
-         check_internal_token),
+         check_unglossed_token),
         ("UNSUPPORTED_STANDING",
          "proofing_service_status is WITNESSED as of this run.",
          lambda where, text: check_unsupported_standing(where, text, set())),
@@ -108,7 +113,7 @@ def selfcheck() -> list[str]:
         "Two of the six exit clauses are done and the rest are not.",
     ]
     for text in clean:
-        found = check_unsourced_number("selfcheck", text) + check_internal_token(
+        found = check_unsourced_number("selfcheck", text) + check_unglossed_token(
             "selfcheck", text)
         if found:
             failures.append(f"clean text refused: {text!r} -> {[d.kind for d in found]}")
@@ -164,7 +169,8 @@ def main(argv: list[str]) -> int:
         print(f"\nFAIL: {len(defects)} Communications claim(s) the record does not support. "
               f"Coverage and its limits are in contracts/comms-claims.json.")
         return 1
-    print("PASS: no unsourced figure, machine token or unsupported standing claim")
+    print("PASS: figures name a derivation, first uses are glossed, and no standing "
+          "claim outruns its witness record")
     return 0
 
 

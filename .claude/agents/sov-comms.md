@@ -48,37 +48,43 @@ End when the answer ends.
 
 ## Carrying work across a boundary
 
-A concern is an address for attribution and routing. It is not authority, the
-list of them is open, and an unfamiliar one is not a reason to refuse. When work
-belongs somewhere else, it routes; it is not blocked.
+This is the modeled half of the seat, and it is not this file's invention.
+`contracts/seat-message.schema.json` and `contracts/seat-etiquette.json` own it;
+`python scripts/witness_seats.py` enforces it in the gate. Read them before improvising.
 
-`python scripts/sov_session.py route --to <concern> --source <address>` records
-the crossing. The route carries no authority and no custody, and the destination
-still decides for itself whether to admit, queue, delegate, refuse or redirect.
+The act is `RENDER`, spoken in relation `FORWARDED`: another seat's statement, said
+again for a different reader. Two properties make it the whole of what this seat may
+do, and they are checked rather than asked for.
 
-What this seat adds to that command is the part a command cannot do: making the
-thing legible on the other side without changing what it is.
+- **It proposes no standing.** `RENDER` carries `standing_proposed: null`, and a
+  rendering that promotes what it renders is refused by `NO_STANDING_IN_RENDERING`.
+  Restating a builder's report in plain words does not make it confirmed. You may
+  change how something reads; you may never change what it is worth.
+- **The carriage comes through whole.** Every judgement item, dissent, residual and
+  proven stall you received is owed onward under its own `item_id`, byte-identical.
+  `CARRY_EVERYTHING_RECEIVED` refuses a drop and `NO_EDIT_IN_TRANSIT` refuses a
+  rewrite. Compress in the `body`, which no checker reads and which exists precisely
+  so that representation is free. Summarising someone's dissent in place of their
+  dissent is editing it.
 
-- **Carry the standing with the claim.** A worker's report crossing a boundary
-  arrives as a fact unless its standing crosses with it. Say what was built, what
-  an independent participant confirmed, and what nobody has checked, every time.
-  Laundering a self-report into a settled result is the defect this seat exists
-  to prevent, and distance from the source is what makes it easy.
-- **Translate the vocabulary, keep the distinctions.** Domains name the same
-  thing differently and different things alike. Say it in the receiving domain's
-  terms where a real synonym exists, and keep the source's term where the
-  difference is real. `CLASSIFICATION.md` owns the shared vocabulary; a term it
-  defines is never a synonym for convenience.
-- **Preserve the source.** Carry the source address and the source-session
-  lineage. A claim whose origin is lost cannot be checked by whoever receives it,
-  and an unattributed one is worth less than none.
-- **Carry the dissent.** A witness that disagreed, a residual, a defeating case
-  that failed: these cross with the result or the crossing is a lie of omission.
-- **Say what the receiver has to decide.** A crossing that does not name the
-  decision it is asking for becomes a queue entry nobody owns.
+`RENDER` travels either way along an edge the speaker already holds, and no further.
+That is what keeps this seat off the authority tree: a controller renders downward for
+its orchestrator, a worker's report is rendered upward for Bdo, and nothing routes
+through a central communicator. Addressing a seat you hold no edge to is refused.
 
-Route the work. Do not take the destination's custody, and do not silently
-retarget this session into the concern you routed to.
+Beyond what the contract checks, the work is judgement:
+
+- **Translate the vocabulary, keep the distinctions.** Gloss a machine type on first
+  use and then use it. Where `CLASSIFICATION.md` defines a difference, keep the term;
+  a synonym chosen for comfort loses the difference.
+- **Preserve the source.** Carry the source address and the source-session lineage.
+  A claim whose origin is lost cannot be checked by whoever receives it.
+- **Say what the receiver has to decide.** A crossing that names no decision becomes a
+  queue entry nobody owns.
+
+`python scripts/sov_session.py route --to <concern> --source <address>` records a
+cross-concern crossing. It carries no authority and no custody, and the destination
+still decides whether to admit, queue, delegate, refuse or redirect.
 
 ## Launching
 

@@ -17,14 +17,21 @@
     "carries"
   ],
   "properties": {
-    "message_schema": {"const": "soveraeign-seat-message/v1"},
+    "message_schema": {
+      "const": "soveraeign-seat-message/v1"
+    },
     "message_id": {
       "description": "Address of this message. Stable for a given speaker, subject, and act so a re-send does not mint a new statement.",
       "type": "string",
       "minLength": 1
     },
-    "sent_at": {"type": "string", "format": "date-time"},
-    "speaker": {"$ref": "#/$defs/speaker"},
+    "sent_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "speaker": {
+      "$ref": "#/$defs/speaker"
+    },
     "to_seat": {
       "description": "The seat this statement is addressed to, as a seat_id in the seat registry. Etiquette decides whether that seat is a legal recipient for this act.",
       "type": "string",
@@ -43,48 +50,94 @@
         "REFUSE",
         "STALL",
         "AGGREGATE",
+        "RENDER",
         "RATIFY",
         "ACCEPT",
         "HOLD"
       ]
     },
-    "subject": {"$ref": "#/$defs/subject"},
+    "subject": {
+      "$ref": "#/$defs/subject"
+    },
     "body": {
       "description": "What the speaker has to say. Freeform on purpose: prose, or any object shape the domain needs. Nothing in the governed set constrains it, and no checker reads inside it.",
       "anyOf": [
-        {"type": "object", "minProperties": 1},
-        {"type": "string", "minLength": 1}
+        {
+          "type": "object",
+          "minProperties": 1
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        }
       ]
     },
     "standing_proposed": {
       "description": "The artifact-standing transition this statement supports, or null when it supports none. A proposal, never a settlement: AGENTS.md reserves ratification to Bdo, and no seat may propose past its act ceiling.",
-      "anyOf": [{"$ref": "#/$defs/standing"}, {"type": "null"}]
+      "anyOf": [
+        {
+          "$ref": "#/$defs/standing"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
-    "carries": {"$ref": "#/$defs/carriage"},
+    "carries": {
+      "$ref": "#/$defs/carriage"
+    },
     "aggregates": {
-      "description": "message_ids this statement forwards. Required in practice for the AGGREGATE act, where the carriage duty is checked against these messages.",
+      "description": "message_ids this statement forwards. Required in practice for AGGREGATE and RENDER, where the carriage duty is checked against these messages.",
       "type": "array",
       "uniqueItems": true,
-      "items": {"type": "string", "minLength": 1}
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     }
   },
   "$defs": {
     "speaker": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["seat_id", "seat_type", "actor_id", "actor_kind", "relation_to_subject"],
+      "required": [
+        "seat_id",
+        "seat_type",
+        "actor_id",
+        "actor_kind",
+        "relation_to_subject"
+      ],
       "properties": {
-        "seat_id": {"type": "string", "minLength": 1},
-        "seat_type": {"enum": ["root", "control", "orchestration", "work"]},
+        "seat_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "seat_type": {
+          "enum": [
+            "root",
+            "control",
+            "orchestration",
+            "work"
+          ]
+        },
         "actor_id": {
           "description": "Attributable identity of whoever is speaking, including version. Never a credential.",
           "type": "string",
           "minLength": 1
         },
-        "actor_kind": {"enum": ["HUMAN", "MODEL"]},
+        "actor_kind": {
+          "enum": [
+            "HUMAN",
+            "MODEL"
+          ]
+        },
         "relation_to_subject": {
           "description": "How this speaker stands to the work it is speaking about. PERFORMED: I did it. INDEPENDENT: I did not do it and did not rely on the performer report. FORWARDED: I am carrying another seat statement onward. This single field is what makes self-witness detectable, per AGENTS.md: a build report cannot witness itself.",
-          "enum": ["PERFORMED", "INDEPENDENT", "FORWARDED"]
+          "enum": [
+            "PERFORMED",
+            "INDEPENDENT",
+            "FORWARDED"
+          ]
         },
         "grant_reference": {
           "description": "Opaque reference to the live grant this statement is made under, when one applies. Never the grant contents.",
@@ -96,46 +149,110 @@
     "subject": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["operation_id"],
+      "required": [
+        "operation_id"
+      ],
       "properties": {
-        "operation_id": {"type": "string", "minLength": 1},
+        "operation_id": {
+          "type": "string",
+          "minLength": 1
+        },
         "artifact_addresses": {
           "type": "array",
           "uniqueItems": true,
-          "items": {"type": "string", "minLength": 1}
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         },
-        "in_reply_to": {"type": "string", "minLength": 1}
+        "in_reply_to": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "standing": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["from", "to"],
+      "required": [
+        "from",
+        "to"
+      ],
       "properties": {
-        "from": {"enum": ["OPEN", "BUILT", "WITNESSED"]},
-        "to": {"enum": ["BUILT", "WITNESSED", "RATIFIED"]}
+        "from": {
+          "enum": [
+            "OPEN",
+            "BUILT",
+            "WITNESSED"
+          ]
+        },
+        "to": {
+          "enum": [
+            "BUILT",
+            "WITNESSED",
+            "RATIFIED"
+          ]
+        }
       }
     },
     "carriage": {
       "description": "What this statement carries onward. A receiving seat owes every item here to its own recipient, unedited (contracts/seat-etiquette.json, carriage_duties). Empty arrays are a claim that there is nothing to carry, not an omission.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["judgement_items", "dissents", "residuals", "stalls"],
+      "required": [
+        "judgement_items",
+        "dissents",
+        "residuals",
+        "stalls"
+      ],
       "properties": {
-        "judgement_items": {"type": "array", "items": {"$ref": "#/$defs/judgement_item"}},
-        "dissents": {"type": "array", "items": {"$ref": "#/$defs/dissent"}},
-        "residuals": {"type": "array", "items": {"$ref": "#/$defs/residual"}},
-        "stalls": {"type": "array", "items": {"$ref": "#/$defs/stall"}}
+        "judgement_items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/judgement_item"
+          }
+        },
+        "dissents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dissent"
+          }
+        },
+        "residuals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/residual"
+          }
+        },
+        "stalls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/stall"
+          }
+        }
       }
     },
     "judgement_item": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["item_id", "raised_by", "question"],
+      "required": [
+        "item_id",
+        "raised_by",
+        "question"
+      ],
       "properties": {
-        "item_id": {"type": "string", "minLength": 1},
-        "raised_by": {"type": "string", "minLength": 1},
-        "question": {"type": "string", "minLength": 1},
+        "item_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "raised_by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1
+        },
         "gates": {
           "description": "The exact transition this question gates, per decisions/0031-transition-local-gates.md. Absent means it gates nothing and blocks no work.",
           "type": "string",
@@ -146,22 +263,52 @@
     "dissent": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["item_id", "raised_by", "claim", "dissent"],
+      "required": [
+        "item_id",
+        "raised_by",
+        "claim",
+        "dissent"
+      ],
       "properties": {
-        "item_id": {"type": "string", "minLength": 1},
-        "raised_by": {"type": "string", "minLength": 1},
-        "claim": {"type": "string", "minLength": 1},
-        "dissent": {"type": "string", "minLength": 1}
+        "item_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "raised_by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "claim": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dissent": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "residual": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["item_id", "raised_by", "residual"],
+      "required": [
+        "item_id",
+        "raised_by",
+        "residual"
+      ],
       "properties": {
-        "item_id": {"type": "string", "minLength": 1},
-        "raised_by": {"type": "string", "minLength": 1},
-        "residual": {"type": "string", "minLength": 1}
+        "item_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "raised_by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "residual": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "stall": {
@@ -180,15 +327,41 @@
         "reachable_alternative"
       ],
       "properties": {
-        "item_id": {"type": "string", "minLength": 1},
-        "raised_by": {"type": "string", "minLength": 1},
-        "held_ticket": {"type": "string", "minLength": 1},
-        "transition": {"type": "string", "minLength": 1},
-        "missing_precondition": {"type": "string", "minLength": 1},
-        "governing_rule": {"type": "string", "minLength": 1},
-        "required_authority": {"type": "string", "minLength": 1},
-        "unblock_condition": {"type": "string", "minLength": 1},
-        "reachable_alternative": {"const": "NONE"}
+        "item_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "raised_by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "held_ticket": {
+          "type": "string",
+          "minLength": 1
+        },
+        "transition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "missing_precondition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "governing_rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required_authority": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unblock_condition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reachable_alternative": {
+          "const": "NONE"
+        }
       }
     }
   }

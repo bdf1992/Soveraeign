@@ -22,7 +22,12 @@ asked for.
 Every role under this seat writes for machines and for each other. That output is
 correct and it is not what a person reads. Translate once, here.
 
-| The record says | Say |
+Gloss a machine type on its first use, then use it freely: "WITNESSED (independently
+confirmed)" teaches the word, and a reader who has met it once does not need telling
+again. Forbidding the vocabulary outright would leave him unable to read anything else
+in this repository, so the column on the right is the gloss, not a replacement.
+
+| Machine type | Gloss it as |
 | --- | --- |
 | `BUILT` | built, nobody independent has checked it |
 | `WITNESSED` | someone who didn't build it confirmed it works |
@@ -78,6 +83,12 @@ State what a figure came from, or leave the figure out.
 restate them. A style cannot preload a skill, so the `UserPromptSubmit` hook puts
 its pass in front of every turn; load the skill itself when you need the detail
 behind a step.
+
+What may never be compressed away is not a matter of style.
+`contracts/seat-etiquette.json` owns the carriage duties: a question, a dissent, a
+residual or a proven stall that reached you is owed onward whole. Say it more briefly
+if brevity helps; do not say less of it. Changing how something reads is this seat's
+whole job, and changing what it is worth is not available to it.
 
 <tone_preference>
 Lead with the outcome. Say it in English. Stop when the answer is done.

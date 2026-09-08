@@ -6,7 +6,7 @@
     "CLAUDE.md",
     ".claude/agents/sov-comms.md"
   ],
-  "summary": "What scripts/sov_comms.py grades. The Communications seat is the only participant that speaks to a person, and until this contract it was the only claim surface in the repository with no grader: every rule it carries was an instruction and nothing failed when one was broken. Each kind here compares an extracted claim against a record that owns it, so each generalizes past the defect that motivated it rather than matching a list of phrasings.",
+  "summary": "What scripts/sov_comms.py grades on the harness prose surface, and - said plainly because the first version of this file did not - what kind of grading each kind is. UNSOURCED_FIGURE and UNGLOSSED_TOKEN are provenance and disclosure checks: they ask whether a claim names a derivation and whether a machine type is explained on first use. Neither reproduces a measurement, so a cited-but-wrong figure passes. Only UNSUPPORTED_STANDING reproduces, by running scripts/sov_standing.py and comparing. This module does not own the Communications seat's duty: contracts/seat-etiquette.json owns the carriage duties and scripts/witness_seats.py enforces them, which is where standing is actually protected across a crossing.",
   "subjects": {
     "surfaces": [
       ".claude/agents/sov-comms.md",
@@ -16,25 +16,27 @@
       ".claude/agents/sov-witness.md",
       ".claude/agents/sov-worker.md"
     ],
-    "surfaces_why": "Agent definitions are read by launched participants carrying no other context, so a false claim in one is repeated by everything it launches. This is the surface the turn-count statistic survived in. Grading every role's definition here is a truth check, not a style one: Controller, Orchestrator, Worker and Witness write for machines and their register is correct. INTERNAL_TOKEN, the one kind that is about register, deliberately does not run over these files at all.",
+    "surfaces_why": "Agent definitions are read by launched participants carrying no other context, so a false claim in one is repeated by everything it launches. This is the surface the turn-count statistic survived in. Grading every role's definition here is a truth check, not a style one: Controller, Orchestrator, Worker and Witness write for machines and their register is correct. UNGLOSSED_TOKEN, the one kind that is about register, deliberately does not run over these files at all.",
     "message": "Text submitted through `check`, which is how the seat grades a draft before sending it. A message is not in the tree, so it is graded on submission or not at all."
   },
   "coverage": {
-    "UNSOURCED_NUMBER": "A quantified claim about how participants, sessions or the owner behaved, in a paragraph that names no command, path or record producing the figure. Generalizes: any number carrying a measurement marker fails unless its own paragraph cites what derives it, so an invented statistic nobody anticipated fails without being listed. Motivated by `sov.md` and `sov-controller.md` asserting five genuine rulings and 78 instances of the word 'go' across 379 of Bdo's turns, with no transcript corpus in the repository and no command producing any part of it.",
-    "INTERNAL_TOKEN": "Repository type vocabulary in text addressed to a person: standing tokens, refusal codes, seam names and effect classes. These are machine types and a person reading one has to translate it. Applies to `check` submissions only; repository documents legitimately carry the vocabulary they define.",
-    "UNSUPPORTED_STANDING": "A claim that a named subject is WITNESSED or RATIFIED, graded against `python scripts/sov_standing.py`, which reads STATUS.yaml and the witness records by separate paths. Whole-token comparison with NOT read as denial, because NOT_WITNESSED contains WITNESSED (CLAUDE.md trap T3)."
+    "UNSOURCED_FIGURE": "A quantified claim about how participants, sessions or the owner behaved, in a paragraph that names no command, path or record producing the figure. Generalizes: any number carrying a measurement marker fails unless its own paragraph cites what derives it, so an invented statistic nobody anticipated fails without being listed. Motivated by `sov.md` and `sov-controller.md` asserting five genuine rulings and 78 instances of the word 'go' across 379 of Bdo's turns, with no transcript corpus in the repository and no command producing any part of it. Provenance only: the named command is never run and its output is never compared.",
+    "UNGLOSSED_TOKEN": "A repository type token used in front of a person whose first use carries no gloss. Progressive disclosure rather than prohibition: WITNESSED (independently confirmed) passes and teaches the vocabulary, a bare WITNESSED does not, and later uses are free. The gloss test reads a marker followed by two words, so a determined non-gloss passes; this prompts disclosure and does not prove it.",
+    "UNSUPPORTED_STANDING": "A claim that a named subject is WITNESSED or RATIFIED, graded against `python scripts/sov_standing.py`, which reads STATUS.yaml and the witness records by separate paths. Whole-token comparison with NOT read as denial, because NOT_WITNESSED contains WITNESSED (CLAUDE.md trap T3). This kind does reproduce: it runs the command and compares."
   },
   "not_covered": {
     "readability": "Whether prose is clear. No oracle exists and a phrasing list would be a declared case pretending to be a net, which is the mistake that withdrew two kinds from scripts/sov_harness.py.",
     "responsiveness": "Whether the text answered the question that was asked. The question is not in the tree.",
     "length": "Whether the text is exhausting. A global terseness rule was measured as harmful and reverted upstream; brevity is not the property worth enforcing here, truth is.",
-    "tone": "Whether the register suits the reader."
+    "tone": "Whether the register suits the reader.",
+    "semantic_truth": "Whether a sourced figure is the right figure. Reproducing every measurement a paragraph cites is a different and larger check than this one, and naming provenance 'truth' is the overclaim that motivated saying so here.",
+    "carriage": "Whether standing, dissent, residuals and stalls survived a crossing. That is owned by contracts/seat-etiquette.json and enforced by scripts/witness_seats.py over real seat messages, not by reading prose."
   },
   "refusals": [
-    "UNSOURCED_NUMBER",
-    "INTERNAL_TOKEN",
+    "UNSOURCED_FIGURE",
+    "UNGLOSSED_TOKEN",
     "UNSUPPORTED_STANDING"
   ],
-  "historical_claims_note": "Exact sentence fragments exempted from UNSOURCED_NUMBER, each with its reason. Empty: the rewritten sov-comms.md no longer quotes the statistic it forbids, so the one entry that lived here was removed under its own condition. A fragment here suppresses only the sentence carrying it; every other number on the surface is graded.",
+  "historical_claims_note": "Exact sentence fragments exempted from UNSOURCED_FIGURE, each with its reason. Empty: the rewritten sov-comms.md no longer quotes the statistic it forbids, so the one entry that lived here was removed under its own condition. A fragment here suppresses only the sentence carrying it; every other number on the surface is graded.",
   "historical_claims": {}
 }

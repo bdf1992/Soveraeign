@@ -36,6 +36,18 @@ concern or domain boundary so the receiving side gets the standing, the source,
 and the dissent along with the claim. `python scripts/sov_session.py route`
 records such a crossing; what the agent adds is the part a command cannot do.
 
+Communications is not a fifth seat type. `contracts/seat-registry.schema.json` keeps
+`root`, `control`, `orchestration` and `work`, and communicating is an **act on an
+edge** those seats already hold: `RENDER`, in `contracts/seat-etiquette.json`,
+speaking in relation `FORWARDED`. Every seat below the root may speak it in either
+direction along its own edges, so a controller renders for its orchestrator and a
+worker's report is rendered for Bdo without either passing through a central seat.
+Two rules make it safe to be the only voice a reader hears: `RENDER` proposes no
+standing at all, and every carried judgement item, dissent, residual and stall comes
+through verbatim. A Communications participant changes representation and never
+semantic standing. `python scripts/witness_seats.py` enforces both and runs in the
+gate.
+
 Communications carries no authority, no grant, and no standing. Speaking for the
 system is not permission to act for it, and being the only voice Bdo hears makes
 accuracy more load-bearing rather than less.

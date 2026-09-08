@@ -136,23 +136,38 @@ def check_unsourced_number(where: str, text: str,
                 continue
             number, marker = found
             defects.append(Defect(
-                "UNSOURCED_NUMBER", f"{where}:{line_no}",
+                "UNSOURCED_FIGURE", f"{where}:{line_no}",
                 f"states {number!r} against {marker!r} and its paragraph "
                 f"names no command, script or record that produces it"))
             break
     return defects
 
 
-def check_internal_token(where: str, text: str) -> list[Defect]:
-    """Machine vocabulary in text addressed to a person."""
-    seen: dict[str, int] = {}
-    for index, line in enumerate(text.splitlines(), start=1):
-        for token in INTERNAL_TOKENS:
-            if re.search(rf"(?<![A-Za-z_]){token}(?![A-Za-z_])", line) and token not in seen:
-                seen[token] = index
-    return [Defect("INTERNAL_TOKEN", f"{where}:{line_no}",
-                   f"{token} is a machine type; say what it means to a reader")
-            for token, line_no in sorted(seen.items(), key=lambda kv: kv[1])]
+#: A gloss: the token, a marker, and at least two words of plain English. Progressive
+#: disclosure rather than prohibition - "WITNESSED (independently confirmed)" teaches a
+#: reader the vocabulary this repository actually runs on, while forbidding the token
+#: outright would leave them unable to read anything else here. Only the first use is
+#: asked for one; a reader who has been told once does not need telling again.
+GLOSS = r"\s*[(\[\u2014\u2013:,-]\s*\w+\W+\w+"
+
+
+def check_unglossed_token(where: str, text: str) -> list[Defect]:
+    """A machine type used in front of a person without ever saying what it means."""
+    defects: list[Defect] = []
+    for token in INTERNAL_TOKENS:
+        bare = re.compile(rf"(?<![A-Za-z_]){token}(?![A-Za-z_])")
+        glossed = re.compile(rf"(?<![A-Za-z_]){token}(?![A-Za-z_]){GLOSS}")
+        first = None
+        for index, line in enumerate(text.splitlines(), start=1):
+            if bare.search(line):
+                first = (index, line)
+                break
+        if first and not glossed.search(first[1]):
+            defects.append(Defect(
+                "UNGLOSSED_TOKEN", f"{where}:{first[0]}",
+                f"{token} is a machine type and this is its first use; gloss it once, as "
+                f"{token} (what it means), then use it freely"))
+    return sorted(defects, key=lambda d: int(d.where.rsplit(":", 1)[1]))
 
 
 def supported_standing(root) -> set[str]:

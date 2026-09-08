@@ -104,6 +104,13 @@
       "direction": "DOWNWARD",
       "requires_relation": "INDEPENDENT",
       "standing_ceiling": null
+    },
+    "RENDER": {
+      "means": "Here is another seat's statement, said again for a different reader.",
+      "plain_english": "Communications. The speaker changes how something reads - translating vocabulary, compressing, adding context for the audience - and changes nothing about what it is. The rendering goes in the body, which no checker reads. Everything carried comes through verbatim, and the act proposes no standing at all, so a rendering cannot promote what it renders. This is the only act available on every edge in both directions, because meaning is lost between a controller and a worker as readily as between a controller and the root.",
+      "direction": "ADJACENT",
+      "requires_relation": "FORWARDED",
+      "standing_ceiling": null
     }
   },
   "seats": {
@@ -123,7 +130,8 @@
         "AGGREGATE",
         "ASK",
         "REFUSE",
-        "STALL"
+        "STALL",
+        "RENDER"
       ]
     },
     "orchestration": {
@@ -134,7 +142,8 @@
         "AGGREGATE",
         "ASK",
         "REFUSE",
-        "STALL"
+        "STALL",
+        "RENDER"
       ]
     },
     "work": {
@@ -146,14 +155,14 @@
         "UNATTESTABLE",
         "ASK",
         "REFUSE",
-        "STALL"
+        "STALL",
+        "RENDER"
       ]
     }
   },
   "carriage_duties": [
     {
       "duty": "CARRY_EVERYTHING_RECEIVED",
-      "applies_to_act": "AGGREGATE",
       "kinds": [
         "judgement_items",
         "dissents",
@@ -161,11 +170,14 @@
         "stalls"
       ],
       "rule": "Every item_id present in an aggregated message must be present in the aggregate.",
-      "plain_english": "A listener owes its own listener everything it heard. Dropping a question, a dissent, a residual, or a proven stall is the failure this whole contract exists to catch."
+      "plain_english": "A listener owes its own listener everything it heard. Dropping a question, a dissent, a residual, or a proven stall is the failure this whole contract exists to catch.",
+      "applies_to_acts": [
+        "AGGREGATE",
+        "RENDER"
+      ]
     },
     {
       "duty": "NO_EDIT_IN_TRANSIT",
-      "applies_to_act": "AGGREGATE",
       "kinds": [
         "judgement_items",
         "dissents",
@@ -173,7 +185,11 @@
         "stalls"
       ],
       "rule": "A carried item forwarded under an existing item_id must be byte-identical to the item it forwards.",
-      "plain_english": "Summarising someone else's dissent is editing it. Add your own item if you have something to add; do not rewrite theirs."
+      "plain_english": "Summarising someone else's dissent is editing it. Add your own item if you have something to add; do not rewrite theirs.",
+      "applies_to_acts": [
+        "AGGREGATE",
+        "RENDER"
+      ]
     },
     {
       "duty": "NO_SELF_WITNESS",
@@ -181,9 +197,18 @@
       "rule": "No statement whose relation_to_subject is INDEPENDENT may be spoken by an actor_id that earlier spoke a PERFORMED statement about the same operation_id.",
       "plain_english": "A build report cannot witness itself, and the same actor cannot change hats to say so.",
       "applies_to_relation": "INDEPENDENT"
+    },
+    {
+      "duty": "NO_STANDING_IN_RENDERING",
+      "applies_to_acts": [
+        "RENDER"
+      ],
+      "kinds": [],
+      "rule": "A RENDER statement carries standing_proposed null.",
+      "plain_english": "A Communications participant may change representation and may not change semantic standing. Restating a builder's report in plain words does not make it witnessed, and the reader of a rendering is owed the same standing the original carried."
     }
   ],
-  "generative_rule": "A seat type absent from `seats` has no admissible acts, and an act absent from `acts` cannot be spoken. Adding a seat or an act is a change to this table alone: the message schema, the fixtures format, and the checker all read from here. Nothing in this file constrains a message body, and no checker reads inside one.",
+  "generative_rule": "A seat type absent from `seats` has no admissible acts, and an act absent from `acts` cannot be spoken. Adding a seat or an act is a change to this table alone: the message schema, the fixtures format, and the checker all read from here. Nothing in this file constrains a message body, and no checker reads inside one. Communications is an act on an edge, not a seat type: no participant is added to the topology to carry meaning, and every seat renders on the edges it already holds.",
   "not_in_scope": [
     "The content, shape, length, or wording of a message body.",
     "Whether a statement is true. Etiquette is about who may say a thing, never about whether it is so.",

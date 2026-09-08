@@ -48,25 +48,50 @@ class Parsing(unittest.TestCase):
         self.assertEqual(0, run.returncode)
 
 
-class Emission(unittest.TestCase):
-    """What lands in the window."""
+def configured_command() -> list[str]:
+    """The exact argv the harness runs, read from settings rather than reconstructed."""
+    settings = json.loads((ROOT / ".claude" / "settings.json").read_text(encoding="utf-8"))
+    entry = settings["hooks"]["UserPromptSubmit"][0]["hooks"][0]
+    return [entry["command"], *entry["args"]]
 
-    def test_the_payload_is_the_documented_shape(self):
-        run = subprocess.run([sys.executable, str(HOOK)], capture_output=True, text=True,
-                             cwd=ROOT, timeout=30)
+
+class Emission(unittest.TestCase):
+    """What lands in the window, run the way the harness runs it.
+
+    These invoke the argv in `settings.json`, not the module. Testing the module
+    passed while the configured command was `python -c unslop_reminder.py turn` -
+    the bootstrap source had been replaced by the literal `-c` flag - so the hook
+    raised NameError and emitted nothing on every turn, and nothing said so. A
+    check that cannot see the thing it grades is the failure class `sov.md` names
+    as this repository's most expensive.
+    """
+
+    def test_the_configured_command_emits_the_documented_shape(self):
+        run = subprocess.run(configured_command(), capture_output=True, text=True,
+                             cwd=ROOT, timeout=30, input="")
+        self.assertEqual(0, run.returncode, run.stderr)
         payload = json.loads(run.stdout)
         self.assertEqual("UserPromptSubmit",
                          payload["hookSpecificOutput"]["hookEventName"])
-        self.assertIn("additionalContext", payload["hookSpecificOutput"])
+        self.assertIn("unslop", payload["hookSpecificOutput"]["additionalContext"])
+
+    def test_the_configured_command_works_from_a_subdirectory(self):
+        """The bootstrap walks up to find .claude/hooks; a persisted cd must not break it."""
+        run = subprocess.run(configured_command(), capture_output=True, text=True,
+                             cwd=ROOT / "scripts", timeout=30, input="")
+        self.assertEqual(0, run.returncode, run.stderr)
+        self.assertIn("additionalContext", run.stdout)
+
+    def test_the_configured_command_is_silent_outside_the_repository(self):
+        """Nothing to find is not a failure: exit 0, emit nothing, never break a session."""
+        run = subprocess.run(configured_command(), capture_output=True, text=True,
+                             cwd=ROOT.parent, timeout=30, input="")
+        self.assertEqual(0, run.returncode)
+        self.assertEqual("", run.stdout.strip())
 
     def test_the_reminder_names_the_owning_skill(self):
         text = reminder(["Keep it short."])
         self.assertIn(".claude/skills/unslop/SKILL.md", text)
-
-    def test_the_hook_is_registered_for_every_turn(self):
-        settings = json.loads((ROOT / ".claude" / "settings.json").read_text(encoding="utf-8"))
-        registered = json.dumps(settings["hooks"]["UserPromptSubmit"])
-        self.assertIn("unslop_reminder.py", registered)
 
 
 if __name__ == "__main__":

@@ -16,11 +16,11 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from sovcomms.kinds import (check_internal_token, check_unsourced_number,
+from sovcomms.kinds import (check_unglossed_token, check_unsourced_number,
                             check_unsupported_standing)
 
 
-class UnsourcedNumber(unittest.TestCase):
+class UnsourcedFigure(unittest.TestCase):
     """A behavioural figure must name what derives it, in its own paragraph."""
 
     def test_a_measurement_with_no_producer_is_refused(self):
@@ -57,20 +57,28 @@ class UnsourcedNumber(unittest.TestCase):
                                                        frozenset({"379 of his turns"}))))
 
 
-class InternalToken(unittest.TestCase):
-    """Machine vocabulary in text addressed to a person."""
+class UnglossedToken(unittest.TestCase):
+    """A machine type may be used in front of a person once it has been explained."""
 
-    def test_a_standing_type_is_refused(self):
-        found = check_internal_token("t", "The slice is WITNESSED.")
-        self.assertEqual(["INTERNAL_TOKEN"], [d.kind for d in found])
+    def test_a_bare_first_use_is_refused(self):
+        found = check_unglossed_token("t", "The slice is WITNESSED.")
+        self.assertEqual(["UNGLOSSED_TOKEN"], [d.kind for d in found])
+
+    def test_a_glossed_first_use_passes(self):
+        """Progressive disclosure: teaching the vocabulary beats forbidding it."""
+        self.assertEqual([], check_unglossed_token(
+            "t", "The slice is WITNESSED (someone who did not build it confirmed it)."))
+
+    def test_later_bare_uses_are_free_once_the_first_was_glossed(self):
+        text = "It is WITNESSED (independently confirmed).\nStill WITNESSED today."
+        self.assertEqual([], check_unglossed_token("t", text))
 
     def test_plain_english_is_not_refused(self):
-        text = "Someone who didn't build it confirmed it works."
-        self.assertEqual([], check_internal_token("t", text))
+        self.assertEqual([], check_unglossed_token(
+            "t", "Someone who didn't build it confirmed it works."))
 
     def test_each_token_is_reported_once(self):
-        text = "WITNESSED here, WITNESSED there, and UNATTESTABLE everywhere."
-        self.assertEqual(2, len(check_internal_token("t", text)))
+        self.assertEqual(2, len(check_unglossed_token("t", "WITNESSED here, and UNATTESTABLE too.")))
 
 
 class UnsupportedStanding(unittest.TestCase):

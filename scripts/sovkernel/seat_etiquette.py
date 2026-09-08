@@ -29,6 +29,17 @@ def _direction_defects(message: dict[str, Any], act: dict[str, Any],
     target_id = message["to_seat"]
     if target_id not in seats:
         return [f"{label}: addressed to {target_id}, which is not a seat in the topology"]
+    if act["direction"] == "ADJACENT":
+        # Communications travels either way along an edge the speaker already holds, and
+        # never to a seat it has no relationship with. That is what keeps rendering on an
+        # edge rather than making it another level: no new authority is implied by being
+        # able to speak in both directions, because the edges are the ones already owned.
+        if seats[speaker_id].get("owner_seat") == target_id:
+            return []
+        if seats[target_id].get("owner_seat") == speaker_id:
+            return []
+        return [f"{label}: {message['act']} travels along an edge {speaker_id} holds, and "
+                f"it holds no edge to {target_id}"]
     if act["direction"] == "UPWARD":
         owner = seats[speaker_id].get("owner_seat")
         if owner is None:
@@ -141,8 +152,15 @@ def _duty_defects(message: dict[str, Any], earlier: list[dict[str, Any]],
         if name == "NO_SELF_WITNESS":
             if message["speaker"]["relation_to_subject"] == duty.get("applies_to_relation"):
                 defects.extend(_self_witness_defects(message, earlier, label))
+        elif name == "NO_STANDING_IN_RENDERING":
+            if message["act"] in duty.get("applies_to_acts", []) \
+                    and message.get("standing_proposed") is not None:
+                proposed = message["standing_proposed"]
+                defects.append(f"{label}: {message['act']} changes representation, never "
+                               f"standing, but this one proposes {proposed['from']} -> "
+                               f"{proposed['to']}")
         elif name in {"CARRY_EVERYTHING_RECEIVED", "NO_EDIT_IN_TRANSIT"}:
-            if message["act"] != duty.get("applies_to_act"):
+            if message["act"] not in duty.get("applies_to_acts", []):
                 continue
             (carry_kinds if name == "CARRY_EVERYTHING_RECEIVED" else no_edit_kinds).extend(
                 duty["kinds"])

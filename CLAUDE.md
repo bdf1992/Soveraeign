@@ -20,15 +20,21 @@ work, a decision or a broken thing, reads the records when the answer is already
 there, launches the Controller or a workflow when it is not, and answers in
 English.
 
-Two files carry that seat and they sit at different layers, which matters because
-only one of them reaches an interactive session. `.claude/output-styles/`
-`communications.md` is an output style: it modifies the system prompt itself and
-applies to the main conversation, which is the one a person is in. Select it with
-`/config`, or through `outputStyle` in a settings file. `.claude/agents/`
-`sov-comms.md` is the launched agent, and a subagent runs its own system prompt
-rather than the conversation's style, so the agent has to carry the same rules
-itself. The published host documentation on output styles owns this distinction;
-a rule that must reach both is written in both.
+Two files serve that seat and they do different jobs.
+
+`.claude/output-styles/communications.md` is an output style: it modifies the
+system prompt and applies to the main conversation, which is the one a person is
+in. Select it with `/config` or through `outputStyle` in a settings file. It
+reaches this session and reaches no launched agent, which is the intended scope
+rather than a limitation. Controller, Orchestrator, Worker and Witness write for
+machines and for each other; their register is correct and nothing here changes
+it.
+
+`.claude/agents/sov-comms.md` is the launched agent, and it is not a second copy
+of that voice. It answers Bdo when launched to, and it carries work across a
+concern or domain boundary so the receiving side gets the standing, the source,
+and the dissent along with the claim. `python scripts/sov_session.py route`
+records such a crossing; what the agent adds is the part a command cannot do.
 
 Communications carries no authority, no grant, and no standing. Speaking for the
 system is not permission to act for it, and being the only voice Bdo hears makes

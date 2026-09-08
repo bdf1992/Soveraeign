@@ -16,7 +16,7 @@
       ".claude/agents/sov-witness.md",
       ".claude/agents/sov-worker.md"
     ],
-    "surfaces_why": "Agent definitions are read by launched participants carrying no other context, so a false claim in one is repeated by everything it launches. This is the surface the 379-turns statistic survived in.",
+    "surfaces_why": "Agent definitions are read by launched participants carrying no other context, so a false claim in one is repeated by everything it launches. This is the surface the turn-count statistic survived in. Grading every role's definition here is a truth check, not a style one: Controller, Orchestrator, Worker and Witness write for machines and their register is correct. INTERNAL_TOKEN, the one kind that is about register, deliberately does not run over these files at all.",
     "message": "Text submitted through `check`, which is how the seat grades a draft before sending it. A message is not in the tree, so it is graded on submission or not at all."
   },
   "coverage": {

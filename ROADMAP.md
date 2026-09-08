@@ -405,7 +405,7 @@ finds the skill that covers it, resolves the services and assets it needs, and
 carries the work.
 
 **Now.** A skill contract and registry: what a skill declares, what it depends
-on, and what evidence it owes. Thirty-one skills sit under `.claude/skills`
+on, and what evidence it owes. Thirty-two skills sit under `.claude/skills`
 with no contract between them and no grader anywhere in `scripts/`, and the work
 is a schema plus a grader over a closed population - the same shape
 `contracts/service-manifest.schema.json` and `python scripts/sov_service.py

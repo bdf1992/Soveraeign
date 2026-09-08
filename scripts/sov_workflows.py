@@ -22,7 +22,7 @@ Three readings now, each of what the file is rather than what anyone says about 
     endings      the repository pins LF in .gitattributes, and lint never saw these files
     concat       `'a' + + 'b'`, a syntax-clean expression that yields NaN inside a prompt
 
-`sovharness/lexer.py` owns the first reading and states its own limit: it is a lexer, so a
+`sovprompts/lexer.py` owns the first reading and states its own limit: it is a lexer, so a
 grammar error whose tokens are all well formed passes it.
 
 A grammar reading closes that gap where a JavaScript engine is present, and the mode
@@ -49,7 +49,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
-from sovharness.lexer import broken_concatenation, unreadable  # noqa: E402
+from sovprompts.lexer import broken_concatenation, unreadable  # noqa: E402
 
 WORKFLOWS = ROOT / ".claude" / "workflows"
 NODE_UNAVAILABLE = "node absent: grammar unread, only the lexer refused or passed this file"

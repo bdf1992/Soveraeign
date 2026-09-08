@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import sov_workflows  # noqa: E402
-from sovharness.lexer import unreadable  # noqa: E402
+from sovprompts.lexer import unreadable  # noqa: E402
 
 CLEAN = "const x = await agent('a prompt', { agentType: 'sov-witness' })\n"
 

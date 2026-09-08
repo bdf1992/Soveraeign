@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import re
 
-from sovharness.render import Unreadable, _body
+from sovprompts.render import Unreadable, _body
 
 AGENT_TYPE = re.compile(r"agentType:\s*(?:['\"](?P<lit>[a-z-]+)['\"]|(?P<ref>[A-Za-z_$][\w$]*))")
 

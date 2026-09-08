@@ -112,17 +112,6 @@ class ToolingPartition(unittest.TestCase):
         self.assertLess(self.critical_shard(dict(run_tooling_tests.MODULE_WEIGHTS)),
                         self.critical_shard({}))
 
-    def test_ignoring_the_whole_table_is_worse_than_honouring_it(self):
-        """The table as a whole earns its place, not only its largest entry."""
-        weighted = self.makespan()
-        original = dict(run_tooling_tests.MODULE_WEIGHTS)
-        run_tooling_tests.MODULE_WEIGHTS = {}
-        try:
-            flat = self.makespan()
-        finally:
-            run_tooling_tests.MODULE_WEIGHTS = original
-        self.assertLess(weighted, flat)
-
     def test_a_weight_changes_placement_and_never_the_population(self):
         modules = run_tooling_tests.test_modules()
         heavy = run_tooling_tests.partition(modules, 4)

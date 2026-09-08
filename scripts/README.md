@@ -1,6 +1,6 @@
 # Command surface
 
-Sixty `sov_*.py` entrypoints plus the two verification commands. This is the
+Sixty-three `sov_*.py` entrypoints plus the two verification commands. This is the
 whole of how the node is operated from a terminal, and it is the index
 `contracts/publication-surface.json` requires: an entrypoint absent from this
 page is unreachable by anyone who did not write it.

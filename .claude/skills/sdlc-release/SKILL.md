@@ -1,6 +1,6 @@
 ---
 name: sdlc-release
-description: Release domain competence for the SDLC loop - draft release notes, documentation, and marketing artifacts locally, and visibly refuse every external publication step while Phase-I boundaries stand. Use when a concern's operation prepares released or published material.
+description: Release domain competence for the SDLC loop - draft release notes, documentation, and marketing artifacts locally, and visibly refuse every external publication step the publication boundary reserves to the owner. Use when a concern's operation prepares released or published material.
 ---
 
 # Release Domain Skill
@@ -10,10 +10,12 @@ O13) and read through `decisions/0023-acceptance-not-approval.md`: `RIGHT` is ow
 acceptance over an evidenced result, not permission to begin. The implementation is a
 skeleton.
 
-In Phase I this skill is mostly a refusal boundary. `STATUS.yaml` protects
-`no_external_effects_in_phase_i`, and the `PUBLIC-CLEARANCE` acceptance hold
-blocks public release only - it blocks no Phase-I engineering. `AGENTS.md`
-restricts what publication may ever include.
+This skill is mostly a refusal boundary. `PUBLICATION.md` is an active safety
+boundary naming what stays unpublished until Bdo approves its disclosure.
+`STATUS.yaml` `owner_holds` carries the live hold: `O1`, reason `PUBLICATION`,
+blocking `repository.publish_public`. That hold blocks public release only -
+every engineering and strategy task proceeds under the working name.
+`AGENTS.md` restricts what publication may ever include.
 
 ## Duties
 
@@ -27,8 +29,9 @@ restricts what publication may ever include.
    separate explicit owner instruction.
 4. Refuse, visibly and with a receipt, every `EXTERNAL_WORLD` step:
    publishing, initializing remotes, enabling integrations, announcements.
-   Name the blocking boundary (`PUBLIC-CLEARANCE`,
-   `no_external_effects_in_phase_i`) in the refusal.
+   Name the blocking carrier in the refusal: `owner_holds` `O1` in
+   `STATUS.yaml`, `PUBLICATION.md`, or the applicable `hold_reasons` entry in
+   `contracts/acceptance-policy.json`.
 
 ## Refusals
 

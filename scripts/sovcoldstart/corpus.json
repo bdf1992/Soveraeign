@@ -4025,6 +4025,67 @@
       "severity_on_failure": "INFO",
       "evaluation_type": "telemetry_diagnostic",
       "category": "telemetry_diagnostic"
+    },
+    {
+      "id": "A36",
+      "section": "harness",
+      "tier": 1,
+      "weight": 5,
+      "severity_on_failure": "HIGH",
+      "evaluation_type": "invariant_match",
+      "category": "capability_authority",
+      "volatility": "slow",
+      "q": "Which tool names may an agent definition under .claude/agents/ declare?",
+      "expected": [
+        "Agent",
+        "AskUserQuestion",
+        "Bash",
+        "Edit",
+        "Glob",
+        "Grep",
+        "NotebookEdit",
+        "Read",
+        "Skill",
+        "Task",
+        "TodoWrite",
+        "WebFetch",
+        "WebSearch",
+        "Workflow",
+        "Write"
+      ],
+      "grade": "set_eq",
+      "probe": {
+        "kind": "json_get",
+        "file": "contracts/harness-hosts.json",
+        "path": [
+          "portable"
+        ],
+        "scope": "tracked"
+      },
+      "source": "contracts/harness-hosts.json",
+      "why": "Four agent definitions declared PowerShell as a tool until 2026-09-08. No invocation could grant it, no check read the frontmatter, and the host section of this corpus encoded the same assumption in an unprobed question, so nothing could report it. The answer now comes from the contract a grader reads."
+    },
+    {
+      "id": "A37",
+      "section": "harness",
+      "tier": 1,
+      "weight": 5,
+      "severity_on_failure": "HIGH",
+      "evaluation_type": "invariant_match",
+      "category": "capability_authority",
+      "volatility": "static",
+      "q": "Which tool does a launched agent reach a shell through, on any platform?",
+      "expected": "Bash",
+      "grade": "exact",
+      "probe": {
+        "kind": "regex_first",
+        "scope": "tracked",
+        "file": "CLAUDE.md",
+        "pattern": "^- Shell: reached through the `(\\w+)` tool",
+        "group": 1
+      },
+      "source": "CLAUDE.md, Host facts",
+      "why": "This file named PowerShell 5.1 as the primary shell while sessions ran on Linux. A participant that believes the shell is a platform fact writes commands the host cannot run; the portable answer is the tool, not the shell behind it."
     }
   ],
   "challenged_at": "2026-08-26",

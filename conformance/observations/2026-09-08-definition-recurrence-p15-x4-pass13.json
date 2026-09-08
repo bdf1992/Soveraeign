@@ -1,0 +1,255 @@
+{
+  "case_id": "WITNESS-2026-09-08-DEFINITION-RECURRENCE-P15-X4-PASS-13",
+  "record_kind": "OBSERVATION",
+  "record_note": "An observation, not a settlement and not a ratification. This participant built nothing in the subject and edited no file but this record. It was asked a narrow records-only confirmation: whether the delta's own account of the note's container-claim history is true when derived from git rather than read off the commit message, whether any sentence of the custody member note or the pass-4 corrections block is false or overstated at this commit, and whether anything blocks landing at BUILT. The refusal of BUILT -> WITNESSED recorded by passes 1 through 12 is not reopened here, is not mine to revisit, and this record supports no standing transition.",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08/pass-13",
+  "independence": {
+    "contributed_to_build_of_subject": false,
+    "edited_subject": false,
+    "built_the_repair": false,
+    "container": "The same container as the participant that built 6170031, and the same one passes 5 through 12 ran in. I did not write to the shared checkout; every measurement was taken in a fresh `git clone --no-hardlinks` copy under the session scratchpad, checked out at 6170031. That is hygiene, not host separation, and it does not make this reading independent of the build in the sense AGENTS.md means.",
+    "model": "claude-opus-5, the same model family as the builder and as all twelve prior readings. Every commit trailer on this branch reads Claude Opus 5. This reading adds no model diversity.",
+    "prompts": "Delegated, and written by the participant that holds this concern and built the subject - not by the root seat. I state the prompt's shape rather than minimising it. It scoped me to a records-only confirmation and told me not to re-survey the branch; it told me the BUILT -> WITNESSED refusal stands and is not reopened; it told me the member lands at BUILT; it named P12-F1 and P12-F2 as the two findings the delta repairs and described each; and in the ALSO CONFIRM section it told me in advance the values I would measure - exit 1 at 9 of 10 with 3 graded closures, proposal:recurrence/1170f5d5096fddb8, 39 unit tests, verify and lint passing, origin/main an ancestor, code byte-identical to 3a8c199. Those six are anchored and I say so. The prompt deliberately withheld every expected value for Q1, which is the one question where this reading is not anchored: I walked the file's own revision history and produced my own enumeration before opening pass 12's P12-F1, and only then compared. It matched. That ordering is stated because it is the only part of this reading that a later participant cannot reconstruct from the artifact.",
+    "helpers_used": "None. No subagent was launched and no other participant read any draft of this record."
+  },
+  "subject": {
+    "work": "scripts/sov_recurrence.py and scripts/sovrecurrence/, the one member of custody:phase-1-5/definition-recurrence (Phase 1.5 exit clause P15-X4) in contracts/custodies/phase-1-5.json, together with the custody member note, the pass-4 corrections block, and the pass-12 observation record the delta ships.",
+    "witnessed_revision": "617003164654c1b68a7d1308c14e5769f0de0c8d",
+    "witnessed_tree": "aebd8898f16b333d4b554f2e9ca346d3f55bdd44",
+    "branch": "claude/sovereign-phase-1-5-exits-fb7ysc",
+    "delta_under_test": "3a8c199..6170031",
+    "files_in_the_delta": [
+      "conformance/observations/2026-09-08-definition-recurrence-p15-x4-pass12.json (added, +248)",
+      "conformance/observations/2026-09-08-definition-recurrence-p15-x4-pass4.json (+6, correction entry C8)",
+      "contracts/custodies/phase-1-5.json (the definition-recurrence member note, one value, +1/-1)"
+    ],
+    "note_on_the_delta": "Three files, all records. I derived this rather than taking the commit message's word for it: `git ls-tree -r 3a8c199` diffed against `git ls-tree -r 6170031` differs on exactly those three paths and no other. The subtree object ids for scripts/, services/, contracts/fixtures/ and .github/ are identical across the delta; conformance/ differs only under conformance/observations/. No .py, .yml, .yaml, .toml, .cfg or .sh file changed. The member's standing, work_state and stage_observed_by are untouched and still read BUILT, PRESENTED, null."
+  },
+  "record_projection": {
+    "supplied": null,
+    "reconstructed_as": "the committed tree at 6170031 and its ancestors on this branch and on origin/main (48a0f576903c0ed96341f0460ce926a65d0cb5aa)",
+    "cutoff": "617003164654c1b68a7d1308c14e5769f0de0c8d",
+    "note": "No RecordProjection id was supplied and none is invented. Every address cited resolves in a commit at or below this cutoff. The cutoff did not move under me (CLAUDE.md, trap T6): the shared checkout read `git status --porcelain` at zero lines before the first measurement and at zero lines after the last, with HEAD unmoved at 6170031 and its tree at aebd8898f16b333d4b554f2e9ca346d3f55bdd44 both times. Every command was run in a fresh clone checked out at 6170031, never in the shared checkout."
+  },
+  "commands": [
+    "git status --porcelain in the shared checkout, before and after -> 0 lines both times; git rev-parse HEAD -> 6170031 both times; HEAD^{tree} -> aebd8898f16b333d4b554f2e9ca346d3f55bdd44 both times",
+    "git clone --no-hardlinks <root> <ws>; git checkout 6170031 -> tree aebd8898f16b333d4b554f2e9ca346d3f55bdd44, porcelain 0 lines",
+    "python scripts/sov_recurrence.py run -> exit 1. 'definition recurrence: FAIL'; 'settled experience: 3 source(s) across 3 clause(s)'; 'primitives: 9 resolved, 3 closed vocabulary(ies); institution:procurement composes: False'; 'candidate: proposal:recurrence/1170f5d5096fddb8'; P15-Q4.1 holds, P15-Q4.2 holds, P15-Q4.3 not.",
+    "python scripts/sov_recurrence.py selfcheck -> exit 0. 'PASS: ... 9 defeating variants each fail their own predicates for exactly the defects they declare, and the live reading reaches this repository'.",
+    "python -m unittest scripts.tests.test_sov_recurrence -> exit 0, 'Ran 39 tests ... OK'.",
+    "python scripts/verify.py -> exit 0, twice. 'PASS: 57 checks in 16.545s wall' and on the re-read 'PASS: 57 checks in 16.979s wall'. DEBT: no wall-clock grade at that time; SILVER needs 15.000s. BUDGET DEBT: 11 checks over ceiling, 28.446s above budget, attributed and not refusing (contracts/verification-budget.json).",
+    "python scripts/lint.py -> exit 0. 'PASS: repository hygiene (1282 text files, 587 Python modules, 10 named debt)'. Four WARN lines, all pre-existing named debt or duplicate STATUS.yaml keys; none in the delta.",
+    "git merge-base --is-ancestor 48a0f57 6170031 -> 0 (origin/main is an ancestor).",
+    "Extracted every Check(\"name\") literal under scripts/ at 48a0f57, 3a8c199 and 6170031 -> 55 at origin/main, 57 at both branch revisions; added 'definition recurrence slice' and 'discovery and reuse slice'; removed none; the sets at 3a8c199 and 6170031 are identical.",
+    "diff <(git ls-tree -r 3a8c199) <(git ls-tree -r 6170031) -> exactly three paths differ, all records.",
+    "Walked every revision of contracts/custodies/phase-1-5.json from fe91c65 to 6170031, parsed each as JSON, extracted the member note by key, and printed every sentence containing 'container'. This is the Q1 derivation.",
+    "For each of the 14 revisions of the file plus 7188ef5 and 5632495: `git show <rev>:contracts/custodies/phase-1-5.json | grep -c 'Passes 5 and 6 share this container'` -> 1 at 7188ef5, 1 at 5632495, 0 at every other revision.",
+    "python: parsed all 12 pass records, compared each subject revision against the commit the note names, and read standing_supported, participant_id, independence.container and independence.prompts key by key.",
+    "python: `from sovrecurrence.declaration import declares` over every .json in the tree, testing the note's broader claim that no contract declares `discovery`.",
+    "python scripts/run_tooling_tests.py -> exit 0, 'PASS: repository tooling tests (116 modules, 4 shards)', which is the check that runs scripts/tests/test_sov_recurrence.py."
+  ],
+  "q1_is_the_delta_s_own_account_true": {
+    "question": "Derived from git rather than from the commit message: how many distinct container wordings has the member note carried, which are withdrawn by name in the corrections block, and did 'Passes 5 and 6 share this container as well' really stand at 7188ef5 and 5632495 and vanish from 0b8b000 onward with no entry naming it?",
+    "answer": "YES on every checkable part, with one qualification about the word 'five' and one undercount in the sentence that follows it. See P13-F1, P13-F2 and P13-F7.",
+    "how_i_derived_it": "I did not read pass 12's P12-F1 until after producing this enumeration. I walked `git log --reverse -- contracts/custodies/phase-1-5.json`, loaded each revision's JSON, pulled the member note by key, split it on sentence boundaries and kept every sentence containing 'container'. Fourteen revisions of the file exist between fe91c65 and 6170031, of which 5632495 is a merge that changed the note's bytes not at all.",
+    "distinct_container_wordings": [
+      "W1, at 1ce4d21 only: 'Pass 4 was a different model in a different container from a fresh clone.'",
+      "W2, at 6d02eef, 7188ef5 and 5632495: 'Pass 4 ran in a separate container from a fresh clone, sharing no session, transcript or working tree with the builder, under a prompt from the root seat rather than from the builder.'",
+      "W3, at 7188ef5 and 5632495 only: 'Passes 5 and 6 share this container as well.'",
+      "W4, at 0b8b000 only: 'Nothing in this repository records a container, a host or a prompt for any reading.'",
+      "W5, at 291ec48 only: 'That every reading came from one model family in one container is why the count is not the evidence; what each one found and reproduced is.'"
+    ],
+    "count": "Five, under the criterion the note is evidently using: a sentence asserting a fact about where a reading ran. That is the same five pass 12 reached independently, and I reached it before reading pass 12. It is not the only defensible criterion - see P13-F7 - and the note does not state which one it means.",
+    "withdrawn_by_name_in_the_corrections_block_at_this_commit": [
+      "C6 withdraws W2, quoted.",
+      "C7 withdraws W4, described rather than quoted, and says explicitly why it does not quote.",
+      "C8 withdraws W3, quoted. New in this delta."
+    ],
+    "not_withdrawn_by_name": [
+      "W1. C1 withdraws only its model half, and C1's what_stands affirms 'A separate container, a fresh clone', so W1's container half was never withdrawn in the block. It was superseded in place by W2 at 6d02eef, and W2 was later withdrawn as C6.",
+      "W5. It is disowned in the note itself at 3a8c199 and again at 6170031 ('which is false'), not in the corrections block."
+    ],
+    "c8_sub_claims": {
+      "stood_at_7188ef5": "TRUE. grep -c on the note at that revision returns 1.",
+      "stood_at_5632495": "TRUE. The merge carries the sentence forward unchanged; grep -c returns 1.",
+      "absent_from_0b8b000_onward": "TRUE, and stronger than stated: it is absent from every revision of the file except those two, including all of the earlier ones. The only two files anywhere in the tree at 6170031 containing the string are pass4.json (C8's own quotation) and pass12.json (P12-F1's).",
+      "no_entry_above_names_it": "TRUE. I read C1 through C7 in full. None quotes, paraphrases or refers to a claim about passes 5 and 6 sharing a container."
+    },
+    "verdict": "The delta's account of the history it repairs is true where it can be checked. C8 is exact in all three of its factual claims. The container enumeration is reproducible and reproduced. What is soft is the word 'five' and the sentence immediately after it."
+  },
+  "q2_is_any_sentence_false_or_overstated": {
+    "question": "Read every sentence of the custody member note and of the pass-4 corrections block at 6170031 against the code and the records. Is any sentence false or overstated?",
+    "answer": "No sentence is flatly false. Two are contestable and both were introduced by this delta, in the same passage; one is loose in a way the delta made looser; two are carried imprecisions the delta touched but did not create. All five are recorded below and all five are DOES NOT BLOCK.",
+    "verified_true_and_re_derived": [
+      "'Twelve readings, none supporting BUILT -> WITNESSED.' Twelve pass records exist. Each one's standing_supported begins NONE. Confirmed key by key.",
+      "The twelve pass-to-commit pairings. Each record's own subject artifact_revision or witnessed_revision starts with the short SHA the note names: fe91c65, a3ac836, 9253eb5, e898d06, 1ce4d21, 6d02eef, 5632495, 0b8b000, 3ffa1b5, 964abd7, 291ec48, 3a8c199. Twelve of twelve.",
+      "'the records are ... pass1.json through pass12.json'. All twelve exist at this commit; pass12.json is added by this delta.",
+      "'all twelve pass records carry claude-opus-5 participant ids'. Twelve of twelve.",
+      "'every commit trailer on this branch reads Claude Opus 5'. Twenty commits in 48a0f57..6170031; nineteen carry Co-Authored-By: Claude Opus 5; the twentieth is the merge 5632495, which carries no trailer at all, so the sentence as written survives.",
+      "'pass 4's own record declares built_the_repair true. It refused e898d06 as a witness and then built f43ee9a'. independence.built_the_repair is true; subject.witnessed_revision is e898d06; subject.repair_revision is f43ee9a.",
+      "'Passes 4 through 12 each record a container and a prompt in their own independence block; passes 1 through 3 record neither.' True key by key: passes 4-12 each carry independence.container and independence.prompts; passes 1-3 carry neither key.",
+      "'Eight claims ... are withdrawn by name in the pass-4 corrections block'. The block holds exactly eight entries, C1 through C8. The count is correct at this commit; it read Seven against seven entries at 3a8c199.",
+      "'among them that scripts/verify.py does not run these unit tests, which it does.' C4 withdraws it, and verify.py does run them: the check 'repository tooling tests' runs scripts/run_tooling_tests.py, which discovers scripts/tests/test_sov_recurrence.py among 116 modules and exits 0.",
+      "'Passes 7 through 12 were asked the landing question apart from the standing question.' Passes 7-12 each carry a landing question field; passes 1-6 carry none.",
+      "'Pass 7 was asked both and would refuse WITNESSED.' Pass 7 alone carries both q1_landing_at_built and q2_standing_refusal, and q2 answers 'NO. I would refuse it too.'",
+      "'Passes 8 through 12 were asked about the repairs rather than the standing and record that they did not reopen the refusal.' Passes 8-12 each carry a did-the-delta-repair question, and each standing_supported states the refusal is not reopened.",
+      "'Pass 11 objected on two false sentences in this note and named nothing else.' Pass 11's q1 answers YES with exactly two blockers, P11-F1 and P11-F2, and a separate what_does_not_block field for everything else. 'Named nothing else' is true of blockers, which is the sentence's evident sense.",
+      "'both were repaired'. At 3a8c199 the note contains zero occurrences of 'one model family in one container', and its withdrawal count reads Seven against seven entries.",
+      "'pass 12 read the repaired state and does not object.' Pass 12's subject is 3a8c199 and its q3 answers 'NO. I do not object'. See P13-F5 on the wording.",
+      "'When that sentence first said no reading objected, no reading of the repaired state existed yet, so it forecast its own witness.' True: at 3a8c199 the newest record in the tree was pass 11, whose subject is 291ec48 and whose answer is YES. The repair correctly names the reading it now rests on and does not forecast a reading of 6170031.",
+      "'reads three settled sources, one per clause that carries a settled member'. run prints 'settled experience: 3 source(s) across 3 clause(s)'.",
+      "'nine defeating variants'. selfcheck prints '9 defeating variants each fail their own predicates for exactly the defects they declare'.",
+      "'`run` exits 1 here for that reason and `selfcheck` exits 0'. Observed: 1 and 0.",
+      "'proposal:recurrence/1170f5d5096fddb8'. run prints exactly that identity, twice in its output.",
+      "'contracts/ticket-settlement.json, the `settlement` primitive's contract, names contracts/issue-metadata.schema.json as governing it, where three role vocabularies are closed against an alternate institution.' neutrality.read reports exactly three closed vocabularies, all in contracts/issue-metadata.schema.json, at /properties/requested_by, /properties/requested_from and /properties/role.",
+      "'One closed vocabulary is reported and not graded, in contracts/product-canon.schema.json'. reported_closure_addresses holds exactly that one path.",
+      "'no contract in this repository declares `discovery`'. Broader than what the reader measures, and I tested the broader claim rather than accepting it - see P13-F6. It holds.",
+      "The whole corrections block. I read C1 through C8. C8's three factual claims are exact (Q1). C1-C7 are unchanged by this delta and I found nothing false in them."
+    ]
+  },
+  "q3_do_you_object_to_landing_at_built": {
+    "question": "Do you object to landing at BUILT? Name any blocker precisely; sort everything else as DOES NOT BLOCK.",
+    "answer": "NO. I do not object to landing custody:phase-1-5/definition-recurrence at standing BUILT, work_state PRESENTED, on the bytes at 6170031.",
+    "blockers": [],
+    "why": "The delta is three record files and nothing else, derived from the tree listing rather than from the commit message. No code, test, fixture, oracle or schema changed; seven subtree object ids are identical across the delta and conformance/ differs only under observations/. No check was weakened or removed: 57 named checks at both 3a8c199 and 6170031, 55 at origin/main, two added and none removed, and origin/main is an ancestor. verify.py exits 0 twice, lint.py exits 0, 39 unit tests pass, selfcheck exits 0 at nine defeating variants, and run still exits 1 at the same candidate identity for the same two stated reasons. C8 is exact. Every count in both files that I could measure is right at this commit. Nothing in the delta claims a standing it does not hold, and the member's closing sentence still reads 'BUILT only. A test may not claim WITNESSED.'",
+    "why_i_considered_blocking_and_did_not": "P13-F1 and P13-F2 are the same shape as P11-F2, which pass 11 treated as a blocker: a hand-maintained statement in the governed note that does not match the file it describes. I weighed them and they do not reach it. Neither misstates a measured fact, a command result, a standing, or anything about the code; both are about how the note counts its own history; both are repairable by deleting or rewording one clause; and the load-bearing content around them - that a container claim was carried and withdrawn, that the argument needs no container fact, that C8 records a silent removal - is true in every direction I tested. Recording them as findings for repair inside the concern is the proportionate response, not refusing the bytes.",
+    "note_on_the_objection": "This is not support for BUILT -> WITNESSED and does not touch that refusal, which stands on twelve readings and is not reopened here. Landing at BUILT and advancing standing are different acts and this record answers only the first."
+  },
+  "reproduced_independently": [
+    "REPRODUCED: sov_recurrence run exits 1 with candidate proposal:recurrence/1170f5d5096fddb8. The command prints 'primitives: 9 resolved, 3 closed vocabulary(ies)'; it does not print '9 of 10'. I established the denominator separately by reading PRIMITIVES in scripts/sovrecurrence/neutrality.py, which holds ten entries, and by calling neutrality.read directly, whose unresolved list holds exactly one entry, `discovery`. So 9 of 10 is true and is derived, not read off the output. The three closures are the graded ones; a fourth is reported and not graded.",
+    "REPRODUCED: python -m unittest scripts.tests.test_sov_recurrence -> 39 tests, OK, exit 0.",
+    "REPRODUCED: python scripts/verify.py -> exit 0, 57 checks, on two separate runs in the frozen clone. Trap T2 applies and I state it: exit 0 here means unchanged, not qualified. The suite asserts nothing about the live P15-Q4 verdict, which the note itself says.",
+    "REPRODUCED: python scripts/lint.py -> exit 0.",
+    "REPRODUCED: origin/main (48a0f57) is an ancestor of 6170031, and no named check was removed relative to it.",
+    "REPRODUCED: the code is byte-identical to 3a8c199. Full recursive tree listings differ on exactly the three record paths.",
+    "REPRODUCED, and this is the part the prompt did not anchor: the container-wording history of the member note, the three corrections entries that withdraw one each, and all three of C8's factual claims."
+  ],
+  "findings": [
+    {
+      "id": "P13-F1",
+      "severity": "MINOR",
+      "bucket": "DOES NOT BLOCK",
+      "state": "OPEN; introduced by this delta, in the sentence written to repair P12-F1",
+      "address": "contracts/custodies/phase-1-5.json, the definition-recurrence member note: 'This file has carried a container claim in five different wordings and no count of them is offered here, because a twelfth reading showed the count in an earlier draft of this sentence was taken from the eleventh reading and never re-derived, which is the move C4 exists to withdraw.'",
+      "claim_defeated": "That no count is offered here.",
+      "observed": "A count is offered in the same clause: 'five different wordings'. On the natural parse, 'them' binds to the nearest plural noun phrase, 'five different wordings', and the sentence then says it offers no count of the things it has just counted. A strained parse rescues it - 'them' binding to container claims as propositions, so the sentence counts wordings while declining to count claims - and that is evidently what was meant, since the withdrawn text counted claims ordinally ('the fourth container claim ... and the fourth to be withdrawn'). But the distinction between a wording and a claim is exactly what makes the count contestable in the first place, so leaning on it to say no count is offered is circular. The commit message repeats the same construction: 'five distinct wordings have stood, two are withdrawn by name, and one was removed without any withdrawal at all. No count is offered now.' Three counts, then a denial that any is offered.",
+      "why_it_matters": "The sentence's job is to be the careful replacement for a count that went wrong. A replacement that contradicts itself in one clause invites a reader to distrust the withdrawal it carries. It is also the fourth commit in a row in which this passage's arithmetic has been a finding: 291ec48 wrote a false container claim, 3a8c199 wrote an unre-derived ordinal, and 6170031 writes a count alongside a denial that it counts.",
+      "why_it_does_not_block": "Nothing measured depends on it. 'Five' is derivable and I derived it independently and got five; the withdrawal it accompanies is sound; and the sentence's load-bearing content is true. It is a wording defect in prose, repairable by deleting five words.",
+      "how_derived": "Read the sentence at 6170031 against the same sentence at 3a8c199 and against the commit message, then parsed both readings of 'them' against what the file actually states.",
+      "repair_shape_if_wanted": "Not mine to build. Either drop 'and no count of them is offered here', or drop 'five different wordings' and keep the denial. Keeping both is what makes it contestable."
+    },
+    {
+      "id": "P13-F2",
+      "severity": "MINOR",
+      "bucket": "DOES NOT BLOCK",
+      "state": "OPEN; introduced by this delta, in the same passage, and made contestable by the same commit's own C8",
+      "address": "contracts/custodies/phase-1-5.json, the member note: 'Two of those wordings are withdrawn by name in the pass-4 corrections block and one was removed from this file without being withdrawn at all, which is recorded as C8.'",
+      "claim_defeated": "That two of the five wordings are withdrawn by name in the pass-4 corrections block at this commit.",
+      "observed": "Three are, at 6170031. C6 withdraws W2 by quotation, C7 withdraws W4 by description, and C8 - added by this very commit - withdraws W3 by quotation. 'Are withdrawn by name in the pass-4 corrections block' is present tense about the block's current content, and the block's current content is three. The clause that follows, 'one was removed from this file without being withdrawn at all', is true of the history up to 3a8c199 and false of the present, because C8 withdraws it. The commit message confirms the intended reading is historical: 'five distinct wordings have stood, two are withdrawn by name, and one was removed without any withdrawal at all.' Under that historical reading the sentence is coherent. Under a present-tense reading of a governed file describing its own sibling record, it undercounts by one.",
+      "why_it_matters": "P11-F2 - 'the note says six claims are withdrawn; seven are' - was one of the two blockers that stopped a landing five commits ago. This is the same defect in the same file about the same block: a hand-maintained count of the corrections block that does not match the block. It went stale in the commit that made it stale, which is the tightest possible loop of the failure this passage exists to close.",
+      "why_it_does_not_block": "There is a coherent reading under which it is true and it is the reading the commit message states, so it is not flatly false the way 'six' against seven was. Nothing measured depends on it. The reader who checks it finds C8 immediately, which is the entry the sentence points at.",
+      "how_derived": "Read all eight entries of the corrections block at 6170031 and mapped each to a wording in the Q1 enumeration. C6 -> W2, C7 -> W4, C8 -> W3. Then re-read the sentence in present and past tense against that mapping.",
+      "repair_shape_if_wanted": "Not mine to build. 'Three of those wordings are now withdrawn by name in the pass-4 corrections block; one of the three, C8, records a sentence that was removed from this file without a withdrawal at the time' says the same thing and cannot be read two ways."
+    },
+    {
+      "id": "P13-F3",
+      "severity": "MINOR",
+      "bucket": "DOES NOT BLOCK",
+      "state": "OPEN; structural, carried by the whole branch and not created by this delta",
+      "address": "contracts/custodies/phase-1-5.json (the member note) and conformance/observations/...pass4.json (the corrections block), against the check table in scripts/sovverify/",
+      "claim_defeated": "None. This is a finding about the check, not about a claim.",
+      "observed": "No check in this repository reads either the note's prose or the corrections block. I grepped every module under scripts/ for the corrections structure and for any grading of the note's counts; the only hits are unrelated. Several of the note's counts are mechanically measurable from the artifact and are declared instead: 'Eight claims ... withdrawn by name' against len(corrections.withdrawn); 'Twelve readings ... pass1.json through pass12.json' against the observation glob; 'Passes 4 through 12 each record a container and a prompt ... passes 1 through 3 record neither' against the independence keys; and the twelve pass-to-commit pairings against each record's own subject revision. I checked all four by hand in about a minute and all four are currently right.",
+      "why_it_matters": "This is the defect class the witness procedure names at 6a: a governed file declares where it could measure. The evidence that it matters is this branch's own history - the withdrawal count went stale at 964abd7 and blocked a landing at 291ec48 as P11-F2, and P13-F2 above is its successor. A five-line check over these four quantities would have refused both before a witness had to.",
+      "why_it_does_not_block": "Every one of the measurable counts is correct at this commit; I verified each. The gap is that nothing keeps them correct, not that they are wrong. Adding a check is work inside this concern, not a defect in these bytes.",
+      "how_derived": "grep over scripts/**/*.py for the corrections structure and the note; then measured each of the four quantities directly from the artifact and compared to the note's wording.",
+      "repair_shape_if_wanted": "Not mine to build, and the concern holder should judge whether it is worth it against simply dropping the counts, which P13-F1 already points at."
+    },
+    {
+      "id": "P13-F4",
+      "severity": "MINOR",
+      "bucket": "DOES NOT BLOCK",
+      "state": "OPEN; carried from before this delta, in a sentence this delta edited",
+      "address": "contracts/custodies/phase-1-5.json: 'Eight claims this participant made and could not support are withdrawn by name in the pass-4 corrections block rather than edited away'; and the block's own note, 'Withdrawals of claims this participant made and could not support.'",
+      "claim_defeated": "That all eight withdrawn claims were made by one participant.",
+      "observed": "'This participant' does not resolve to one actor across the eight. C1, C2, C3 and C5 withdraw claims in the pass-4 record, made by the pass-4 participant. C1 also withdraws claims in the commit messages of f43ee9a and 1ce4d21, which are the builder's. C6 withdraws a sentence in the custody note, which the builder wrote. C8, new here, withdraws a sentence that stood in the custody note at 7188ef5 - also the builder's, and about passes 5 and 6, which did not exist when pass 4 was written, so it cannot have been pass 4's claim. C4 withdraws a claim that entered at pass 3, was repeated by pass 5, and was repeated in pass 4's own record and in the custody note. The count of eight is exactly right; the attribution to a single participant is not.",
+      "why_it_matters": "The block is the branch's mechanism for withdrawing without editing, so who is withdrawing what is the thing it is for. A reader tracing accountability through it gets a wrong answer for at least three of the eight entries.",
+      "why_it_does_not_block": "It predates this delta by seven commits, the count is right, each entry names its own subject precisely, and no reader who opens an entry is misled. Only the summary sentence is loose.",
+      "how_derived": "Read all eight entries and attributed each withdrawn claim to the revision and file it stood in.",
+      "repair_shape_if_wanted": "Not mine to build. 'Eight claims made on this branch and not supportable' drops the false attribution without changing anything else."
+    },
+    {
+      "id": "P13-F5",
+      "severity": "MINOR",
+      "bucket": "DOES NOT BLOCK",
+      "state": "OPEN; introduced by this delta, in the sentence written to repair P12-F2",
+      "address": "contracts/custodies/phase-1-5.json: 'both were repaired, and pass 12 read the repaired state and does not object.'",
+      "claim_defeated": "Nothing. The sentence is true. The finding is that 'the repaired state' no longer denotes uniquely at the commit it now sits in.",
+      "observed": "Pass 12 read 3a8c199. At 3a8c199 that was the repaired state and the phrase was unambiguous. At 6170031 the note has been repaired again, twice more, and a reader at this commit can take 'the repaired state' for these bytes - which no reading had seen when they were written. That is the exact structure P12-F2 objected to, one step removed: the sentence does not assert a reading of 6170031, which is correct and is the repair working, but its referent drifts as the file changes underneath it. Naming the revision forecloses it. For the record: this reading is the first of 6170031, and at the moment 6170031 was authored no reading of it existed. The note is right not to claim one.",
+      "why_it_matters": "The whole point of the P12-F2 repair is that a note should name the reading it rests on rather than describe it. It names the reading (pass 12) but describes the state, and the description is the half that goes stale.",
+      "why_it_does_not_block": "It is true as written and true under both readings of the phrase, because pass 12 does not object and neither do I. It is a wording that will drift, not one that is wrong.",
+      "how_derived": "Read pass 12's subject.witnessed_revision (3a8c199) against the commit the sentence now sits in (6170031), and confirmed no observation record in the tree has 6170031 as its subject.",
+      "repair_shape_if_wanted": "Not mine to build. 'pass 12 read 3a8c199 and does not object' cannot drift."
+    },
+    {
+      "id": "P13-F6",
+      "severity": "OBSERVATION",
+      "bucket": "DOES NOT BLOCK",
+      "state": "OPEN; carried, not touched by this delta",
+      "address": "contracts/custodies/phase-1-5.json: 'no contract in this repository declares `discovery`', against scripts/sovrecurrence/neutrality.py.",
+      "claim_defeated": "Nothing. The claim holds. The finding is that it is broader than what the reader measures, so the note asserts where the code does not.",
+      "observed": "The reader checks one contract: `discovery` is paired with contracts/node-interface.schema.json, and the unresolved entry reads 'which that contract does not declare structurally'. It never scans for a contract elsewhere that does. I tested the broader claim rather than accepting it: I ran declaration.declares(document, 'discovery') over every .json in the tree. Five files declare it structurally, and all five are witness observation records under witness/observations/. Nothing under contracts/ or any service contracts directory declares it. So the sentence is true under 'contract' and would be false under 'file', and the reader supports only the narrower fact.",
+      "why_it_matters": "The note is otherwise scrupulous about the line between what is measured and what is asserted, and says so at length. This sentence sits on the asserted side while reading like a measured one.",
+      "why_it_does_not_block": "It is true, I verified it independently, and it is unchanged by this delta.",
+      "how_derived": "Imported scripts/sovrecurrence/declaration.declares and applied it to every parseable .json under the repository root.",
+      "repair_shape_if_wanted": "Not mine to build. 'the contract paired with `discovery` does not declare it' says exactly what is measured."
+    },
+    {
+      "id": "P13-F7",
+      "severity": "OBSERVATION",
+      "bucket": "DOES NOT BLOCK",
+      "state": "OPEN; bears on Q1, and on P13-F1",
+      "address": "contracts/custodies/phase-1-5.json, 'a container claim in five different wordings', and C8's what_stands, 'makes no container claim at all'.",
+      "claim_defeated": "Nothing, under the criterion the note uses. The finding is that the criterion is unstated and a natural competing one gives a different number.",
+      "observed": "Five is the count of sentences asserting a fact about where a reading ran. Under the broader criterion 'a sentence in this note that asserts something about containers', the running sentence 'Passes 4 through N each record a container and a prompt in their own independence block' is also one, and it has itself stood in five wordings - at 3ffa1b5 with an extra corroboration clause and N=8, at 964abd7 with N=9, at 291ec48 with N=10, at 3a8c199 with N=11, and at 6170031 with N=12. Under that criterion the count is ten, not five, and the note still carries one. The note is internally consistent, because C8's what_stands says the note 'makes no container claim at all' while the note plainly says passes 4 through 12 each record one - which is only coherent under the narrow criterion. So the narrow criterion is the one in use. It is just never written down, which is what makes 'five' unfalsifiable rather than false.",
+      "why_it_matters": "P12-F1 said the ordinal 'cannot be checked, which is worse rather than better'. The replacement cardinal has the same property. Both are true under one individuation and false under another, and neither states which.",
+      "why_it_does_not_block": "It is a property of the sentence, not an error in it, and the withdrawal it decorates is sound.",
+      "how_derived": "Extracted every container-bearing sentence from every revision of the note and grouped them two ways: by whether they assert where a reading ran, and by whether they mention a container at all.",
+      "repair_shape_if_wanted": "Not mine to build, and P13-F1's repair - dropping the count - resolves this one too."
+    }
+  ],
+  "defeating_case_coverage": {
+    "note": "The delta changes no code, no test and no fixture, so no coverage moved. I re-confirmed the existing coverage rather than re-deriving it, which is what a records-only scope permits, and I state that limit.",
+    "re_confirmed": [
+      "selfcheck exits 0 and reports nine defeating variants each failing exactly the predicates they declare, plus the positive variant and the live-reachability case.",
+      "39 unit tests pass. The set is byte-identical to 3a8c199: scripts/tests/test_sov_recurrence.py is unchanged, so no test was added, weakened or removed.",
+      "The run/selfcheck polarity holds: run exits 1 against this repository and selfcheck exits 0, which is the instrument discriminating while the repository does not satisfy the predicate."
+    ],
+    "not_re_derived_here": [
+      "The sabotage battery pass 12 ran against the ignore matcher, the digest framing and the five mechanisms. The modules are byte-identical across this delta, so pass 12's coverage carries; I confirmed the byte-identity rather than the sabotages.",
+      "The three findings pass 12 recorded and did not repair - no check invokes git's own ignore matcher, the generated-name floor applies always, and two digest tests sit in the neutrality class. All three are unchanged by this delta and remain open."
+    ],
+    "still_uncovered": [
+      "Every count in the member note and in the corrections block. No positive case and no defeating case exists for any of them, because no check reads them. That is P13-F3."
+    ]
+  },
+  "residuals": [
+    "Independence. This is a thirteenth reading from inside the builder's container and model family, under a prompt the builder wrote. The prompt withheld Q1's values, which is why Q1 is the one part of this reading that is not anchored, and it supplied the ALSO CONFIRM values in advance, which anchors those. Re-deriving them in a fresh clone does not undo the anchor. None of this makes the reading independent in the sense BUILT -> WITNESSED requires.",
+    "Scope. I was told not to re-survey the branch and I did not. I read the delta, the whole member note, the whole corrections block, all twelve pass records at the level of their subject, standing and independence fields, and the neutrality and declaration modules. I did not re-derive the ignore matcher, the digest framing or the nine variants from scratch.",
+    "Not attested. The container and prompt self-reports in passes 4 through 13, including my own. Nothing outside a reading corroborates any of them, and the note says so.",
+    "Not attested. That every member of this collection recorded as WITNESSED and LANDED truly is. The reader believes the record, and the note discloses it.",
+    "Trap T2 stated rather than assumed: verify.py at exit 0 means unchanged, not qualified. It asserts nothing about the live P15-Q4 verdict, which is NOT holding and is the custody's own stated defeating condition, met.",
+    "Wall-clock and budget debt: verify.py records no wall-clock grade at 16.5-17.0s and 11 checks over their ceilings by 28.446s total. Attributed debt under contracts/verification-budget.json, not a refusal, and unchanged by a records-only delta.",
+    "Seven findings, all DOES NOT BLOCK. Two are new defects in the passage this delta rewrote; one is structural and belongs to the branch; two are carried imprecisions; two are properties of sentences rather than errors in them."
+  ],
+  "unattestable": {
+    "any": false,
+    "note": "The cutoff held. The shared checkout read `git status --porcelain` at zero lines before the first measurement and after the last, with HEAD at 6170031 and its tree at aebd8898f16b333d4b554f2e9ca346d3f55bdd44 on both reads. verify.py was run twice in the frozen clone and exited 0 both times. Every command ran in a fresh clone, never in the shared tree. No material evidence was unavailable and no projection id was invented."
+  },
+  "verdict": "REPRODUCED, with no objection to landing and no support for any standing transition. The delta is three record files; the code is byte-identical to 3a8c199 by full tree listing, not by report. Every value the prompt named reproduces in a fresh clone. Q1: the delta's own account of the container-claim history is true where it can be checked - I derived the five wordings from the file's revisions before reading pass 12's enumeration and reached the same five, and all three of C8's factual claims are exact, including that the sentence stood at exactly 7188ef5 and 5632495 and nowhere else in the file's whole history. Q2: no sentence is flatly false; two introduced by this delta are contestable in the same passage, one structural gap and two carried imprecisions sit around them. Q3: I do not object. Seven findings, all DOES NOT BLOCK.",
+  "standing_supported": "NONE. This observation supports no standing transition. The member stays BUILT at work_state PRESENTED, and the refusal of BUILT -> WITNESSED recorded by passes 1 through 12 is not reopened here and is not mine to revisit. What this record supports is landing the branch with the member at that standing, which is a different act, takes no standing and is not an acceptance. It does not support OPEN -> BUILT either, which is already held.",
+  "judgement_items": [
+    "For the concern holder, not for a seat: the passage that counts this note's own history has now been a finding in four consecutive commits - a false container claim at 291ec48, an unre-derived ordinal at 3a8c199, and at 6170031 both a count offered inside a denial that any is offered and an undercount of the block the same commit extended. Is the right repair a fifth wording, deleting the counts, or a check that measures them?",
+    "For the concern holder, not for a seat: 'this participant' in the corrections block resolves to at least three different actors across its eight entries. Is the block a record of one participant's withdrawals or of the branch's?",
+    "For Bdo, and only for Bdo: nothing here. No judgement-typed claim is made, no external effect is proposed, no naming or publication is touched, and no standing is advanced. This record asks the root seat for nothing."
+  ]
+}

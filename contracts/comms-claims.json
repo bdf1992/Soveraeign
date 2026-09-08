@@ -1,0 +1,42 @@
+{
+  "contract_id": "soveraeign-comms-claims/v1",
+  "status": "PROPOSED",
+  "governed_by": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    ".claude/agents/sov-comms.md"
+  ],
+  "summary": "What scripts/sov_comms.py grades. The Communications seat is the only participant that speaks to a person, and until this contract it was the only claim surface in the repository with no grader: every rule it carries was an instruction and nothing failed when one was broken. Each kind here compares an extracted claim against a record that owns it, so each generalizes past the defect that motivated it rather than matching a list of phrasings.",
+  "subjects": {
+    "surfaces": [
+      ".claude/agents/sov-comms.md",
+      ".claude/agents/sov.md",
+      ".claude/agents/sov-controller.md",
+      ".claude/agents/sov-orchestrator.md",
+      ".claude/agents/sov-witness.md",
+      ".claude/agents/sov-worker.md"
+    ],
+    "surfaces_why": "Agent definitions are read by launched participants carrying no other context, so a false claim in one is repeated by everything it launches. This is the surface the 379-turns statistic survived in.",
+    "message": "Text submitted through `check`, which is how the seat grades a draft before sending it. A message is not in the tree, so it is graded on submission or not at all."
+  },
+  "coverage": {
+    "UNSOURCED_NUMBER": "A quantified claim about how participants, sessions or the owner behaved, in a paragraph that names no command, path or record producing the figure. Generalizes: any number carrying a measurement marker fails unless its own paragraph cites what derives it, so an invented statistic nobody anticipated fails without being listed. Motivated by `sov.md` and `sov-controller.md` asserting five genuine rulings and 78 instances of the word 'go' across 379 of Bdo's turns, with no transcript corpus in the repository and no command producing any part of it.",
+    "INTERNAL_TOKEN": "Repository type vocabulary in text addressed to a person: standing tokens, refusal codes, seam names and effect classes. These are machine types and a person reading one has to translate it. Applies to `check` submissions only; repository documents legitimately carry the vocabulary they define.",
+    "UNSUPPORTED_STANDING": "A claim that a named subject is WITNESSED or RATIFIED, graded against `python scripts/sov_standing.py`, which reads STATUS.yaml and the witness records by separate paths. Whole-token comparison with NOT read as denial, because NOT_WITNESSED contains WITNESSED (CLAUDE.md trap T3)."
+  },
+  "not_covered": {
+    "readability": "Whether prose is clear. No oracle exists and a phrasing list would be a declared case pretending to be a net, which is the mistake that withdrew two kinds from scripts/sov_harness.py.",
+    "responsiveness": "Whether the text answered the question that was asked. The question is not in the tree.",
+    "length": "Whether the text is exhausting. A global terseness rule was measured as harmful and reverted upstream; brevity is not the property worth enforcing here, truth is.",
+    "tone": "Whether the register suits the reader."
+  },
+  "refusals": [
+    "UNSOURCED_NUMBER",
+    "INTERNAL_TOKEN",
+    "UNSUPPORTED_STANDING"
+  ],
+  "historical_claims": {
+    "379 of his turns": "The statistic itself, quoted inside the rule that forbids it. sov-comms.md records what was removed and why; grading the record of a removed claim would demand deleting the evidence, which is the exemption scripts/sov_harness.py makes for drafts and contracts/counted-populations.json makes for dated readings. Removing this entry is correct only when no surface needs to name the defect any more."
+  },
+  "historical_claims_note": "Exact sentence fragments exempted from UNSOURCED_NUMBER, each with the reason. A fragment here suppresses only the sentence carrying it; every other number on the surface is still graded."
+}

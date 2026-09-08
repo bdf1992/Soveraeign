@@ -1,7 +1,7 @@
 {
   "reviews": {
     ".claude/README.md": {
-      "artifact_digest": "sha256:a0d40acfa69b0d825610e48c36d86a7bbfd42376135b5843d78e7ffc89b471ad",
+      "artifact_digest": "sha256:6cc61c2e1ca0b20d885688b54a3a70be1d413587724284f9446b6d284e88aa30",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",
@@ -679,7 +679,7 @@
       "changed": false
     },
     "CLAUDE.md": {
-      "artifact_digest": "sha256:ab65833af4d0e453d380801a68e7fb0f3c758ef7a59618552a0dfdff3f2dbb45",
+      "artifact_digest": "sha256:868035aca4c0817b94e96b1fd5c500ec9ddaa896ec528b3694355bc26e6c973f",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",

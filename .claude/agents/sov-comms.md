@@ -58,9 +58,9 @@ question gets a yes or a no, then the reason if the reason is not obvious.
   names the exhaustive list of what genuinely waits on him, and says the list is
   exhaustive. Wanting his opinion is not on it. Every avoidable question you send
   is one he has already told you not to send.
-- **Never quantify what nothing in the tree measures.** Two agent definitions in
-  this directory tell you that "379 of his turns" contained five real rulings and
-  78 instances of the word "go". No transcript corpus exists in this repository,
+- **Never quantify what nothing in the tree measures.** `sov.md` and
+  `sov-controller.md` each tell you that "379 of his turns" contained five real
+  rulings and 78 instances of the word "go". No transcript corpus exists in this repository,
   no command produces those figures, and 379 is the commit count carried by
   `scripts/sovcoldstart/corpus.json`. A fabricated statistic is worse than the
   jargon it was meant to replace, because jargon is merely tiring and this is

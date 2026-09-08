@@ -1,0 +1,33 @@
+{
+  "schema": "soveraeign-disposition-surface-taxonomy/v0.1",
+  "standing": "EXPERIMENTAL",
+  "issue": 200,
+  "purpose": "Classify directly observable behavioral surface acts without predicting latent disposition constructs.",
+  "abstention_label": "abstain",
+  "labels": [
+    {"id": "explores-alternatives", "definition": "Explicitly generates, requests, or compares multiple plausible paths.", "candidate_construct": "exploration", "candidate_polarity": 1.0},
+    {"id": "reuses-known-path", "definition": "Explicitly chooses an already-established path because it is established or familiar.", "candidate_construct": "exploration", "candidate_polarity": -1.0},
+    {"id": "requests-evidence", "definition": "Explicitly asks for observation, testing, verification, research, or evidence before commitment.", "candidate_construct": "evidence-threshold", "candidate_polarity": 1.0},
+    {"id": "commits-with-sparse-evidence", "definition": "Explicitly commits despite acknowledged missing or weak evidence.", "candidate_construct": "evidence-threshold", "candidate_polarity": -1.0},
+    {"id": "preserves-reversibility", "definition": "Explicitly preserves rollback, optionality, staging, isolation, or a reversible next step.", "candidate_construct": "reversibility-preference", "candidate_polarity": 1.0},
+    {"id": "commits-irreversibly", "definition": "Explicitly selects an irreversible or difficult-to-reverse commitment when a reversible route is available.", "candidate_construct": "reversibility-preference", "candidate_polarity": -1.0},
+    {"id": "checks-constraint", "definition": "Explicitly checks, preserves, or tests an existing requirement, invariant, contract, or boundary.", "candidate_construct": "invariant-fidelity", "candidate_polarity": 1.0},
+    {"id": "relaxes-constraint", "definition": "Explicitly relaxes or reinterprets an existing constraint in pursuit of another objective.", "candidate_construct": "invariant-fidelity", "candidate_polarity": -1.0},
+    {"id": "abstracts-to-structure", "definition": "Explicitly generalizes a local case into a reusable model, type, pattern, rule, or structure.", "candidate_construct": "abstraction-preference", "candidate_polarity": 1.0},
+    {"id": "stays-concrete", "definition": "Explicitly keeps the solution local or example-specific rather than generalizing it.", "candidate_construct": "abstraction-preference", "candidate_polarity": -1.0},
+    {"id": "initiates-action", "definition": "Begins or proposes an admissible next action once the goal and boundary are sufficient.", "candidate_construct": "initiative", "candidate_polarity": 1.0},
+    {"id": "waits-for-prompt", "definition": "Explicitly declines to proceed until another prompt or approval despite sufficient stated authority.", "candidate_construct": "initiative", "candidate_polarity": -1.0},
+    {"id": "coordinates-dependencies", "definition": "Explicitly surfaces dependencies, handoffs, stakeholders, shared state, or synchronization needs.", "candidate_construct": "coordination", "candidate_polarity": 1.0},
+    {"id": "resolves-independently", "definition": "Explicitly chooses independent resolution rather than coordination when both are available.", "candidate_construct": "coordination", "candidate_polarity": -1.0},
+    {"id": "extends-horizon", "definition": "Explicitly reasons about downstream, system-wide, repeated, or longer-horizon consequences.", "candidate_construct": "scope-horizon", "candidate_polarity": 1.0},
+    {"id": "optimizes-local", "definition": "Explicitly optimizes the immediate local result while setting aside broader or later effects.", "candidate_construct": "scope-horizon", "candidate_polarity": -1.0}
+  ],
+  "rules": [
+    "Labels describe visible acts, not identity or personality.",
+    "Multi-label classification is allowed.",
+    "Quoted, hypothetical, negated, or attributed behavior is not evidence of the current subject unless the surrounding observation establishes enactment.",
+    "A classifier may abstain.",
+    "Classifier output is candidate evidence only; it cannot directly update a disposition construct.",
+    "Candidate construct mappings are hypotheses to test, not validated equivalences."
+  ]
+}

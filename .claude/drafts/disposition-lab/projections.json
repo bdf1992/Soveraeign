@@ -1,0 +1,64 @@
+{
+  "schema": "soveraeign-disposition-projection-bank/v0.1",
+  "standing": "EXPERIMENTAL",
+  "issue": 200,
+  "projections": [
+    {
+      "id": "sov-native-v0.1",
+      "title": "Soveraeign Disposition Profile",
+      "calibration_standing": "EXPLORATORY",
+      "intended_use": "Readable projection of the native experimental constructs without remapping them to another personality framework.",
+      "mapping": "identity",
+      "loss": []
+    },
+    {
+      "id": "big-five-like-v0.1",
+      "title": "Big Five-like Research Projection",
+      "calibration_standing": "UNVALIDATED",
+      "intended_use": "Hypothesis-generation only; not an official Big Five score or validated crosswalk.",
+      "mapping": {
+        "openness_like": {"exploration": 0.55, "abstraction-preference": 0.45},
+        "conscientiousness_like": {"invariant-fidelity": 0.45, "evidence-threshold": 0.25, "scope-horizon": 0.30},
+        "extraversion_like": {"initiative": 0.55, "coordination": 0.45}
+      },
+      "loss": [
+        "No experimental mapping is asserted for agreeableness or negative emotionality/neuroticism.",
+        "These operational constructs are not assumed measurement-equivalent to human Big Five traits.",
+        "Weights are hypotheses for testing, not calibrated coefficients."
+      ]
+    },
+    {
+      "id": "mbti-like-v0.1",
+      "title": "MBTI-like Research Projection",
+      "calibration_standing": "UNVALIDATED",
+      "intended_use": "Communication experiment only; not an MBTI result.",
+      "mapping": {
+        "E_I_like": {"initiative": 0.50, "coordination": 0.50},
+        "N_S_like": {"abstraction-preference": 0.60, "exploration": 0.40},
+        "J_P_like": {"invariant-fidelity": 0.35, "evidence-threshold": 0.30, "reversibility-preference": -0.35}
+      },
+      "loss": [
+        "No Thinking/Feeling-like axis is projected in v0.1.",
+        "Continuous operational evidence is compressed into framework-like axes only on explicit request.",
+        "No categorical type is emitted by the deterministic tool."
+      ]
+    },
+    {
+      "id": "cvi-like-v0.1",
+      "title": "CVI-like Research Projection",
+      "calibration_standing": "UNVALIDATED",
+      "intended_use": "Archetype-language hypothesis generation only; not a Core Values Index result.",
+      "mapping": {
+        "innovator_like": {"exploration": 0.45, "abstraction-preference": 0.35, "initiative": 0.20},
+        "banker_like": {"evidence-threshold": 0.40, "invariant-fidelity": 0.40, "scope-horizon": 0.20},
+        "builder_like": {"initiative": 0.35, "invariant-fidelity": 0.25, "scope-horizon": 0.20, "reversibility-preference": -0.20},
+        "merchant_like": {"coordination": 0.55, "initiative": 0.25, "exploration": 0.20}
+      },
+      "loss": [
+        "The mapping is not derived from the proprietary CVI scoring method or item bank.",
+        "The four outputs are research analogs over Soveraeign constructs only.",
+        "Weights are hypotheses for empirical evaluation."
+      ]
+    }
+  ]
+}

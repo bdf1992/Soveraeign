@@ -1,0 +1,27 @@
+name: temporary disposition docs refresh
+
+on:
+  push:
+    branches:
+      - research/disposition-lab-v0-1
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build documentation projection
+        run: python scripts/sov_docs.py build
+      - name: Upload generated page
+        uses: actions/upload-artifact@v4
+        with:
+          name: disposition-documentation-html
+          path: docs/documentation.html
+          if-no-files-found: error
+          retention-days: 1

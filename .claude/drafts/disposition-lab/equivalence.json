@@ -1,0 +1,11 @@
+{
+  "schema": "soveraeign-disposition-equivalence/v0.1",
+  "standing": "EXPERIMENTAL",
+  "issue": 200,
+  "records": [],
+  "default": {
+    "cross_adapter_comparison": "NOT_ADMITTED",
+    "cross_subject_kind_comparison": "NOT_ADMITTED",
+    "reason": "No measurement-equivalence evidence has yet been admitted for Disposition Lab v0.1."
+  }
+}

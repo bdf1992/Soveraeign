@@ -6,7 +6,7 @@
     "CLAUDE.md",
     "STATUS.yaml"
   ],
-  "summary": "What scripts/sov_harness.py grades, stated as a contract rather than left implicit in the code. Some kinds are derived from records and generalize; some cover exactly the vocabulary listed here; one is a presence check. Which is which is the `coverage` block below, and `scripts/sovharness/contract.py` grades that block against the kinds the module actually runs, because a grader whose own coverage claim is unchecked is the defect it exists to catch. This file said 'two of the five claim kinds are derived' while documenting six kinds and three derived; an independent witness caught it, no check could have.",
+  "summary": "What scripts/sov_harness.py grades, stated as a contract rather than left implicit in the code. Every kind compares an extracted claim against a record that owns it, so each generalizes past the defect that motivated it. scripts/sovharness/contract.py grades this block against the kinds the module actually runs, because a grader whose own coverage claim is unchecked is the defect it exists to catch.",
   "coverage": {
     "derived": {
       "CAPABILITY": "Every tool name in agent frontmatter, against contracts/harness-hosts.json. Generalizes: any tool not in the portable set fails, named or not.",
@@ -14,71 +14,23 @@
       "STANDING": "Every `<subject>_status is <TOKEN>` assertion, against STATUS.yaml. Generalizes over subjects and tokens, but ONLY matches that one sentence form.",
       "SELFCLAIM": "This contract itself, against the kinds scripts/sov_harness.py actually runs and the drift footprint git's index actually holds. Generalizes: the kind set is read off ALL_CHECKS membership, so a check removed from the module removes its kind and this refuses the contract that still claims it."
     },
-    "declared": {
-      "VOLATILE": "Standing words in a skill or agent `description:` field. Covers exactly the terms in standing_vocabulary below and no others. A new way of writing 'this service is not built yet' is not caught until it is added here.",
-      "RETIRED": "Identifiers that no longer resolve. Covers exactly the terms in retired_identifiers below."
-    },
     "presence_only": {
       "PROVENANCE": "That a vendored skill declares its source fields. Does not recompute the digest; that needs the origin repository's rule and is a DEPENDENCY_SEAM."
     },
     "not_covered": [
-      "Prose that is misleading without asserting a graded claim.",
+      "Whether a description asserts mutable standing in words nobody listed. Two kinds here matched a hand-written vocabulary and were withdrawn on 2026-09-08: they refused 'accepted but unbuilt' and passed 'implementation is still pending', which is the same claim differently worded. SDLC.md puts generative detection in the Red lane and declared cases in Blue; a phrase list is a Blue case pretending to be a net.",
+      "Prose that misleads without asserting a graded claim.",
       "Whether a description's scope statement is accurate.",
       "Whether a workflow prompt's reasoning is sound.",
       "The cold-start `host` section, which records one workstation's facts and is mostly unprobed.",
-      "The two cold-start probes A36 and A37. They are recorded in the corpus, and no gate executes sov_coldstart.py - it is in neither the verify table nor .github/. The gate that actually refuses a bad tool declaration is CAPABILITY, which runs in verify."
+      "The two cold-start probes A36 and A37. No gate executes sov_coldstart.py - it is in neither the verify table nor .github/. The gate that refuses a bad tool declaration is CAPABILITY, which runs in verify."
     ]
   },
-  "representation_rule": {
-    "rule": "A skill or agent description states what the skill is for. It does not state what is built, accepted, chartered, or in progress. Standing is resolved from STATUS.yaml at the moment it is needed, because a description is read by a participant that cannot tell how old it is.",
-    "remedy": "Delete the standing clause. If the reader genuinely needs the standing, point at STATUS.yaml instead of copying it."
-  },
-  "standing_vocabulary": [
-    {
-      "term": "unbuilt",
-      "why": "sov-console and sov-proofing both described a boundary as 'accepted but unbuilt'; Console's continuity path was built."
-    },
-    {
-      "term": "not built",
-      "why": "The same claim spelled with a space."
-    },
-    {
-      "term": "not yet built",
-      "why": "The same claim hedged."
-    },
-    {
-      "term": "not implemented",
-      "why": "The spelling STATUS.yaml itself uses in a status value, which makes it likely to be copied into prose."
-    },
-    {
-      "term": "accepted but",
-      "why": "The construction that carries a standing contrast into a description."
-    },
-    {
-      "term": "phase-i boundaries stand",
-      "why": "sdlc-release conditioned a live refusal on a phase that is terminal."
-    },
-    {
-      "term": "in phase i this",
-      "why": "The body form of the same, which asserts the closed phase is current."
-    },
-    {
-      "term": "while the service is",
-      "why": "The clause that introduced both 'accepted but unbuilt' descriptions."
-    }
-  ],
-  "retired_identifiers": [
-    {
-      "term": "no_external_effects_in_phase_i",
-      "replacement": "owner_holds O1 (reason PUBLICATION) in STATUS.yaml, or the applicable hold_reasons entry in contracts/acceptance-policy.json",
-      "why": "Cited by sdlc-release as the record to name in a refusal. It is not in STATUS.yaml, so the instruction was to cite a record that does not exist."
-    }
-  ],
   "known_drift": [
     {
       "term": "PUBLIC-CLEARANCE",
-      "status": "NOT_ENFORCED",
-      "why": "It names a live concept, owner_holds O1 with reason PUBLICATION, under a retired spelling, so it is drift rather than falsehood. Enforcing it now would fail the build on text this branch is not repairing.",
+      "status": "RECORDED_NOT_ENFORCED",
+      "why": "PUBLIC-CLEARANCE names a live concept, owner_holds O1 with reason PUBLICATION, under a retired spelling. Nothing here refuses it; the footprint below is a derived count that fails if it drifts, so the successor concern has an exact target rather than an estimate.",
       "follow_up": "The wider retired-name cleanup. Add to retired_identifiers in the same change that repairs the citations.",
       "footprint": {
         "files": 12,
@@ -100,5 +52,14 @@
         ]
       }
     }
-  ]
+  ],
+  "successor": {
+    "concern": "a semantic lane for standing claims in prose",
+    "why": "The withdrawn kinds failed because detecting a standing claim in arbitrary English is a semantic judgement, not a lexical one. A model answers it; a substring list cannot.",
+    "shape": "The model detects and proposes; deterministic code refuses. A model verdict is a report, never authority (AGENTS.md, Evidence and standing), and verify.py must return the same verdict for the same bytes, so a proposal lands as a fixture or a repair and the gate stays deterministic.",
+    "routes": [
+      "Enable the existing generative red lane in .github/workflows/qa-lanes.yml (SOV_RED_LANE_ENABLED plus a key). External crossing, owner-held, per pull request.",
+      "Local, through adapters/ollama/invoke.py with data_boundary LOCAL_ONLY. No external crossing and no owner gate, but invoke_model is declared in contracts/kernel-transitions.json with no kernel implementation (PROD-I-9), so this is a build rather than a configuration change."
+    ]
+  }
 }

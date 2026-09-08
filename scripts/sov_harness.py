@@ -11,14 +11,20 @@ was the surface with no grader, which is why four agent definitions declared a
 tool no invocation grants and a workflow prompt told launched agents a service
 standing STATUS.yaml contradicts.
 
-What this does and does not reach is declared in `contracts/harness-claims.json`,
-not left to be inferred from a green run. Two kinds are derived from records and
-generalize (CAPABILITY, REFERENCE, and STANDING within its one sentence form);
-two cover exactly the vocabulary that contract lists (VOLATILE, RETIRED); one
-checks presence only (PROVENANCE). A first version of this module graded only
-`<subject>_status is <TOKEN>` and would have missed every prose defect the same
-branch removed - "accepted but unbuilt", a refusal conditioned on a closed phase,
-an identifier that no longer resolves. Those are now cases in `selfcheck`.
+What this does and does not reach is declared in `contracts/harness-claims.json`.
+Every kind here compares an extracted claim against a record that owns it, so
+each generalizes: an unknown tool, an address nobody anticipated, an invented
+status token and a subject STATUS.yaml never had are all refused without being
+listed anywhere.
+
+Two further kinds lived here and were withdrawn. VOLATILE and RETIRED matched a
+hand-written list of nine strings, so "accepted but unbuilt" was refused while
+"implementation is still pending" passed - the same claim, differently worded.
+That is Red work, not Blue: SDLC.md puts generative detection in the adversarial
+lane and declared cases in this one, and a phrase list is a declared case
+pretending to be a net. `qa-lanes.yml` already carries a generative red lane for
+it, gated off. Detecting a standing claim in arbitrary prose belongs there, and
+what belongs here is whatever that lane lands as a fixture.
 
 This does not lint prose. A description may say what it likes as long as its
 assertions hold and it does not state standing, which is the one representation
@@ -192,43 +198,6 @@ def check_reference(root: Path = ROOT) -> list[Defect]:
     return defects
 
 
-@emits("VOLATILE")
-def check_volatile(root: Path = ROOT) -> list[Defect]:
-    """A description states what a skill is for, never what is built.
-
-    Covers exactly the vocabulary `contracts/harness-claims.json` declares. This
-    kind does not generalize and the contract says so: a new way of writing "not
-    built yet" passes until it is added there.
-    """
-    contract = _contract(root, "harness-claims.json")
-    terms = [(e["term"], e["why"]) for e in contract["standing_vocabulary"]]
-    remedy = contract["representation_rule"]["remedy"]
-    defects = []
-    for path in _described(root):
-        match = DESCRIPTION.search(path.read_text(encoding="utf-8"))
-        if not match:
-            continue
-        text = " ".join(match.group(1).split()).lower()
-        for term, why in terms:
-            if term in text:
-                defects.append(Defect("VOLATILE", f"{path.relative_to(root)} description says "
-                                                  f"{term!r}", f"{why} {remedy}"))
-    return defects
-
-
-@emits("RETIRED")
-def check_retired(root: Path = ROOT) -> list[Defect]:
-    """An identifier cited in the harness must still resolve to a record."""
-    contract = _contract(root, "harness-claims.json")
-    defects = []
-    for path in _harness_files(root):
-        text = path.read_text(encoding="utf-8")
-        for entry in contract["retired_identifiers"]:
-            if entry["term"] in text:
-                defects.append(Defect(
-                    "RETIRED", f"{path.relative_to(root)} cites {entry['term']}",
-                    f"{entry['why']} Use {entry['replacement']}."))
-    return defects
 
 
 @emits("PROVENANCE")
@@ -250,8 +219,8 @@ def check_selfclaim(root: Path = ROOT) -> list[Defect]:
 
 #: Every kind this module runs. Each member was bound to its kind by @emits at
 #: its own definition, so membership is the only thing this tuple decides.
-ALL_CHECKS = (check_capability, check_standing, check_reference, check_volatile,
-              check_retired, check_provenance, check_selfclaim)
+ALL_CHECKS = (check_capability, check_standing, check_reference, check_provenance,
+              check_selfclaim)
 
 
 def kinds() -> set[str]:

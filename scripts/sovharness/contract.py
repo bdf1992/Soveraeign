@@ -41,8 +41,12 @@ def check_contract(root: Path, kinds: set[str]) -> list[tuple[str, str]]:
     contract = json.loads((root / "contracts" / "harness-claims.json").read_text(
         encoding="utf-8"))
     coverage = contract["coverage"]
-    declared = set(coverage["derived"]) | set(coverage["declared"]) | set(
-        coverage["presence_only"])
+    # Every mapping under `coverage` describes kinds; `not_covered` is a list of
+    # prose and describes none. Reading the block by shape rather than by a fixed
+    # set of key names means removing a whole group - as withdrawing the two
+    # phrase-list kinds did - does not silently stop the grading.
+    declared = {kind for group in coverage.values() if isinstance(group, dict)
+                for kind in group}
     defects = []
 
     missing = kinds - declared

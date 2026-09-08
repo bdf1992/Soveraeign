@@ -1,0 +1,248 @@
+{
+  "case_id": "WITNESS-2026-09-08-DEFINITION-RECURRENCE-P15-X4-PASS-12",
+  "record_kind": "OBSERVATION",
+  "record_note": "An observation, not a settlement and not a ratification. This participant built nothing in the subject and edited no file but this record. It was asked a narrow confirmation question: whether the two findings pass 11 objected on are gone, whether every sentence of the custody member note is true, and whether anything in the delta blocks landing at BUILT. The refusal of BUILT -> WITNESSED recorded by passes 1 through 11 is not reopened here, is not mine to revisit, and this record supports no standing transition.",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08/pass-12",
+
+  "independence": {
+    "contributed_to_build_of_subject": false,
+    "edited_subject": false,
+    "built_the_repair": false,
+    "container": "The same container and the same shared checkout as the participant that built 3a8c199, and the same one passes 5 through 11 ran in. I never edited the shared checkout; every measurement was taken in fresh `git clone --no-hardlinks` copies under the session scratchpad. That is hygiene, not host separation, and it does not make this reading independent of the build in the sense AGENTS.md means.",
+    "model": "claude-opus-5, the same model family as the builder and as all eleven prior readings. Every commit trailer on this branch reads Claude Opus 5. This reading adds no model diversity.",
+    "prompts": "Delegated, and written by the participant that holds this concern and built the subject - not by the root seat. The prompt is a strong anchor and I state its shape rather than minimising it. It told me the scope was a confirmation and not a fresh survey; it told me the BUILT -> WITNESSED refusal stands and is not reopened; it named P11-F1 and P11-F2 as the two things to confirm gone; it named P11-F5 and P11-F6 as repaired and told me how; and it told me in advance the values I would find - exit 1, 9 of 10 resolved, 3 graded closures, proposal:recurrence/1170f5d5096fddb8, 39 unit tests, verify and lint passing, origin/main an ancestor. Being told the expected answer before measuring is the sharpest limit on this reading. I re-derived every one of those values in fresh clones rather than reading them from any record, and I derived the git check-ignore comparison, the five sabotage plants, the anchored-pattern probe, the tracked-path sweep and the three-revision identity re-derivation myself; but I was told where to look and what I would see, and a reader should weight this accordingly.",
+    "helpers_used": "None. No subagent read or edited anything in this reading.",
+    "what_this_does_not_establish": "Nothing here establishes independence in the sense BUILT -> WITNESSED requires. This is a twelfth reading from inside the builder's container, model family and prompt chain. It is a second reading of a repair, not an outside judgement of the member."
+  },
+
+  "subject": {
+    "work": "scripts/sov_recurrence.py and scripts/sovrecurrence/, the one member of custody:phase-1-5/definition-recurrence (Phase 1.5 exit clause P15-X4) in contracts/custodies/phase-1-5.json, together with the custody member note and the pass-11 observation record the delta ships.",
+    "witnessed_revision": "3a8c1997fea08aa577aa9424be6984e2bbf63254",
+    "witnessed_tree": "b3e4d6b317927772f8cf8a9be728c7fe28bc7402",
+    "branch": "claude/sovereign-phase-1-5-exits-fb7ysc",
+    "delta_under_test": "291ec48..3a8c199",
+    "files_in_the_delta": [
+      "conformance/observations/2026-09-08-definition-recurrence-p15-x4-pass11.json (added, 317 lines)",
+      "contracts/custodies/phase-1-5.json (the definition-recurrence member note, one value)",
+      "scripts/sovrecurrence/experience.py (+34/-11)",
+      "scripts/tests/test_sov_recurrence.py (+57 net, two tests added, two moved between classes, none removed)"
+    ],
+    "note_on_the_delta": "Four files. Nothing outside the concern is touched: no service, no governing root document, no workflow, no schema, no fixture, no oracle. I confirmed by sha256 that scripts/sovrecurrence/declaration.py, neutrality.py, fixture.py, candidate.py, recurrence.py, scripts/sov_recurrence.py and conformance/commissioning.py are byte-identical across 291ec48..3a8c199, so no oracle was weakened to let a participant pass. The test file gained test_a_directory_pattern_keeps_a_file_of_the_same_name and test_a_negated_ignore_pattern_keeps_the_file and lost none."
+  },
+
+  "record_projection": {
+    "supplied": null,
+    "reconstructed_as": "the committed tree at 3a8c199 and its ancestors on this branch and on origin/main",
+    "cutoff": "3a8c1997fea08aa577aa9424be6984e2bbf63254",
+    "note": "No RecordProjection id was supplied and none is invented. Every address cited resolves in a commit at or below this cutoff. The cutoff did not move under me (CLAUDE.md, trap T6): the shared checkout read 3a8c199 with `git status --porcelain` at zero lines before the first measurement and at zero lines after the last, with HEAD unmoved. Every command was run in a fresh clone at a checked-out revision, never in the shared checkout."
+  },
+
+  "content_digests_sha256_16_at_3a8c199": {
+    "contracts/custodies/phase-1-5.json": "ef68da81d35812e4",
+    "scripts/sovrecurrence/experience.py": "74153d9ac5047d1e",
+    "scripts/tests/test_sov_recurrence.py": "70b008845cdc0223",
+    "conformance/observations/2026-09-08-definition-recurrence-p15-x4-pass11.json": "300147db475c6d93",
+    "scripts/sovrecurrence/declaration.py": "112aa10d78945817 (identical at 291ec48)"
+  },
+
+  "commands": [
+    "git status --porcelain in the shared checkout, before and after -> 0 lines both times; git rev-parse HEAD -> 3a8c199 both times",
+    "git clone --no-hardlinks <root> <ws>; git checkout 3a8c199 -> tree b3e4d6b317927772f8cf8a9be728c7fe28bc7402, porcelain 0 lines",
+    "python3 scripts/sov_recurrence.py run -> exit 1; 3 settled sources across 3 clauses; candidate proposal:recurrence/1170f5d5096fddb8; primitives 9 resolved of 10, 3 closed vocabularies; 1 reported-not-graded (contracts/product-canon.schema.json); P15-Q4.1 holds, P15-Q4.2 holds, P15-Q4.3 does not",
+    "python3 scripts/sov_recurrence.py selfcheck -> exit 0; 9 defeating variants each fail their own predicates; the live reading reaches this repository",
+    "python3 scripts/tests/test_sov_recurrence.py -> Ran 39 tests, OK",
+    "python3 scripts/verify.py in the fresh clone -> exit 0, PASS: 57 checks in 15.889s wall; DEBT recorded for wall clock and for 12 checks over ceiling; no semantic failure",
+    "python3 scripts/sov_recurrence.py run again in the same clone, after verify.py wrote __pycache__ under services/observation -> proposal:recurrence/1170f5d5096fddb8, unchanged; git status --porcelain still 0 lines",
+    "python3 scripts/lint.py -> exit 0, PASS: repository hygiene (1281 text files, 587 Python modules, 10 named debt)",
+    "second independent fresh clone at 3a8c199 -> proposal:recurrence/1170f5d5096fddb8, identical",
+    "IDENTITY RE-DERIVATION: three further fresh clones -> 6d02eef (tree 2b1aa7e, porcelain 0) gives 785cd7eea6b17d50; 964abd7 (tree 79d457f, porcelain 0) gives 785cd7eea6b17d50; 291ec48 (tree 234c2d9, porcelain 0) gives 1170f5d5096fddb8. Framing is the move, and 785cd7ee is what a clean checkout at 6d02eef produces, which is the value pass 6 cites at the tree object pass 6 declares.",
+    "COMPARISON: built a throwaway git repository holding this repository's .gitignore verbatim and compared `git check-ignore -q --no-index` against experience._is_artifact over 38 controlled paths -> 1 divergence, and it is not in the declaration matcher (see P12-F4). All nine over-exclusions pass 11 measured are gone: a file named build, dist, env, venv, src/build, src/dist, a/b/venv, buildings/x and pkg.egg-info are all kept, as git keeps them, while build/out.o, dist/x, env/x, a/b/venv/x and a/b/c/build/z are all excluded, as git excludes them.",
+    "SWEEP: `git ls-files` -> 1478 tracked paths; experience._is_artifact against the repository root drops 0 of them.",
+    "SABOTAGE x5 in throwaway copies of 3a8c199, each reverted: delete the `!` negation branch -> 39 tests, 1 failure, selfcheck exit 0. Revert _ignore_patterns to the old strip-both-ends form -> 1 failure. Delete the trailing-slash branch of _matches -> 2 failures. Delete the two length-framing updates -> 1 failure. Force _ignore_patterns to read an empty declaration -> 3 failures. Every one is caught by a unit test and none by selfcheck.",
+    "PROBE: a synthetic .gitignore of `/build/` and `/dist` -> build/x and a/build/x are both KEPT (git ignores build/x) and dist and a/dist are both DROPPED (git ignores only the root dist). Anchored patterns are genuinely not implemented in both directions, exactly as the docstring now states. Confirmed no pattern in this repository's .gitignore is anchored, uses `**`, or spans segments: 46 patterns, all plain names, globs or single-segment directory patterns.",
+    "python3 -c \"import run_tooling_tests; run_tooling_tests.test_modules()\" -> 116 modules, and scripts/tests/test_sov_recurrence.py is one of them, so verify.py's 'repository tooling tests' check does reach this member's unit tests",
+    "git merge-base --is-ancestor origin/main 3a8c199 -> true; origin/main is 48a0f57",
+    "git diff --name-only 291ec48..3a8c199 -> 4 files; git diff --stat for scripts/verify.py, scripts/sovverify/ and conformance/ -> only the pass-11 record; no check added, none removed",
+    "sha256 of declaration.py, neutrality.py, fixture.py, candidate.py, recurrence.py, sov_recurrence.py, conformance/commissioning.py at both revisions -> identical"
+  ],
+
+  "q1_are_p11_f1_and_p11_f2_repaired": {
+    "question": "Are P11-F1 and P11-F2 repaired, and is the replacement wording true against the artifact?",
+    "answer": "BOTH REPAIRED. The replacement wording is true, with one contestable count named as P12-F1.",
+    "p11_f1": {
+      "verdict": "REPAIRED.",
+      "observed": "The sentence 'That every reading came from one model family in one container is why the count is not the evidence' no longer exists in contracts/custodies/phase-1-5.json. It now reads 'That every reading came from one model family is why the count is not the evidence; what each one found and reproduced is.' The container half is gone, and the withdrawal is added to the file rather than edited away: the next sentence says 'An earlier draft of this sentence said one container as well, which is the fourth container claim this file has carried and the fourth to be withdrawn: passes 1 through 3 record no container, and pass 4 reports a separate one. The argument needs no container fact to stand.'",
+      "replacement_true": "The model-family half is true against the artifact: all eleven pass records carry a participant_id containing claude-opus-5, and every non-merge commit trailer in origin/main..3a8c199 reads 'Co-Authored-By: Claude Opus 5'. The one commit with no trailer is the merge 5632495, which carries no content of its own, so the sentence about trailers is not falsified by it. The two facts the withdrawal states are true: pass1.json, pass2.json and pass3.json have no `container` key and no `prompts` key in their independence blocks, and pass4.json's container reads 'A separate remote container from a fresh clone'. Sentence [43], 'Passes 4 through 11 each record a container and a prompt in their own independence block; passes 1 through 3 record neither', is true key by key.",
+      "residual": "The count 'the fourth ... and the fourth to be withdrawn' is contestable. See P12-F1. It does not block."
+    },
+    "p11_f2": {
+      "verdict": "REPAIRED, and the new number is right.",
+      "observed": "The note now reads 'Seven claims this participant made and could not support are withdrawn by name in the pass-4 corrections block rather than edited away, among them that scripts/verify.py does not run these unit tests, which it does.' json.load on conformance/observations/2026-09-08-definition-recurrence-p15-x4-pass4.json at 3a8c199 gives corrections.withdrawn of length 7: C1 through C7. The named example is C4, which withdraws exactly the claim that verify.py runs selfcheck and not the unit tests; I re-derived that verify.py does run them, by importing run_tooling_tests.test_modules() and finding scripts/tests/test_sov_recurrence.py among the 116 modules the 'repository tooling tests' check runs."
+    }
+  },
+
+  "q2_is_every_sentence_of_the_note_true": {
+    "question": "Read every sentence of the custody member note at this commit against the code and the records. Is any of it false or overstated?",
+    "answer": "NO SENTENCE IS FALSE. One count is contestable (P12-F1), one sentence was not derivable when written though it is true now (P12-F2), and one phrase is loose against the code it describes (P12-F4). I split the note into 53 sentences and checked every one that makes a checkable claim.",
+    "method": "The note was extracted from the JSON, split on sentence boundaries, and each sentence was taken to either the code at 3a8c199, the eleven pass records, the commit graph, or a command re-run in a fresh clone. I did not accept any sentence because a prior record agreed with it.",
+    "verified_true": [
+      "[2] 'graded by conformance/commissioning.py, which imports no participant code' - the module's only imports are __future__ and typing.",
+      "[3]/[4] 'No session or transcript is consulted' and 'It reads the working tree and not a git object' - no environ, getenv, subprocess or git call in scripts/sovrecurrence/ or scripts/sov_recurrence.py. This is the P11-F4 repair, which the delta also made in gather()'s docstring without claiming it: the shipped code now says 'No session or transcript is consulted, so a second participant reproduces it from a clean tree', dropping the 'environment' word pass 10 and pass 11 objected to. P11-F4 is repaired, unclaimed.",
+      "[7] '.gitignore is tracked and needs no git to open' - tracked, and opened with read_text.",
+      "[9] 'Framing moved the live identity from proposal:recurrence/785cd7eea6b17d50 to proposal:recurrence/1170f5d5096fddb8' - re-derived in three fresh clones: 785cd7ee at 6d02eef and at 964abd7, 1170f5d5 at 291ec48.",
+      "[10]/[11] 'Records citing the older value were true of the trees they measured ... Those trees were clean checkouts of the revisions those records name' - this is the P11-F9 repair and it holds. The overstatement 'true of the revisions they name' is gone. I confirmed the substantive half independently: a fresh clone at 6d02eef with porcelain at 0 lines and tree object 2b1aa7e produces 785cd7eea6b17d50, and 2b1aa7e is exactly the witnessed_tree pass6.json declares. pass6.json and pass7.json each declare measurement in a detached worktree at the frozen commit with the tree object verified, so the clause rests on a self-report that carries a checkable tree hash, not on bare assertion.",
+      "[13] 'synthesis is observed to leave STATUS.yaml, contracts/phases.json and this collection byte-identical' - candidate.GOVERNING is exactly that triple and recurrence digests them either side of synthesis.",
+      "[13] 'nine defeating variants' - selfcheck reports nine and exits 0.",
+      "[23]/[24] the declaration rule and the prose exclusion - DECLARED_NAME_KEYS is ($defs, definitions, properties, patternProperties) and PROSE_KEYS covers description, note, $comment, warrant, title, name and enum. Prose is not read.",
+      "[27] the live verdict and both its reasons - reproduced exactly: 3 sources across 3 clauses, 9 of 10 primitives resolved with `discovery` the unresolved one, contracts/ticket-settlement.json naming contracts/issue-metadata.schema.json, three closed role vocabularies there.",
+      "[29] '`run` exits 1 here for that reason and `selfcheck` exits 0' - exit 1 and exit 0 measured.",
+      "[30]/[31] 'Eleven readings, none supporting BUILT -> WITNESSED' and the revision list - all eleven records read standing_supported NONE, and each record's declared revision matches the note's list, pass 1 at fe91c65 through pass 11 at 291ec48.",
+      "[32] 'Passes 7 through 11 were asked the landing question apart from the standing question' - passes 7, 8, 9, 10 and 11 each carry a q1_landing_at_built field distinct from their standing answer.",
+      "[34] 'Pass 7 was asked both and would refuse WITNESSED' - pass7.json verdict reads SPLIT, landing supported, WITNESSED not.",
+      "[35] 'Passes 8 through 11 ... record that they did not reopen the refusal, which is not the same as making one' - each of the four says so in its own standing_supported or record_note.",
+      "[36]/[40] the model-family claim and what is checkable - eleven claude-opus-5 participant ids, every commit trailer Claude Opus 5.",
+      "[41] pass 4 'refused e898d06 as a witness and then built f43ee9a' - pass4.json declares built_the_repair true and a split verdict naming both revisions.",
+      "[43] passes 4-11 record a container and a prompt; 1-3 record neither - true key by key.",
+      "[46] seven withdrawals, and verify.py does run these unit tests - both re-derived.",
+      "[49] 'scripts/verify.py reaches this member twice, through the definition recurrence slice and through the tooling tests, and neither asserts the live verdict' - true, and this is the honest disclosure of P11-F8. The slice check runs selfcheck, not run.",
+      "[50] 'A const, a pattern, and a required-property closure are not read' - neutrality._closed_enums reads only `enum`, and the gap is stated in the module.",
+      "[51] the reported-not-graded closure in contracts/product-canon.schema.json - emitted by the live run exactly as described.",
+      "[52]/[53] 'BUILT only. A test may not claim WITNESSED' - and the member record itself reads standing BUILT, work_state PRESENTED, stage_observed_by null."
+    ],
+    "not_false_but_named": "P12-F1 (a contestable count), P12-F2 (a sentence true only once this reading exists), P12-F4 (a loose phrase about the generated-name floor). Each is below."
+  },
+
+  "q3_do_you_object_to_landing_at_built": {
+    "question": "Do you object to landing at BUILT? If yes, name the blocker precisely.",
+    "answer": "NO. I do not object to landing custody:phase-1-5/definition-recurrence at standing BUILT, work_state PRESENTED, on the bytes at 3a8c199.",
+    "blockers": [],
+    "why": "Both of pass 11's stated blockers are gone from the artifact and their replacements are true. Every command claim reproduces in a fresh clone: exit 1 at 9 of 10 with 3 graded closures and proposal:recurrence/1170f5d5096fddb8, identical across two independent clones and unchanged after python scripts/verify.py wrote bytecode under services/observation. 39 unit tests pass. verify.py exits 0 at 57 checks and lint.py exits 0. origin/main is an ancestor and no check was added or removed. No oracle was weakened - seven modules including declaration.py are byte-identical across the delta. No test was deleted. The ignore matcher now agrees with git check-ignore on every one of the nine paths pass 11 measured it wrong on, and drops none of the 1478 tracked paths. All five mechanisms I could sabotage go red in a unit test, including the negation branch that had no case before. Nothing in the delta claims a standing it does not hold, and the member's own closing sentence still refuses WITNESSED.",
+    "note_on_the_objection": "This is not support for BUILT -> WITNESSED and does not touch that refusal, which stands on eleven readings and is not reopened here. Landing at BUILT and advancing standing are different acts and this record answers only the first."
+  },
+
+  "reproduced_independently": {
+    "p11_f5_directory_pattern": "REPRODUCED AS REPAIRED, and confirmed against git rather than against the prose. _ignore_patterns now appends `pattern if pattern.endswith('/') else pattern.strip('/')`, so a trailing slash survives, and _matches tests a slash-terminated pattern against `relative.parts[:-1]` alone - the directory components - and `continue`s rather than falling through to the name test. Measured: 38 controlled paths against `git check-ignore -q --no-index` on a throwaway repository holding this repository's .gitignore verbatim. A file named build, dist, env, venv, src/build, src/dist, a/b/venv, pkg.egg-info or buildings/x is KEPT, matching git; build/out.o, dist/x, env/x, a/b/venv/x, a/b/c/build/z, pkg.egg-info/PKG-INFO, .local/x, .soveraeignx/y and receipts.local/r are EXCLUDED, matching git. The `!` negation still holds: .env.local excluded, .env.example and src/.env.example kept. One divergence remains and it is the hard floor, not the declaration matcher - see P12-F4. Reverting only the trailing-slash line takes the unit tests to one failure, so the repair is guarded.",
+    "p11_f6_negation_branch": "REPRODUCED AS REPAIRED. test_a_negated_ignore_pattern_keeps_the_file is new in this delta and covers both polarities in one method: with `.env\\n.env.*\\n!.env.example` declared, planting .env.local leaves the member digest unmoved, and planting .env.example moves it. Deleting the two `if _matches(relative, negate): return True` lines now takes scripts/tests/test_sov_recurrence.py to 1 failure, where at 291ec48 it left all 37 passing. selfcheck is still exit 0 under that sabotage, so the unit test is the whole guard - which is what the note's own [49] discloses.",
+    "identity_and_gates": "REPRODUCED. proposal:recurrence/1170f5d5096fddb8 in two independent fresh clones, in the same clone after python scripts/verify.py, and by direct re-derivation the value at 964abd7 is 785cd7eea6b17d50 - so the note's account of what framing moved is the artifact's, not a restatement. run exits 1 with 9 of 10 primitives resolved and 3 graded closures. 39 unit tests OK. verify.py exit 0 at 57 checks with wall-clock and per-check debt attributed and not refusing. lint.py exit 0. origin/main (48a0f57) is an ancestor of 3a8c199 and the delta touches no check.",
+    "not_reproduced": "Nothing I attempted failed to reproduce."
+  },
+
+  "findings": [
+    {
+      "id": "P12-F1",
+      "severity": "MINOR",
+      "bucket": "DOES NOT BLOCK",
+      "state": "OPEN; introduced by this delta, inside the sentence written to repair P11-F1",
+      "address": "contracts/custodies/phase-1-5.json, the definition-recurrence member note, 'which is the fourth container claim this file has carried and the fourth to be withdrawn'",
+      "claim_defeated": "That this is the fourth container claim the file has carried and the fourth to be withdrawn.",
+      "observed": "The count is not checkable the way the seven-withdrawals count is, because it depends on how a sentence is individuated, and it is not stable across natural individuations. I walked every revision of contracts/custodies/phase-1-5.json on this branch and extracted every sentence containing 'container'. Five distinct assertions have stood in the file: (1) at 1ce4d21, 'Pass 4 was a different model in a different container from a fresh clone'; (2) at 6d02eef and again at 7188ef5, 'Pass 4 ran in a separate container from a fresh clone, sharing no session, transcript or working tree with the builder, under a prompt from the root seat rather than from the builder'; (3) at 7188ef5, 'Passes 5 and 6 share this container as well'; (4) at 0b8b000, 'Nothing in this repository records a container, a host or a prompt for any reading'; (5) at 291ec48, 'one model family in one container'. Counting withdrawals by the file's own stated standard - the corrections block withdraws by adding to the record rather than by editing what was said - only two have been withdrawn by name: C6 withdraws (2) and C7 withdraws (4). C1 withdraws the model half of (1) and its what_stands explicitly affirms 'A separate container', so (1)'s container half was never withdrawn by name. (3) is withdrawn nowhere; I grepped every observation record and every correction entry for it and it appears in no withdrawal - it was edited away at 0b8b000, which is the move the corrections note says the file does not make. So this is the fifth container claim and the third withdrawn by name. It reaches 'the fourth ... the fourth' only by merging (1) and (2) as one proposition in two wordings AND by counting a silent removal as a withdrawal.",
+      "why_it_matters": "Three reasons, in order. First, it is the third hand-maintained count this file has carried in three commits, and the previous two both went stale and both became findings (P11-F2 here; pass 7 and pass 10 on the earlier one). This one cannot go stale because it cannot be checked, which is worse rather than better. Second, the arithmetic is pass 11's, not the builder's: pass 11 wrote 'it is the fourth container claim this branch has written into that file, three of which have already been withdrawn', and the note adopts that count without re-deriving it. C4 in this same file withdraws a claim for exactly that reason and says so: 'Taking a witness's report as evidence instead of re-deriving it is the failure this delegation was called about.' Third, it sits in the sentence whose job is to withdraw a container claim, so a reader who checks it and finds it soft has the withdrawal itself in doubt.",
+      "why_it_does_not_block": "It is not a false statement. There is a coherent individuation under which it is true, and the sentence's load-bearing content - that the container half was withdrawn, that passes 1 to 3 record no container, that pass 4 reports a separate one, and that the argument needs no container fact to stand - is true in every direction I tested. The count is ornament on a sound withdrawal.",
+      "how_derived": "Walked `git rev-list origin/main..3a8c199 -- contracts/custodies/phase-1-5.json` and regexed every sentence containing 'container' out of each revision of the member note. Then read all seven corrections entries in pass4.json and grepped every observation record for 'share this container' and 'Passes 5 and 6'.",
+      "repair_shape_if_wanted": "Not mine to build. Drop the ordinal, or state the enumeration: 'the container claim this file has now carried and withdrawn four times over' invites the same question. 'This file has asserted a container fact and withdrawn it before; this is the last of them' says what matters and cannot go stale."
+    },
+    {
+      "id": "P12-F2",
+      "severity": "MINOR",
+      "bucket": "DOES NOT BLOCK",
+      "state": "OPEN; introduced by this delta; true as of this record and not derivable when it was written",
+      "address": "contracts/custodies/phase-1-5.json, 'Pass 11 objected until two false sentences in this note were repaired, and none objects to landing at BUILT on the state this member is landed in.'",
+      "claim_defeated": "That the record supported 'none objects to landing at BUILT on the state this member is landed in' at the moment 3a8c199 was written.",
+      "observed": "At 3a8c199 the newest reading in the repository was pass 11, whose subject is 291ec48 and whose q1_landing_at_built answers 'YES. I object'. No reading of 3a8c199 existed. The sentence is a claim about how a witness would grade bytes no witness had seen, written by the participant that wrote those bytes, into the governed file that carries the member's standing. Its first half is a fair paraphrase and I checked it: pass 11's note_on_the_objection says 'This is an objection to landing these bytes' and calls both blockers one-clause repairs inside the concern, so 'objected until ... were repaired' is supported. Its second half was a prediction. It is true now, because I read the note in full and do not object, and because passes 7 through 10 recorded no landing objection - but it became true after the commit that asserts it, not before.",
+      "why_it_matters": "AGENTS.md: 'A build report cannot witness itself.' This is that shape in one clause. The branch's discipline has been to say what rests on whose word - sentences [40] and [42] of this same note do it carefully for the model family and the container - and this sentence does not distinguish what the record held from what the builder expected the next reader to find. It is also self-defeating as evidence: a later reader who takes it as established has taken the builder's forecast for an observation, which is the thing the eleven-record chain exists to prevent.",
+      "why_it_does_not_block": "It is true against the record as the record now stands, and this reading is what makes it so. Nothing turns on it: it claims no standing, and the sentence immediately following the block still reads 'BUILT only. A test may not claim WITNESSED.'",
+      "how_derived": "Read pass11.json's q1_landing_at_built, objection_to_landing_at_built and note_on_the_objection in full; checked passes 7 through 10 for a landing objection (none); confirmed no observation record at 3a8c199 names 3a8c199 as its subject.",
+      "repair_shape_if_wanted": "Not mine to build. Tense it to what the record holds: 'no reading has objected to landing at BUILT on any state but the two sentences repaired here', or leave the forward claim to the record that can make it."
+    },
+    {
+      "id": "P12-F3",
+      "severity": "MINOR",
+      "bucket": "DOES NOT BLOCK",
+      "state": "OPEN; a property of the check, not of the delta; latent, correct at this commit",
+      "address": "scripts/sovrecurrence/experience.py, the IGNORE_DECLARATION docstring, 'an anchored or `**` pattern is not implemented. This repository's declaration uses none of the last.'; and the absence of any check that reads .gitignore",
+      "claim_defeated": "Nothing stated. This is the answer to 'what bytes does the check read', asked of the delta's own central mechanism.",
+      "observed": "The sentence is true at 3a8c199 - I read all 46 non-comment patterns in .gitignore and none is anchored, none uses `**`, and none spans path segments - and it is graded by nothing. All three ignore-related unit tests write their own two- or three-line .gitignore into a temporary root; none reads the repository's real declaration. No check anywhere in scripts/ invokes git check-ignore or compares the matcher to git. So the correspondence between this reader and git's semantics is asserted in prose and measured by no bytes that will be read again tomorrow. I measured what the divergence would be. Adding `/build/` to .gitignore silently UNDER-excludes: _ignore_patterns keeps it as '/build/', _matches tests fnmatch(part, '/build') against bare path components, and it can never match, so build/x and a/build/x are both kept where git ignores build/x. Adding `/dist` silently OVER-excludes: strip('/') makes it 'dist' and it matches at every depth, so a/dist is dropped where git keeps it. Either edit moves a member digest and therefore the candidate identity, with the whole suite green.",
+      "why_it_matters": "This is the shape that has already produced three identity drifts on this branch (P9-F5, P10-F4, P10-F5): the digest moves, nothing goes red, and only a witness re-deriving the value by hand finds it. The delta closes the drift the ignore list caused and leaves the mechanism by which a one-line edit to a file outside this concern reopens it. The docstring is honest about the limit - it names anchoring and `**` explicitly rather than hiding them, which is why this is a finding about the check and not about the prose.",
+      "why_it_does_not_block": "The claim is true today and I verified it directly rather than reading it. The delta does not make this worse; it is the first commit to state the limit accurately at all, since the wording it replaced said 'narrower than git' in the direction pass 11 measured wrong.",
+      "how_derived": "grep for check-ignore across scripts/ and conformance/ -> no check. Read the three ignore tests and confirmed each writes a synthetic declaration. Enumerated .gitignore's 46 patterns. Probed a synthetic '/build/\\n/dist' declaration through _ignore_patterns and _is_artifact and compared to git's documented anchoring.",
+      "repair_shape_if_wanted": "Not mine to build, and it may be right to leave it. If wanted, the cheapest guard is a unit test that reads the real .gitignore and asserts no pattern begins with '/' or contains '**' - one assertion, and it fails the build the day someone adds one, which is the day the digest would otherwise move in silence."
+    },
+    {
+      "id": "P12-F4",
+      "severity": "TRIVIAL",
+      "bucket": "DOES NOT BLOCK",
+      "state": "OPEN; pre-existing, carried unchanged through this delta; the one surviving divergence from git in my 38-path comparison",
+      "address": "contracts/custodies/phase-1-5.json, 'over a floor of generated names for a root that declares none'; and the same phrase in the scripts/sovrecurrence/experience.py module docstring",
+      "claim_defeated": "That the generated-name floor applies to a root that declares none.",
+      "observed": "The floor applies always. _is_artifact checks GENERATED_DIRS and GENERATED_SUFFIXES unconditionally and returns False before the negation branch is reached, so the floor beats both the declaration and a `!` negation of it. The function's own docstring says this correctly - 'The floor applies whatever the declaration says' - so the module contradicts itself by one clause, and the custody note copies the weaker half. The measurable consequence is small and I found exactly one instance in 38 controlled paths: a FILE named exactly `__pycache__` (or `.venv`, `node_modules`, `.tox`, and the other six) is dropped by this reader and kept by git, since git's `__pycache__/` is a directory pattern. Over-exclusion, and no such path is tracked - the sweep over all 1478 tracked paths drops none.",
+      "why_it_matters": "Barely, and only for consistency: this is a sentence about what the instrument reads, in the file that carries the member's standing, and it says something the code does not do. The branch has spent four readings on exactly that class of sentence.",
+      "why_it_does_not_block": "No repository path is affected, the divergence direction is pathological, and the precise statement already exists eleven lines away in the same module.",
+      "how_derived": "Read _is_artifact top to bottom and confirmed the floor precedes the negate test. Ran the 38-path git check-ignore comparison and isolated the single divergence.",
+      "repair_shape_if_wanted": "Not mine to build. Copy the function's own wording into the two places that carry the weaker one."
+    },
+    {
+      "id": "P12-F5",
+      "severity": "TRIVIAL",
+      "bucket": "DOES NOT BLOCK",
+      "state": "OPEN; half-repaired by this delta without claim; P11-F7, P10-F6 and P9-F8 before it",
+      "address": "scripts/tests/test_sov_recurrence.py, class InstitutionNeutrality, test_a_directory_member_is_not_digested_from_tool_output (line 351) and test_an_identifier_below_the_root_is_not_the_contract_identity (line 343)",
+      "claim_defeated": "Nothing the delta claims. This records what the delta did and did not do with a finding it did not name.",
+      "observed": "P11-F7 named four tests sitting under a class that does not own their subject. The delta moved two of them - test_the_directory_digest_frames_each_file and test_the_repositorys_own_ignore_declaration_decides now sit in SettledExperience at lines 90 and 103, beside the two new ones - and left two. test_a_directory_member_is_not_digested_from_tool_output is entirely about experience.digest and is still under InstitutionNeutrality. The delta does not claim this repair, so it is not a broken claim; it is a finding that got half-absorbed.",
+      "why_it_matters": "Least consequential thing here. Its only weight is that all four of the delta's ignore and framing guards are single unit tests with no self-check behind them, so placement is the only signal a later participant reorganising this file has about which ones must survive.",
+      "how_derived": "Listed every class and test method with line numbers at 3a8c199 and diffed the method set against 291ec48: two added, none removed, two moved.",
+      "repair_shape_if_wanted": "Not mine to build. Move the remaining two."
+    }
+  ],
+
+  "carried_from_pass_11_not_claimed_and_not_repaired": [
+    "P11-F3 (DOES NOT BLOCK): C7 in pass4.json still places a hybrid string in quotation marks after 'C6 above says', and still disowns it in the next sentence. conformance/observations/2026-09-08-definition-recurrence-p15-x4-pass4.json is byte-identical across this delta. Unchanged, and the disclaimer still keeps a reader from being misled.",
+    "P11-F8 (DOES NOT BLOCK): no check in scripts/verify.py asserts the live candidate identity. The 'definition recurrence slice' check runs selfcheck against a fixture root and asserts only that the live reading reaches this repository. I confirmed this by reading scripts/sovverify/commissioning.py line 34 and by running the check. The note discloses it correctly at [49], so it is a residual and not a false statement. It remains the reason every reading of this member has had to re-derive the identity by hand.",
+    "P11-F10 (DOES NOT BLOCK): pass8.json still carries the stale coverage line and still has no corrections block. Unchanged."
+  ],
+
+  "repaired_without_being_claimed": [
+    "P11-F4: gather()'s docstring in scripts/sovrecurrence/experience.py no longer reads 'No session, transcript or environment is consulted, so a second participant reproduces it from the artifact'. It now reads 'No session or transcript is consulted, so a second participant reproduces it from a clean tree', which is the wording the custody note already used. The two copies agree, which is what the finding asked for."
+  ],
+
+  "defeating_case_coverage": {
+    "note": "AGENTS.md requires a positive case and a case proving the required refusal for every consequential behaviour. Measured by sabotage in throwaway copies, not read off the prose. Each sabotage was reverted and the baseline re-confirmed at 39 tests OK.",
+    "newly_covered_since_291ec48": [
+      "the `!` negation branch, which had no case in either polarity at 291ec48: test_a_negated_ignore_pattern_keeps_the_file asserts both directions - an ignored .env.local leaves the digest unmoved, a negated .env.example moves it. Deleting the branch -> 1 failure. This closes P11-F6.",
+      "a directory pattern against a same-named file: test_a_directory_pattern_keeps_a_file_of_the_same_name asserts that src/build as a FILE moves the digest under a `build/` declaration and that a further file under build/ does not. Deleting the trailing-slash branch of _matches -> 2 failures; reverting _ignore_patterns to strip both ends -> 1 failure. This closes P11-F5."
+    ],
+    "already_covered_and_re_confirmed": [
+      "digest injectivity over trees: deleting the two length-framing updates -> 1 failure.",
+      "the ignore declaration being read rather than restated: forcing an empty declaration -> 3 failures.",
+      "the settled-member rule, the NOT_WITNESSED whole-token comparison, the missing-address defect, the byte-identical governing records, and the nine defeating variants - all still present and all still fail as declared under selfcheck."
+    ],
+    "still_uncovered": [
+      "the correspondence between this matcher and git's ignore semantics, and the claim that this repository's declaration uses no anchored or `**` pattern: asserted in a docstring, graded by no check, and true at this commit only because I measured it. P12-F3.",
+      "the live candidate identity against this repository: no check reads it. P11-F8, disclosed in the note.",
+      "the truth of a member's recorded standing and work_state: taken as written, disclosed at note sentence [48]."
+    ],
+    "not_caught_by_selfcheck": "None of the five sabotages moves selfcheck off exit 0. Every guard on the delta's mechanisms is a single unit test."
+  },
+
+  "residuals": [
+    "Independence. This is a twelfth reading from inside the builder's container and model family, under a prompt the builder wrote that told me in advance which two findings to confirm gone and what values I would measure. I re-derived every value in fresh clones and derived the git comparison, the sabotages and the anchored-pattern probe myself, and none of that makes this an independent observation in the sense BUILT -> WITNESSED requires.",
+    "Not attested. The container and prompt self-reports in passes 4 through 11, including my own. Nothing outside a reading corroborates any of them, and the note says so.",
+    "Not attested. That every member of this collection recorded as WITNESSED and LANDED truly is. The reader believes the record; a falsely settled member would enter the basis undetected. The note discloses this at [48].",
+    "Wall-clock and per-check debt: verify.py records no grade at 15.889s and 12 checks over ceiling, 27.375s above budget, attributed and not refusing under contracts/verification-budget.json. Not a semantic failure and not this concern's.",
+    "The member remains at BUILT with stage_observed_by null. This record changes neither."
+  ],
+
+  "unattestable": {
+    "any": false,
+    "note": "The cutoff held. The shared checkout read 3a8c199 with a clean working tree before the first measurement and after the last, HEAD unmoved, and every command ran in a fresh clone rather than in the shared tree. No material evidence was unavailable and no projection id was invented."
+  },
+
+  "verdict": "REPRODUCED, with no objection to landing and no support for any standing transition. Both of pass 11's blockers are gone from the artifact and their replacements are true. Every command claim reproduces in fresh clones. Every code repair holds in every direction I could attack it: nine of nine over-exclusions against git are gone, no tracked path is swallowed, all five mechanisms go red under sabotage including the negation branch that had no case, the identity is one value across four trees including one that ran verify.py, and no oracle, fixture or test was weakened or removed. I dissent on nothing that blocks. Five findings, all DOES NOT BLOCK: one contestable count, one sentence that was a forecast when written and is true now, one unguarded claim about git's semantics, one loose phrase about the generated-name floor, and one half-absorbed placement finding.",
+
+  "standing_supported": "NONE. This observation supports no standing transition. The member stays BUILT at work_state PRESENTED, and the refusal of BUILT -> WITNESSED recorded by passes 1 through 11 is not reopened here and is not mine to revisit. What this record does support is landing the branch with the member at that standing, which is a different act and is answered in q3_do_you_object_to_landing_at_built.",
+
+  "judgement_items": [
+    "For the concern holder, not for a seat: is a count in a governed note that cannot be checked - 'the fourth container claim' - better or worse than one that can go stale? Three counts in three commits have now been findings. The question is whether this file should carry ordinals at all.",
+    "For the concern holder, not for a seat: should a claim about what a not-yet-existing reading will find ever be written into a governed file by the participant that wrote the bytes? P12-F2 is true today only because this reading exists.",
+    "For Bdo, and only for Bdo: nothing here. No judgement-typed claim is made, no external effect is proposed, no naming or publication is touched, and no standing is advanced. This record asks the root seat for nothing."
+  ]
+}

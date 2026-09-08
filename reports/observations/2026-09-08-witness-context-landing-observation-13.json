@@ -1,0 +1,94 @@
+{
+  "observation_schema": "soveraeign-participant-observation/v1",
+  "observation_id": "obs:witness-context-landing:13",
+  "observer_id": "claude-opus-5/sov-witness@2026-09-08T23:10Z#13",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "candidate_commit": "4653b62796b92db4fec42ad977bca99432c83956",
+  "candidate_tree": "26f2f22324079573e1dbd9e07857c884304a547e",
+  "base_commit": "64fe9856dabf679a79ebbc36a07a68b56e1f4a46",
+  "concern": "concern:harness/witness-context",
+  "schema_conformance": {
+    "state": "NOT_SCHEMA_VALID",
+    "note": "The same seam every observation in this series records: contracts/participant-observation.schema.json sets additionalProperties false and admits none of the six top-level fields the landing gate reads."
+  },
+  "method": {
+    "independence": "Read a read-only worktree detached at the pinned commit; git status --porcelain empty at the start and end of the reading. Nothing in the subject tree was edited; mutations were applied to scratch copies.",
+    "own_method": [
+      "Pinned the subject and confirmed the tree did not move underneath the reading.",
+      "Derived scope from git diff --name-status against the base rather than from the declared file list.",
+      "Ran verify.py and lint.py from the pinned checkout, recording each command's own exit code.",
+      "Ran all 55 corpus mutations and collected every violation emitted, then compared that set against every refusal message the package states, to find refusals no case fires.",
+      "Constructed adversarial dispatches and re-ran both named test modules on each.",
+      "Measured derives_from_agent_result on the pristine tree to test the resolver in the other direction."
+    ]
+  },
+  "observed": {
+    "checks": [
+      {
+        "command": "python scripts/verify.py",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/lint.py",
+        "exit_code": 0,
+        "note": "10 named-debt WARNs, PASS: repository hygiene"
+      },
+      {
+        "command": "python -m unittest scripts.tests.test_witness_context_defeats scripts.tests.test_witness_context_provenance",
+        "exit_code": 0,
+        "note": "17 tests"
+      }
+    ],
+    "scope": "39 files, 3040 insertions / 57 deletions.",
+    "undeclared_paths": [
+      "scripts/tests/test_landing_ledger_isolation.py",
+      "scripts/tests/test_observer_independence.py",
+      ".claude/workflows/sov-epic.js",
+      ".claude/workflows/sov-coldstart.js"
+    ],
+    "undeclared_note": "The account said two new test modules; four are added. sov-epic.js and sov-coldstart.js carry syntax repairs beyond the demotion sentence the account describes.",
+    "overclaim": "'the other 21 carry a demotion sentence ahead of what they splice' is false as measured. Of 28 non-frame witness dispatches, three carry no demotion sentence at all because they splice nothing, and two splice a repository path or a constant ahead of the sentence. Harmless in substance; the sentence as written is not what the artifact does.",
+    "unchanged_declared_paths": []
+  },
+  "defeats": [
+    {
+      "id": "G1",
+      "shows": "`agent` reached under another name, so the provenance reader sees nothing.",
+      "mechanism": "bindings.AGENT_CALL matched the literal `agent(`. calls._agent_names already resolved aliases to a fixpoint for enumeration, and the provenance resolver was never given the same resolution.",
+      "mutation": "A workflow with `const spawn = agent`, a build dispatched through `spawn(...)`, and a witness prompt splicing `built.summary` as its oracle. `agent.call(null, ...)` defeats it identically.",
+      "result": "violations() returned [] across all 23 workflows; both named test modules OK. derives_from_agent_result(src, 'built.summary') returned False."
+    },
+    {
+      "id": "G2",
+      "shows": "The frame's subject pin deleted from what the evaluator receives, with the real frame left in place as dead code.",
+      "mechanism": "_frame_violations grades `function witnessFrame(`; _dispatch_violations keyed the frame path on `witnessFrame(` appearing in masked text, while test_witness_context_provenance asserted the same thing over raw source. A comment `/* witnessFrame( */` satisfies one grader and not the other. The position rule is separately zeroed: with the label as the first literal, the count of markers before it is 0, so no expression is ever asked about.",
+      "mutation": "A helper `witnessBrief` returning joined blocks that tell the evaluator not to pin and to take the builder's scope as given, spliced where the frame was, behind a leading demotion sentence and a `/* witnessFrame( */` comment.",
+      "result": "violations({'sov-loop.js': src}) == []; both named test modules OK. Full verify.py output byte-identical to the unmutated control."
+    },
+    {
+      "id": "G3",
+      "shows": "The provenance resolver fires on schema literals, in the other direction.",
+      "mechanism": "The binding map read an object literal's `key: value` pairs as bindings of `key`, so a JSON Schema's property names walked to whatever they collided with.",
+      "measurement": "On the pristine tree, derives_from_agent_result returned True for BUILD_SCHEMA, WITNESS_SCHEMA and residuals in sov-asset.js; the chain was built -> results -> thunks -> BUILD_SCHEMA -> residuals -> witness -> agent(.",
+      "result": "Refusal messages annotated 'provenance to an agent result is measurable' were name collisions. render.py's own standard - a check that convicts correct code is worse than the gap it covers - was not met."
+    }
+  ],
+  "residuals": [
+    "One refusal has no corpus case that fires it: the prompt_of / Unreadable branch reached when a witness call does not have exactly two arguments. Every other refusal in the package fires on at least one case.",
+    "`expects` is matched by substring, and 'what this prompt delivers cannot be read' is emitted verbatim from two different branches, so a case could migrate between them and still pass.",
+    "Coverage is lopsided: 16 of 55 cases fire the single 'no label demoting the builder's account' refusal, while the position rule has exactly one case.",
+    "The subject pin is required only of a file declaring `function witnessFrame(`. Twenty-two of twenty-three workflows have no subject-pin requirement at all.",
+    "The two test modules and audit.violations are not the same oracle: the provenance test greps raw source where the audit grades rendered text. G2 lives in that gap.",
+    "escaped_agent_references returns on the first `eval`, discarding every other escape in the file.",
+    "observation_basis is honest and its docstring matches, but the RESOLVED half rests on a caller-set boolean the kernel cannot check, and the vocabulary did not follow the rename into the test names.",
+    "lexer.py records in its own comment that two scanners in the package genuinely disagree and that their both failing closed is luck rather than design. Unrepaired."
+  ],
+  "corpus_reading": "All 55 cases produced at least one violation containing their own expects string, measured rather than read off the test. Thirteen fire additional refusals beyond their declared one; none passes only on an unrelated violation.",
+  "judgement_items": [
+    "Is a mechanism that enforces the subject pin on one of twenty-three workflow files, and presence-of-a-sentence on the other twenty-two, an admissible reading of Release gate 6, or does the gate require the frame to be the only way to construct a witness prompt?",
+    "Does a landing ledger field named observation_basis: SUPPLIED_AND_RESOLVED, whose RESOLVED half is asserted by the calling tool rather than established by the kernel, satisfy the standing grant's independent-observation precondition?"
+  ],
+  "standing_supported": "none",
+  "standing_reason": "The claim's central invariant - that the package grades every witness dispatch against Release gate 6 - is defeated by two independent constructions with verify, lint and both test modules green. OPEN -> BUILT is also declined: the artifact exists but the claim made about it does not hold. A narrower claim about the module as code could support it."
+}

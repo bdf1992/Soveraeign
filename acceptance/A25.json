@@ -1,0 +1,80 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A25",
+  "claim": "One judgement and one grant defect, both of which stop work this session finished from landing. The judgement: .claude/skills/sov-lifecycle/ is one path through the whole loop, an instance of the portable core see-it-through in the bdos repository pinned by digest, and it covers the ground the eight sdlc-* skills cover. It cannot supersede them here, because SDLC.md Skill axes declares those eight by name and states that an operator holds exactly one tier skill plus its domain skills, and SDLC.md is outside the standing grant. Until you rule, the tree would hold nine skills over the same ground, which is more duplication than before and not less, so the skill is withdrawn from the landing rather than landed. The defect: grant:standing-landing-loop admits prose whose clarity receipts live outside it, so 113 of the 152 clarity-covered artifacts cannot be changed under the grant at all. That is decisions/0105 and it is why three finished deliverables are presented here instead of landed.",
+  "subject": {
+    "artifact": ".claude/skills/sov-lifecycle/SKILL.md",
+    "from_standing": "OPEN",
+    "to_standing": "BUILT"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": {
+    "actor_id": "urn:soveraeign:actor:claude-independent-judge",
+    "actor_kind": "MODEL"
+  },
+  "visible_result": {
+    "demo": [
+      "python",
+      "scripts/sov_counts.py",
+      "check"
+    ],
+    "shows": "the entanglement that forces this packet. Run it on this branch and it passes. Restore the withdrawn skill (git checkout origin/claude/witness-context-discovery-runas1 -- .claude/skills/sov-lifecycle/) and it fails.",
+    "expect": "FAIL ROADMAP.md:408: states 31 skills, the record holds 32 (harness-skills). Correcting that line is in scope; ROADMAP.md is not."
+  },
+  "evidence": [
+    {
+      "address": "decisions/0105-the-landing-grant-admits-prose-it-cannot-land.md",
+      "digest": null,
+      "says": "the measured defect: 152 clarity-covered artifacts, 113 of them inside the grant's scope, and .clarity/coverage.json outside it. Changing covered prose makes its receipt stale, which fails verify, which the grant requires to pass; landing the receipt is refused for scope. Neither ordering escapes it. Two coherent designs are put to the root seat and neither is applied."
+    },
+    {
+      "address": "reports/observations/2026-09-08-witness-context-landing-observation-7.json",
+      "digest": null,
+      "says": "the seventh independent reading, by an observer with no prior stake, which rendered prompts by executing the workflows in node rather than trusting this repository's own readers. It named the cause of the recurring defect: eight partial scanners with six rule sets, and refusals living in docstrings rather than in the tree."
+    },
+    {
+      "address": "scripts/tests/fixtures/witness-context-defeats.json",
+      "digest": null,
+      "says": "the twenty-nine constructions that defeated this check across seven readings, now executable. SDLC.md gate 3 requires a defeating case per consequential behaviour; one of these reproduced across three candidates after being named, because what refused it was a sentence."
+    },
+    {
+      "address": "SDLC.md",
+      "digest": null,
+      "says": "Skill axes declares Control, Orchestration, Worker, Product, Development, QA, Release and Feedback skills by name and states that a working operator holds exactly one tier skill and the domain skills its concern requires. A tree without the eight contradicts it, and this document is outside the grant."
+    },
+    {
+      "address": "charting/derive.py",
+      "digest": null,
+      "says": "derives its chart from the eight by the sdlc- prefix. Removing them fails four charting tests, measured in a throwaway copy: 14 passed at baseline, 4 failed and 10 passed with them removed."
+    },
+    {
+      "address": ".claude/workflows/sov-compression.js",
+      "digest": null,
+      "says": "routes an agent to .claude/skills/sdlc-feedback/SKILL.md. A live route to one of the eight."
+    }
+  ],
+  "why_it_matters": "A rule the repository has held since day two - that an independent reading works from the contract and never from the builder's plan - was stated in SDLC.md and enforced nowhere, and the harness workflow that runs the loop violated it. That is repaired and lands. What does not land is held by two different things, and both are yours rather than this session's: a judgement about the shape of the skill tree, and a grant whose scope cannot express the change it admits. The second is the more consequential: while it stands, no documentation repair to any of 113 artifacts can go through the loop at all, which makes the standing grant narrower in practice than it reads.",
+  "what_could_defeat_it": [
+    "A ruling that the eight tier and domain skills are the right shape and one path skill is the wrong one, in which case sov-lifecycle is withdrawn rather than the eight retired.",
+    "An operator that genuinely needs one tier's competence without the rest of the path, which is what Skill axes assumes and one path skill cannot serve.",
+    "A demonstration that a clarity-covered artifact inside the grant's scope can be landed under it today, which would void decisions/0105 entirely. The measurement is the thing to attack.",
+    "Evidence that binding to a core in another repository costs more than it saves, since nothing here runs the grader and the pin is checked only where bdos is."
+  ],
+  "residuals": [
+    "Nothing in this repository runs `python -m bdos instance`, so the pinned digest cannot report a moved core from here.",
+    "The withdrawn set is six paths, not the five an earlier revision of this packet stated: reports/ is outside the grant too, so the handoff report describing the split was itself outside it.",
+    "Three finished deliverables are withdrawn for the grant defect rather than for any fault of their own: the workflow grader, the context-surface measure, and the ledger quarantine record. Each adds a sov_*.py entrypoint, which moves a count stated in scripts/README.md, which is clarity-covered.",
+    "The checks read whether a phrase is present and where it sits, not what a prompt means: a label followed by a correction that inverts it passes. The sixth reading judged the repair for that - making the frame the only way to build a witness prompt - not owed by this concern; the seventh disagreed. Both are on record and the disagreement is unsettled.",
+    "Two independent observers retired themselves during this concern for lost independence, one after repairs were made on prescriptions it wrote and one after it prescribed against the work. Neither was asked to. The repository's model treats independent observation as renewable and this concern spent two of them.",
+    "The observation records carry six top-level keys the landing gate reads and no observation schema admits, because both schemas set additionalProperties false. Nothing grades reports/observations/ against a schema, so verify stays green. That is a gap in the contracts boundary, recorded here and not repaired.",
+    ".local/landing/ does not exist in this container, so ledger.quarantined.ndjson - the only record of the 156 rows lost during an earlier repair - is not reachable from here and cannot be re-derived."
+  ],
+  "on_accept": "sov-lifecycle stands as the declared path at PROPOSED and the next bounded concern is SDLC.md Skill axes: whether one instance plus domain competences replaces one tier skill plus domain skills. Retiring the eight follows, repairing charting/derive.py and sov-compression.js in the same concern because both route to them. Ruling on decisions/0105 separately unblocks the three withdrawn deliverables and every future documentation repair inside the grant's scope.",
+  "on_reject": "Nothing needs reverting. The engineering work is already separated from this packet: it is the frozen candidate on claude/witness-context-handoff-n8lk0h, which carries no skill, no governing document and no clarity-covered artifact, and stands on its own. Rejecting this packet withdraws sov-lifecycle and leaves the eight sdlc-* skills as the declared shape; the branch claude/witness-context-discovery-runas1 preserves the skill unedited if it is wanted later."
+}

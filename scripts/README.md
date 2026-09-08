@@ -5,6 +5,13 @@ whole of how the node is operated from a terminal, and it is the index
 `contracts/publication-surface.json` requires: an entrypoint absent from this
 page is unreachable by anyone who did not write it.
 
+That rule is not currently met. Most of these commands have a row below; a couple
+of dozen do not, and are reachable only by listing the directory. The count in the
+sentence above is graded against the files by `python scripts/sov_counts.py check`,
+so it cannot go stale; the rows are not graded by anything, which is why they
+drifted apart. Compare them with
+`ls scripts/sov_*.py` against the tables here before trusting this page as an index.
+
 Every command reads local files. None reaches the network unless its own
 documentation says so. Nothing here grants authority, and no command settles its
 own output — `AGENTS.md` owns that rule and these tools are subject to it.
@@ -44,6 +51,8 @@ Run any of them with `--help` for exact arguments.
 | `sov_kernel.py` | `table` `check` `parity` `drift` `closure` `binding-check` `selfcheck` | Shared Kernel projections and conformance. |
 | `sov_node.py` | `status` `peers` `validate` `export-journal` `restore-journal` `journals` | This node's identity, the peers it has admitted, and custody of its journal: export it under its head, restore it into an empty node, and check every export and citation under `nodes/`. |
 | `sov_fresh.py` | `run` `selfcheck` `open-office` | Fresh participation, the P15-X1 slice: enter a node as a declared principal and grade what was resolved; prove the probe can fail; open a persisted node's permits office under the registry's root at its recorded direction. |
+| `sov_reuse.py` | `run` `selfcheck` | Discovery and reuse, the P15-X3 slice: read a result the way a second fresh participant would - custody member, witness record, receipts, landed bytes, restored journal - and grade what it resolved; prove the reader can fail. |
+| `sov_recurrence.py` | `run` `selfcheck` | Definition recurrence, the P15-X4 slice: synthesize a candidate Definition from settled experience, cite it back to its basis, and grade that it took no standing and that the primitives compose under an institution the founder did not predict; prove the reader can fail. |
 | `sov_owners.py` | `status` `check` | The domain owner register. |
 | `sov_interface.py` | `show` `build` `check` `invoke` `prove` | The derived Node Interface a model reader receives. |
 | `sov_surface.py` | `render` `check` `try` | The same Node Interface rendered for a person. |

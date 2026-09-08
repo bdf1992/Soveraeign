@@ -137,7 +137,7 @@ def with_of(step: str) -> dict[str, str]:
     for index, line in enumerate(lines):
         if line.lstrip().startswith("#"):
             continue
-        if len(line) - len(line.lstrip()) == depth and line.split("#")[0].strip() == "with:":
+        if len(line) - len(line.lstrip()) == depth and decomment(line).strip() == "with:":
             return mapping_at(lines, index + 1, depth + 2)
     return {}
 

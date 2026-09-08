@@ -392,6 +392,26 @@ class TheCountedRuleHoldsItsAttribution(unittest.TestCase):
         self.assertEqual([], unretained(workflow(
             VERIFY_STEP + "      - run: echo done  # scripts/verify.py ran above\n" + RETAIN)))
 
+    def test_a_step_that_only_names_the_upload_action_is_not_a_keeper(self):
+        """The upload step was selected by substring, so a comment or a `name:`
+        saying `upload-artifact@` made a step an upload. That is the class four
+        witnesses kept finding - a property read off raw text rather than off the
+        key that declares it - and this instance was found by a pass over the
+        module rather than by a fifth witness."""
+        for label, decoy in (
+                ("named only in a comment",
+                 '      - name: Retain\n        if: ${{ !cancelled() }}\n'
+                 '        # uses: actions/upload-artifact@v4\n'
+                 '        uses: some/other-action@v1\n'),
+                ("named in the step name",
+                 '      - name: pretend actions/upload-artifact@v4\n'
+                 '        if: ${{ !cancelled() }}\n        uses: some/other-action@v1\n')):
+            with self.subTest(decoy=label):
+                self.assertEqual(NOT_UPLOADED, unretained(workflow(
+                    VERIFY_STEP + decoy + '        with:\n'
+                    '          path: ${{ runner.temp }}/obs.json\n'
+                    '          if-no-files-found: error\n')))
+
 
 if __name__ == "__main__":
     unittest.main()

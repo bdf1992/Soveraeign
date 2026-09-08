@@ -37,6 +37,7 @@ import re
 from sovverify.workflows import (VERIFIER, before_steps, canonical, jobs_of, keys_of,
                                  live, normalise, strays_of, under_temp, with_of)
 
+UPLOAD = "actions/upload-artifact@"
 CONTINUE = re.compile(r"^\s*continue-on-error:\s*(?P<value>.*?)\s*$", re.M)
 OBSERVE = re.compile(
     r"--observe[\s=]+"
@@ -92,7 +93,14 @@ def unretained(text: str) -> list[str]:
     graded = 0
     accounted = 0
     for job, (block, steps) in jobs_of(text).items():
-        uploads = [step for step in steps if "upload-artifact@" in step]
+        # Read `uses:` at its own key. Selecting upload steps by substring made a
+        # step an upload because a comment or its `name:` said so, which is the
+        # class four witnesses kept finding: a property read off the raw text
+        # rather than off the key that declares it. Found in a pass over this
+        # module rather than by a fifth witness, which is where it should have
+        # been found the first four times.
+        uploads = [step for step in steps
+                   if keys_of(step).get("uses", "").startswith(UPLOAD)]
         seen = 0
         for step in steps:
             body = canonical(live(step))

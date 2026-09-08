@@ -249,6 +249,37 @@ class InstitutionNeutrality(unittest.TestCase):
         self.assertFalse(read["fixed_role_names_required"])
         self.assertTrue(any("unrelated.json" in item for item in read["closed_elsewhere"]))
 
+    def test_a_governed_closure_outside_the_contracts_tree_is_still_scanned(self) -> None:
+        """The scan is the contracts tree plus what a primitive names, not the tree alone."""
+        outside = self.root / "services/fixture/contracts/governing.json"
+        outside.parent.mkdir(parents=True, exist_ok=True)
+        outside.write_text(json.dumps({"$id": "outside", "properties": {
+            "filled_by": {"enum": list(fixture.CLOSED_ROLES)}}}), encoding="utf-8", newline="\n")
+        bound = self.root / neutrality.PRIMITIVES["settlement"][0]
+        document = json.loads(bound.read_text(encoding="utf-8"))
+        document["governed_by"] = ["services/fixture/contracts/governing.json"]
+        bound.write_text(json.dumps(document), encoding="utf-8", newline="\n")
+        read = neutrality.read(self.root)
+        self.assertTrue(read["fixed_role_names_required"])
+        self.assertTrue(any("is governed by" in item for item in read["closed_vocabularies"]))
+
+    def test_a_properties_dict_inside_an_example_declares_nothing(self) -> None:
+        """Identity is read at the root; declared names must follow the same line."""
+        path = self.root / neutrality.PRIMITIVES["finding"][0]
+        path.write_text(json.dumps({"$id": "unrelated", "examples": [
+            {"properties": {"finding_id": {"type": "string"}}}]}),
+            encoding="utf-8", newline="\n")
+        self.assertTrue(any("finding" in item
+                            for item in neutrality.read(self.root)["unresolved"]))
+
+    def test_a_root_identifier_carrying_prose_is_not_an_identifier(self) -> None:
+        """A root key that ends in `_id` cannot smuggle a sentence back in."""
+        path = self.root / neutrality.PRIMITIVES["finding"][0]
+        path.write_text(json.dumps({"policy_id": "a record of every finding an evaluator makes"}),
+                        encoding="utf-8", newline="\n")
+        self.assertTrue(any("finding" in item
+                            for item in neutrality.read(self.root)["unresolved"]))
+
     def test_the_alternate_institution_shares_no_name_with_the_proving_roles(self) -> None:
         alternate = {role.upper().replace("-", "_") for role in neutrality.ALTERNATE_INSTITUTION["roles"]}
         self.assertFalse(alternate & neutrality.PROVING_ROLES)
@@ -277,12 +308,24 @@ class AgainstThisRepository(unittest.TestCase):
         result = recurrence.run(ROOT)
         self.assertEqual(sorted(result["grades"]), sorted(recurrence.PREDICATES))
 
-    def test_the_live_reading_separates_governed_closures_from_unrelated_ones(self) -> None:
-        """Pins the split, not the count: a closure a primitive's own `governed_by` reaches is
-        that primitive's and is graded; one no primitive names is reported and is not."""
-        read = neutrality.read(ROOT)
-        for entry in read["closed_elsewhere"]:
-            self.assertNotIn("is governed by", entry)
+    def test_no_reported_closure_sits_in_a_contract_a_primitive_names(self) -> None:
+        """Pins the split, not the count, and can actually fail.
+
+        The test it replaced asserted that no `closed_elsewhere` entry contained the string
+        "is governed by", which the reported branch never writes: it passed under the direct
+        inverse of the repair it claimed to pin, and under two regressions that emptied the
+        list. A fifth witness caught that. The governed set is rebuilt here from `PRIMITIVES`
+        rather than read back from the reader, so a leak in either direction fails.
+        """
+        governed: set[str] = set()
+        for relative, _ in neutrality.PRIMITIVES.values():
+            document = json.loads((ROOT / relative).read_text(encoding="utf-8"))
+            governed.update(reference for reference in document.get("governed_by") or []
+                            if isinstance(reference, str))
+        bound = {relative for relative, _ in neutrality.PRIMITIVES.values()}
+        for entry in neutrality.read(ROOT)["closed_elsewhere"]:
+            named = entry.split("/properties")[0].split("/$defs")[0]
+            self.assertNotIn(named, governed - bound)
 
     def test_the_basis_is_drawn_only_from_settled_members(self) -> None:
         gathered = experience.gather(ROOT)

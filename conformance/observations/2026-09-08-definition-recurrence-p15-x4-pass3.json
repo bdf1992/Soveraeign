@@ -1,0 +1,204 @@
+{
+  "case_id": "WITNESS-2026-09-08-DEFINITION-RECURRENCE-P15-X4-PASS-3",
+  "record_kind": "OBSERVATION",
+  "record_note": "An observation, not a settlement and not a ratification. Written under .local/ at the launching agent's direction; the builder may carry it to conformance/observations/ as it did passes 1 and 2.",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08/pass-3",
+  "independence": {
+    "contributed_to_build": false,
+    "edited_subject": false,
+    "helpers_used": "none; second reading done in-session",
+    "read_builder_conclusions_before_freeze": "the repair commit message e20d207 and the two prior witness records were read to locate the claims under test, as directed. No Orchestrator or Controller evaluative conclusion was read before this Finding froze.",
+    "correlation_with_prior_passes": "Passes 1 and 2 were supplied and read first, as directed. Every prior finding cited below as repaired or as unrepaired was re-derived by this participant from the artifact, by re-running the prior plant. Findings taken on trust from pass 1 or pass 2: none. Prior passes are treated as correlated readers of the same family; the eight P3-N findings below were planted independently and none reuses a prior plant."
+  },
+  "subject": {
+    "work": "scripts/sov_recurrence.py + scripts/sovrecurrence/, member of custody:phase-1-5/definition-recurrence (P15-X4) at standing BUILT, work_state PRESENTED",
+    "artifact_revision": "9253eb5046fa89cc5d28f7f41a028c8e644c7e6e",
+    "prior_refused_revisions": ["fe91c655ec4897bc04423d59fcbeae549cfb8d2b", "a3ac83611411e96b8dc686e3cc68eaa48faea93b"],
+    "baseline_revision": "d00f46ad38448856fa692399d12cf0a324266004",
+    "branch": "claude/sovereign-phase-1-5-exits-fb7ysc",
+    "repair_commits_since_pass_2": ["e20d207", "2f28c9d", "9253eb5"],
+    "working_tree_state": "The shared checkout at . was at 9253eb5 with git status --porcelain returning 0 lines at the start and at the end of this witness. All measurement was taken in an isolated detached worktree at 9253eb5 (trap T6); that worktree returned 0 lines before and after every measurement, and every plant was run in a throwaway copy with .git removed. The frozen worktree was never edited. Per procedure 6b the whole surface was re-run at the end against the same tree with identical results."
+  },
+  "record_projection": {
+    "supplied": null,
+    "reconstructed_as": "the committed tree at 9253eb5 and its ancestors a3ac836, fe91c65 and d00f46a",
+    "cutoff": "9253eb5046fa89cc5d28f7f41a028c8e644c7e6e",
+    "note": "No RecordProjection id was supplied and none is invented. Every address cited below resolves in the commit tree at the declared cutoff; both prior witness records now resolve there too (git cat-file -e succeeded for each, and git check-ignore matches neither)."
+  },
+  "commands": [
+    {"cmd": "python3 scripts/sov_recurrence.py selfcheck", "cwd": "9253eb5 worktree", "exit": 0, "note": "7 defeating variants each fail their own predicates"},
+    {"cmd": "python3 scripts/sov_recurrence.py run", "cwd": "9253eb5 worktree", "exit": 1, "note": "38 settled sources across 3 clauses; 9 primitives resolved; 4 closed vocabularies reported not graded; P15-Q4.1 and Q4.2 hold, Q4.3 does not"},
+    {"cmd": "python3 -m unittest -q scripts.tests.test_sov_recurrence", "cwd": "9253eb5 worktree", "exit": 0, "note": "25 tests OK"},
+    {"cmd": "python3 scripts/verify.py", "cwd": "9253eb5 worktree", "exit": 0, "runs": 2, "note": "PASS: 57 checks in 14.9s wall; 47 FAIL-containing lines, byte-identical set across both runs"},
+    {"cmd": "python3 scripts/verify.py", "cwd": "d00f46a worktree", "exit": 0, "note": "PASS: 55 checks; 47 FAIL-containing lines"},
+    {"cmd": "python3 scripts/lint.py", "cwd": "9253eb5 worktree", "exit": 0, "note": "1262 text files, 582 Python modules, 10 named debt"},
+    {"cmd": "python3 scripts/sov_active_phase_progress.py", "cwd": "9253eb5 worktree", "exit": 0},
+    {"cmd": "python3 scripts/sov_counts.py check", "cwd": "9253eb5 worktree", "exit": 0, "note": "25 stated counts match across 14 populations"},
+    {"cmd": "python3 scripts/sov_clarity.py check", "cwd": "9253eb5 worktree", "exit": 0},
+    {"cmd": "python3 scripts/sov_traps.py", "cwd": "9253eb5 worktree", "exit": 0, "note": "2 traps still hold, 3 recorded for attended checking"},
+    {"cmd": "git status --porcelain (after selfcheck, run, two verify passes)", "cwd": "9253eb5 worktree", "exit": 0, "note": "0 lines; zero writes reproduced"}
+  ],
+  "builder_claims_tested": {
+    "claim_1_N1_repaired_structurally": {
+      "verdict": "PARTIALLY REPRODUCED, then DISSENTED",
+      "reproduced": "The regex is genuinely gone: EVIDENCE_PATH has zero occurrences in scripts/sovrecurrence/. Evidence is read from the three directories under experience.EVIDENCE_DIRS. Editing a member's stage_observed_by prose to name no path changes the basis by nothing, and that is pinned by test_the_basis_does_not_come_from_the_member_prose. The live basis is 38 addresses across P15-X1/X2/X3, up from 8. Pass 2's two shrink plants are unreachable by construction.",
+      "dissent": "Reading the directory introduced two new manipulations and did not close the old property. See P3-N3 (a fabricated standing claim is vouched for by incidental prose, and one already-shipped record vouches for the wrong member) and P3-N4 (the basis still shrinks silently four ways, one of them 38 -> 13, all surviving selfcheck and all 25 tests). The claim 'editing a member's prose can no longer shrink the basis at all' is true; the claim the repair was for - that a basis that silently shrinks is what P15-Q4.1 exists to catch - is still false, because check_q41 is unchanged and remains X.issubset(X)."
+    },
+    "claim_2_N2_a_binding_must_name_its_primitive": {
+      "verdict": "DISSENTED - the two bindings the commit says now fail do not fail",
+      "evidence": "See P3-N1 and P3-N2. Re-ran pass 2's exact plant (session -> contracts/verification-budget.json) at 9253eb5: selfcheck 0, 25 tests 0, still 9 resolved, live output identical. Re-ran the binding pass 1 caught (session -> contracts/source.schema.json): same. Both pass _declares because 'sessions' appears in a host description and 'claude-session:<id>' appears in an address example. 'discovery' is not genuinely undeclared: 14 of 78 top-level contracts pass the reader's own _declares for it. The check is a lowercased, punctuation-stripped substring over the whole JSON dump, so contracts/acceptance-policy.json declares 'authority' on the sentence 'it grants no authority'."
+    },
+    "claim_3_N3_four_closed_vocabularies_reported_not_graded": {
+      "verdict": "REPRODUCED as behaviour, DISSENTED as an argument",
+      "evidence": "All four print on every run and are correctly identified. The scoping argument is not honest at the seam that matters: contracts/ticket-settlement.json, the contract the settlement primitive is bound to, declares \"governed_by\": [..., \"contracts/issue-metadata.schema.json\", ...], and that file is where two of the four closures live. See P3-N5."
+    },
+    "claim_4_N4_two_role_threshold_pinned": {
+      "verdict": "REPRODUCED",
+      "evidence": "Planted >= 3: unittest exits 1 on test_exactly_two_proving_roles_is_the_threshold at line 182. The threshold is now measured in both directions (assertTrue on two roles, assertFalse on one)."
+    },
+    "claim_5_N5_counts_40_listed_21_unlisted": {
+      "verdict": "REPRODUCED independently",
+      "evidence": "Matching '^| `<name>`' in scripts/README.md against Path('scripts').glob('sov_*.py'): 61 total, 40 listed, 21 unlisted. The single name a sov_[a-z_]+\\.py pattern misses is sov_f2_gate.py, confirming the stated cause. sov_counts.py check exits 0. The replacement prose 'about a third do not' is accurate (21/61) and remains ungraded, which is pass 2's N5 residual carried forward at lower severity."
+    },
+    "claim_6_N7_both_witness_records_committed": {
+      "verdict": "REPRODUCED",
+      "evidence": "git cat-file -e 9253eb5:<path> succeeds for both conformance/observations/2026-09-08-definition-recurrence-p15-x4-pass1.json and -pass2.json; git check-ignore matches neither. The custody note cites both at those addresses. A second participant reading the landed repository can resolve the record of both refusals."
+    },
+    "claim_7_fixture_not_weakened": {
+      "verdict": "PARTIALLY REPRODUCED",
+      "evidence": "All 7 variants re-run individually: each fails exactly its declared predicate and no other, with no other_defects. The positive variant now cites 6 sources including the 4 fixture witness records, so the record-index path is genuinely exercised positively. No variant passes for the wrong reason: primitive-undeclared still unlinks the file and fails on 'absent or unreadable', not on _declares. What is missing is coverage, not soundness: the fixture stubs write \"$comment\": \"declares the {primitive} primitive\" at every bound path, so the fixture still cannot disagree with a binding, and no variant exercises either headline repair. See P3-N9."
+    },
+    "claim_8_regression_sweep": {
+      "verdict": "REPRODUCED in full",
+      "evidence": "verify 0 twice at 9253eb5 with identical 47-line FAIL sets; verify 0 at d00f46a with 47 FAIL lines; the single delta is 'FAIL verification checks: page says 57, record holds 999999' against '... page says 55 ...', which scripts/tests/test_sov_snapshot.py emits under mock as its own control, the 55->57 being the two commissioning checks this branch registers. lint 0, 25 tests OK, selfcheck 0, run 1, sov_active_phase_progress 0, sov_clarity check 0, sov_counts check 0, sov_traps 0. Zero writes. 16 files changed against d00f46a, all in scope; no secrets; largest new module 185 lines. Trap T2 noted: exit 0 means unchanged, not qualified."
+    }
+  },
+  "prior_plants_re_derived": {
+    "pass_1_F2_GOVERNING_empty": "NOW FAILS - selfcheck exit 1, policy-moved variant no longer defeated",
+    "pass_1_F3_tree_digest_byte_blind": "NOW FAILS - unittest exit 1",
+    "pass_1_F4_work_state_defaults_LANDED": "NOW FAILS - unittest exit 1",
+    "pass_1_F8_session_to_source_schema": "STILL SURVIVES - selfcheck 0, 25 tests 0, 9 resolved, output identical (P3-N1)",
+    "pass_1_F10_observes_tuple_unread": "UNREPAIRED - deleting contracts/custodies/phase-1-5.json leaves selfcheck exit 0 PASS while the check declares that address as observed",
+    "pass_2_N1a_N1b_prose_shrink": "NOW IMPOSSIBLE by construction - the extractor is deleted",
+    "pass_2_N2_session_to_verification_budget": "STILL SURVIVES - selfcheck 0, 25 tests 0, 9 resolved, output identical (P3-N1)",
+    "pass_2_N4_threshold_ge_3": "NOW FAILS - unittest exit 1",
+    "pass_2_N7_gitignored_citation": "REPAIRED - both records committed and resolvable"
+  },
+  "findings": [
+    {
+      "id": "P3-N1",
+      "severity": "BLOCKING",
+      "address": "scripts/sovrecurrence/neutrality.py:112-124 _declares; commit e20d207 message; neutrality.py:118-121 docstring",
+      "claim_defeated": "\"The witness's plant (session -> the verification budget) fails, and so does the binding the first witness caught (session -> the Source schema)\" (e20d207); \"which is the weakest check that the earlier binding of `session` to the Source schema would have failed\" (shipped docstring)",
+      "observed": "Neither statement is true against the artifact. PLANT P3-A: set PRIMITIVES['session'] = 'contracts/verification-budget.json' at 9253eb5. selfcheck 0, all 25 unit tests 0, run 1 with 'primitives: 9 resolved' and byte-identical output to the control. _declares returns True because the file contains \"host\": \"windows, eleven live sessions sharing one working tree\". PLANT P3-B: set PRIMITIVES['session'] = 'contracts/source.schema.json', the exact binding pass 1 refused as a synonym for an existing domain term. Same green surface, same output. _declares returns True because an address description gives the example 'claude-session:<id>'. The N2 repair therefore defeats neither of the two bindings it is written up as defeating, and the module's own docstring asserts a property the module does not have.",
+      "why_it_matters": "This is the load-bearing claim of the repair commit and it is asserted in the commit message, in a shipped docstring, and by reference in the custody member note. A witness reading any of the three would conclude the class was closed. It is not: nine of the ten bindings can still be silently swapped for a contract that merely mentions the word."
+    },
+    {
+      "id": "P3-N2",
+      "severity": "BLOCKING",
+      "address": "scripts/sovrecurrence/neutrality.py:112-124 _declares; scripts/tests/test_sov_recurrence.py:223-235; contracts/custodies/phase-1-5.json P15-X4 member note",
+      "claim_defeated": "\"No contract in this repository names discovery as a primitive\" (custody note, commit message, and the docstring of test_only_discovery_is_unresolved_and_it_is_unresolved_for_a_stated_reason); \"P15-Q4.3 NOT holding ... is the true state of the clause\"",
+      "observed": "PLANT P3-C: append one sentence to the existing `description` of contracts/node-interface.schema.json - 'Operation discovery is what this page serves.' No structural change, no rebinding, no new property. The live reading flips from 'primitives: 9 resolved' and 'P15-Q4.3: institution-neutral composition lacks governed primitives' to 'primitives: 10 resolved' and 'P15-Q4.3: holds', and verify.py goes red because the pinned test now sees zero unresolved. Measured across contracts/*.json, _declares passes for 'discovery' in 14 of 78 files, for 'authority' in 49, for 'work' in 53, for 'observation' in 38. contracts/acceptance-policy.json satisfies _declares for 'authority' on the sentence 'it grants no authority: an owner action is ...'. The rule cannot distinguish a declaration from a mention, or a mention from a denial.",
+      "why_it_matters": "The headline finding this member is being landed for - that P15-Q4.3 genuinely does not hold, reached by refusing to rebind - is not a measurement. It is an accident of one string being absent from one file, reversible by a documentation edit. The stated claim 'no contract names discovery as a primitive' is refuted by the reader's own predicate; the supportable claim is only 'the file discovery is bound to does not contain the string'. Separately this creates an undeclared coupling: an unrelated prose improvement to node-interface.schema.json turns the whole repository build red."
+    },
+    {
+      "id": "P3-N3",
+      "severity": "MATERIAL",
+      "address": "scripts/sovrecurrence/experience.py:121 `on_disk = sorted(path for path, text in records.items() if address in text)`",
+      "claim_defeated": "\"which records naming this member exist on disk, whatever the member says about them\" (_record_index docstring); \"nothing on disk shows an independent participant observed it\" (the defect message); \"Every clause that advanced did so through a member an independent participant observed\" (the emitted candidate's claim)",
+      "observed": "Reading the directory replaced a dependency on the member's own prose with a dependency on everyone else's. PLANT P3-D: add one member to P15-X4 - address scripts/sov_snapshot.py, standing WITNESSED, work_state LANDED, stage_observed_by 'observed by an independent participant', naming no path. No defect fires. The basis inflates 38 -> 52, and the emitted candidate Definition now asserts '4 of 6 exit clauses carry settled experience (P15-X1, P15-X2, P15-X3, P15-X4)' followed by 'Every clause that advanced did so through a member an independent participant observed and that landed'. selfcheck 0, all 25 unit tests 0, P15-Q4.1 holds. The vouching records are ten or more files that mention scripts/sov_snapshot.py incidentally, including reports/observations/2026-08-25-orientation-snapshot-observation.json. The same defect is already live in the shipped reading: conformance/observations/2026-09-08-definition-recurrence-p15-x4-pass1.json - whose subject is scripts/sov_recurrence.py and whose verdict is 'standing_supported: NONE. BUILT -> WITNESSED is not supported' - is admitted as the evidence that P15-X2's member services/observation was independently observed, solely because it contains that string inside a sentence describing a planted defect. Pass 2's record is excluded because it happens not to contain the string. witness/tooling-test-cost.md likewise vouches for scripts/sov_fresh.py on one incidental 'python scripts/sov_fresh.py selfcheck exit 0'.",
+      "why_it_matters": "The reader treats 'a file under three directories contains this string' as 'an independent participant observed this member'. Naming is not observing, and a refusal is being counted as an observation. A fabricated settlement in the custody record - one JSON edit, schema-valid, no code change - is confirmed by the instrument and propagated into the candidate Definition's claim. That is a worse failure than the prose shrink it replaced, because the shrink removed evidence and this manufactures it."
+    },
+    {
+      "id": "P3-N4",
+      "severity": "MATERIAL",
+      "address": "scripts/sovrecurrence/experience.py:22 EVIDENCE_DIRS, :72-73 rglob and suffix filter, :121; conformance/commissioning.py:135-144 check_q41",
+      "claim_defeated": "\"the basis could not detect its own shrinking\" repaired; \"a basis that silently shrinks is exactly what P15-Q4.1 exists to catch\" (experience.py docstring)",
+      "observed": "Four independent plants, none reusing a prior pass, all surviving selfcheck, run, and all 25 unit tests, all leaving 'P15-Q4.1: holds'. (a) narrow the suffix filter from ('.md','.json') to ('.json',): basis 38 -> 33, dropping every prose witness record including witness/observation-service.md. (b) EVIDENCE_DIRS = ('witness',): 38 -> 33. (c) base.glob('*') instead of base.rglob('*'): basis 38 -> 13, a two-thirds collapse, because every record under witness/observations/ disappears. (d) add `and 'observation' in path`: 38 -> 34. Inflation is equally unguarded: matching on address.split('/')[0] instead of the address takes the basis 38 -> 108 with the same green surface. The root cause is unchanged since pass 1's F5: check_q41 compares set(candidate['source_addresses']) against set(observed['settled_evidence_addresses']), and recurrence.observe:64 and candidate.synthesize:80 build both from the same gathered list, so in the live path the predicate is X.issubset(X) and can fail only on emptiness. Nothing pins EVIDENCE_DIRS, the suffix filter, or the traversal depth.",
+      "why_it_matters": "P15-Q4.1 is the predicate this member is graded on, and it still cannot fail against a real basis. What the repair added is a defect list in experience.gather that surfaces through other_defects, not through the predicate, and the four plants above walk around it without touching it."
+    },
+    {
+      "id": "P3-N5",
+      "severity": "MATERIAL",
+      "address": "scripts/sovrecurrence/neutrality.py:127-146 _closed_elsewhere; contracts/ticket-settlement.json:3-9; contracts/issue-metadata.schema.json",
+      "claim_defeated": "\"P15-Q4.3 is about the primitives, so grading scans the contracts that declare them. A role vocabulary closed somewhere else does not defeat those primitives\" (_closed_elsewhere docstring); 'alternate institution composes' scoping as honest",
+      "observed": "contracts/ticket-settlement.json - the contract the `settlement` primitive is bound to - declares \"governed_by\": [\"GROUND.md\", \"contracts/product-canon.json\", \"contracts/issue-metadata.schema.json\", ...]. contracts/issue-metadata.schema.json closes /properties/requested_by and /properties/requested_from to ['worker','orchestrator','controller','owner']; both are graded closed by the reader's own repaired rule, and a procurement-steward can fill neither. The reader prints them as 'outside the bound primitives, reported not graded'. They are inside the settlement primitive's own declared governing set, one named reference away. The scope is a flat list of ten filenames and follows neither governed_by nor $ref. Separately, _closed_elsewhere sweeps only root/contracts/**, not services/*/contracts/, while `session` itself is bound under services/; I found zero closures there, so that half is currently vacuous.",
+      "why_it_matters": "The custody's own defeating condition is 'a primitive that only works when the participant is named Controller, Orchestrator, Worker, or Witness'. The settlement primitive, as governed, is one of those. The reader reports the closure and then declines to let it change the verdict on a line drawn at file boundaries rather than at the primitive's declared closure. Disclosure is better than silence, but the honest disclosure is not that these are elsewhere - it is that the reader does not follow a primitive into the contracts that primitive says govern it."
+    },
+    {
+      "id": "P3-N6",
+      "severity": "MATERIAL",
+      "address": "scripts/sovverify/commissioning.py:34-42; scripts/verify.py check registration",
+      "claim_defeated": "that verify.py PASS carries any information about this clause against this repository",
+      "observed": "Procedure 6a, re-derived independently. The only check verify.py registers for this member runs `sov_recurrence.py selfcheck`, which builds a fixture under a temporary directory and reads no repository byte except its own modules and the oracle. Deleting contracts/custodies/phase-1-5.json from a copy leaves that check at exit 0 PASS, though its `observes` tuple declares that exact address. `sov_recurrence.py run` - the live reading, the command that exits 1 - is invoked by no check anywhere in scripts/. The clause's live state reaches verify.py only through two unit tests in AgainstThisRepository, and those pin the current failing verdict rather than the rule, so the build is green while the clause is unmet and would go red the moment the clause is met. Confirmed by P3-N2's plant.",
+      "why_it_matters": "This is the defect class CLAUDE.md and the procedure name: a check that grades a declaration where it could have measured. The check declares four repository addresses as observed and reads none of them, and the branch extends that pattern to a third check. It also means a reader who sees 'PASS: 57 checks' has learned nothing about P15-Q4."
+    },
+    {
+      "id": "P3-N7",
+      "severity": "MINOR",
+      "address": "contracts/custodies/phase-1-5.json, P15-X4 member note",
+      "observed": "The note states: 'The live reading against this repository reads eight settled sources across P15-X1, P15-X2 and P15-X3, and all three predicates hold.' The live reading at this revision reads 38 settled sources and P15-Q4.3 does not hold. Three sentences later the same note says 'the live reading now reports P15-Q4.3 NOT holding with nine of ten primitives resolved'. A governing record carries a stale claim and its own contradiction in one field, and the stale half is the half a skimming reader takes."
+    },
+    {
+      "id": "P3-N8",
+      "severity": "MINOR",
+      "address": "scripts/sovrecurrence/experience.py:126-133 sources.setdefault; scripts/sovrecurrence/candidate.py:51-52 sources_per_clause",
+      "observed": "An evidence record is attributed to whichever settled member is iterated first, not to the member it observes. witness/discovery-and-reuse.md names scripts/sov_reuse.py 29 times and scripts/sov_fresh.py 3 times and is attributed to P15-X1, not P15-X3. The emitted candidate's recurs.sources_per_clause reads {P15-X1: 22, P15-X2: 8, P15-X3: 8}, which is an artefact of collection order. That is a derived fact inside an object the reader hands a participant to carry through submit_proposal, and nothing grades it."
+    },
+    {
+      "id": "P3-N9",
+      "severity": "MINOR",
+      "address": "scripts/sovrecurrence/fixture.py:25-41 EXPECTED_FAILURES, :97-100 stub contracts",
+      "observed": "Neither headline repair has a defeating variant in the reader's own selfcheck. The seven variants cover basis-dropped, no-sources, standing-taken, authority-taken, policy-moved, primitive-undeclared (file unlinked) and role-vocabulary-closed. None exercises 'a settled member no record on disk names' (the N1 repair) or 'a bound contract that parses but does not declare its primitive' (the N2 repair); both are covered only by unit tests. The stubs still write \"$comment\": \"declares the {primitive} primitive\" at whatever path PRIMITIVES gives them, so the fixture remains unable to disagree with a binding - the class pass 2 named in N2 is unfixed at the fixture layer. Since verify.py runs selfcheck and not the tests-as-gate, the property the repository certifies excludes both repairs."
+    },
+    {
+      "id": "P3-N10",
+      "severity": "OBSERVATION",
+      "address": "experience.EVIDENCE_DIRS includes conformance/observations; conformance/observations/2026-09-08-definition-recurrence-p15-x4-pass{1,2}.json",
+      "observed": "Committing this member's own witness records into one of the reader's evidence directories makes the reader's refusals part of the basis the reader cites. That is already live for pass 1 via P3-N3. If P15-X4's member is ever marked WITNESSED and LANDED, the reader will admit scripts/sov_recurrence.py as settled experience, admit the records refusing it as the evidence, and emit a candidate Definition derived from a basis containing the instrument that derived it. The custody note frames that as intended ('the reader cannot cite itself until an independent participant observes it and it lands'). Recorded as a designed circularity a seat should rule on rather than as a defect."
+    },
+    {
+      "id": "P3-N11",
+      "severity": "OUT_OF_SCOPE",
+      "address": "contracts/verification-budget.json:41-42; scripts/sovverify/budget.py",
+      "observed": "Established before recording (procedure 6b). 'definition recurrence slice' entered at a 0.5s ceiling and measures 0.195s wall pooled: comfortably inside. 'discovery and reuse slice' entered at 3.0s and measures 4.395s pooled, so it enters in attributed debt; that is the prior member's, disclosed by the builder, and does not refuse the run. Pass 2's N9 arithmetic defect in the BUDGET DEBT report reproduces at this revision and at d00f46a alike ('discovery and reuse slice: 4.395s over its 3.000s ceiling' prints the wall time, not the overage). Not this concern's; recorded, not routed."
+    }
+  ],
+  "reproduced_independently": [
+    "verify.py exits 0 at 9253eb5 on two consecutive runs with byte-identical 47-line FAIL sets, and 0 at d00f46a with 47; the single delta is the mocked 999999 control emitted by scripts/tests/test_sov_snapshot.py, with 55 -> 57 accounted for by the two commissioning checks this branch registers",
+    "selfcheck exit 0 and run exit 1; 38 settled sources across P15-X1/X2/X3; 9 of 10 primitives resolved; four closed vocabularies printed as reported-not-graded; P15-Q4.1 and Q4.2 hold and P15-Q4.3 does not",
+    "each of the 7 defeating variants fails exactly its declared predicate and no other, with no other_defects; the positive variant cites 6 sources and does not cite the BUILT-only fixture member",
+    "selfcheck and run write nothing: git status stays at 0 lines through selfcheck, run and two full verify passes",
+    "standing is compared as whole tokens against ('WITNESSED','RATIFIED'), so NOT_WITNESSED is refused (trap T3)",
+    "scripts/README.md: 61 sov_*.py entrypoints, 40 with a row, 21 without; sov_f2_gate.py is the single digit-bearing name that a sov_[a-z_]+\\.py pattern misses",
+    "both prior witness records resolve at 9253eb5 and are not gitignored",
+    "16 files changed against d00f46a, all in scope; no unrelated files; lint 0 with no new debt; largest new module 185 lines; RECORDED and RATIFIED are correct SPEC.md vocabulary (SPEC.md:481) and no synonym was minted",
+    "conformance/commissioning.py is untouched by this branch and imports only __future__ and typing",
+    "the tree is stable: 9253eb5 with 0 dirty lines in the shared checkout and in the frozen worktree, before and after every measurement, and the full surface re-run at the end gave identical results"
+  ],
+  "taken_from_prior_passes_without_re_derivation": [],
+  "unattestable": [
+    "that a clarity review of scripts/README.md was performed at 9253eb5: the only byte that moved in .clarity/coverage.json is the artifact_digest, and the receipt format cannot distinguish a review from a sha256sum. Pass 2's N6, unchanged and not this branch's design."
+  ],
+  "verdict": "DISSENT. BUILT -> WITNESSED is NOT supported at 9253eb5.",
+  "verdict_reasoning": "This revision is materially better than the one pass 2 refused. The prose-shrink regex is structurally gone, three of pass 1's four plants and pass 2's threshold plant now fail on a delivered surface, the tests grew to 25, the closures outside scope are disclosed on every run, the counts are right, the witness records are committed where a second participant can resolve them, and the builder reported its own clause unmet rather than rebinding to make the number read ten. That last decision is the best thing on the branch and I want it recorded as such. But the claim under witness is that this instrument can fail, and eleven findings say it still cannot fail on either property the clause is graded on. Two are blocking. The N2 repair does not defeat either of the two bindings its own commit message and its own shipped docstring say it defeats: pass 2's plant and pass 1's plant both re-run green at this revision, because _declares is a substring over prose and 'sessions sharing one working tree' and 'claude-session:<id>' both satisfy it (P3-N1). And the unmet verdict that is the branch's headline is not measured: one sentence added to a description field flips P15-Q4.3 from unmet to holding (P3-N2). Meanwhile the new directory-reading path manufactures evidence it did not before - a member declared WITNESSED in one JSON edit is vouched for by incidental mentions in unrelated records, and a shipped refusal record is already being counted as the observation of a member it never observed (P3-N3) - and the basis still shrinks silently four ways with P15-Q4.1 reporting holds, because check_q41 remains X.issubset(X) (P3-N4). Trap T2 applies twice over here: verify exit 0 means unchanged, and in this case it also means untouched, since the only registered check reads a temporary fixture and the live reading is gated by nothing (P3-N6).",
+  "judgement_answered_for_the_builder": {
+    "question": "Given that run now reports P15-Q4.3 unmet, is admitting scripts/sov_recurrence.py as a BUILT member of P15-X4 still correct and useful, or does a reader that cannot pass its own clause fail to serve the custody?",
+    "answer": "BUILT is correct and the unmet report is a credit, not the problem. A reader exists to report the clause's state; one that reported it met would be worse, and AGENTS.md requires preserving open contradictions and says plainly that a test may establish BUILT. Refusing to rebind discovery to an adjacent contract was the right call and is the single strongest signal on this branch. Exiting 1 disqualifies nothing. The problem is that the unmet verdict is not a measurement. I flipped P15-Q4.3 from 'does not hold' to 'holds' by adding one sentence to a description field in the contract discovery is already bound to, without changing a binding or a line of code. So the clause's verdict is currently a property of documentation prose, and the instrument cannot distinguish a contract that declares a primitive from one that mentions the word - including contracts/acceptance-policy.json, which satisfies the check for 'authority' on the phrase 'it grants no authority'. A reader whose verdict swings on a description sentence does not serve the custody in either direction: it cannot be trusted when it says nine, and it could not have been trusted had it said ten. What is owed inside this concern is to make _declares structural - the primitive's name in $id, title, $defs, or a property key, not anywhere in a JSON dump - and to state the finding at the precision the instrument can support: not 'no contract in this repository names discovery', which the reader's own predicate refutes in fourteen files, but 'no contract declares a discovery object'."
+  },
+  "standing_supported": "NONE. This observation supports no standing transition. The member remains BUILT.",
+  "residuals": [
+    "P3-N1 and P3-N2 are blocking and are repair work owed inside this concern, not new tickets. Both are one function: _declares must read structure rather than a JSON dump, and the three written claims that depend on it (commit message, module docstring, custody note) must be corrected to what the artifact supports.",
+    "P3-N3 and P3-N4 are the same seam from opposite sides: what makes a record count as an observation of a member. Matching the member address anywhere in a record's text over-admits (a refusal, an incidental mention, an unrelated concern) and the traversal that produces the record set is pinned by nothing. A record's own subject field is available in every record I read and is not consulted.",
+    "P3-N5 is scope, and the honest fix is to follow governed_by and $ref from each bound primitive rather than to widen a flat file list.",
+    "P3-N6 asks whether the repository should gate on the live reading at all. Today it gates on a fixture and pins the failing verdict in two unit tests, which means the clause becoming satisfied turns the build red.",
+    "P3-N7, P3-N8 and P3-N9 are minor and repairable in place.",
+    "P3-N10 and P3-N11 are recorded, not routed. P3-N11 is not this concern's."
+  ],
+  "judgement_items": [
+    "Should a witness record that refuses a member be admissible as the disk evidence that a different member was independently observed? The reader currently answers yes by construction (P3-N3), and the answer decides whether observation records may be read by substring at all. No seat has ruled.",
+    "Is a service-scoped contract (services/console/contracts/operator-session.schema.json) an admissible binding for `session` in a claim about generic governed primitives? Pass 2 raised this and it is unruled; P3-N1 sharpens it, since the check that was supposed to grade the binding does not.",
+    "Should verify.py gate on the live reading rather than the fixture, given that the current arrangement pins a failing verdict and would go red when the clause is satisfied (P3-N6)? This constrains how every future exit-clause instrument is registered and is not this concern's to settle.",
+    "Once P15-X4's member is WITNESSED and LANDED, the reader will cite itself and cite the records that refused it as its own basis (P3-N10). Is that recurrence intended, or should a member be excluded from the basis of the instrument that reads it?"
+  ]
+}

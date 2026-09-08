@@ -192,6 +192,13 @@
       "kinds": [],
       "rule": "A speaker's actor_id must be the actor_id the topology records as that seat's occupant.",
       "plain_english": "Nobody speaks from a seat they do not occupy. A participant that phrases another seat's statement is named in rendered_by and leaves the speaker alone: the Controller stays the source of a Controller claim however the words were chosen. Without this, putting a communications actor into the control seat reads as the controller itself speaking, and every standing and authority rule downstream is being applied to the wrong participant."
+    },
+    {
+      "duty": "RENDERER_IS_A_REGISTERED_PRINCIPAL",
+      "applies_to_acts": [],
+      "kinds": [],
+      "rule": "A rendered_by.principal_id must resolve in contracts/principals.json.",
+      "plain_english": "decisions/0048 ID-1 admits no orphan actors, and a renderer is an actor on a consequential record. Fixing seat impersonation while letting the renderer be any string would trade one unattributable participant for another. This reuses the principal registry rather than giving Communications an identity mechanism of its own."
     }
   ],
   "generative_rule": "A seat type absent from `seats` has no admissible acts, and an act absent from `acts` cannot be spoken. Adding a seat or an act is a change to this table alone: the message schema, the fixtures format, and the checker all read from here. Nothing in this file constrains a message body, and no checker reads inside one. Communications needs no act of its own: AGGREGATE already forwards under relation FORWARDED, proposes no standing, and owes every carried item onward verbatim, and the body it forwards is unconstrained. What Communications needed was attribution, which is `rendered_by` on the message.",
@@ -199,5 +206,6 @@
     "The content, shape, length, or wording of a message body.",
     "Whether a statement is true. Etiquette is about who may say a thing, never about whether it is so.",
     "Settlement. Every act here proposes; the kernel and the root seat settle."
-  ]
+  ],
+  "reads_principals_from": "contracts/principals.json"
 }

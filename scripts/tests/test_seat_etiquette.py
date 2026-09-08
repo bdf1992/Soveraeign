@@ -28,6 +28,11 @@ FIXTURES = CONTRACTS / "fixtures"
 SEAT_SCHEMA = json.loads((CONTRACTS / "seat-registry.schema.json").read_text("utf-8"))
 ETIQUETTE = json.loads((CONTRACTS / "seat-etiquette.json").read_text("utf-8"))
 TOPOLOGY = json.loads((FIXTURES / "seat-topology.reference.json").read_text("utf-8"))
+#: decisions/0048 ID-1: a renderer resolves to a registered principal or it is not
+#: attribution. The checker cannot grade that without the registry, and does not
+#: pretend to when a caller supplies none.
+PRINCIPALS = {p["principal_id"] for p in
+              json.loads((CONTRACTS / "principals.json").read_text("utf-8"))["principals"]}
 ENTRIES = json.loads((FIXTURES / "seat-message.fixtures.json").read_text("utf-8"))
 GRADED = [entry for entry in ENTRIES if "expected_etiquette" in entry]
 
@@ -45,7 +50,8 @@ class SeatEtiquetteFixtures(unittest.TestCase):
         self.assertGreaterEqual(len(GRADED), 2)
         for entry in GRADED:
             with self.subTest(case=entry["id"]):
-                defects = conversation_defects(_conversation(entry), TOPOLOGY, ETIQUETTE)
+                defects = conversation_defects(_conversation(entry), TOPOLOGY, ETIQUETTE,
+                                               PRINCIPALS)
                 if entry["expected_etiquette"]:
                     self.assertEqual(defects, [], entry["id"])
                 else:
@@ -88,12 +94,12 @@ class SeatEtiquetteFixtures(unittest.TestCase):
             "standing_proposed": {"from": "BUILT", "to": "WITNESSED"},
             "carries": {"judgement_items": [], "dissents": [], "residuals": [], "stalls": []},
         }
-        self.assertEqual(conversation_defects([probe], TOPOLOGY, ETIQUETTE), [])
+        self.assertEqual(conversation_defects([probe], TOPOLOGY, ETIQUETTE, PRINCIPALS), [])
         etiquette = json.loads(json.dumps(ETIQUETTE))
         etiquette["carriage_duties"].append(
             {"duty": "UNIMPLEMENTED_DUTY", "applies_to_act": "ATTEST", "kinds": [],
              "rule": "a duty this checker has never heard of", "plain_english": "probe"})
-        defects = conversation_defects([probe], TOPOLOGY, etiquette)
+        defects = conversation_defects([probe], TOPOLOGY, etiquette, PRINCIPALS)
         self.assertTrue(any("UNIMPLEMENTED_DUTY" in defect for defect in defects),
                         "the checker passed a duty it does not implement")
 

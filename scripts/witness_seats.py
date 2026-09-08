@@ -34,6 +34,8 @@ FIXTURES = CONTRACTS / "fixtures"
 ETIQUETTE = json.loads((CONTRACTS / "seat-etiquette.json").read_text(encoding="utf-8"))
 TOPOLOGY = json.loads((FIXTURES / "seat-topology.reference.json").read_text(encoding="utf-8"))
 ENTRIES = json.loads((FIXTURES / "seat-message.fixtures.json").read_text(encoding="utf-8"))
+PRINCIPALS = {p["principal_id"] for p in json.loads(
+    (CONTRACTS / "principals.json").read_text(encoding="utf-8"))["principals"]}
 BY_ID = {entry["id"]: entry for entry in ENTRIES}
 
 # A proven BLOCKED claim carries all seven fields or it is a gate, not a block.
@@ -72,7 +74,7 @@ def conversation(entry: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def defects(statements: list[dict[str, Any]]) -> list[str]:
-    return list(conversation_defects(statements, TOPOLOGY, ETIQUETTE))
+    return list(conversation_defects(statements, TOPOLOGY, ETIQUETTE, PRINCIPALS))
 
 
 def seat(message: dict[str, Any], seat_id: str, seat_type: str) -> None:
@@ -140,6 +142,10 @@ def observe() -> int:
           lambda m: (m.__setitem__("rendered_by", {"actor_id": "sov-comms@1",
                                                    "actor_kind": "MODEL"}),
                      m["speaker"].__setitem__("actor_id", "sov-comms@1")))
+
+    press(observed, "SEATMSG-POS-RENDERED-AGGREGATE",
+          "a renderer nobody registered is not attribution",
+          lambda m: m.__setitem__("rendered_by", {"principal_id": "whoever@1"}))
 
     # The relation each act requires.
     press(observed, "SEATMSG-POS-CONTROL-AGGREGATE", "an AGGREGATE claiming PERFORMED is refused",

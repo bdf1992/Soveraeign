@@ -148,16 +148,36 @@ def _occupant_defects(message: dict[str, Any], seats: dict[str, dict[str, Any]],
             f"{occupant} occupies; a participant that only phrased this belongs in rendered_by"]
 
 
+def _renderer_defects(message: dict[str, Any], principals: set[str] | None,
+                      label: str) -> list[str]:
+    """A named renderer resolves to a registered principal, or it is not attribution.
+
+    `decisions/0048` ID-1 admits no orphan actors. A caller that supplies no registry
+    cannot check this and does not pretend to.
+    """
+    rendered_by = message.get("rendered_by")
+    if not rendered_by or principals is None:
+        return []
+    named = rendered_by.get("principal_id")
+    if named in principals:
+        return []
+    return [f"{label}: rendered_by names {named}, which is not a registered principal "
+            f"(decisions/0048 ID-1, no orphan actors)"]
+
+
 def _duty_defects(message: dict[str, Any], earlier: list[dict[str, Any]],
                   by_id: dict[str, dict[str, Any]], etiquette: dict[str, Any],
-                  seats: dict[str, dict[str, Any]], label: str) -> list[str]:
+                  seats: dict[str, dict[str, Any]], principals: set[str] | None,
+                  label: str) -> list[str]:
     """Dispatch the declared carriage duties. An undeclared duty name is itself a defect."""
     defects: list[str] = []
     carry_kinds: list[str] = []
     no_edit_kinds: list[str] = []
     for duty in etiquette["carriage_duties"]:
         name = duty["duty"]
-        if name == "SPEAKER_IS_THE_OCCUPANT":
+        if name == "RENDERER_IS_A_REGISTERED_PRINCIPAL":
+            defects.extend(_renderer_defects(message, principals, label))
+        elif name == "SPEAKER_IS_THE_OCCUPANT":
             defects.extend(_occupant_defects(message, seats, label))
         elif name == "NO_SELF_WITNESS":
             if message["speaker"]["relation_to_subject"] == duty.get("applies_to_relation"):
@@ -177,7 +197,8 @@ def _duty_defects(message: dict[str, Any], earlier: list[dict[str, Any]],
 
 
 def conversation_defects(conversation: list[dict[str, Any]], topology: dict[str, Any],
-                         etiquette: dict[str, Any]) -> list[str]:
+                         etiquette: dict[str, Any],
+                         principals: set[str] | None = None) -> list[str]:
     """Every etiquette defect in a conversation, in the order the statements were made.
 
     An empty list means every statement was one its speaker was entitled to make. It does
@@ -190,6 +211,6 @@ def conversation_defects(conversation: list[dict[str, Any]], topology: dict[str,
         label = f"{message.get('message_id', index)}"
         defects.extend(_message_defects(message, etiquette, seats, label))
         defects.extend(_duty_defects(message, conversation[:index], by_id, etiquette,
-                                     seats, label))
+                                     seats, principals, label))
         by_id[message["message_id"]] = message
     return defects

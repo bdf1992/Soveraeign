@@ -95,23 +95,17 @@
       }
     },
     "rendered_by": {
-      "description": "The participant that produced this statement's wording, when that is not the speaker. Communications is attributable here and nowhere else: the speaker still owns the claim, keeps its standing, and answers for it, while this names who put it into these words. Absent means the speaker wrote its own. Naming a renderer changes nothing a checker reads - the act's standing ceiling and the carriage duties are unaffected by who phrased the message - which is exactly the point.",
+      "description": "The participant that produced this statement's wording, when that is not the speaker. Communications is attributable here and nowhere else: the speaker still owns the claim, keeps its standing, and answers for it, while this names who put it into these words. Absent means the speaker wrote its own. Naming a renderer changes nothing a checker reads - the act's standing ceiling and the carriage duties are unaffected by who phrased the message - which is exactly the point. The id is a principal_id and not a free string, because attribution nobody can resolve is the same defect as no attribution: decisions/0048 ID-1 admits no orphan actors.",
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "actor_id",
-        "actor_kind"
+        "principal_id"
       ],
       "properties": {
-        "actor_id": {
+        "principal_id": {
+          "description": "A principal_id registered in contracts/principals.json.",
           "type": "string",
           "minLength": 1
-        },
-        "actor_kind": {
-          "enum": [
-            "HUMAN",
-            "MODEL"
-          ]
         },
         "audience": {
           "description": "Who the wording was chosen for, when it is worth recording.",

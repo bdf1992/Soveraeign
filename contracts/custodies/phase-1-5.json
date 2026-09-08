@@ -190,7 +190,17 @@
         "maturity": "DISCOVERY_ENVELOPE",
         "dimensions": [{"dimension_id": "grants", "low": 0, "high": 1}, {"dimension_id": "judgement_units", "low": 1, "high": 1}]
       },
-      "members": [],
+      "members": [
+        {
+          "member_kind": "ITEM",
+          "address": "scripts/sov_recurrence.py",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "PRESENTED",
+          "stage_observed_by": null,
+          "note": "the closed path settled experience -> candidate Definition -> no standing taken -> institution-neutral composition -> instrument; P15-Q4.1 to Q4.3 graded by conformance/commissioning.py on an observation the reader builds from committed files alone. Basis is the custody members an independent participant observed and that landed, plus the witness records and receipts each names, every address digested; a member at BUILT or one that never landed is excluded, and an address a member names that is absent is a defect rather than a silent drop. The candidate is derived and emitted, never persisted: its identity is a digest over its basis, it carries standing RECORDED and authority_effect NONE, and synthesis is observed to leave STATUS.yaml, contracts/phases.json and this collection byte-identical. Institution neutrality is read structurally - a vocabulary an enum closes to the four proving roles defeats it, a role name in prose does not - and the ten primitives are composed under institution:procurement, whose role names share nothing with the commissioning four. selfcheck builds the basis under a fixture root and proves seven defeating variants each fail exactly the predicates they declare, that each actually fails, and that the positive variant cites no member nobody witnessed. The live reading against this repository reads eight settled sources across P15-X1, P15-X2 and P15-X3, and all three predicates hold. BUILT only: a test may not claim WITNESSED, and the reader cannot cite itself until an independent participant observes it and it lands."
+        }
+      ],
       "depends_on": [],
       "cleanup_obligations": []
     },

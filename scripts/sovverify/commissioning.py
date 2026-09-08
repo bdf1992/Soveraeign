@@ -22,6 +22,24 @@ COMMISSIONING_CHECKS = (
           "defeating variants prove the grade can fail",
           ("scripts/sov_fresh.py", "scripts/sovfresh", "conformance/commissioning.py",
            "contracts/custodies/phase-1-5.json")),
+    Check("discovery and reuse slice", [sys.executable, "scripts/sov_reuse.py", "selfcheck"],
+          ROOT,
+          "reads a fixture result the way a second fresh participant would - custody member, "
+          "witness record, receipts, landed bytes, restored journal - and grades P15-Q3 "
+          "through conformance/commissioning.py; nine defeating variants each fail the "
+          "predicates they declare. The clause's own closure command, which until now "
+          "nothing in the suite ran",
+          ("scripts/sov_reuse.py", "scripts/sovreuse", "conformance/commissioning.py",
+           "contracts/custodies/phase-1-5.json")),
+    Check("definition recurrence slice", [sys.executable, "scripts/sov_recurrence.py",
+                                          "selfcheck"], ROOT,
+          "synthesizes a candidate Definition from settled experience under a fixture root, "
+          "grades P15-Q4 through conformance/commissioning.py, and proves the candidate takes "
+          "no standing and the primitives compose under an institution the founder did not "
+          "predict; seven defeating variants each fail the predicates they declare, and the "
+          "positive variant is checked for citing no member nobody witnessed",
+          ("scripts/sov_recurrence.py", "scripts/sovrecurrence", "conformance/commissioning.py",
+           "contracts/custodies/phase-1-5.json")),
     Check("node journal custody", [sys.executable, "scripts/sov_node.py", "journals"], ROOT,
           "replays every journal export under nodes/ with the Record Service's own verifier, "
           "which recomputes each entry digest from its contents, and resolves every "

@@ -42,29 +42,59 @@ from outside their own fixtures.
   failures it does not want to repeat. Communication failures go there, not into a
   ledger of their own.
 
+## Seats participate in several graphs, and only one of them is authority
+
+Ownership is one graph. Concern ownership, work dependency, orchestration, communication
+and routing, observation, custody and settlement are others. The same participants appear
+in several of them, and the edges mean different things. Most of this repository already
+keeps them apart in separate records — `contracts/domain-owners.json`,
+`contracts/acceptance-routing.json`, `contracts/work-lease.schema.json`,
+`contracts/custodies/`. The seat etiquette did not.
+
+It derived where a statement may travel from `owner_seat`, which is the delegation graph.
+Three consequences, each demonstrated against the live checker before this was changed:
+
+- a witness could not witness a controller;
+- a witness could not address any seat but the one that owns it;
+- a worker could not ask a sibling anything.
+
+Every statement had to travel the ownership tree, so interaction implied hierarchy by
+construction. That is the conflation this decision now refuses.
+
+The topology may declare typed edges beside ownership: `witnesses`, `renders-for`, `asks`.
+An act names the relation it travels, and a declared edge of that type is an admissible
+route. `owner_seat` still derives the delegation graph and is the only graph that carries
+authority.
+
+**A typed edge is a route and never a grant** (`RELATION_GRANTS_NOTHING`). A seat that
+witnesses a controller is not owned by it and cannot direct it; a seat that renders for
+the root does not thereby report to it. An edge is consulted only for the act that names
+that relation, so no edge licenses an act which did not ask for one, and `DISPATCH` names
+none. Both refusals are pressed from outside their fixtures.
+
 ## What Communications is not
 
 **Not a seat type.** `contracts/seat-registry.schema.json` keeps `root`, `control`,
-`orchestration`, `work`. A fifth would put representation into the authority hierarchy,
-which is the one thing this decision is against.
+`orchestration`, `work`. A fifth would put representation into the delegation graph, which
+is the one graph this decision keeps it out of.
 
-**Not a seat instance either, and that was tested rather than assumed.** A
-`seat:communications` typed `work` was constructed against the live checker. It is
-refused twice: a work seat may not `AGGREGATE`, so it cannot forward what it renders, and
-`AGGREGATE` travels to its owner, so it cannot reach the root. Making it work would take
-either `AGGREGATE` in every work seat's `may` list, which lets any worker forward, or a
-`control` seat, which grants dispatch. The same conversation with no comms seat and
-`rendered_by` set is admitted as written.
+**Not a rung anywhere.** Communications interacts with Controller, Orchestrator, Worker
+and Witness, and none of those interactions places it above or below any of them. It may
+discover it needs a tool and ask a Controller to define the work; it may render a Worker's
+artifact for an audience; it may route between two domains and gain neither domain's
+authority. Being connected is not being owned, in either direction.
 
-That is the finding, and it is the reason the shape is what it is: **a seat is an
-authority position, and Communications holds no authority.** None of the properties Bdo
-asked for — its own concern, its own skills, an attributable participant, graders, a
-history of communication failures, somewhere to accumulate competence — needs one.
+**A seat instance is admissible and is not yet needed.** A `seat:communications` typed
+`work` was constructed against the live checker: it cannot `AGGREGATE`, so it cannot
+forward what it renders. That refusal is about the act table, not about hierarchy, and a
+`renders-for` edge plus `rendered_by` already carries the case this branch had. Adding the
+seat is a change to `seats` and `relations`, not a change to the shape of authority, and
+it is left for the first concern that needs a durable custody record rather than taken on
+speculation.
 
-**Not a new act.** `RENDER` was drafted and withdrawn. The control seat's `AGGREGATE`
-carrying a plain-English body is admitted; the same message proposing `BUILT ->
-WITNESSED` is refused; the same message dropping a carried question is refused. Every
-property was already there, and the `body` is unconstrained on purpose.
+**Not a new act.** `RENDER` was drafted and withdrawn. `AGGREGATE` carrying a plain-English
+body is admitted; the same message proposing `BUILT -> WITNESSED` is refused; the same
+message dropping a carried question is refused.
 
 ## What would defeat this
 
@@ -86,3 +116,9 @@ rather than wrong.
    The fixtures use an already-registered principal rather than minting one.
 4. The etiquette this builds on is `PROPOSED` (`decisions/0035`). This decision does not
    promote it.
+5. Three relation types are declared — `witnesses`, `renders-for`, `asks` — because three
+   are what the refused cases needed. Custody, dependency and settlement edges live in
+   their own records today and are not folded in here; whether they should share this
+   vocabulary is unsettled and is not settled by this decision.
+6. `ASK` names the `asks` relation and the topology declares no `asks` edge, so it still
+   travels delegation only. The route exists and nothing uses it yet.

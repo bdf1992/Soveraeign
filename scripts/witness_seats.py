@@ -147,6 +147,17 @@ def observe() -> int:
           "a renderer nobody registered is not attribution",
           lambda m: m.__setitem__("rendered_by", {"principal_id": "whoever@1"}))
 
+    # A typed edge is a route and never a grant. Ownership is one graph among several,
+    # and no edge in another may be read as authority.
+    press(observed, "SEATMSG-POS-WITNESS-OBSERVES-CONTROL",
+          "a witnesses edge does not license dispatching along it",
+          lambda m: (m.__setitem__("act", "DISPATCH"),
+                     m["speaker"].__setitem__("relation_to_subject", "PERFORMED"),
+                     m.__setitem__("standing_proposed", None)))
+    press(observed, "SEATMSG-POS-WITNESS-OBSERVES-CONTROL",
+          "an act naming a relation still needs a declared edge",
+          lambda m: m.__setitem__("to_seat", "seat:worker-1"))
+
     # The relation each act requires.
     press(observed, "SEATMSG-POS-CONTROL-AGGREGATE", "an AGGREGATE claiming PERFORMED is refused",
           lambda m: m["speaker"].__setitem__("relation_to_subject", "PERFORMED"))

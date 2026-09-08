@@ -75,7 +75,7 @@ class SeatEtiquetteFixtures(unittest.TestCase):
         spoken = {message["act"] for entry in ENTRIES for message in _conversation(entry)}
         unexercised = sorted(set(ETIQUETTE["acts"]) - spoken)
         self.assertEqual(
-            unexercised, ["ACCEPT", "ASK", "DISPATCH", "PLAN", "REFUSE", "UNATTESTABLE"],
+            unexercised, ["ACCEPT", "ASK", "PLAN", "REFUSE", "UNATTESTABLE"],
             "the set of acts with no fixture changed; extend the corpus or update this list")
 
     def test_every_carriage_duty_is_implemented_by_the_checker(self) -> None:

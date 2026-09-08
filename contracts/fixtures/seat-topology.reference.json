@@ -75,5 +75,25 @@
         "claim_basis": "leased by the orchestration seat to witness OP-DEMO-1"
       }
     }
+  ],
+  "relations": [
+    {
+      "from": "seat:witness-1",
+      "type": "witnesses",
+      "to": "seat:session-control",
+      "why": "A witness observes an act, and an act may be a controller's. Witnessing is a relation to a claim, not a rung beneath workers."
+    },
+    {
+      "from": "seat:witness-1",
+      "type": "witnesses",
+      "to": "seat:root",
+      "why": "Where the observation is addressed when the subject is the control seat's own."
+    },
+    {
+      "from": "seat:session-control",
+      "type": "renders-for",
+      "to": "seat:root",
+      "why": "Communications phrases what crosses to the person in the root seat. Rendering for a seat is not reporting to it and grants nothing either way."
+    }
   ]
 }

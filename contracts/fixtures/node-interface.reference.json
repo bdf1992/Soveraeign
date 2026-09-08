@@ -8,7 +8,7 @@
     "node_source": "contracts/fixtures/node-registry.reference.json",
     "root_source": "contracts/fixtures/seat-topology.reference.json",
     "node_source_digest": "9c94292cca2ac136f7b0cb86926d62f3dec59e537408c1d17b5e2f552299e2da",
-    "root_source_digest": "81516fa7fcce9d86fca246b3f438ca1ba4da405cb8126032301dfc7bd4d636fe"
+    "root_source_digest": "575e87db5733147e80a97d62122112b1df62e397f95cdbf7508b34ee85ea784c"
   },
   "kernel": {
     "closure_schema": "soveraeign-kernel-closure/v1",
@@ -117,7 +117,7 @@
     },
     {
       "address": "contracts/fixtures/seat-topology.reference.json",
-      "digest": "81516fa7fcce9d86fca246b3f438ca1ba4da405cb8126032301dfc7bd4d636fe"
+      "digest": "575e87db5733147e80a97d62122112b1df62e397f95cdbf7508b34ee85ea784c"
     },
     {
       "address": "contracts/kernel-paradigms.json",
@@ -288,7 +288,7 @@
       "digest": "150834886995a8e0c32334beb5ef53dbc69cbb244172b510a06b056e608bf4b0"
     }
   ],
-  "input_state_digest": "1992dcdece8f3867c656f4183c4d52ce79ddbea1478cbba4c69c1e9db8ea36d1",
+  "input_state_digest": "271ff62c1a483b1d805b67277c7c9dc61fe1145964fffea0a0b1f2845a16e45e",
   "counts": {
     "declared": 135,
     "bound": 135,

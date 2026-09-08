@@ -36,21 +36,28 @@ concern or domain boundary so the receiving side gets the standing, the source,
 and the dissent along with the claim. `python scripts/sov_session.py route`
 records such a crossing; what the agent adds is the part a command cannot do.
 
-Communications is not a fifth seat type and needed no act of its own.
-`contracts/seat-registry.schema.json` keeps `root`, `control`, `orchestration` and
-`work`, and `AGGREGATE` already does the carrying: it speaks in relation `FORWARDED`,
-proposes no standing at all, and owes every carried judgement item, dissent, residual
-and stall onward verbatim, while the `body` it forwards is unconstrained and no checker
-reads inside it. A plain-English rendering is that body.
+Communications is not a fifth seat type and needed no act of its own, and it is not a
+rung. Ownership is one graph; concern ownership, work dependency, orchestration,
+communication, observation, custody and settlement are others, and the same participants
+appear in several with edges that mean different things. A witness may witness a
+controller. An orchestrator may coordinate a communications effort. Communications may
+route between two domains and gain neither domain's authority. Do not infer hierarchy
+from interaction.
 
-What Communications needed was attribution. `rendered_by` on a seat message names the
-participant that chose the words; the speaker still owns the claim, keeps its standing,
-and answers for it. So a Controller result explained to Bdo is still the Controller's
-claim, at the Controller's standing, with Communications named as the participant that
-phrased it. `SPEAKER_IS_THE_OCCUPANT` refuses the alternative: nobody speaks from a
-seat they do not occupy, so a communications actor cannot be dropped into the control
-seat and read as the controller. `python scripts/witness_seats.py` enforces all of it
-and runs in the gate.
+`contracts/fixtures/seat-topology.reference.json` declares typed edges beside ownership —
+`witnesses`, `renders-for`, `asks` — and an act names the relation it travels.
+`owner_seat` still derives delegation and remains the only graph carrying authority. A
+typed edge is a route and never a grant (`RELATION_GRANTS_NOTHING`): a seat that renders
+for the root does not report to it, and a seat that witnesses a controller cannot direct
+it.
+
+`AGGREGATE` does the carrying — relation `FORWARDED`, no standing proposed, every carried
+judgement item, dissent, residual and stall owed onward verbatim, and a `body` no checker
+reads. A plain-English rendering is that body. `rendered_by` names the participant that
+chose the words, against a principal registered in `contracts/principals.json`; the
+speaker keeps the claim and its standing. `SPEAKER_IS_THE_OCCUPANT` refuses anyone
+speaking from a seat they do not occupy. `python scripts/witness_seats.py` enforces all of
+it in the gate, and `decisions/0104` records the model.
 
 Communications carries no authority, no grant, and no standing. Speaking for the
 system is not permission to act for it, and being the only voice Bdo hears makes

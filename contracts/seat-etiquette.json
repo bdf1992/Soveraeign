@@ -37,28 +37,32 @@
       "standing_ceiling": {
         "from": "BUILT",
         "to": "WITNESSED"
-      }
+      },
+      "travels_relation": "witnesses"
     },
     "DISSENT": {
       "means": "I looked at this myself and I disagree with the claim.",
       "plain_english": "A witness disagreeing. A valid and valuable outcome, and one no listener may drop.",
       "direction": "UPWARD",
       "requires_relation": "INDEPENDENT",
-      "standing_ceiling": null
+      "standing_ceiling": null,
+      "travels_relation": "witnesses"
     },
     "UNATTESTABLE": {
       "means": "I looked, and the claim cannot be verified as stated.",
       "plain_english": "Neither agreement nor disagreement: there is nothing here that could be checked. A claim with no defeating case usually lands here.",
       "direction": "UPWARD",
       "requires_relation": "INDEPENDENT",
-      "standing_ceiling": null
+      "standing_ceiling": null,
+      "travels_relation": "witnesses"
     },
     "ASK": {
       "means": "This needs judgement I do not hold. Here is the question.",
       "plain_english": "A question travelling up toward the root. It queues; it never blocks the asker or anyone else.",
       "direction": "UPWARD",
       "requires_relation": "ANY",
-      "standing_ceiling": null
+      "standing_ceiling": null,
+      "travels_relation": "asks"
     },
     "REFUSE": {
       "means": "I will not do this, and here is the rule that forbids it.",
@@ -79,7 +83,8 @@
       "plain_english": "The only act a control seat uses to move other seats' words upward. It moves nothing on its own: an aggregate proposes no standing, and every item it received must come out the other side unedited.",
       "direction": "UPWARD",
       "requires_relation": "FORWARDED",
-      "standing_ceiling": null
+      "standing_ceiling": null,
+      "travels_relation": "renders-for"
     },
     "RATIFY": {
       "means": "This is settled as judgement.",
@@ -199,6 +204,13 @@
       "kinds": [],
       "rule": "A rendered_by.principal_id must resolve in contracts/principals.json.",
       "plain_english": "decisions/0048 ID-1 admits no orphan actors, and a renderer is an actor on a consequential record. Fixing seat impersonation while letting the renderer be any string would trade one unattributable participant for another. This reuses the principal registry rather than giving Communications an identity mechanism of its own."
+    },
+    {
+      "duty": "RELATION_GRANTS_NOTHING",
+      "applies_to_acts": [],
+      "kinds": [],
+      "rule": "An act with no travels_relation may reach only the delegation edge, and a DOWNWARD act may reach only a seat the speaker owns.",
+      "plain_english": "No edge silently implies another. A declared witnesses or renders-for edge lets a statement travel it and confers nothing else: it does not let the speaker dispatch work along it, does not make either seat the other's owner, and does not move authority in either direction. Being connected is not being owned."
     }
   ],
   "generative_rule": "A seat type absent from `seats` has no admissible acts, and an act absent from `acts` cannot be spoken. Adding a seat or an act is a change to this table alone: the message schema, the fixtures format, and the checker all read from here. Nothing in this file constrains a message body, and no checker reads inside one. Communications needs no act of its own: AGGREGATE already forwards under relation FORWARDED, proposes no standing, and owes every carried item onward verbatim, and the body it forwards is unconstrained. What Communications needed was attribution, which is `rendered_by` on the message.",

@@ -2981,5 +2981,345 @@
       }
     },
     "defeats": "a renderer named by a string nobody registered; attribution that cannot be resolved is the same defect as no attribution (decisions/0048 ID-1)"
+  },
+  {
+    "id": "SEATMSG-POS-WITNESS-OBSERVES-CONTROL",
+    "contract": "seat-message.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "expected_etiquette": true,
+    "note": "A witness observes a control seat's act and addresses the root, carrying every question and residual the chain below raised. Witnessing is a relation to a claim, not a rung beneath workers, and the topology declares the `witnesses` edge that carries it. Before typed edges existed this was refused outright: the only route a statement could take was the ownership tree, so no seat could observe a seat that did not own it.",
+    "record": {
+      "message_schema": "soveraeign-seat-message/v1",
+      "message_id": "msg:w1",
+      "sent_at": "2026-09-08T00:00:00Z",
+      "speaker": {
+        "seat_id": "seat:witness-1",
+        "seat_type": "work",
+        "actor_id": "sov-witness@1",
+        "actor_kind": "MODEL",
+        "relation_to_subject": "INDEPENDENT"
+      },
+      "to_seat": "seat:root",
+      "act": "ATTEST",
+      "subject": {
+        "operation_id": "OP-DEMO-1"
+      },
+      "body": "The control seat's aggregation was checked against the messages it forwards.",
+      "standing_proposed": {
+        "from": "BUILT",
+        "to": "WITNESSED"
+      },
+      "carries": {
+        "judgement_items": [
+          {
+            "item_id": "J1",
+            "raised_by": "sov-worker@1",
+            "question": "Should the transition contract admit a lease with no expiry?",
+            "gates": "OPEN -> BUILT for contracts/transition.schema.json"
+          },
+          {
+            "item_id": "J2",
+            "raised_by": "sov-worker@1",
+            "question": "Is a work seat allowed to name its own successor operation?"
+          }
+        ],
+        "dissents": [],
+        "residuals": [
+          {
+            "item_id": "R1",
+            "raised_by": "sov-worker@1",
+            "residual": "No defeating fixture yet for the empty-lease path."
+          },
+          {
+            "item_id": "R2",
+            "raised_by": "sov-witness@1",
+            "residual": "verify.py exercises the positive path only; the refusal path is unobserved."
+          }
+        ],
+        "stalls": []
+      }
+    },
+    "context": [
+      {
+        "message_schema": "soveraeign-seat-message/v1",
+        "message_id": "msg:1",
+        "sent_at": "2026-08-23T12:00:00Z",
+        "speaker": {
+          "seat_id": "seat:worker-1",
+          "seat_type": "work",
+          "actor_id": "sov-worker@1",
+          "actor_kind": "MODEL",
+          "relation_to_subject": "PERFORMED"
+        },
+        "to_seat": "seat:orchestrator-1",
+        "act": "REPORT",
+        "subject": {
+          "operation_id": "OP-DEMO-1"
+        },
+        "body": {
+          "files_changed": [
+            "contracts/transition.schema.json"
+          ],
+          "checks": [
+            {
+              "command": "python scripts/verify.py",
+              "exit_code": 0
+            }
+          ],
+          "next_operation": "author the defeating fixture for the empty-lease path"
+        },
+        "standing_proposed": {
+          "from": "OPEN",
+          "to": "BUILT"
+        },
+        "carries": {
+          "judgement_items": [
+            {
+              "item_id": "J1",
+              "raised_by": "sov-worker@1",
+              "question": "Should the transition contract admit a lease with no expiry?",
+              "gates": "OPEN -> BUILT for contracts/transition.schema.json"
+            },
+            {
+              "item_id": "J2",
+              "raised_by": "sov-worker@1",
+              "question": "Is a work seat allowed to name its own successor operation?"
+            }
+          ],
+          "dissents": [],
+          "residuals": [
+            {
+              "item_id": "R1",
+              "raised_by": "sov-worker@1",
+              "residual": "No defeating fixture yet for the empty-lease path."
+            }
+          ],
+          "stalls": []
+        }
+      },
+      {
+        "message_schema": "soveraeign-seat-message/v1",
+        "message_id": "msg:2",
+        "sent_at": "2026-08-23T12:00:00Z",
+        "speaker": {
+          "seat_id": "seat:witness-1",
+          "seat_type": "work",
+          "actor_id": "sov-witness@1",
+          "actor_kind": "MODEL",
+          "relation_to_subject": "INDEPENDENT"
+        },
+        "to_seat": "seat:orchestrator-1",
+        "act": "ATTEST",
+        "subject": {
+          "operation_id": "OP-DEMO-1"
+        },
+        "body": "Re-read the changed schema against SPEC.md and re-ran verify.py at the witnessed tree state; exit code 0. The positive case reproduces. Recorded one residual.",
+        "standing_proposed": {
+          "from": "BUILT",
+          "to": "WITNESSED"
+        },
+        "carries": {
+          "judgement_items": [],
+          "dissents": [],
+          "residuals": [
+            {
+              "item_id": "R2",
+              "raised_by": "sov-witness@1",
+              "residual": "verify.py exercises the positive path only; the refusal path is unobserved."
+            }
+          ],
+          "stalls": []
+        }
+      },
+      {
+        "message_schema": "soveraeign-seat-message/v1",
+        "message_id": "msg:3",
+        "sent_at": "2026-08-23T12:00:00Z",
+        "speaker": {
+          "seat_id": "seat:orchestrator-1",
+          "seat_type": "orchestration",
+          "actor_id": "sov-orchestrator@1",
+          "actor_kind": "MODEL",
+          "relation_to_subject": "FORWARDED"
+        },
+        "to_seat": "seat:session-control",
+        "act": "AGGREGATE",
+        "subject": {
+          "operation_id": "OP-DEMO-1"
+        },
+        "body": {
+          "forwarded": [
+            "msg:1",
+            "msg:2"
+          ],
+          "note": "builder report and an independent attestation"
+        },
+        "standing_proposed": null,
+        "carries": {
+          "judgement_items": [
+            {
+              "item_id": "J1",
+              "raised_by": "sov-worker@1",
+              "question": "Should the transition contract admit a lease with no expiry?",
+              "gates": "OPEN -> BUILT for contracts/transition.schema.json"
+            },
+            {
+              "item_id": "J2",
+              "raised_by": "sov-worker@1",
+              "question": "Is a work seat allowed to name its own successor operation?"
+            }
+          ],
+          "dissents": [],
+          "residuals": [
+            {
+              "item_id": "R1",
+              "raised_by": "sov-worker@1",
+              "residual": "No defeating fixture yet for the empty-lease path."
+            },
+            {
+              "item_id": "R2",
+              "raised_by": "sov-witness@1",
+              "residual": "verify.py exercises the positive path only; the refusal path is unobserved."
+            }
+          ],
+          "stalls": []
+        },
+        "aggregates": [
+          "msg:1",
+          "msg:2"
+        ]
+      },
+      {
+        "message_schema": "soveraeign-seat-message/v1",
+        "message_id": "msg:4",
+        "sent_at": "2026-08-23T12:00:00Z",
+        "speaker": {
+          "seat_id": "seat:session-control",
+          "seat_type": "control",
+          "actor_id": "sov-controller@1",
+          "actor_kind": "MODEL",
+          "relation_to_subject": "FORWARDED"
+        },
+        "to_seat": "seat:root",
+        "act": "AGGREGATE",
+        "subject": {
+          "operation_id": "OP-DEMO-1"
+        },
+        "body": {
+          "forwarded": [
+            "msg:3"
+          ],
+          "judgement_queue_size": 2
+        },
+        "standing_proposed": null,
+        "carries": {
+          "judgement_items": [
+            {
+              "item_id": "J1",
+              "raised_by": "sov-worker@1",
+              "question": "Should the transition contract admit a lease with no expiry?",
+              "gates": "OPEN -> BUILT for contracts/transition.schema.json"
+            },
+            {
+              "item_id": "J2",
+              "raised_by": "sov-worker@1",
+              "question": "Is a work seat allowed to name its own successor operation?"
+            }
+          ],
+          "dissents": [],
+          "residuals": [
+            {
+              "item_id": "R1",
+              "raised_by": "sov-worker@1",
+              "residual": "No defeating fixture yet for the empty-lease path."
+            },
+            {
+              "item_id": "R2",
+              "raised_by": "sov-witness@1",
+              "residual": "verify.py exercises the positive path only; the refusal path is unobserved."
+            }
+          ],
+          "stalls": []
+        },
+        "aggregates": [
+          "msg:3"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "SEATMSG-DEF-RELATION-USED-TO-DISPATCH",
+    "contract": "seat-message.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_etiquette": false,
+    "defeats": "a typed edge read as authority; a seat that witnesses a controller is not thereby able to direct it, and no edge silently implies another",
+    "note": "The witness tries to dispatch work along the edge it observes over. A declared relation is a route and never a grant.",
+    "record": {
+      "message_schema": "soveraeign-seat-message/v1",
+      "message_id": "msg:w2",
+      "sent_at": "2026-09-08T00:00:00Z",
+      "speaker": {
+        "seat_id": "seat:witness-1",
+        "seat_type": "work",
+        "actor_id": "sov-witness@1",
+        "actor_kind": "MODEL",
+        "relation_to_subject": "PERFORMED"
+      },
+      "to_seat": "seat:session-control",
+      "act": "DISPATCH",
+      "subject": {
+        "operation_id": "OP-CONTROL-1"
+      },
+      "body": "The control seat's aggregation was checked against the messages it forwards.",
+      "standing_proposed": null,
+      "carries": {
+        "judgement_items": [],
+        "dissents": [],
+        "residuals": [],
+        "stalls": []
+      }
+    }
+  },
+  {
+    "id": "SEATMSG-DEF-UNDECLARED-EDGE",
+    "contract": "seat-message.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_etiquette": false,
+    "defeats": "a statement routed over an edge nobody declared; naming a relation on an act admits the declared edges of that type and invents none",
+    "note": "The witness attests to a sibling worker it holds no witnesses edge to.",
+    "record": {
+      "message_schema": "soveraeign-seat-message/v1",
+      "message_id": "msg:w3",
+      "sent_at": "2026-09-08T00:00:00Z",
+      "speaker": {
+        "seat_id": "seat:witness-1",
+        "seat_type": "work",
+        "actor_id": "sov-witness@1",
+        "actor_kind": "MODEL",
+        "relation_to_subject": "INDEPENDENT"
+      },
+      "to_seat": "seat:worker-1",
+      "act": "ATTEST",
+      "subject": {
+        "operation_id": "OP-CONTROL-1"
+      },
+      "body": "The control seat's aggregation was checked against the messages it forwards.",
+      "standing_proposed": {
+        "from": "BUILT",
+        "to": "WITNESSED"
+      },
+      "carries": {
+        "judgement_items": [],
+        "dissents": [],
+        "residuals": [],
+        "stalls": []
+      }
+    }
   }
 ]

@@ -35,8 +35,13 @@ from typing import Any
 import hashlib
 
 from .errors import RelationUndetermined, RunNotTerminal, Unreadable
-from .record import CONSTRUCTION_CONTEXT, PREDICATE_SOURCE_KINDS, RunRecord
-from .version import DIFFERENT, SAME, UNKNOWN, _version_of
+from .record import (
+    CONSTRUCTION_CONTEXT,
+    CONTEXT_KINDS,
+    PREDICATE_SOURCE_KINDS,
+    RunRecord,
+)
+from .version import SAME, UNKNOWN, _version_of
 
 EDGES = (
     "SAME_ACTOR_VERSION",
@@ -86,6 +91,17 @@ def _walk_perspective(record: RunRecord, candidate: str, walk: _Walk) -> None:
         walk.cannot_answer("SAME_ACTOR_VERSION")
 
 
+def _corroborated(record: RunRecord, arrows: list[dict[str, Any]]) -> bool:
+    """Does an actor of this run appear on the subject the run names?
+
+    The subject is the executor's own word. A subject no actor of this run ever moved is not
+    this run's lifecycle, whoever named it.
+    """
+    executors = record.executors()
+    return any(_version_of(record, str(entry.get("actor") or ""), actor) == SAME
+               for entry in arrows for actor in executors)
+
+
 def _walk_lifecycle(record: RunRecord, candidate: str, walk: _Walk) -> None:
     """Did the candidate, or a version of it, already move this subject along an arrow?
 
@@ -101,19 +117,24 @@ def _walk_lifecycle(record: RunRecord, candidate: str, walk: _Walk) -> None:
         walk.cannot_answer("PRIOR_STANDING_ACTOR")
         return
     walk.cite(*arrows)
+    # The subject is named by the executor's own ATTEMPTED payload, so it is corroborated
+    # before it is walked: an actor of this run must appear on it. A decoy the executor names
+    # to send the walk down an unrelated lifecycle fails that and is unanswerable.
+    #
+    # An earlier repair asked the opposite question - whether the candidate had moved anything
+    # else - and a second witness pass showed that made admission decrease as the record grew,
+    # so every observer with prior work anywhere was refused. Corroborating the subject refuses
+    # the decoy without charging a candidate for having worked before.
+    if not _corroborated(record, arrows):
+        walk.cannot_answer("PRIOR_STANDING_ACTOR")
+        return
     readings = [(entry, _version_of(record, candidate, str(entry.get("actor") or "")))
                 for entry in arrows]
     for entry, reading in readings:
         if reading == SAME:
             walk.edge("PRIOR_STANDING_ACTOR", entry)
             return
-    # The subject is named by the executor's own ATTEMPTED payload. A record that also shows
-    # this candidate moving some other subject cannot rule out that the named one is a decoy,
-    # so it is unanswerable rather than a pass.
-    elsewhere = [entry for entry in record.all_standings()
-                 if entry.get("subject") != subject
-                 and _version_of(record, candidate, str(entry.get("actor") or "")) != DIFFERENT]
-    if any(reading == UNKNOWN for _, reading in readings) or elsewhere:
+    if any(reading == UNKNOWN for _, reading in readings):
         walk.cannot_answer("PRIOR_STANDING_ACTOR")
 
 
@@ -136,6 +157,8 @@ def _walk_context(record: RunRecord, candidate: str, walk: _Walk) -> None:
         walk.cannot_answer("CONSTRUCTION_CONTEXT_INHERITED")
     elif any(str(kind) in CONSTRUCTION_CONTEXT for kind in passed):
         walk.edge("CONSTRUCTION_CONTEXT_INHERITED", launch)
+    elif any(str(kind) not in CONTEXT_KINDS for kind in passed):
+        walk.cannot_answer("CONSTRUCTION_CONTEXT_INHERITED")
 
     kind = payload.get("predicates_source_kind")
     author = payload.get("predicates_source_actor")
@@ -167,8 +190,17 @@ def _walk_outputs(record: RunRecord, candidate: str, walk: _Walk) -> None:
     walk.cite(*present)
     if len(present) != len(addresses):
         walk.cannot_answer("PRODUCED_THE_OUTPUT")
-    elif any(entry.get("actor") == candidate for entry in present):
-        walk.edge("PRODUCED_THE_OUTPUT", next(e for e in present if e.get("actor") == candidate))
+    else:
+        # The producer of an output need not be the run's attempter, so `SAME_ACTOR_VERSION`
+        # does not cover it. A second witness pass reached INDEPENDENT for a candidate loading
+        # the output producer's profile under another id, because this compared raw ids.
+        readings = [(entry, _version_of(record, candidate, str(entry.get("actor") or "")))
+                    for entry in present]
+        found = next((entry for entry, reading in readings if reading == SAME), None)
+        if found is not None:
+            walk.edge("PRODUCED_THE_OUTPUT", found)
+        elif any(reading == UNKNOWN for _, reading in readings):
+            walk.cannot_answer("PRODUCED_THE_OUTPUT")
     if not present:
         walk.edge("ONLY_EXECUTOR_REPORT", report)
 
@@ -223,8 +255,14 @@ def infer_relation(
                 # Present and unreadable. The earlier code read this as "no lease holder",
                 # which is a denial the bytes do not support.
                 walk.cannot_answer("HOLDS_RUN_LEASE")
-            elif lease.get("holder_id") == candidate_observer_id:
-                walk.edge("HOLDS_RUN_LEASE", attempt)
+            else:
+                # A lease holder is not always the attempter either; same finding, same fix.
+                holder = str(lease.get("holder_id") or "")
+                reading = _version_of(record, candidate_observer_id, holder)
+                if reading == SAME:
+                    walk.edge("HOLDS_RUN_LEASE", attempt)
+                elif reading == UNKNOWN:
+                    walk.cannot_answer("HOLDS_RUN_LEASE")
 
     _walk_outputs(record, candidate_observer_id, walk)
 

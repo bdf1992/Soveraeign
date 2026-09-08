@@ -153,6 +153,12 @@ def _observation(begin: dict[str, Any], report: dict[str, Any],
         defects.append("observation admitted with a direct edge to the run")
     if inference.get("record_completeness") != "COMPLETE":
         defects.append("independence read over an incomplete record")
+    # Two witness passes over the Observation Service reached INDEPENDENT on records that
+    # named edges nobody could answer, and this oracle graded three fields of the same
+    # declaration and never the silence. Absence of a recorded edge is not absence of a
+    # relation, at this boundary as much as inside the service.
+    if inference.get("unanswerable_edges"):
+        defects.append("independence read over edges the record could not answer")
     declared = observation.get("predicates_declared_at")
     observed_at = observation.get("observed_at")
     if isinstance(declared, (int, float)) and isinstance(observed_at, (int, float)):

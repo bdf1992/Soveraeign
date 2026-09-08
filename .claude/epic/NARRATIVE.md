@@ -345,7 +345,8 @@ keeps an append-preserving journal, and the Asset Service is built. So the
 narrative is no longer "the ledger has to exist first". It is: nobody can be
 told who they are, so no counter can open. Identity is the next floor, and
 nothing above it can be witnessed either until the service that would do the
-witnessing, built and witnessed now as a thin slice, has observed a run.
+witnessing, built now as a thin slice and not witnessed since decisions/0104
+replaced its walk, has observed a run.
 
 ## Decisions this layer queues for the owner
 

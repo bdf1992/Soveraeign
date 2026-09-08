@@ -223,9 +223,8 @@ profile as unanswerable; `_walk_lifecycle` treated the same absence as a clean "
 `PRIOR_STANDING_ACTOR` degraded to id equality and a rename defeated it — a rename being the
 exact thing the profile exists to defeat. Two walks in one module read one absence two ways.
 
-Repaired at the commit carrying this paragraph. The perspective reading is three-valued
-(`SAME`, `DIFFERENT`, `UNKNOWN`) and lives in `version.py`, one module with one reading,
-because the pass also found the executor-relay refusal comparing ids while the walk compared
+Repaired. The perspective reading is three-valued (`SAME`, `DIFFERENT`, `UNKNOWN`) and lives
+in `version.py`, because the pass also found the executor-relay refusal comparing ids while the walk compared
 profiles: `infer_relation` called two actors the same and `observe_run` called them different,
 on one record. The gate moved to `admission.py` and now reads the whole verdict — found edges,
 unanswered edges, completeness, and whether the examination covered the closed set — after the
@@ -248,6 +247,46 @@ writing one turns `verify.py` red and repairing that needs a file a witness may 
 words are filed by the builder, quoted, and the coupling is a row in `KNOWN-GAPS.md`. Custody
 of a witness record filed by the party it grades is weaker than one the witness wrote, and
 saying so is the honest form of it.
+
+## The second pass dissented too, and falsified this record
+
+`reports/2026-09-08-independence-repairs.md`, over commit `f28e43b`. It supported no standing
+either, and its first finding was against the paragraph above: this record claimed one module
+with one reading while `HOLDS_RUN_LEASE` and `PRODUCED_THE_OUTPUT` still compared raw ids. A
+candidate that was a version of the lease holder, or of the actor that produced the very output
+it proposed to observe, read `INDEPENDENT` over a `COMPLETE` record. Neither actor need be the
+run's attempter, which is why `SAME_ACTOR_VERSION` did not cover them and why those two edges
+exist at all. **A decision record stating a repair as complete when it is not is the same
+defect as a check that grades a declaration, in the document that governs the check.**
+
+Three more findings changed what this record rules rather than only what the code does.
+
+**A closed vocabulary on both context fields, not one.** `PREDICATE_SOURCE_KINDS` was closed in
+the repair above and refused an unrecognised kind. `context_passed` was not, so a launcher that
+truthfully declared `FULL_BUILD_CONTEXT`, or wrote `transcript` in lower case, was read as
+subject-side. The launcher said something real and the service could not read the word. Both
+sets are closed now, and an unrecognised kind on either is a question.
+
+**A gate reads the record, not a report about it.** `admission.py` graded a verdict and never
+the record that verdict described, so the run's own executor observed its own run through the
+exported `observe_run` on a hand-written dict. It now takes the record, re-derives the
+`inference_id` from the material the walk hashes, and refuses an inference citing entries the
+record does not carry.
+
+**Corroborate the subject; do not charge the candidate.** The decoy repair above asked whether
+the candidate had moved any other subject, and the pass showed that made admission *decrease*
+as the record grew: one unrelated arrow by an unrelated party refused every candidate, and the
+only route to admission was handing the walk a narrowed record — the thing
+`record_completeness` exists to punish. The question is now asked of the subject instead. An
+actor of this run must appear on the subject the run names. The decoy still refuses and an
+observer with prior work elsewhere is admitted, and the two cases are pinned together, because
+either alone can be satisfied by a rule that is wrong.
+
+The pass's envelope was `UNATTESTABLE` for a contract-typed `Finding`: no `RecordProjection`
+has been exercised on a real run, and minting an id to satisfy the schema would be inventing
+evidence. It said plainly that the standing answer was no either way. It also declined to be
+the next pass, on the ground that from that point its own probes are inside the repair loop.
+That is the correct reading of this decision applied to the pass itself.
 
 ## Defaults taken
 

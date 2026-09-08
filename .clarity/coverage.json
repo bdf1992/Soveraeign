@@ -71,7 +71,7 @@
       "changed": false
     },
     ".claude/agents/sov.md": {
-      "artifact_digest": "sha256:818c8368906b08e1cf8a98b17c2c49af50db287a830a5523dbe51e13868e8fea",
+      "artifact_digest": "sha256:86e0147d74ae9bb7baaf1ffd2dc7aea37fab172137fd838624e71fcc469fe129",
       "basis": [
         {
           "digest": "sha256:623d11fc2efa36b75e4c752abb8575c9266d75401541119369f986e7e188a908",
@@ -82,7 +82,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     ".claude/controllers/queue-agent.md": {
       "artifact_digest": "sha256:d2e4b2b39943726bf27b76ff9057a2982e4acb27a4ad8044726ca16b1b8b838b",
@@ -99,7 +99,7 @@
       "changed": false
     },
     ".claude/epic/NARRATIVE.md": {
-      "artifact_digest": "sha256:c926fd59db1ca32bab4c85f852fa80cf03f0eb3bff2d7e0f5bb304f84eec6cc6",
+      "artifact_digest": "sha256:bf114716cc8879997ea01e2f63cf08d92311d0672865ce8d4d948de601382af0",
       "basis": [
         {
           "digest": "sha256:623d11fc2efa36b75e4c752abb8575c9266d75401541119369f986e7e188a908",
@@ -1885,7 +1885,7 @@
       "changed": false
     },
     "services/observation/CHARTER.md": {
-      "artifact_digest": "sha256:7e18306029b69fd56d8ceaeab1a29e4d0c9856609efa704452d10999c50bc6ed",
+      "artifact_digest": "sha256:181e09fd91e5d1dbe2746f5132124fb00e0036f66534ccd180a9dd488e6c0b96",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
@@ -1903,7 +1903,7 @@
       "changed": true
     },
     "services/observation/KNOWN-GAPS.md": {
-      "artifact_digest": "sha256:75ee2781ee899761e3a316a42ec2b95b3478122bdae53120809f5082fe4a1bfc",
+      "artifact_digest": "sha256:35769b1a640aaa381726705a7bc496c2816b9a5aa04100b292b85c690bd5c3d7",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",

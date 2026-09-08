@@ -49,8 +49,10 @@ per-run walk would admit a builder as its own witness one arrow later.
   the same operating profile one of them loaded;
 - `PRIOR_STANDING_ACTOR` — the candidate, or a version of it, already moved this subject along
   an earlier standing arrow;
-- `HOLDS_RUN_LEASE` — the candidate holds the lease, fence, or session the run executed under;
-- `PRODUCED_THE_OUTPUT` — the candidate produced the output it proposes to observe;
+- `HOLDS_RUN_LEASE` — the candidate, or a version of it, holds the lease, fence, or session
+  the run executed under;
+- `PRODUCED_THE_OUTPUT` — the candidate, or a version of it, produced the output it proposes
+  to observe;
 - `ONLY_EXECUTOR_REPORT` — the only evidence available to the candidate is the executor's
   report, which includes an observation the executor relayed rather than one the observer
   wrote;
@@ -93,16 +95,31 @@ under-declaring buys a refusal rather than a pass:
 - any actor the comparison must place — an executor, a prior arrow's actor, a named author —
   whose operating profile the record does not carry, because a rename is exactly what the
   profile exists to defeat;
-- a run that names no subject, or that names one while the record also shows the candidate
-  moving another, since the subject is declared by the executor's own entry and a decoy that
-  carries real arrows would otherwise walk the wrong lifecycle;
+- a run that names no subject, or that names one no actor of the run ever moved. The subject
+  is the executor's own word, so it is corroborated before it is walked; a decoy carrying real
+  arrows by unrelated parties is not this run's lifecycle. The check is on the subject and not
+  on the candidate, because a second pass showed that charging a candidate for prior work
+  anywhere made admission fall as the record grew, and the only way to be admitted was to hand
+  the walk a narrower record;
+- a context kind this service does not recognise. The set is closed, like the set of kinds an
+  observer's criteria may come from. A launcher that truthfully declares a kind outside it —
+  a witness pass used `transcript` in lower case, a plural, and an invented compound — has
+  said something real that this service cannot read, and reading it as subject-side is a
+  denial the bytes do not support;
 - a lease the record carries in a shape this service cannot read.
 
-The first witness pass over this walk reached `INDEPENDENT` on five records the manifest
-forbids, every one of them a place where a missing datum answered "no" instead of "cannot
-say". `witness/independence-context-perspective.md` is that pass. The asymmetry it found is
-the thing to watch for in any edge added later: one walk refused on a missing profile and
-another read the same absence as a clean answer.
+Two witness passes over this walk reached `INDEPENDENT` on records the manifest forbids, every
+one of them a place where a missing or unreadable datum answered "no" instead of "cannot say".
+`witness/independence-context-perspective.md` is pass 1;
+`reports/2026-09-08-independence-repairs.md` carries pass 2 and both dispositions, and
+`witness/probes/probe_independence_walk.py` is pass 2's own construction, checked in so its
+defeats are re-derivable rather than only described.
+
+The asymmetry they found is the thing to watch for in any edge added later: one reading
+refused on a missing profile while another read the same absence as a clean answer. Both
+passes found it again in a place the previous repair had claimed to close. Every identity
+comparison in this service goes through `version.py`, and an edge that compares an id by hand
+is that defect returning.
 
 ## What this service is not
 

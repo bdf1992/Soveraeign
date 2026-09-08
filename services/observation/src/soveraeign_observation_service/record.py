@@ -51,6 +51,16 @@ STANDING = "STANDING"
 #: Context kinds a run's own construction produces. Holding one is not independence.
 CONSTRUCTION_CONTEXT = frozenset({"REASONING", "PLAN", "TRANSCRIPT", "CONCLUSION"})
 
+#: Context kinds that are the subject rather than the construction: what the run was asked to
+#: do, what it produced, and the contract it answers to. An observer may hold all three.
+SUBJECT_CONTEXT = frozenset({"OBJECTIVE", "ARTIFACT", "CONTRACT"})
+
+#: The closed set. A second witness pass declared `TRANSCRIPT` in lower case, `CONCLUSIONS`
+#: plural, and `FULL_BUILD_CONTEXT`, and all three read as independence: the launcher told the
+#: truth and the service could not read the word. An unrecognised kind is a question now, the
+#: same rule PREDICATE_SOURCE_KINDS already carried.
+CONTEXT_KINDS = CONSTRUCTION_CONTEXT | SUBJECT_CONTEXT
+
 #: Where an observer's criteria came from. Only `ACTOR` can be a version of an executor; the
 #: rest are addresses, not participants. An independent witness showed why the record must say
 #: which: an id it does not recognise is as likely to be an alias of the executor as a
@@ -262,5 +272,6 @@ class RunRecord:
         return digest
 
 
-__all__ = ["ATTEMPTED", "CONSTRUCTION_CONTEXT", "GRANT", "LAUNCH", "OUTPUT",
-           "PREDICATE_SOURCE_KINDS", "REPORTED", "STANDING", "RunRecord", "digest_address"]
+__all__ = ["ATTEMPTED", "CONSTRUCTION_CONTEXT", "CONTEXT_KINDS", "GRANT", "LAUNCH", "OUTPUT",
+           "PREDICATE_SOURCE_KINDS", "REPORTED", "STANDING", "SUBJECT_CONTEXT", "RunRecord",
+           "digest_address"]

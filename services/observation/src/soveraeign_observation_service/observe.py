@@ -121,7 +121,7 @@ def observe_run(
     another run, or names an address the run did not report, `UNREADABLE` when an output cannot
     be read, and `DIGEST_MISMATCH` when the bytes disagree with the record.
     """
-    require_independent(inference, observer_id, record.run_id)
+    require_independent(inference, observer_id, record.run_id, record)
     submitter = observer_id if submitted_by is None else submitted_by
     if submitter != observer_id and is_version_of_any(record, submitter, record.executors()):
         raise ObserverNotIndependent(
@@ -174,7 +174,8 @@ def observe_run(
         "observer_relation": (
             f"{inference['outcome']} per {inference['inference_id']}: none of "
             f"{', '.join(inference['edges_examined'])} found over a "
-            f"{inference['record_completeness']} record; "
+            f"{inference['record_completeness']} record read at "
+            f"{', '.join(inference['evidence_addresses'])}; "
             f"outputs read directly, not through the executor's report"),
         "observed_state_addresses": addresses,
         "observed_state_digests": digests,

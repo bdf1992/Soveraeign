@@ -60,7 +60,7 @@ Run these, in this order, and treat their output as the state:
 ```
 python scripts/sov_strand.py     # is any work here about to be lost
 python scripts/sov_backlog.py    # what was built and never landed
-python scripts/sov_standing.py   # what is witnessed or ratified (one witnessed claim; nothing ratified)
+python scripts/sov_standing.py   # what is witnessed or ratified (today: nothing of either)
 python scripts/sov_accept.py queue    # what is presented to Bdo
 python scripts/sov_docket.py queue    # what the decision records claim awaits him
 python scripts/verify.py         # the gate, once, before you change anything

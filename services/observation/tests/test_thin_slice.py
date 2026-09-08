@@ -24,6 +24,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from sovkernel.jsonschema import validate  # noqa: E402
 
+from soveraeign_observation_service.relation import EDGES  # noqa: E402
 from soveraeign_observation_service import (  # noqa: E402
     DigestMismatch,
     IncompleteProposal,
@@ -69,6 +70,7 @@ def _entry(entry_id: str, kind: str, subject: str, actor: str, payload: dict) ->
 
 
 def journal(*, lease_holder="worker-a", grant_id="grant-run", output_actor="worker-a",
+            subject=SUBJECT,
             with_outputs=True, with_report=True, omit_subject=False,
             omit_context_kinds=False, witness_context=("OBJECTIVE", "ARTIFACT"),
             witness_profile=WITNESS_PROFILE,
@@ -83,7 +85,7 @@ def journal(*, lease_holder="worker-a", grant_id="grant-run", output_actor="work
     attempt = {"event": "ATTEMPTED", "operation_plan_id": "plan-1", "lease": lease,
                "grant_id": grant_id, "profile": WORKER_PROFILE}
     if not omit_subject:
-        attempt["subject_id"] = SUBJECT
+        attempt["subject_id"] = subject
     launch_witness = {"event": "LAUNCH", "launched_actor_id": "witness-z",
                       "launched_by": "worker-a", "profile": witness_profile,
                       "predicates_source_kind": predicates_kind,
@@ -408,13 +410,14 @@ class WitnessFindingsOn7be1323(unittest.TestCase):
         self.assertIn("PRIOR_STANDING_ACTOR",
                       self.service.inferences[-1]["unanswerable_edges"])
 
-    def test_a_candidate_moving_another_subject_cannot_be_cleared_by_the_named_one(self) -> None:
-        """P3b. The subject is named by the executor's own ATTEMPTED payload. A decoy that
-        carries real arrows walked the wrong lifecycle and passed."""
-        entries = journal()
-        entries.insert(6, _entry("e-standing-other", "EVENT", "urn:soveraeign:work:other",
-                                 "witness-z", {"event": "STANDING", "from": "OPEN",
-                                               "to": "BUILT"}))
+    def test_a_decoy_subject_no_actor_of_this_run_ever_moved_is_not_walked(self) -> None:
+        """P3b. The subject is named by the executor's own ATTEMPTED payload, so it is
+        corroborated before it is walked: the decoy carries real arrows by unrelated parties
+        and is not this run's lifecycle."""
+        entries = journal(subject="urn:soveraeign:work:decoy")
+        entries.insert(6, _entry("e-standing-decoy", "EVENT", "urn:soveraeign:work:decoy",
+                                 "stranger-s", {"event": "STANDING", "from": "OPEN",
+                                                "to": "BUILT"}))
         record = RunRecord.from_entries(RUN, entries)
         with self.assertRaises(RelationUndetermined):
             self.service.infer_relation(record, "witness-z", "MODEL")
@@ -497,6 +500,154 @@ class WitnessFindingsOn7be1323(unittest.TestCase):
         inference = self.service.inferences[-1]
         self.assertIn(inference["outcome"], observation["observer_relation"])
         self.assertIn(inference["record_completeness"], observation["observer_relation"])
+
+
+class WitnessFindingsOnF28e43b(unittest.TestCase):
+    """The second pass over the seven-edge walk. It dissented too.
+
+    Its central finding was that `decisions/0104` claimed one module with one reading while
+    two edges still compared raw ids, and that the repair for the decoy subject had made
+    admission decrease as the record grew. Both are pinned here, the second by a pair: the
+    decoy must refuse and the experienced observer must be admitted, together.
+    """
+
+    def setUp(self) -> None:
+        self.service = ObservationService(Clock())
+        self.record = RunRecord.from_entries(RUN, journal())
+
+    def _valid(self, record: dict, schema: dict) -> None:
+        self.assertEqual([], validate(record, schema, schema, "/"))
+
+    def _versioned(self, actor: str, profile: dict) -> dict:
+        return _entry(f"e-launch-{actor}", "EVENT", actor, "worker-a",
+                      {"event": "LAUNCH", "launched_actor_id": actor, "launched_by": "worker-a",
+                       "context_passed": ["OBJECTIVE"], "profile": profile,
+                       "predicates_source_kind": "CONTRACT",
+                       "predicates_source_actor": "contract:observation"})
+
+    def test_a_version_of_the_lease_holder_is_direct(self) -> None:
+        """D1. A lease holder need not be the attempter, so SAME_ACTOR_VERSION does not cover
+        it, and this edge compared raw ids."""
+        held = _profile("lease-holder")
+        entries = journal(lease_holder="lease-holder-x")
+        entries.append(self._versioned("lease-holder-x", held))
+        entries.append(self._versioned("lease-holder-x2", held))
+        record = RunRecord.from_entries(RUN, entries)
+        inference = self.service.infer_relation(record, "lease-holder-x2", "MODEL")
+        self.assertEqual("DIRECT", inference["outcome"])
+        self.assertEqual([{"edge": "HOLDS_RUN_LEASE", "evidence_address": "e-attempt"}],
+                         inference["edges_found"])
+
+    def test_a_version_of_the_output_producer_is_direct(self) -> None:
+        """D1, the other half: a candidate that is a version of the actor which produced the
+        very output it proposes to observe."""
+        made = _profile("producer")
+        entries = journal(output_actor="producer-p")
+        entries.append(self._versioned("producer-p", made))
+        entries.append(self._versioned("producer-p2", made))
+        record = RunRecord.from_entries(RUN, entries)
+        inference = self.service.infer_relation(record, "producer-p2", "MODEL")
+        self.assertEqual("DIRECT", inference["outcome"])
+        self.assertEqual("PRODUCED_THE_OUTPUT", inference["edges_found"][0]["edge"])
+
+    def test_an_observer_with_prior_work_on_another_subject_is_still_admitted(self) -> None:
+        """D4. The earlier decoy repair asked whether the candidate had moved anything else,
+        which made every observer with prior work anywhere permanently unattestable. This case
+        and the decoy case above must pass together or the repair is not a repair."""
+        entries = journal()
+        entries.insert(6, _entry("e-standing-elsewhere", "EVENT", "urn:soveraeign:work:other",
+                                 "witness-z", {"event": "STANDING", "from": "OPEN",
+                                               "to": "BUILT"}))
+        record = RunRecord.from_entries(RUN, entries)
+        inference = self.service.infer_relation(record, "witness-z", "MODEL")
+        self._valid(inference, INFERENCE_SCHEMA)
+        self.assertEqual("INDEPENDENT", inference["outcome"])
+
+    def test_an_unreadable_context_kind_is_a_question_not_subject_side(self) -> None:
+        """D2. The launcher told the truth and the service could not read the word."""
+        for kind in ("transcript", "CONCLUSIONS", "FULL_BUILD_CONTEXT"):
+            with self.subTest(kind=kind):
+                service = ObservationService(Clock())
+                record = RunRecord.from_entries(RUN, journal(witness_context=(kind,)))
+                with self.assertRaises(RelationUndetermined):
+                    service.infer_relation(record, "witness-z", "MODEL")
+                self.assertEqual(["CONSTRUCTION_CONTEXT_INHERITED"],
+                                 service.inferences[-1]["unanswerable_edges"])
+
+    def test_a_hand_written_inference_does_not_admit_its_own_author(self) -> None:
+        """D3. The run's own executor observed its own run on a fabricated dict, because the
+        gate graded fields of the declaration and never the record."""
+        forged = {
+            "inference_id": "urn:soveraeign:observation:relation-inference:forged",
+            "run_id": RUN, "candidate_observer_id": "worker-a",
+            "candidate_observer_kind": "WORKER", "executor_id": "worker-a",
+            "edges_examined": list(EDGES), "edges_found": [],
+            "record_completeness": "COMPLETE", "outcome": "INDEPENDENT",
+            "evidence_addresses": ["e-attempt"], "evidence_digests": ["sha256:" + "0" * 64],
+            "inferred_at": "2026-09-08T00:00:00Z",
+        }
+        self.service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(RelationUndetermined):
+            observe_run(self.record, forged, self.service.declarations[-1], "worker-a",
+                        reader, "2026-09-08T01:00:00+00:00")
+
+    def test_an_inference_citing_entries_this_record_does_not_carry_is_refused(self) -> None:
+        genuine = self.service.infer_relation(self.record, "witness-z", "MODEL")
+        forged = dict(genuine, evidence_addresses=genuine["evidence_addresses"] + ["e-elsewhere"])
+        self.service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(RelationUndetermined):
+            observe_run(self.record, forged, self.service.declarations[-1], "witness-z",
+                        reader, "2026-09-08T01:00:00+00:00")
+
+    def test_an_inference_about_another_observer_is_refused(self) -> None:
+        """D5. The admission check added for this had no defeating case at all."""
+        genuine = self.service.infer_relation(self.record, "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(RelationUndetermined):
+            observe_run(self.record, genuine, self.service.declarations[-1], "someone-else",
+                        reader, "2026-09-08T01:00:00+00:00")
+
+    def test_an_unanswered_edge_alone_refuses_at_the_gate(self) -> None:
+        """D5. This clause and the completeness clause were only jointly pinned."""
+        forged = dict(self.service.infer_relation(self.record, "witness-z", "MODEL"),
+                      unanswerable_edges=["SAME_ACTOR_VERSION"])
+        self.service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(RelationUndetermined):
+            observe_run(self.record, forged, self.service.declarations[-1], "witness-z",
+                        reader, "2026-09-08T01:00:00+00:00")
+
+    def test_an_incomplete_record_alone_refuses_at_the_gate(self) -> None:
+        forged = dict(self.service.infer_relation(self.record, "witness-z", "MODEL"),
+                      record_completeness="INCOMPLETE")
+        self.service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(RelationUndetermined):
+            observe_run(self.record, forged, self.service.declarations[-1], "witness-z",
+                        reader, "2026-09-08T01:00:00+00:00")
+
+    def test_the_observer_relation_names_what_the_inference_read(self) -> None:
+        """D5. The earlier assertion could not fail: the gate refuses anything but
+        INDEPENDENT over COMPLETE, so quoting and asserting were indistinguishable on every
+        reachable input. The addresses come from the record and do differ."""
+        self.service.infer_relation(self.record, "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, PREDICATES)
+        observation = self.service.observe_run(self.record, "witness-z", reader)
+        for address in self.service.inferences[-1]["evidence_addresses"]:
+            self.assertIn(address, observation["observer_relation"])
+
+    def test_a_version_of_an_executor_is_not_read_as_distinct_by_the_relay_guard(self) -> None:
+        """D5. `is_version_of_any`'s UNKNOWN arm is the point of the function and nothing
+        held it there."""
+        entries = journal()
+        entries.append(_entry("e-launch-ghost", "EVENT", "ghost", "worker-a",
+                              {"event": "LAUNCH", "launched_actor_id": "ghost",
+                               "launched_by": "worker-a", "context_passed": ["OBJECTIVE"],
+                               "predicates_source_kind": "CONTRACT",
+                               "predicates_source_actor": "contract:observation"}))
+        record = RunRecord.from_entries(RUN, entries)
+        self.service.infer_relation(record, "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(ObserverNotIndependent):
+            self.service.observe_run(record, "witness-z", reader, submitted_by="ghost")
 
 
 class WitnessFindingsOn169182f(unittest.TestCase):

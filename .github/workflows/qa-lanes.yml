@@ -64,12 +64,12 @@ jobs:
       - name: Repository verification
         run: python scripts/verify.py --observe "$RUNNER_TEMP/blue-observations.json"
       - name: Retain what the Blue verification observed
-        if: always()
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: blue-observations-${{ github.event.pull_request.head.sha }}-py${{ matrix.python-version }}
           path: ${{ runner.temp }}/blue-observations.json
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 30
       - name: Record the standing this establishes
         if: always()

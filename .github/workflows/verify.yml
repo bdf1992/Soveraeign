@@ -18,6 +18,13 @@ name: verify
 # `scripts/sovland/isolation.py` attributes one at the landing gate. The records are
 # kept when the run fails as well: that is the run whose attribution matters, and a
 # job that keeps evidence only on the passing path answers the easy question only.
+#
+# The retention step refuses an absent file rather than warning. A green verify that
+# produced no records is the case worth catching, and warning about it leaves the
+# guarantee unenforced at runtime - the permissive direction, and the opposite of
+# what the module cited above does with its own uncertainty. `!cancelled()` rather
+# than `always()` for the same reason read the other way: a cancelled matrix leg has
+# no records to lose and should not be reported as a job that lost them.
 on:
   pull_request:
   push:
@@ -65,12 +72,12 @@ jobs:
       - name: Verify candidate repository
         run: python scripts/verify.py --observe "$RUNNER_TEMP/candidate-observations.json"
       - name: Retain what the candidate verification observed
-        if: always()
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: candidate-observations-${{ github.event.pull_request.head.sha }}-py${{ matrix.python-version }}
           path: ${{ runner.temp }}/candidate-observations.json
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 30
       - name: State the evidence subject
         if: always()
@@ -115,12 +122,12 @@ jobs:
       - name: Verify repository
         run: python scripts/verify.py --observe "$RUNNER_TEMP/repository-observations.json"
       - name: Retain what the repository verification observed
-        if: always()
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: repository-observations-${{ github.sha }}-py${{ matrix.python-version }}
           path: ${{ runner.temp }}/repository-observations.json
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 30
       - name: State the evidence subject
         if: always() && github.event_name == 'pull_request'

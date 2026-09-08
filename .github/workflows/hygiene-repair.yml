@@ -33,10 +33,10 @@ jobs:
       - name: Root verification
         run: python scripts/verify.py --observe "$RUNNER_TEMP/hygiene-observations.json"
       - name: Retain what the root verification observed
-        if: always()
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: hygiene-observations-${{ github.sha }}-py${{ matrix.python-version }}
           path: ${{ runner.temp }}/hygiene-observations.json
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 30

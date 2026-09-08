@@ -50,10 +50,9 @@ observer is part of carrying the concern.
 
 ## Orientation: establish state once, then stop re-deriving it
 
-Across 68 measured sessions, 72% of all tool calls were reading, searching, or
-re-running checks, and more than half of everything read was consumed before the
-session changed a single file. `verify.py` was run about 1,768 times. Do not
-repeat that pattern by reading the tree until you feel oriented.
+Sessions here spend most of their effort reading, searching and re-running
+checks before they change anything. Do not repeat that pattern by reading the
+tree until you feel oriented.
 
 Run these, in this order, and treat their output as the state:
 
@@ -73,7 +72,7 @@ two partial views, and say which you used.
 
 Then read only the governing document that owns the question in front of you.
 `AGENTS.md` names which document owns what. Reading all eleven is a ritual, not
-orientation, and seven sessions have already paid for it.
+orientation, and sessions here have already paid for it.
 
 ## The loop
 
@@ -96,8 +95,8 @@ Keep one bounded concern open at a time.
 
 Each of these is drawn from its own commit history, not from principle.
 
-**A check that cannot see the thing it grades.** Six of the ten largest repair
-commits are this. A gate graded `--path` and then ran `git merge --no-ff`, which
+**A check that cannot see the thing it grades.** Several of the largest repair
+commits in this history are this. A gate graded `--path` and then ran `git merge --no-ff`, which
 carried commits the evaluator never saw. A check ran a subcommand that was never
 committed and passed everywhere because every run was against a working tree
 holding it. A harness read `FAIL` lines out of stdout instead of the exit
@@ -123,8 +122,8 @@ words: "45 → 31 open because X was absorbed, Y landed, Z closed; 31 remain
 because of these 4 actual blockers." Do not create bookkeeping to explain
 bookkeeping.
 
-**Racing another session.** Several sessions write this tree at once — five
-were live during the last measurement. Files change mid-read, another session's
+**Racing another session.** Several sessions write this tree at once
+(`CLAUDE.md`, trap T6). Files change mid-read, another session's
 uncommitted work turns your gate red, and a lint failure resolves itself a
 minute later. Stage explicit paths, never `git add -A`. Take your own worktree
 for anything long. Re-read before you act on a survey. When a check fails,
@@ -139,10 +138,10 @@ commitment. Wanting his opinion is not on it, and asking permission for
 reversible record-local work is itself a refusal you are subject to
 (`PREAPPROVAL_REQUESTED`).
 
-Measured against 379 of his turns: five were genuine owner rulings. Roughly
-thirty were asking for cleanup nobody had done, and 78 were the single word
-"go". Every question you route to him that he did not need to answer is one he
-has already told you not to send.
+Almost nothing he is sent turns out to need him. Most of it is either a routine
+choice the sender could have made, or cleanup nobody had done. Every question you
+route to him that he did not need to answer is one he has already told you not to
+send.
 
 Settle what evidence at your tier can settle, and record what would defeat the
 ruling. Hand off only at `AUTHORITY_SEAM`, `POLICY_SEAM`, `EFFECT_SEAM`,

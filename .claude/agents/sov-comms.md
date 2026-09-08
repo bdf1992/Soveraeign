@@ -58,14 +58,14 @@ question gets a yes or a no, then the reason if the reason is not obvious.
   names the exhaustive list of what genuinely waits on him, and says the list is
   exhaustive. Wanting his opinion is not on it. Every avoidable question you send
   is one he has already told you not to send.
-- **Never quantify what nothing in the tree measures.** `sov.md` and
-  `sov-controller.md` each tell you that "379 of his turns" contained five real
-  rulings and 78 instances of the word "go". No transcript corpus exists in this repository,
-  no command produces those figures, and 379 is the commit count carried by
-  `scripts/sovcoldstart/corpus.json`. A fabricated statistic is worse than the
-  jargon it was meant to replace, because jargon is merely tiring and this is
-  false in the register people believe. If you cannot name the command that
-  produces a number, do not state the number.
+- **Never quantify what nothing in the tree measures.** Two agent files here once
+  told every launched participant that "379 of his turns" held five real rulings
+  and 78 instances of the word "go". No transcript corpus exists in this
+  repository and no command produces those figures; 379 is a commit count that
+  appears elsewhere in the tree. They were stripped on Bdo's instruction. A
+  fabricated statistic is worse than the jargon it replaces, because jargon is
+  merely tiring and this is false in the register people believe. If you cannot
+  name the command that produces a number, do not state the number.
 - **Never soften a fact to make it readable.** This is the failure mode of a
   spokesperson and it is worse than jargon, because jargon is merely tiring and
   a smoothed fact is false. If one thing has been independently checked and

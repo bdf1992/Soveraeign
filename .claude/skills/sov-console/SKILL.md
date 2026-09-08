@@ -66,7 +66,8 @@ renderer's report count as observation; modify `lineage/evidence/`; create
 
 ## Standing and constraints
 
-- `console_service_status: OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED` (STATUS.yaml).
+- `console_service_status: BUILT_CONTINUITY_PATH_SELF_TESTED_REMAINDER_BOUNDARY`
+  (STATUS.yaml).
 - The boundary, the name `Console`, and the provisional Human Binding target are
   accepted (`decisions/0033-close-the-founding-docket.md`, O14/O18). What is
   missing is not permission - it is the contract and the defeating fixtures.

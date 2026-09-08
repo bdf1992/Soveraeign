@@ -11,7 +11,7 @@
     "derived": {
       "CAPABILITY": "Every tool name in agent frontmatter, against contracts/harness-hosts.json. Generalizes: any tool not in the portable set fails, named or not.",
       "REFERENCE": "Every backticked repository address in an orientation surface, against git ls-files. Generalizes: any address that does not resolve from the repository root, the document's own directory, the harness root, or a service root fails.",
-      "STANDING": "Every `<subject>_status is <TOKEN>` assertion, against STATUS.yaml. Generalizes over subjects and tokens, but ONLY matches that one sentence form.",
+      "STANDING": "Every `<subject>_status` claim in .claude/, against STATUS.yaml. Generalizes over subjects and tokens: a subject STATUS.yaml never declared and a token nobody invented are both refused. The regex is a recognizer, not the standard - widening it changes what is extracted while STATUS.yaml keeps deciding what is true, which is the line between this kind and the two withdrawn on 2026-09-08, whose word lists were themselves the standard. It reads `is`, `is now`, `:` and `=`; a witness sized the earlier `is`-only form at one spelling of six, and widening it immediately surfaced three false standing claims in skills that had cited STATUS.yaml by name.",
       "SELFCLAIM": "This contract itself, against the kinds scripts/sov_harness.py actually runs and the drift footprint git's index actually holds. Generalizes: the kind set is read off ALL_CHECKS membership, so a check removed from the module removes its kind and this refuses the contract that still claims it."
     },
     "presence_only": {

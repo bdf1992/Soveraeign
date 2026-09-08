@@ -365,7 +365,7 @@
       "changed": true
     },
     ".claude/skills/sov-console/SKILL.md": {
-      "artifact_digest": "sha256:46d9bd414592fb34d1f81556ccca45452d69de3d35d536efba18f4e82183aa91",
+      "artifact_digest": "sha256:e9c4bcd5c83da8b885802f18d17bd4ac28c373c1c0cf054b2c192a332d312c14",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",
@@ -393,7 +393,7 @@
       "changed": true
     },
     ".claude/skills/sov-contracts/SKILL.md": {
-      "artifact_digest": "sha256:aa666b23e9534f857824981c935516a90c6313e484640b1453653d82768ca0f9",
+      "artifact_digest": "sha256:39f48b396ec76c70941a0fa74ceb2e7b035313eb76b8b3878ba1d9cd64a74bb0",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",

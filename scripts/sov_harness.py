@@ -26,9 +26,10 @@ pretending to be a net. `qa-lanes.yml` already carries a generative red lane for
 it, gated off. Detecting a standing claim in arbitrary prose belongs there, and
 what belongs here is whatever that lane lands as a fixture.
 
-This does not lint prose. A description may say what it likes as long as its
-assertions hold and it does not state standing, which is the one representation
-rule the contract imposes and the remedy is always deletion.
+This does not lint prose. A description may say what it likes as long as the
+assertions it makes are true of the records that own them. Whether prose asserts
+standing in words nobody listed is not graded here at all; the contract's
+`not_covered` says so and names the lane it belongs to.
 
 STATUS.yaml is read line by line, never through a YAML parser. Eight subjects
 carry two typed claims under one key, ruled legitimate by `sov_status_claims.py`;
@@ -57,9 +58,13 @@ EXEMPT_DIRS = ("drafts",)
 RUNTIME_PREFIXES = (".local/",)
 
 PATH_TOKEN = re.compile(r"`((?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]+\.[A-Za-z0-9]+)`")
-STANDING_TOKEN = re.compile(r"\b([a-z][a-z0-9_]*_status) is ([A-Z][A-Z0-9_]+)")
+#: A status claim, however it is punctuated. Widening this changes what is
+#: extracted, never what counts as true - STATUS.yaml stays the oracle. That is
+#: the line between this and the withdrawn kinds, whose word lists were
+#: themselves the standard. A witness sized the old form at one spelling of six.
+STANDING_TOKEN = re.compile(
+    r"\b([a-z][a-z0-9_]*_status)\s*(?:is\s+(?:now\s+)?|[:=]\s*)([A-Z][A-Z0-9_]{2,})")
 FRONTMATTER_TOOLS = re.compile(r"^tools:\s*(.+)$", re.M)
-DESCRIPTION = re.compile(r"^description:\s*(?:>-\s*\n)?((?:.*(?:\n(?:[ \t]+.*|))*))", re.M)
 
 
 @dataclass(frozen=True)
@@ -89,12 +94,6 @@ def _harness_files(root: Path = ROOT) -> list[Path]:
             continue
         out.append(path)
     return out
-
-
-def _described(root: Path) -> list[Path]:
-    """The two file kinds that carry a `description:` a participant discovers by."""
-    return sorted((root / ".claude" / "skills").glob("*/SKILL.md")) + \
-        sorted((root / ".claude" / "agents").glob("*.md"))
 
 
 def _status_claims(root: Path = ROOT) -> dict[str, set[str]]:

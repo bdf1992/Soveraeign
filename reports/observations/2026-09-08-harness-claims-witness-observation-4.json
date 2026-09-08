@@ -1,0 +1,98 @@
+{
+  "case_id": "HARNESS-CLAIMS-WITNESS-4",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08",
+  "artifact_revision": "5faaf5b17fa4cd7eb46c77ef94a8237fe5153ce3",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "the reduced grader: VOLATILE and RETIRED withdrawn as phrase lists, five kinds remaining (CAPABILITY, STANDING, REFERENCE, PROVENANCE, SELFCLAIM), the kind bound at definition by @emits, the coverage block read by shape, three generalization fixtures added, and the branch rebased onto a new base 48a0f57",
+    "verdict": "REPRODUCED_WITH_RESIDUALS",
+    "standing_supported": "BUILT -> WITNESSED",
+    "standing_note": "An observation, not a settlement and not a ratification. It does not authorise a landing; it is one of the three preconditions the standing grant names.",
+    "supersedes": "reports/observations/2026-09-08-harness-claims-witness-observation-3.json (3b1b578), -2 (7373456) and the first (99b7942). None withdrawn; 3b1b578 is no longer reachable after the rebase onto 48a0f57, and what it attested was re-measured here rather than carried by assertion.",
+    "candidate_commit": "5faaf5b17fa4cd7eb46c77ef94a8237fe5153ce3",
+    "candidate_tree": "88ae6fcedac4754297385b06e5d24779db89dd14",
+    "base_commit": "48a0f576903c0ed96341f0460ce926a65d0cb5aa",
+    "observed_at": "2026-09-08",
+    "observer_id": "claude-opus-5/sov-witness@2026-09-08",
+    "observer_relation": "INDEPENDENT_OF_BUILDER",
+    "contributed_to_build": false,
+    "observer_independence_basis": "Same separate witness invocation as records 1 to 3. Built, edited, staged, committed, merged, reset or rebased nothing. All readings in a clone pinned by full SHA outside the tree; all mutation in throwaway copies. The builder named what to attack; every result is this witness's own measurement, and the generalization property was tested with values this witness chose rather than the ones the fixtures ship.",
+    "tree_state": "Rebased onto 48a0f57, which itself has d00f46a as an ancestor. 9 construction commits, 0 merge commits, base an ancestor of the candidate. Live HEAD 5faaf5b17fa4cd7eb46c77ef94a8237fe5153ce3, git status --porcelain empty; pinned clone tree hash equals the live tree hash.",
+    "commands": {
+      "rebase_audit": "git diff --name-only d00f46a 3b1b578 (pre) vs git diff --name-only 48a0f57 5faaf5b (post); comm -23 pre post -> EMPTY. git diff --name-only 3b1b578 5faaf5b classified against git diff --name-only d00f46a 48a0f57 -> every path is either MAIN-TOUCHED or one of the two new commits' targets.",
+      "verify": "python scripts/verify.py -> exit 0; 'PASS: 57 checks in 23.605s wall' on a contended host; 69 headers; both harness checks executed once each",
+      "lint": "python scripts/lint.py -> exit 0",
+      "harness": "python scripts/sov_harness.py -> exit 0; '80 files graded across 5 kinds'",
+      "selfcheck": "python scripts/sov_harness.py selfcheck -> exit 0; 15 cases, 7 regressions",
+      "vacuity": "four mutations of the coverage block: emptied, group converted dict->list, all groups removed, unrelated dict added",
+      "generalization": "five novel claim values chosen by this witness plus three negative controls",
+      "module_sizes": "sov_harness.py 260, fixtures.py 199, contract.py 80, provenance.py 27, __init__.py 18 - all under 300"
+    },
+    "predicate_results": {
+      "the_rebase_lost_nothing": {
+        "held": true,
+        "detail": "Verified independently and by path classification rather than by trusting a summary, because a rebase on this branch dropped three files once before. The set of files the branch touches is identical pre- and post-rebase except for the addition of this witness's third record: comm -23 of the two name lists is empty. Every content difference between 3b1b578 and 5faaf5b is then accounted for: thirteen paths are files main changed between d00f46a and 48a0f57 (the CI workflows, retention.py, workflows.py, three test modules and five CI-retention observation records), and the remainder are exactly the files the two new commits target. Nothing is unexplained. Records 1 and 2 are byte-identical across the rebase, and record 3 as committed matches this witness's on-disk bytes exactly."
+      },
+      "the_withdrawal_is_complete_in_what_it_grades": {
+        "held": true,
+        "detail": "No kind, contract clause or fixture for the withdrawn kinds survives in anything that runs. standing_vocabulary, retired_identifiers and representation_rule are all gone from the contract; coverage now holds derived (CAPABILITY, REFERENCE, STANDING, SELFCLAIM), presence_only (PROVENANCE) and a not_covered list of six. kinds() reports 5 and the contract describes exactly those 5. The withdrawal is recorded rather than silent: not_covered's first entry names the two kinds, the date, the failing example pair - 'accepted but unbuilt' refused while 'implementation is still pending' passed - and the SDLC.md Red/Blue rationale, and a successor clause names the concern and two routes."
+      },
+      "the_shape_based_coverage_read_is_not_vacuous": {
+        "held": true,
+        "detail": "This was the specific risk asked about and the reading is not vacuous. Emptying coverage entirely fires, naming all five kinds as undescribed. Converting derived from a mapping to a list fires, naming the four kinds that group held. Removing every group and leaving only not_covered fires. So removing a group cannot silently stop the grading; it turns every kind in it into a named defect. The inverse also holds: adding an unrelated mapping under coverage is read as a kind group and fires 'the contract describes [author]'. That is arguably correct authoring feedback rather than a false positive, but it is an undeclared constraint - coverage may contain only kind mappings plus list-shaped prose - and the contract does not say so."
+      },
+      "the_three_generalization_fixtures_hold_the_property": {
+        "held": true,
+        "detail": "They do, and not incidentally. The shipped values are genuinely absent from every list: Kubernetes, contracts/quarterly-plan.yaml and banana_service_status each appear zero times across contracts/ and STATUS.yaml. More to the point, the property holds for values this witness invented after reading the code: tool 'Zygomorphic' and tool 'PowerShell7' are refused CAPABILITY, address contracts/xyzzy-plough.toml is refused REFERENCE, subject aardvark_service_status is refused STANDING, and a novel token FLABBERGASTED on a real subject is refused STANDING. The mechanism is why: CAPABILITY is an allow-list so anything outside it fails, REFERENCE is an index lookup, STANDING is a record lookup. Three negative controls confirm the fixture does not simply refuse everything - a valid tool set, a valid tracked address and a true status claim are each silent. That is the discriminating test the earlier phrase experiment failed."
+      },
+      "STANDING_belongs_with_the_four_rather_than_with_the_two_withdrawn": {
+        "held": true,
+        "detail": "Answered as asked, and the answer is that it belongs with the four, but it is the weakest of the five and the reason it belongs is narrower than 'it generalizes'. The dividing line is not how much a kind generalizes; it is whether a record other than the check itself decides the verdict. VOLATILE and RETIRED had no oracle - the nine-string list WAS the standard, so the list defined the offence and anything unlisted was not an offence at all. STANDING has an oracle in STATUS.yaml: its regex is a recognizer, not the standard, and once a claim is extracted the verdict comes from a record, which is why a subject and a token nobody ever wrote are both refused. Its narrowness is real and should not be understated: of six spellings of one false claim, only the canonical 'subject_status is TOKEN' is caught; the colon form 'asset_service_status: WITNESSED' is missed, as are 'is now', '=', and two prose restatements. The contract does say 'ONLY matches that one sentence form', which is honest. The cheap improvement is to widen the recognizer to the obvious separators, and that is categorically different from extending a phrase list, because widening a recognizer changes what is extracted while the judgement stays with STATUS.yaml, whereas extending the withdrawn lists changed what counted as an offence."
+      },
+      "F12_from_the_prior_record_is_closed": {
+        "held": true,
+        "detail": "services is now declared in the observes tuple for 'harness claims', alongside .claude, and 'harness claim refusals fire' carries contracts/harness-hosts.json. Both tuples now name every file this witness can find that each check reads. The honest remainder, unchanged and unexpressible as a path, is the whole git index that git ls-files reads."
+      },
+      "the_withdrawal_left_no_residue_in_the_artifact": {
+        "held": false,
+        "detail": "Two pieces of residue survive, both in scripts/sov_harness.py and neither affecting a verdict. First, dead code: the DESCRIPTION regex at line 62 and the _described() helper at line 94 existed only to serve check_volatile, and a repository-wide search finds exactly one reference to _described, its own definition. Neither is called by any member of ALL_CHECKS. Second, and the one that matters more for a tool of this kind, the module docstring at lines 30 to 31 still tells the reader that a description 'does not state standing, which is the one representation rule the contract imposes and the remedy is always deletion'. The contract imposes no such rule any more: representation_rule appears zero times in contracts/ and zero times in scripts/, and the code that enforced it was check_volatile. So the module asserts a contract clause that no longer exists and a remedy nothing applies. The substance is disclosed correctly one file away, in not_covered's first entry, which makes this a stale sentence rather than a false coverage claim - but it is an unsupported claim about a record, in the artifact whose entire purpose is refusing those."
+      }
+    },
+    "findings": [
+      "F12 CLOSED. services and harness-hosts.json both declared; both tuples now complete as to files.",
+      "F14 CLOSED. @emits binds the kind at each definition so no positional zip can misalign it, and selfcheck now asserts that every kind a check declares is produced by some case, which closes the rename-the-Defect-literal hole that only the sibling check caught last round.",
+      "F15 CLOSED. The regression count is computed and reads 7; no stale count remains in the fixtures docstring.",
+      "F16 CLOSED by supersession. The disputed M1 output belonged to code that no longer exists.",
+      "F17 OPEN, LOW, INSIDE THIS CONCERN. Dead code from the withdrawal: the DESCRIPTION regex and the _described() helper are defined and called by nothing.",
+      "F18 OPEN, LOW-MEDIUM, INSIDE THIS CONCERN. The sov_harness.py docstring still cites 'the one representation rule the contract imposes'; the contract dropped representation_rule and nothing enforces it.",
+      "F19 OPEN, LOW. STANDING catches one of six spellings of the same false claim. The contract states the limit but not its size; widening the recognizer to the obvious separators is available and is not the withdrawn category, because the verdict stays with STATUS.yaml.",
+      "F20 OPEN, LOW. coverage may contain only kind mappings plus list-shaped prose, or an unrelated mapping is read as a kind set. The constraint is real, enforced, and undeclared."
+    ],
+    "verdict_on_landing": {
+      "position": "Nothing this witness found should hold the landing. No residue weakens a refusal, and no mutation tried leaves a defect passing.",
+      "basis": "verify exit 0 with 57 checks and both harness checks executed, lint exit 0, selfcheck 15 cases with every declared refusal firing and three negative controls silent, the rebase audited path by path with nothing unexplained, and the five surviving kinds each proven to generalize against values this witness invented. The reduction is the right direction: every remaining kind delegates its verdict to a record, which is the property the two withdrawn kinds never had.",
+      "preferred_but_not_required": "F17 and F18 are two edits in one file and would be better fixed before landing than after, because F18 is an unsupported claim about a contract inside the tool that grades unsupported claims. Neither is a reason to hold if the builder judges otherwise; both are repairable in place under Closure ownership.",
+      "not_this_witness_to_decide": "Whether it lands. The standing grant requires verify PASS, lint PASS and an independent observation from a participant that did not build the change; this record is the third of those and is not a fourth thing called permission."
+    },
+    "process_observation": {
+      "note": "Offered because it is the pattern across four passes rather than a defect in this one. Each round has closed what the prior record named and left a smaller residue of the same shape: the repair is local to the instance named. F17 and F18 are that again - a withdrawal that removed the kinds, the fixtures, the vocabulary and the contract clauses, and left the helper and the sentence that served them. The trajectory is nonetheless strongly positive and this pass is the best of the four: the reduction removed a category rather than patching an instance, which is the first time that has happened in this concern."
+    },
+    "residuals": [
+      "F3, F5, F6 and F7 from the earlier records stand as judged.",
+      "CI remains unattested by this witness; gh is not installed on this host. One point does resolve: the generative red lane this witness flagged under trap T5 is explicitly optional by design - qa-lanes.yml gates it on vars.SOV_RED_LANE_ENABLED and its downstream gate accepts needs.generative-red.result != 'failure' with the message that screening was 'either successful or not enabled'. That is a declared optional lane, not a required check silently satisfied, so T5 does not bite here. Whether it is listed as required in the ruleset is still unverified by either party.",
+      "verify exit 0 is still not conformance (trap T2). Wall time here was 23.605s on a contended host, which is debt under contracts/verification-budget.json and not a failure.",
+      "The successor clause's two routes were checked and are accurate: the red lane exists and is gated as described, and route two's statement that invoke_model is declared in contracts/kernel-transitions.json without a kernel implementation matches PROD-I-9 as CLAUDE.md records it.",
+      "The PUBLIC-CLEARANCE footprint still holds at this head: 12 files and 14 occurrences by independent git grep, matching the contract.",
+      "This record conforms to contracts/participant-observation.schema.json, which the landing gate is recorded as refusing (OPEN-SEAMS.md S29). Not this witness's to settle.",
+      "Not settled here: any service, requirement or phase standing; whether any claim outside the grader's declared reach is true."
+    ],
+    "judgement_items": [
+      "None requiring an owner seat. F17 through F20 are repairs inside this concern."
+    ]
+  },
+  "telemetry": {
+    "method": "One clone pinned by full SHA outside the repository at 5faaf5b; all mutation in throwaway copies restored between cases. Verdicts read from process exit codes. The rebase was audited by set comparison of changed-path lists before and after, then by classifying every remaining content difference against what main changed, rather than by reading a summary. Generalization was tested with values chosen by this witness after reading the code, with three negative controls to prove the fixture does not refuse everything. Vacuity was tested by four structural mutations of the coverage block.",
+    "host": "Linux, Python 3.11, no gh, shared and contended working tree",
+    "writes_by_this_witness": "this record only; no work, fixture, contract, test, script or implementation file was created, edited, staged, committed or deleted at any point across all four passes"
+  }
+}

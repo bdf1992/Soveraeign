@@ -64,6 +64,54 @@ when a concern uses one and the use produces something.
 - A carried core turning out to reach the network, write a record, or claim authority.
 - The fourteen arriving later without each one naming the use that earned it.
 
+## Amendment, 2026-09-08 · the digest table is now enforced
+
+Added by Bdo's instruction after `scripts/sov_vendor.py` landed. Nothing above this
+line is changed: the ruling, the digest table, the constraints, and the status are
+as they were written. This section records a consequence of that ruling, not a
+revision of it.
+
+The Constraints above say the digest table exists so "a later reader can tell
+whether the copy still matches". Until this amendment nothing performed that
+comparison, and a table only a reader consults goes stale between readers.
+`python scripts/verify.py` now performs it, through `scripts/sov_vendor.py`
+registered as two checks. Two consequences a reader of this decision should not
+have to discover from the build:
+
+- **Editing a row in the table above is a build-affecting act.** A digest that no
+  longer matches its file fails `verify`, which is this decision's own stated
+  defeating condition made operative rather than merely written.
+- **Adding a skill that declares bdos provenance without a row here fails too.**
+  The check reads both directions.
+
+What the check does not reach, stated so its silence is not read as coverage:
+
+- It grades internal consistency between this file and the tree, not provenance.
+  Both can move in one commit, so a row rewritten to match a rewritten copy
+  passes. What holds that outside the check is `AGENTS.md`: `decisions/` is
+  excluded from `grant:standing-landing-loop`, so a table edit cannot land under
+  the standing grant.
+- The second direction selects on the `bdos: true` marker in a skill's own
+  frontmatter. A copy carried in without that marker is invisible to it.
+- Whether the upstream has since edited a core cannot be answered from this
+  repository. `python scripts/sov_vendor.py sync <bdos working tree>` answers it
+  when someone has both trees, compares bytes rather than markers, reports rather
+  than refuses, and says plainly when a reading could not be taken. It is not run
+  in CI, which has no upstream tree.
+
+It does not reimplement the `artifact_digest` each carried file already carries in
+its own frontmatter. That value is bdos's, computed under bdos's rule with the
+core's currency block elided so a re-stamp does not invalidate it; the digests in
+the table above are plain digests of the bytes, under this repository's rule and
+answering this repository's question. The two differ on both carried files. A
+reader who notices two digests per file is looking at two rules, not a
+disagreement.
+
+Recording the enforcement does not ratify this decision. Its status is unchanged
+and the judgement queue below is unanswered, so a build-failing gate now derives
+from a table in a `PROPOSED` record. Whether that is acceptable is the second item
+in that queue.
+
 ## Judgement queue for Bdo
 
 Whether the other fourteen should be carried on the same terms, or whether the repository

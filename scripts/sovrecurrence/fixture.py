@@ -33,30 +33,51 @@ OPEN_ROLES = ("procurement-steward", "supplier-liaison", "worker")
 """One proving-role name and two an alternate institution uses: not a closed vocabulary."""
 CLOSED_ROLES = ("worker", "orchestrator", "controller", "owner")
 """The vocabulary a third witness found in this repository: closed without being four-of-four."""
+INSTANCE_KEYS = ("examples", "example", "fixtures")
+"""Keys the mispaired variant fills with instance data that declares its term.
+
+Written out rather than taken from `declaration.EXAMPLE_KEYS`, and that is the whole point.
+The first version of this variant did read the constant, so emptying the constant emptied the
+variant too and the self-check stayed green under the exact regression it exists to refuse: a
+fixture derived from the rule under test cannot refuse a narrowing of that rule. It must
+name exactly the excluded keys - one the rule legitimately reads would make the variant
+resolve for the right reason under the right rule - and a unit test pins the equality, so a
+key added to `EXAMPLE_KEYS` and not here fails there rather than passing silently."""
 
 
 def _mispaired(term: str) -> dict[str, Any]:
     """A contract that says `term` everywhere prose is allowed and declares it nowhere.
 
-    This is the whole excluded set, not one key of it. A sixth witness reintroduced
-    `description` reading and watched the self-check stay green, because the variant only
-    carried its term in a title: the fixture certified one prose key out of five while its
-    own docstring claimed the class. Any reader that reads a description, a note, a comment,
-    a warrant, a title, a name, or an enum value resolves this contract, the declared defeat
-    does not fire, and `selfcheck` fails by name.
+    This is the whole excluded set, not one key of it.
+
+    A sixth witness reintroduced `description` reading and watched the self-check stay green,
+    because the variant carried its term in a title alone: the fixture certified one prose
+    key out of five while its docstring claimed the class. A seventh found the same shape one
+    level down - `EXAMPLE_KEYS` had three members and the variant exercised one, so narrowing
+    it to `("examples",)` passed the whole gate and an `example` block then took the live
+    reading from nine of ten to ten. It also showed that the restriction to
+    `DECLARED_NAME_KEYS` had no refusal case at all: harvesting every dict key in the document
+    left the self-check green.
+
+    So every prose key says the term at the root and again below it, every example key carries
+    an instance that declares it, and `sections` holds it as an ordinary dict key that no
+    schema keyword reaches. A reader that reads any of those resolves this contract, the
+    declared defeat does not fire, and `selfcheck` fails by name.
     """
     said = f"Fixture {term} declaration"
-    return {
+    prose = {"title": said, "name": said, "description": said, "note": said,
+             "$comment": said, "warrant": said}
+    instance = {"properties": {f"{term}_id": {"type": "string"}}}
+    stub: dict[str, Any] = {
         "$id": "https://soveraeign.local/contracts/fixture-unrelated.schema.json",
-        "title": said,
-        "name": said,
-        "description": said,
-        "note": said,
-        "$comment": said,
-        "warrant": said,
-        "properties": {"actor_id": {"type": "string", "enum": [said], "description": said}},
-        "examples": [{"properties": {f"{term}_id": {"type": "string"}}}],
+        "properties": {"actor_id": dict({"type": "string", "enum": [said]}, **prose)},
+        "sections": {term: {"kind": "string"}},
+        "elsewhere": dict(prose),
     }
+    stub.update(prose)
+    for key in INSTANCE_KEYS:
+        stub[key] = [instance] if key.endswith("s") else dict(instance)
+    return stub
 
 
 def _stub(term: str, **extra: Any) -> dict[str, Any]:

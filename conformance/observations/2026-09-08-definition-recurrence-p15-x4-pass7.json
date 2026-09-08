@@ -1,0 +1,322 @@
+{
+  "case_id": "WITNESS-2026-09-08-DEFINITION-RECURRENCE-P15-X4-PASS-7",
+  "record_kind": "OBSERVATION",
+  "record_note": "An observation, not a settlement and not a ratification. This participant built nothing in the subject and edited no file but this record. It answers two questions the six prior readings were not asked: whether anything at this commit makes landing the member at BUILT wrong, and, separately, whether anything here changes the standing refusal. The two answers are kept in separate fields on purpose, because landing at BUILT and advancing standing are different acts and this branch has already been damaged once by a claim carried across a boundary it did not belong to.",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08/pass-7",
+  "independence": {
+    "contributed_to_build_of_subject": false,
+    "edited_subject": false,
+    "built_the_repair": false,
+    "container": "The same container as the participant that built 7188ef5 and merged 5632495, and the same one passes 5 and 6 ran in. The scratchpad I was given already held those passes' working files. I worked in a detached git worktree at the frozen commit and never edited the shared checkout; that is hygiene, not host separation. No fresh clone and no separate host.",
+    "model": "claude-opus-5. The same model family as the builder of 7188ef5 and as passes 1 to 6. Stated first because it is the weakest thing about this reading.",
+    "prompts": "Delegated, and written by the participant that holds this concern and built the subject - not by the root seat. The task named six things to try to defeat and told me which prior findings to re-derive. Everything I recorded as reproduced I re-derived with my own plant against the frozen tree; I ran none of pass 6's scripts and took none of its numbers. The plants pass 6 did not think of, and the ones I did not think of, are a different matter: a prompt that names the attacks shapes what gets attacked, and this one did.",
+    "helpers_used": "None. No subagent read or wrote any part of this record.",
+    "what_this_does_not_establish": "That the artifact is free of defects. Seven readings have now happened, six of them from inside the builder's container and model family, and each has found material defects the one before it missed. That series has not converged and this reading is not evidence that it has."
+  },
+  "subject": {
+    "work": "scripts/sov_recurrence.py and scripts/sovrecurrence/, the one member of custody:phase-1-5/definition-recurrence (Phase 1.5 exit clause P15-X4), together with the custody note, the pass-4 corrections block, and the merge with origin/main.",
+    "witnessed_revision": "56324952d16b80ef36a295f85ad1261c082f5ed2",
+    "witnessed_tree": "4b25e2c03927a4b96886eb44e357e8414ce3a313",
+    "merge_parents": [
+      "7188ef5525dfa823c6116afdd30d24b25e681187 (branch)",
+      "48a0f576903c0ed96341f0460ce926a65d0cb5aa (origin/main)"
+    ],
+    "repair_round_under_test": "7188ef5525dfa823c6116afdd30d24b25e681187",
+    "prior_refused_revisions": [
+      "fe91c655ec4897bc04423d59fcbeae549cfb8d2b",
+      "a3ac83611411e96b8dc686e3cc68eaa48faea93b",
+      "9253eb5046fa89cc5d28f7f41a028c8e644c7e6e",
+      "e898d0651dc7e8d9271948003159d372c5c9524a",
+      "1ce4d2115f19a40469084643b1b5fcc1b0a33507",
+      "6d02eef2a45020acedd9a013f6a82ae2b6aa345c"
+    ],
+    "revisions_re_measured_for_a_prior_reading_s_premise": [
+      "1ce4d2115f19a40469084643b1b5fcc1b0a33507",
+      "6d02eef2a45020acedd9a013f6a82ae2b6aa345c"
+    ],
+    "branch": "claude/sovereign-phase-1-5-exits-fb7ysc",
+    "working_tree_state": "git status --porcelain returned 0 lines in the shared checkout before the first measurement and 0 lines after the last, with HEAD at 5632495 both times. Every measurement was taken in detached worktrees at 5632495, 1ce4d21 and 6d02eef, or in throwaway copies built from git ls-files. Two worktree edits were made and reverted (a planted declaration.py, a regenerated documentation.html); both were confirmed clean by git status before the next reading. CLAUDE.md trap T6 satisfied: the tree did not move underneath this reading."
+  },
+  "record_projection": {
+    "supplied": null,
+    "reconstructed_as": "the committed tree at 5632495 and its ancestors on this branch and on origin/main",
+    "cutoff": "56324952d16b80ef36a295f85ad1261c082f5ed2",
+    "note": "No RecordProjection id was supplied and none is invented. Every address cited resolves in a commit at or below this cutoff, and every revision named was checked out and measured."
+  },
+  "content_digests_sha256_16_at_5632495": {
+    "scripts/sov_recurrence.py": "90a8f4603903a974",
+    "scripts/sovrecurrence/__init__.py": "3caac98492dc814c",
+    "scripts/sovrecurrence/candidate.py": "0974774ff6701029",
+    "scripts/sovrecurrence/declaration.py": "33725ec9361ebd14",
+    "scripts/sovrecurrence/experience.py": "a27ff452d8297322",
+    "scripts/sovrecurrence/fixture.py": "74ddd3bc0cc1bf59",
+    "scripts/sovrecurrence/neutrality.py": "976c339839708a45",
+    "scripts/sovrecurrence/recurrence.py": "143f2f2c06f6b4ac",
+    "scripts/tests/test_sov_recurrence.py": "ec6d6968b374108c",
+    "scripts/sovverify/commissioning.py": "59e03993f95b8047",
+    "conformance/commissioning.py": "e25005a98e7a9e14",
+    "contracts/custodies/phase-1-5.json": "293a479a3ad28958",
+    "conformance/observations/2026-09-08-definition-recurrence-p15-x4-pass4.json": "8361ec9f55260991",
+    "contracts/verification-budget.json": "5dd4ccad18b1af1c",
+    "scripts/README.md": "22275922bf86ea9f"
+  },
+  "commands": [
+    "git worktree add --detach <ws> 5632495 -> clean; HEAD 5632495; tree 4b25e2c",
+    "git diff --name-only 48a0f57 5632495 vs 7188ef5 5632495; comm -12 -> empty. The two merge sides touch disjoint file sets, so the merge commit introduced no content of its own.",
+    "python3 scripts/sov_recurrence.py selfcheck -> exit 0 (9 defeating variants)",
+    "python3 scripts/sov_recurrence.py run -> exit 1; 3 sources / 3 clauses; 9 of 10 resolved; 3 closed vocabularies; P15-Q4.1 and Q4.2 hold, Q4.3 does not; proposal:recurrence/785cd7eea6b17d50",
+    "python3 -m unittest scripts.tests.test_sov_recurrence -> 32 tests, OK",
+    "python3 scripts/verify.py -> exit 0, PASS: 57 checks in 17.691s (first reading)",
+    "python3 scripts/verify.py -> exit 0, PASS: 57 checks in 16.699s (second reading, trap T6 re-run)",
+    "python3 scripts/lint.py -> exit 0 twice, PASS: repository hygiene (1276 text files, 587 Python modules, 10 named debt)",
+    "PLANT description/note/$comment/warrant/title/name read as a declared name (six separate single-edit plants) -> selfcheck exit 1 in all six, each naming primitive-mispaired",
+    "PLANT enum values read as declared names -> selfcheck exit 1",
+    "PLANT EXAMPLE_KEYS -> ('example','fixtures') so `examples` is harvested -> selfcheck exit 1",
+    "PLANT declares() searches the whole JSON dump (the original defect) -> selfcheck exit 1, 4 unit failures",
+    "PLANT property titles and descriptions one level under `properties` read as names -> selfcheck exit 1",
+    "PLANT standing compared with a substring test -> selfcheck exit 1, refused by name citing trap T3",
+    "PLANT standing compared with str.endswith(SETTLED_STANDINGS) -> selfcheck exit 1, same refusal",
+    "PLANT graded/reported leak, three directions (all graded; all reported; instance-to-schema-sibling hop) -> test_no_reported_closure_sits_in_a_contract_a_primitive_names fails in all three",
+    "PLANT matched triple: a governed contract leaked into `reported` with its closed enum under /properties, /definitions and /patternProperties -> the split test fails identically in all three; the spelling dependence W6-F4 named is gone",
+    "CONSTRUCTED satisfied clause: declared `discovery` structurally in contracts/node-interface.schema.json and added one alternate role to the three closed enums in contracts/issue-metadata.schema.json -> run exit 0, P15-Q4.3 holds, selfcheck exit 0, 32/32 tests OK. The check does not pin the verdict.",
+    "PLANT title read as a declaration, then python3 scripts/verify.py -> exit 1; the run's own verdict line reads 'FAIL: repository tooling tests, definition recurrence slice'; the named failing test is test_a_term_in_a_title_is_not_a_declaration. Re-derived here, not taken from pass 6.",
+    "mv contracts/custodies/phase-1-5.json away at 5632495 -> slice FAIL ('the reading is not reaching this repository'); the same deletion at 1ce4d21 -> slice PASS at exit 0",
+    "at 1ce4d21 with the collection deleted: sov_recurrence selfcheck 0, sov_fresh selfcheck 1, sov_reuse selfcheck 1 (C2 re-derived)",
+    "append one byte to scripts/sov_fresh.py in a throwaway copy -> proposal id 785cd7eea6b17d50 becomes b6e5b3828735c7b4 (C5 re-derived with my own byte)",
+    "PLANT names.update(every dict key) -> selfcheck 0, 32/32 OK, live reading byte-identical",
+    "PLANT EXAMPLE_KEYS -> ('examples',) -> selfcheck 0, 32/32 OK; then one `example` block added to contracts/node-interface.schema.json -> live reading 9 of 10 becomes 10 of 10 and one P15-Q4.3 finding disappears, whole gate green",
+    "PLANT identity_names whitespace guard removed -> selfcheck 0 but test_a_root_identifier_carrying_prose_is_not_an_identifier fails, so verify.py is red",
+    "run_tooling_tests.partition(test_modules(), 4) at 1ce4d21, 6d02eef and 5632495 -> 114 modules shard 4/4, 114 modules shard 4/4, 116 modules shard 1/4",
+    "scan all 123 JSON files under contracts/ and services/*/contracts/ with declaration.declares(doc,'discovery') -> none",
+    "python3 scripts/sov_active_phase_progress.py -> exit 0; P15-X4 reads VERTICAL_SLICE, floor ROOT_POINT, 1 member, NOT_EARNED",
+    "set the member work_state to LANDED in a copy -> basis still 3 sources, proposal id unchanged; the member cannot cite itself at standing BUILT",
+    "python3 scripts/sov_docs.py build at 5632495 -> tree stays clean; docs/documentation.html is current",
+    "grep the branch's added files for absolute paths, key material and CRLF -> none"
+  ],
+  "reproduced_independently": [
+    {
+      "id": "R1",
+      "of": "W6-F1, the finding this repair round was called about",
+      "claim": "scripts/verify.py runs scripts/tests/test_sov_recurrence.py, so the gate was never blind - only the self-check half of it was.",
+      "observed": "True, and re-derived here rather than repeated. I planted the title-reading defect at 5632495 and ran python3 scripts/verify.py: exit 1, and the run's own verdict line names exactly two failing checks, 'repository tooling tests' and 'definition recurrence slice', with test_a_term_in_a_title_is_not_a_declaration named in the shard output. I also confirmed the shard harness reads its verdict from the shard exit code and not from the word FAIL in stdout (scripts/run_tooling_tests.py, the failing_modules docstring), which matters because the clean run prints 'FAIL: docs/surface.html is stale' inside a passing test's captured output and a text-reading harness would have called that a failure."
+    },
+    {
+      "id": "R2",
+      "of": "W6-F5, the prose class closed at the fixture",
+      "claim": "The self-check refuses a reader that reads any of the excluded prose keys.",
+      "observed": "True for every key the rule names, at the document root. Eight separate single-edit plants - description, note, $comment, warrant, title, name, enum values, and harvesting the examples block - each take selfcheck to exit 1 naming primitive-mispaired. The original whole-dump defect is refused too. The realistic nested shape, reading titles and descriptions of subschemas one level under `properties`, is also refused, because _mispaired carries a description there. Repaired."
+    },
+    {
+      "id": "R3",
+      "of": "W6-F6, trap T3",
+      "claim": "The self-check refuses a substring comparison of member standing.",
+      "observed": "True, and it refuses more than a substring: both `t in standing` and `standing.endswith(SETTLED_STANDINGS)` take selfcheck to exit 1 with a refusal that names the address, the standing NOT_WITNESSED and CLAUDE.md trap T3. Repaired."
+    },
+    {
+      "id": "R4",
+      "of": "W6-F3, the split test's one-directional blindness",
+      "claim": "The split test fails under a leak in either direction.",
+      "observed": "True. All three regressions pass 6 named now fail it: making every outside closure graded, dropping the graded branch entirely, and the instance-to-schema-sibling hop that moved contracts/product-canon.schema.json from reported to graded. The third is the one that previously passed selfcheck and all 32 tests; it now fails test_no_reported_closure_sits_in_a_contract_a_primitive_names. Repaired."
+    },
+    {
+      "id": "R5",
+      "of": "W6-F4, the split test's dependence on JSON path spelling",
+      "claim": "The test no longer recovers the address by parsing the reader's sentence.",
+      "observed": "True. I built the matched set pass 6 described - a contract named in a bound primitive's governed_by, leaked into `reported` by a one-line owner override, with its closed enum under /properties, then /definitions, then /patternProperties - and the test fails identically in all three. neutrality.read now returns governed_closure_addresses and reported_closure_addresses as data. Repaired."
+    },
+    {
+      "id": "R6",
+      "of": "W6-F2, the withdrawal written backwards in the governed file",
+      "claim": "The custody note now says what the artifact supports.",
+      "observed": "True. Sentence 19 now reads 'It shares a model family with the builder' and sentence 20 attributes the different-model claim to an earlier draft and to the messages of f43ee9a and 1ce4d21, withdrawn in the pass-4 corrections block. I checked both against the 1ce4d21 bytes of the same field and against corrections.withdrawn[0]. The inversion is gone. Repaired."
+    },
+    {
+      "id": "R7",
+      "of": "W6-F7, 'committed files only'",
+      "claim": "The three docstrings and the note sentence now say the reader reads the working tree.",
+      "observed": "True, and I re-derived the underlying property with my own probe rather than pass 6's: grep found no git, subprocess, environ or getenv call anywhere in scripts/sovrecurrence/ or scripts/sov_recurrence.py, and appending one byte to scripts/sov_fresh.py in a throwaway copy moved the proposal id from 785cd7eea6b17d50 to b6e5b3828735c7b4 with nothing committed. experience.gather, recurrence.observe and note sentence 3 all now say so. Repaired."
+    },
+    {
+      "id": "R8",
+      "of": "the task's fourth question, _live_reading_is_reachable",
+      "claim": "The reachability check cannot pin a verdict and does not go red when the clause is satisfied.",
+      "observed": "True. I constructed the satisfied clause: declared `discovery` structurally in contracts/node-interface.schema.json and added one alternate role to each of the three closed enums in contracts/issue-metadata.schema.json. run then exits 0 with all three predicates holding, selfcheck stays at exit 0, and all 32 unit tests still pass. Nothing in the gate goes red when P15-Q4 becomes satisfiable."
+    },
+    {
+      "id": "R9",
+      "of": "note sentence 25, the slice's new reach",
+      "claim": "The slice now proves the live reading reaches this repository, which it did not before.",
+      "observed": "True and correctly scoped to the slice. Removing contracts/custodies/phase-1-5.json at 5632495 takes the slice to FAIL with 'the reading is not reaching this repository'; the same removal at 1ce4d21 leaves it at exit 0 while sov_fresh and sov_reuse both go to exit 1. The sentence says 'the slice', not 'verify.py', which is the narrow true statement W6-F1 asked for."
+    },
+    {
+      "id": "R10",
+      "of": "the task's sixth question, the merge",
+      "claim": "The merge with origin/main introduced no regression and no collision.",
+      "observed": "True. The two sides of 5632495 touch disjoint file sets - 21 paths from the branch, 13 from main, no overlap - so the merge commit carries no content of its own. Neither side touched any of the three basis addresses (scripts/sov_fresh.py, scripts/sov_reuse.py, services/observation), so the live proposal id is unchanged at 785cd7eea6b17d50. verify.py exits 0 on two separate readings at 57 checks; lint.py exits 0 on both. docs/documentation.html regenerates byte-identically. No secrets, absolute paths or CRLF in anything the branch added."
+    }
+  ],
+  "findings": [
+    {
+      "id": "W7-F1",
+      "severity": "MINOR",
+      "state": "OPEN, in a shipped record",
+      "address": "conformance/observations/2026-09-08-definition-recurrence-p15-x4-pass4.json, corrections.note",
+      "claim_defeated": "'Added after the fifth reading (…pass5.json) showed two claims in this record unsupported by the artifact.'",
+      "observed": "That sentence was written at 6d02eef, when the block held C1, C2 and C3. 7188ef5 appended C4 and C5, both derived from the sixth reading, and left the framing sentence unchanged. The block now carries five withdrawals under a note that attributes all of them to the fifth reading and counts two. git diff 6d02eef 7188ef5 on that path shows exactly the two added objects and one moved bracket.",
+      "why_it_matters": "A corrections block exists so a later reader can tell which reading found what. This one now misattributes the provenance of two of its five entries, and it compounds W6-F8: the block sits inside another participant's observation record and still names no author, so a reader attributes both the writing and the provenance to pass 4.",
+      "how_derived": "git show 6d02eef:<path> and git diff 6d02eef 7188ef5 -- <path>, then read corrections.note against the withdrawn list.",
+      "repair_shape_if_wanted": "Not mine to build and not to be filed elsewhere. One sentence, naming which reading produced which withdrawal and who wrote the block."
+    },
+    {
+      "id": "W7-F2",
+      "severity": "MINOR",
+      "state": "OPEN, in a shipped record, and it is the branch's own defect class in miniature",
+      "address": "conformance/observations/2026-09-08-definition-recurrence-p15-x4-pass4.json, corrections.withdrawn C4",
+      "claim_defeated": "'scripts/verify.py runs scripts/tests/test_sov_recurrence.py inside the \"repository tooling tests\" check, shard 4 of 4.'",
+      "observed": "The shard index is false at the commit being landed. run_tooling_tests.partition is a weight-balanced bin pack over the whole test population, so shard membership moves when the population moves. I computed it at three revisions: 114 modules at 1ce4d21 put test_sov_recurrence in shard 4/4, 114 at 6d02eef the same, and 116 at 5632495 put it in shard 1/4 - main added test_ci_retention_guard and test_verify_observe_cli and repacked the bins. I read the same placement out of a live verify run's shard header. The load-bearing half of the sentence is true and I verified it independently (R1); only the shard index is wrong.",
+      "why_it_matters": "Small in consequence and exact in kind. 'Shard 4 of 4' is a measurement taken by the sixth witness at 6d02eef and written into a shipped record by the current participant without being re-measured against the commit it ships in - the same move, one order of magnitude smaller, that C4 itself exists to withdraw. The sentence is also in the present tense about scripts/verify.py, which reads as a durable property rather than a reading taken at a revision. A next participant who re-derives it will find shard 1 and have to work out whether the record or the repository moved.",
+      "how_derived": "Imported run_tooling_tests in detached worktrees at 1ce4d21, 6d02eef and 5632495 and called partition(test_modules(), 4), then cross-checked against the shard header line of a clean verify run at 5632495.",
+      "repair_shape_if_wanted": "Delete the shard index, or date it. The claim stands without it."
+    },
+    {
+      "id": "W7-F3",
+      "severity": "MATERIAL",
+      "state": "OPEN, and carried in a governed contract file",
+      "address": "contracts/custodies/phase-1-5.json, the custody:phase-1-5/definition-recurrence member note, sentences 16 and 18",
+      "claim_defeated": "That the note's account of pass 4's independence is supported by the artifact, and that 'six independent readings' needs no qualification.",
+      "observed": "Two things, one repaired and one not. Sentence 19 now correctly says the model family is shared, and sentence 20 correctly withdraws the earlier claim because the artifact does not support it. Sentence 18, immediately before them, still asserts as plain fact that 'Pass 4 ran in a separate container from a fresh clone, sharing no session, transcript or working tree with the builder, under a prompt from the root seat rather than from the builder.' Its whole basis is pass 4's own independence.container and independence.prompts - self-report, of exactly the kind sentence 20 withdraws a sibling claim for being. Nothing in the repository records which container or which prompt executed any pass; I checked. The note tells a reader that one of those claims is unsupported and presents the other three as established.\n\nSeparately, the note never records what pass 4's own record declares in a field: independence.built_the_repair is true, and its record_note says 'Sections that read f43ee9a are this participant's own build and are a build claim, not a witness.' Pass 4 read e898d06, found the title defect, built the repair at f43ee9a, and its record landed at 1ce4d21. Sentence 16 counts it among 'six independent readings' and sentence 18 describes it as the most independent of them, with no mention that it authored a repair inside this concern.",
+      "why_it_matters": "Independence is the entire content of BUILT -> WITNESSED, and a custody collection is read alone. AGENTS.md is explicit that a participant that edited the change is inside the build and can never witness it; pass 4's own record honours that line and the governed file drops it. Pass 6 recorded the container asymmetry as a residual and 7188ef5 repaired the model half of the sentence beside it, which makes the remaining asymmetry read as considered rather than overlooked. This is the note's most consequential remaining sentence and it is the one a later participant is most likely to rely on.",
+      "how_derived": "Split the note field into sentences and read 16 to 22 against pass 4's independence block and record_note, against git log on the pass-4 record path (added 1ce4d21, modified 6d02eef and 7188ef5), and against git log -1 on f43ee9a. Grepped the repository for any record of a container or prompt for any pass and found none.",
+      "repair_shape_if_wanted": "Not mine to build and not to be filed elsewhere. Two clauses: say that pass 4's container, clone and prompt rest on its own declaration and not on the artifact, in the same voice sentence 20 already uses; and say that pass 4 built the f43ee9a repair, so its reading of e898d06 is independent and its account of f43ee9a is a build claim."
+    },
+    {
+      "id": "W7-F4",
+      "severity": "OBSERVATION",
+      "state": "OPEN, no defeating case, currently vacuous",
+      "address": "scripts/sovrecurrence/declaration.py, DECLARED_NAME_KEYS and structural_names",
+      "claim_defeated": "That the restriction to $defs, definitions, properties and patternProperties is held by anything. Sentence 9 of the note states it as what the reader measures.",
+      "observed": "Replacing the walk's selective harvest with names.update over every dict key - the loosest possible structural rule - leaves selfcheck at exit 0, all 32 unit tests passing, and the live reading byte-identical at 9 of 10 resolved and proposal id 785cd7eea6b17d50. The mispaired variant cannot catch it because its only non-prose keys are $id and actor_id, neither of which carries the paired term. The regression is vacuous in this repository today, which is why the live reading does not move; it is not vacuous as a rule.",
+      "why_it_matters": "W6-F5 closed the prose class at the fixture. This is the same shape on the other side of the same function: the rule that decides what does count as a declaration has one positive case and no case proving the refusal. The cheapest repair is one more key in the mispaired variant - a top-level key naming the term, outside DECLARED_NAME_KEYS.",
+      "how_derived": "One single-edit plant in a throwaway copy, read through selfcheck, the unit module and run."
+    },
+    {
+      "id": "W7-F5",
+      "severity": "OBSERVATION",
+      "state": "OPEN, no defeating case, and not vacuous under one edit",
+      "address": "scripts/sovrecurrence/declaration.py, EXAMPLE_KEYS",
+      "claim_defeated": "_mispaired's own docstring: 'This is the whole excluded set, not one key of it.' It is the whole denylist and one of the three example keys.",
+      "observed": "EXAMPLE_KEYS is ('examples', 'example', 'fixtures') and the mispaired variant carries only `examples`. Narrowing it to ('examples',) leaves selfcheck at exit 0, all 32 unit tests passing and the live reading unchanged. It is then one documentation-shaped edit from a verdict change: adding {\"example\": {\"properties\": {\"discovery\": {...}}}} to contracts/node-interface.schema.json takes the live reading from 9 of 10 to 10 of 10 and removes 'institution-neutral composition lacks governed primitives' from P15-Q4.3, with selfcheck at 0 and 32/32 green. That is the pass-4 defect class - a verdict an instance-data edit can flip - surviving at the two members of the enumeration the fixture does not exercise.",
+      "why_it_matters": "The note (sentence 10) names only `examples`, so the governed file does not overclaim; the fixture docstring does. It is a carried case of W6-F9: a rule closed by enumeration whose enumeration is certified at one member.",
+      "how_derived": "Two plants: EXAMPLE_KEYS narrowed alone, then the same copy with one `example` block added to a real contract."
+    },
+    {
+      "id": "W7-F6",
+      "severity": "OBSERVATION",
+      "state": "OPEN, vocabulary",
+      "address": "scripts/sovrecurrence/fixture.py, REFUSED_ADDRESS and build(); contracts/custody.schema.json, $defs/standing",
+      "claim_defeated": "Nothing the note asserts. Recorded because AGENTS.md requires enum values to match the governing vocabulary and forbids inventing standing terms.",
+      "observed": "The W6-F6 repair writes a fixture member at standing NOT_WITNESSED. contracts/custody.schema.json $defs/standing admits exactly OPEN, BUILT, WITNESSED and RATIFIED, and AGENTS.md names the same four as the lifecycle. Every other NOT_WITNESSED in this repository is a suffix inside a composite STATUS.yaml status such as BUILT_SELF_TESTED_NOT_WITNESSED, which is what CLAUDE.md trap T3 is actually about. So the trap-T3 defeating case is built from a standing token no schema-conformant custody collection can carry, and none of the four legal tokens contains another as a substring. The fixture's members also omit the schema-required `stage` field, which predates this round. Nothing validates the fixture collection - no soveraeign-custody-collection/v1 schema file exists - so neither is a check failure.",
+      "why_it_matters": "The case still guards a real code hazard, because the reader validates nothing and would silently admit an out-of-vocabulary standing under a substring comparison. But neither fixture.py nor the note says the token is outside the vocabulary, so a reader of either is invited to think NOT_WITNESSED is a standing this repository uses. One sentence in the REFUSED_ADDRESS docstring closes it.",
+      "how_derived": "Read $defs/standing and $defs/member out of contracts/custody.schema.json, validated the real member against them by hand, and grepped the tree for every NOT_WITNESSED occurrence."
+    },
+    {
+      "id": "W7-F7",
+      "severity": "OBSERVATION",
+      "state": "OPEN, bounded, contrived",
+      "address": "scripts/sovrecurrence/fixture.py, _mispaired; contracts/custodies/phase-1-5.json note, sentence 11",
+      "claim_defeated": "Sentence 11 read at its widest: 'The self-check refuses a reader that reads any of them.' It refuses any reader that reads them at the document root, which is every realistic shape I could build.",
+      "observed": "_mispaired carries note, $comment, warrant, title and name at the root only; below the root it carries description and an enum value. A reader that reads warrant or title strictly below the root and not description passes selfcheck at exit 0 with 32/32 tests. I could not turn that into anything realistic: the historical defect was depth-agnostic and is caught, and the natural JSON Schema shape - reading the title and description of each subschema under `properties` - is caught, because the variant carries a description there. Recorded to bound the sentence exactly rather than to defeat it.",
+      "why_it_matters": "The precise claim is 'any reader that reads any of those keys at the document root'. Sentence 11 is one qualifier away from being exactly true, and this branch has been bitten four times by the gap between a sentence and its measurement.",
+      "how_derived": "Two nested-only plants and one realistic property-level plant, each read through selfcheck and the unit module."
+    },
+    {
+      "id": "W7-F8",
+      "severity": "OBSERVATION",
+      "state": "OPEN, carried from W6-F10, not this concern's",
+      "address": "scripts/sovverify/commissioning.py, the definition recurrence slice observes tuple; scripts/verify.py line 86",
+      "observed": "Still true at 5632495. verify.py uses check.observes only to filter addresses that exist; nothing grades the tuple against what the check actually opens. The slice's tuple correctly names contracts/custodies/phase-1-5.json and the check genuinely reads it - I proved that by deleting the file - but the correspondence is a declaration, not a measurement. This is the verification domain's and the repository already records it.",
+      "why_it_matters": "Named because the W5-F4 repair's evidence leans on the tuple, and because a declaration where a measurement was possible is the defect class this repository's own procedure singles out.",
+      "how_derived": "Read scripts/verify.py line 86 and every consumer of .observes; confirmed the slice's real reach by removing the collection."
+    },
+    {
+      "id": "W7-F9",
+      "severity": "OBSERVATION",
+      "state": "OPEN, scope",
+      "address": "contracts/verification-budget.json, check_ceilings.named",
+      "observed": "This branch adds two named ceilings: 'definition recurrence slice' at 0.5s, which equals the default and is this concern's own, and 'discovery and reuse slice' at 3.0s, which is another concern's check and raises it from the 0.5s default. That check measures about 8.7s here, so it records debt either way; the effect is to reduce its reported overrun by about 2.5s. The contract's own note says a named ceiling is set from the measured cost plus modest headroom, and 3.0s is neither the default nor the measurement - it is the sibling slice's number. Budget debt never refuses a run, so no verdict moves.",
+      "why_it_matters": "No verdict rides on it and it is defensible as absorption of a sibling P15 slice. Named only so that a loosened ceiling on a check this concern does not own is on the record rather than discovered later.",
+      "how_derived": "Read the diff against 48a0f57, read check_ceilings.default_seconds and the contract note, and read the check's measured cost out of the BUDGET DEBT block of both clean verify runs."
+    }
+  ],
+  "defeating_case_coverage": {
+    "note": "AGENTS.md requires a positive case and a case proving the required refusal for every consequential behaviour. This is the state at 5632495, measured by plant rather than read off the prose. Three of the five gaps pass 6 listed are closed.",
+    "newly_covered_since_6d02eef": [
+      "description, note, $comment, warrant, title and name are not read as declarations - all six, at the document root, each refused by name (was: title only)",
+      "enum values are not read as declarations",
+      "an examples block is not harvested as a declaration",
+      "standing is compared as a whole token: both substring and endswith regressions refused, citing trap T3",
+      "a graded/reported leak in either direction fails the split test, including the instance-to-schema hop, and independently of where in a contract the enum sits"
+    ],
+    "covered_and_re_confirmed": [
+      "a member nobody witnessed is excluded from the basis, and the positive variant is checked for its absence",
+      "a witnessed member that never landed is excluded",
+      "a member whose declared address is missing is a defect and is never silently dropped",
+      "a member at RATIFIED is admitted",
+      "the candidate identity moves when the basis moves",
+      "synthesis leaves STATUS.yaml, contracts/phases.json and the collection byte-identical",
+      "a role name in prose does not defeat neutrality; a vocabulary of exactly two proving roles does",
+      "a properties dict inside an examples array declares nothing, and a root identifier carrying prose is not an identifier",
+      "the reader reaches the live custody collection: removing it turns the slice red at 5632495 and did not at 1ce4d21",
+      "the reachability check does not pin the verdict: a constructed satisfied clause leaves the whole gate green"
+    ],
+    "still_uncovered": [
+      "the restriction of declared names to $defs, definitions, properties and patternProperties (W7-F4)",
+      "the `example` and `fixtures` members of EXAMPLE_KEYS (W7-F5)",
+      "the whitespace guard on root identifiers is covered by a unit test but not by the self-check, so the gate catches it and selfcheck alone does not",
+      "prose read strictly below the document root, for note, $comment, warrant, title and name (W7-F7; contrived, no realistic shape found)",
+      "the asserted PRIMITIVES pairing itself, which no rule can supply and the module says so",
+      "the correspondence between a check's observes tuple and what it opens (W7-F8, verification domain's)",
+      "a member's standing and work_state are believed as written; nothing corroborates them"
+    ],
+    "verdict": "Two consequential behaviours the artifact's own prose asserts still carry no case proving the required refusal, down from six. Both are one fixture key away from covered. That is a real gap against AGENTS.md and it is a smaller one than at any prior revision on this branch."
+  },
+  "q1_landing_at_built": {
+    "question": "Is there anything at 5632495 that makes landing the member at BUILT wrong?",
+    "answer": "NO.",
+    "reasoning": "Nothing here is a regression, a weakened oracle, a check that passes when it should not, or a standing the member does not hold. The merge is a clean disjoint union of two file sets that do not touch; verify.py exits 0 twice at 57 checks and lint.py exits 0 twice; the generated page regenerates byte-identically; no secrets, absolute paths or CRLF entered. The member lands at standing BUILT, work_state PRESENTED, stage_observed_by null, and sov_active_phase_progress reads P15-X4 as NOT_EARNED, so no clause advances by landing. I checked the one thing that would make landing self-serving - whether the member could become its own cited basis - and it cannot: gather() admits only WITNESSED or RATIFIED at LANDED, and I confirmed by setting work_state to LANDED in a copy that the basis stays at three sources and the proposal id does not move. Seven claimed repairs, and I reproduced all seven with my own plants.\n\nThree defects belong in the answer even though none of them blocks. W7-F1 and W7-F2 are false sentences in a shipped record: a corrections block that misattributes the provenance of two of its five withdrawals, and a shard index inside it that the merge itself falsified. Both are one-line repairs and neither misleads about anything consequential. W7-F3 is the one I would repair before landing rather than after, and I say that as a recommendation and not as a refusal: it is in contracts/, which outlives the branch, it is about independence, which is the only thing this member's standing turns on, and it presents a self-reported container and prompt as fact one sentence after withdrawing a sibling claim for being self-reported, while omitting that pass 4 built a repair inside this concern. That is the sentence a next participant will lean on. It is the concern holder's call, it is RECORD_LOCAL, and it is repairable in place.",
+    "would_mislead_the_next_participant": [
+      "W7-F3 (governed file, independence)",
+      "W7-F1 and W7-F2 (shipped record, provenance and a stale measurement)",
+      "W7-F6 (a standing token the vocabulary does not admit, unlabelled)"
+    ],
+    "regression_against_main": "None found.",
+    "check_that_passes_when_it_should_not": "None that this round introduced. Two coverage gaps remain where a regression would pass the whole gate - W7-F4, vacuous today, and W7-F5, one edit from moving the live verdict. Neither is a check reporting a false PASS about the current tree."
+  },
+  "q2_standing_refusal": {
+    "question": "Does anything at 5632495 change the view that BUILT -> WITNESSED is not supported?",
+    "answer": "NO. I would refuse it too.",
+    "reasoning": "The artifact is better at 5632495 than at any prior revision on this branch and that is not what the refusal turns on. Three reasons, in the order I weight them.\n\nFirst, my own position. I share a container and a model family with the builder, I read a task prompt the builder wrote which named six specific things to attack, and the scratchpad I was handed already held passes 5 and 6's working files. Every one of those makes this a second reading rather than an independent one. AGENTS.md says a build cannot witness itself and that no reading is authority; a reading directed by the builder from inside the builder's container is not the thing BUILT -> WITNESSED names, whatever it finds. I found three defects, which is evidence the reading was real, and not evidence it was independent.\n\nSecond, the one reading with a claim to real separation is compromised in the other direction. Pass 4 declares built_the_repair: true and says in its own record that its account of f43ee9a is a build claim rather than a witness. It read e898d06 independently, found the title defect, and built the fix. So the series has six readings and no reading that both came from outside the build chain and stayed outside it. The governed note does not record this (W7-F3).\n\nThird, coverage. Two consequential behaviours the artifact asserts still carry no case proving the required refusal (W7-F4, W7-F5), and W7-F5 is one instance-data edit away from moving the live verdict with the whole gate green. AGENTS.md makes that a bar on its own. It is a much smaller bar than pass 6 recorded - six became two - and it is still a bar.\n\nWhat would change my answer: a reading from a participant that does not share this container, was not directed by anyone in this build chain, and built nothing here, that finds the remaining coverage gaps closed. Nothing about the code at 5632495 argues against WITNESSED; what argues against it is that no such reading exists and this one is not it.",
+    "position_on_the_prior_refusals": "Not reopened and not needed. I re-derived the repairs rather than the refusals, and I reached the same terminal by a different route."
+  },
+  "residuals": [
+    "Seven readings, six of them from inside the builder's container and model family. Each found material defects the one before it missed, including this one. The series has not converged, and the marginal value of an eighth reading from the same position is the question pass 6 put to the seat and I repeat.",
+    "The custody note calls the readings independent and describes pass 4 as the most independent of them without recording that pass 4 built a repair inside this concern (W7-F3).",
+    "contracts/custodies/phase-1-5.json still records the member at work_state PRESENTED. After this branch lands, PRESENTED is stale and the field will need moving to LANDED; landing at BUILT does not make the member self-citable either way, which I confirmed.",
+    "scripts/verify.py exits 0 here. CLAUDE.md trap T2: that means unchanged, not qualified, and it says nothing about whether P15-Q4 holds against this repository. It does not.",
+    "P15-Q4.3 does not hold, for the two reasons the note states, and the second is this custody's own declared defeating condition. The member is an instrument that discriminates, not a satisfied clause, and the note says so.",
+    "The corrections block on the pass-4 record was written into another participant's record by the builder and still names no author (W6-F8, unrepaired), and now misattributes provenance for two of its five entries (W7-F1)."
+  ],
+  "unattestable": [
+    "Which model or container executed any pass, including this one beyond my own declaration. Nothing in this repository records it, and I searched.",
+    "Whether the pass-6 record was altered before 7188ef5 committed it. It was introduced into the tree by the participant it refused, in the same commit as the repairs for its findings, so there is no earlier copy to compare against. Nothing suggests it was and I cannot establish that it was not. The same holds for the C4 and C5 additions to the pass-4 record.",
+    "Whether pass 4 in fact ran in a separate container from a fresh clone under a root-seat prompt. That is W7-F3's subject: I can establish that the artifact does not support it, not that it is false.",
+    "Whether the artifact is free of defects a differently-directed reader would find. My prompt named six attacks and I added my own; the ones neither of us thought of are not in this record."
+  ],
+  "verdict": "SPLIT. Landing at BUILT is supported and I found nothing that makes it wrong. BUILT -> WITNESSED is not supported for custody:phase-1-5/definition-recurrence at 5632495, and I dissent from it for reasons independent of the code.",
+  "standing_supported": "NONE. This observation supports no standing transition. The member stays BUILT at work_state PRESENTED. It does support landing the branch with the member at that standing, which is a different act and takes no standing; the landing gate under grant:standing-landing-loop still needs verify PASS, lint PASS and an observation from a participant that did not build the change, and this record is that observation for the landing and is not one for the standing.",
+  "judgement_items": [
+    "None of the nine findings is judgement-typed. All nine are repairable inside this concern by the participant that holds it, at effect class RECORD_LOCAL, without widening any grant. Nothing here asks Bdo for permission.",
+    "The one question worth putting to the seat one edge up, repeating pass 6 rather than replacing it: after seven readings, six from inside the builder's container and model family and the seventh directed by the builder, is a further reading from this position capable of settling this member's independence at all? If not, BUILT -> WITNESSED here needs a reading this host cannot produce, and saying so is cheaper than an eighth pass. That is a question about what evidence would suffice, not a request for permission to continue.",
+    "Whether W7-F3 should be repaired before the landing or after it. I recommend before, because it is in contracts/ and it is about independence; it is the concern holder's reversible call and I am recording a recommendation, not a gate."
+  ]
+}

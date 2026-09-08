@@ -292,7 +292,7 @@ REPOSITORY_CHECKS = (
           "the harness's own tests; independent of the repository content they check, but "
           "not of the harness itself; the runner partitions the complete discovered module "
           "population and fails if any shard fails",
-          ("scripts/tests", "scripts/run_tooling_tests.py")),
+          ("scripts/tests", "scripts/run_tooling_tests.py", "scripts/sovtooling")),
 )
 
 #: Repository checks then participant checks; the package `__init__` splices the

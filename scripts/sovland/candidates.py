@@ -26,7 +26,7 @@ class CandidateRefused(RuntimeError):
 
 
 def _request(args: Any, capability: str, paths: list[str], checks: dict[str, str],
-             observation: dict | None = None) -> dict:
+             observation: dict | None = None, observation_path: str | None = None) -> dict:
     return {
         "request_schema": "soveraeign-authority-request/v1",
         "actor_id": args.actor,
@@ -36,6 +36,11 @@ def _request(args: Any, capability: str, paths: list[str], checks: dict[str, str
         "branch": args.target,
         "paths": paths,
         "spend": {"unit": "agent_invocations", "amount": args.spend},
+        # Set only after the observation was read from this path, so a path present here
+        # is a path that resolved. Without it the candidate landing path recorded
+        # DECLARED_ONLY for every landing and the distinction the field exists to keep
+        # was inert on the one route that actually lands anything.
+        "observation_path": observation_path,
         "evidence": {"checks": checks, "observation": observation},
     }
 
@@ -179,7 +184,13 @@ def land(args: Any, grants: list[dict]) -> tuple[dict, dict, str]:
         raise CandidateRefused(
             f"candidate target is {candidate.get('target')!r}, not requested {args.target!r}"
         )
-    observation = json.loads(_repo_path(args.observation).read_text(encoding="utf-8"))
+    observation_source = _repo_path(args.observation)
+    observation = json.loads(observation_source.read_text(encoding="utf-8"))
+    try:
+        observation_path = observation_source.resolve().relative_to(
+            repo.ROOT.resolve()).as_posix()
+    except ValueError:
+        observation_path = observation_source.as_posix()
     _candidate_integrity(candidate)
 
     qualification = sov_candidate.evaluate(
@@ -204,6 +215,7 @@ def land(args: Any, grants: list[dict]) -> tuple[dict, dict, str]:
         candidate["changed_paths"],
         candidate["checks"],
         observation,
+        observation_path,
     )
     result = authority.evaluate(grants, request)
     if result["verdict"] != authority.PERMITTED:

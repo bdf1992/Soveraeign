@@ -72,7 +72,8 @@ def journal(*, lease_holder="worker-a", grant_id="grant-run", output_actor="work
             with_outputs=True, with_report=True, omit_subject=False,
             omit_context_kinds=False, witness_context=("OBJECTIVE", "ARTIFACT"),
             witness_profile=WITNESS_PROFILE,
-            predicates_author="contract:observation") -> list[dict]:
+            predicates_author="contract:observation",
+            predicates_kind="CONTRACT") -> list[dict]:
     """A run's journal slice: the run, its grants, the launches, and the subject's arrows.
 
     `witness-z` is launched with subject-side context and its own profile, so it reads
@@ -85,6 +86,7 @@ def journal(*, lease_holder="worker-a", grant_id="grant-run", output_actor="work
         attempt["subject_id"] = SUBJECT
     launch_witness = {"event": "LAUNCH", "launched_actor_id": "witness-z",
                       "launched_by": "worker-a", "profile": witness_profile,
+                      "predicates_source_kind": predicates_kind,
                       "predicates_source_actor": predicates_author}
     if not omit_context_kinds:
         launch_witness["context_passed"] = list(witness_context)
@@ -105,6 +107,7 @@ def journal(*, lease_holder="worker-a", grant_id="grant-run", output_actor="work
                {"event": "LAUNCH", "launched_actor_id": "helper-h", "launched_by": "worker-a",
                 "context_passed": ["OBJECTIVE", "ARTIFACT", "REASONING"],
                 "profile": _profile("helper"),
+                "predicates_source_kind": "CONTRACT",
                 "predicates_source_actor": "contract:observation"}),
     ]
     if with_outputs:
@@ -220,7 +223,8 @@ class ThinSlice(unittest.TestCase):
 
     def test_a_witness_graded_against_the_builders_criteria_is_not_independent(self) -> None:
         """The rubber-stamp `decisions/0100` named as its own defeater, now a refusal."""
-        record = RunRecord.from_entries(RUN, journal(predicates_author="worker-a"))
+        record = RunRecord.from_entries(RUN, journal(predicates_author="worker-a",
+                                                     predicates_kind="ACTOR"))
         inference = self.service.infer_relation(record, "witness-z", "MODEL")
         self.assertEqual("DIRECT", inference["outcome"])
         self.assertEqual([{"edge": "PREDICATES_SUPPLIED_BY_EXECUTOR",
@@ -235,6 +239,7 @@ class ThinSlice(unittest.TestCase):
                               {"event": "LAUNCH", "launched_actor_id": "builder-b",
                                "launched_by": "worker-a", "context_passed": ["OBJECTIVE"],
                                "profile": _profile("builder"),
+                               "predicates_source_kind": "CONTRACT",
                                "predicates_source_actor": "contract:observation"}))
         record = RunRecord.from_entries(RUN, entries)
         inference = self.service.infer_relation(record, "builder-b", "MODEL")
@@ -376,6 +381,122 @@ class ThinSlice(unittest.TestCase):
         refused = [receipt["reason_code"] for receipt in self.service.receipts
                    if receipt["outcome"] == "REFUSED"]
         self.assertEqual(["PREDICATES_UNDECLARED", "OBSERVER_NOT_INDEPENDENT"], refused)
+
+
+class WitnessFindingsOn7be1323(unittest.TestCase):
+    """The seven-edge walk's first witness pass. Each case is a defeat it drove itself.
+
+    All but one were reached by building a journal slice and reading the outcome, so each
+    test below is that slice. The pass dissented and supported no standing; these are the
+    repairs, pinned so the walk cannot quietly return to answering "no" where it cannot see.
+    """
+
+    def setUp(self) -> None:
+        self.service = ObservationService(Clock())
+        self.record = RunRecord.from_entries(RUN, journal())
+
+    def test_a_prior_arrow_actor_without_a_profile_is_not_read_as_different(self) -> None:
+        """P1a. A candidate loading the builder's profile under another id read INDEPENDENT,
+        because the arrow's actor carried no launch entry and the comparison answered "no"
+        rather than "cannot say". That defeats Ruling 3 by rename."""
+        entries = journal()
+        entries.insert(6, _entry("e-standing-open", "EVENT", SUBJECT, "builder-b",
+                                 {"event": "STANDING", "from": "OPEN", "to": "BUILT"}))
+        record = RunRecord.from_entries(RUN, entries)
+        with self.assertRaises(RelationUndetermined):
+            self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertIn("PRIOR_STANDING_ACTOR",
+                      self.service.inferences[-1]["unanswerable_edges"])
+
+    def test_a_candidate_moving_another_subject_cannot_be_cleared_by_the_named_one(self) -> None:
+        """P3b. The subject is named by the executor's own ATTEMPTED payload. A decoy that
+        carries real arrows walked the wrong lifecycle and passed."""
+        entries = journal()
+        entries.insert(6, _entry("e-standing-other", "EVENT", "urn:soveraeign:work:other",
+                                 "witness-z", {"event": "STANDING", "from": "OPEN",
+                                               "to": "BUILT"}))
+        record = RunRecord.from_entries(RUN, entries)
+        with self.assertRaises(RelationUndetermined):
+            self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertIn("PRIOR_STANDING_ACTOR",
+                      self.service.inferences[-1]["unanswerable_edges"])
+
+    def test_a_predicate_author_of_unstated_kind_is_not_cleared(self) -> None:
+        """P4. An alias of the executor and a contract address are the same bytes to this
+        service, so the record must say which kind it named."""
+        record = RunRecord.from_entries(RUN, journal(predicates_kind="UNSTATED"))
+        with self.assertRaises(RelationUndetermined):
+            self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertEqual(["PREDICATES_SUPPLIED_BY_EXECUTOR"],
+                         self.service.inferences[-1]["unanswerable_edges"])
+
+    def test_an_actor_author_the_record_cannot_place_is_not_cleared(self) -> None:
+        record = RunRecord.from_entries(RUN, journal(predicates_author="worker-a-alias",
+                                                     predicates_kind="ACTOR"))
+        with self.assertRaises(RelationUndetermined):
+            self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertEqual(["PREDICATES_SUPPLIED_BY_EXECUTOR"],
+                         self.service.inferences[-1]["unanswerable_edges"])
+
+    def test_an_unreadable_lease_is_a_question_not_a_denial(self) -> None:
+        """P2, carried from before this change: a non-object lease answered "no holder"."""
+        entries = journal()
+        entries[4]["payload"]["lease"] = "lease-abc"
+        record = RunRecord.from_entries(RUN, entries)
+        with self.assertRaises(RelationUndetermined):
+            self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertIn("HOLDS_RUN_LEASE", self.service.inferences[-1]["unanswerable_edges"])
+
+    def test_an_incomplete_inference_reading_independent_is_refused_at_the_gate(self) -> None:
+        """F2. The schema forbade this shape; the runtime gate read `outcome` and admitted it,
+        then wrote an observer_relation asserting a COMPLETE record it never read."""
+        forged = dict(self.service.infer_relation(self.record, "witness-z", "MODEL"))
+        forged["record_completeness"] = "INCOMPLETE"
+        forged["unanswerable_edges"] = ["SAME_ACTOR_VERSION"]
+        self.service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(RelationUndetermined):
+            observe_run(self.record, forged, self.service.declarations[-1], "witness-z",
+                        reader, "2026-09-08T00:00:00+00:00")
+
+    def test_a_narrowed_examination_is_refused_at_the_gate(self) -> None:
+        forged = dict(self.service.infer_relation(self.record, "witness-z", "MODEL"))
+        forged["edges_examined"] = ["SAME_ACTOR_VERSION", "HOLDS_RUN_LEASE"]
+        self.service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(RelationUndetermined):
+            observe_run(self.record, forged, self.service.declarations[-1], "witness-z",
+                        reader, "2026-09-08T00:00:00+00:00")
+
+    def test_an_inference_about_another_run_does_not_admit_this_one(self) -> None:
+        forged = dict(self.service.infer_relation(self.record, "witness-z", "MODEL"))
+        forged["run_id"] = "urn:soveraeign:run:somewhere-else"
+        self.service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(RelationUndetermined):
+            observe_run(self.record, forged, self.service.declarations[-1], "witness-z",
+                        reader, "2026-09-08T00:00:00+00:00")
+
+    def test_a_second_session_of_the_executor_may_not_relay_an_observation(self) -> None:
+        """F3. The relay refusal compared ids while the walk compared profiles, so the service
+        gave two opposite answers about one actor on one record."""
+        entries = journal()
+        entries.append(_entry("e-launch-a2", "EVENT", "worker-a-2", "worker-a",
+                              {"event": "LAUNCH", "launched_actor_id": "worker-a-2",
+                               "launched_by": "worker-a", "context_passed": ["OBJECTIVE"],
+                               "profile": WORKER_PROFILE,
+                               "predicates_source_kind": "CONTRACT",
+                               "predicates_source_actor": "contract:observation"}))
+        record = RunRecord.from_entries(RUN, entries)
+        self.service.infer_relation(record, "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(ObserverNotIndependent):
+            self.service.observe_run(record, "witness-z", reader, submitted_by="worker-a-2")
+
+    def test_the_observer_relation_quotes_the_inference_rather_than_asserting(self) -> None:
+        self.service.infer_relation(self.record, "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, PREDICATES)
+        observation = self.service.observe_run(self.record, "witness-z", reader)
+        inference = self.service.inferences[-1]
+        self.assertIn(inference["outcome"], observation["observer_relation"])
+        self.assertIn(inference["record_completeness"], observation["observer_relation"])
 
 
 class WitnessFindingsOn169182f(unittest.TestCase):

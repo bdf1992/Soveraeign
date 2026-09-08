@@ -57,7 +57,10 @@ per-run walk would admit a builder as its own witness one arrow later.
 - `CONSTRUCTION_CONTEXT_INHERITED` — the launch handed the candidate the run's reasoning, plan,
   transcript, or conclusion;
 - `PREDICATES_SUPPLIED_BY_EXECUTOR` — the criteria the candidate grades against were authored
-  by an executor rather than by a contract, a fixture, or the observer itself.
+  by an executor rather than by a contract, a fixture, or the observer itself. The launch
+  declares the author's *kind* as well as its id, because an id this service does not
+  recognise is as likely to be an alias of the executor as a contract address, and reading
+  either one as "not the executor" is a denial the bytes cannot support.
 
 Find one and the answer is `OBSERVER_NOT_INDEPENDENT`. Find none and the observer may observe.
 
@@ -83,9 +86,23 @@ So the inference has three outcomes, not two: `DIRECT`, `INDEPENDENT`, and `UNDE
 `infer-relation` refuses `RELATION_UNDETERMINED` when the record cannot support the inference,
 and `observe-run` refuses on it as well. Silence is not a pass.
 
-This is what keeps the two new axes honest. A launch that declares no context, an actor whose
-profile the record does not carry, and a run that names no subject each leave an edge
-unanswerable, so under-declaring buys a refusal rather than a pass.
+This is what keeps the two new axes honest. Each of these leaves an edge unanswerable, so
+under-declaring buys a refusal rather than a pass:
+
+- a launch that declares no context, or no kind for the author of its criteria;
+- any actor the comparison must place — an executor, a prior arrow's actor, a named author —
+  whose operating profile the record does not carry, because a rename is exactly what the
+  profile exists to defeat;
+- a run that names no subject, or that names one while the record also shows the candidate
+  moving another, since the subject is declared by the executor's own entry and a decoy that
+  carries real arrows would otherwise walk the wrong lifecycle;
+- a lease the record carries in a shape this service cannot read.
+
+The first witness pass over this walk reached `INDEPENDENT` on five records the manifest
+forbids, every one of them a place where a missing datum answered "no" instead of "cannot
+say". `witness/independence-context-perspective.md` is that pass. The asymmetry it found is
+the thing to watch for in any edge added later: one walk refused on a missing profile and
+another read the same absence as a clean answer.
 
 ## What this service is not
 

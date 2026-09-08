@@ -87,7 +87,7 @@
         "estimate_schema": "soveraeign-estimate/v1",
         "estimated_by": "principal:session-bf50c8",
         "estimated_at": "2026-09-03T00:00:00Z",
-        "basis": "Opened against the prepared profile; the Observation Service thin slice is the one witnessed member, and no Finding or RecordProjection has been exercised on a real run.",
+        "basis": "Opened against the prepared profile; the Observation Service thin slice was the one witnessed member until decisions/0104 replaced the walk its passes read, leaving none, and no Finding or RecordProjection has been exercised on a real run.",
         "maturity": "DISCOVERY_ENVELOPE",
         "dimensions": [{"dimension_id": "grants", "low": 0, "high": 1}, {"dimension_id": "judgement_units", "low": 1, "high": 1}]
       },
@@ -96,10 +96,10 @@
           "member_kind": "SERVICE",
           "address": "services/observation",
           "stage": "VERTICAL_SLICE",
-          "standing": "WITNESSED",
+          "standing": "BUILT",
           "work_state": "LANDED",
-          "stage_observed_by": "witness/observation-service.md",
-          "note": "independent observation with independence inferred from the record; witnessed as code at 3087714, no run observed yet"
+          "stage_observed_by": null,
+          "note": "independent observation with independence inferred from the record. Witnessed as code at 3087714 (witness/observation-service.md); decisions/0104 replaced that five-edge walk with seven across two axes, so those passes no longer cover the enforcement surface and the member is back to BUILT. No run observed yet"
         },
         {
           "member_kind": "CONTRACT",

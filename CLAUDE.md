@@ -86,8 +86,9 @@ whenever they disagree.
 - 10 service boundaries under `services/`, 135 declared operations
   across 10 manifests. Asset and Record are built and self-tested; Console's
   continuity path is built; Gateway has one in-process Asset route; Registry has
-  a built resolve slice; Observation has a witnessed thin slice (relation
-  inference and observe-run); Proofing, Projection, and the remainder of
+  a built resolve slice; Observation has a built thin slice (relation
+  inference and observe-run), no longer witnessed since decisions/0104
+  replaced the walk its witness passes read; Proofing, Projection, and the remainder of
   those services are incomplete. `services/README.md` and the live issue graph
   carry the detailed standing; declarations are not reachability.
 - Conformance oracle (`conformance/`): executable, 33 controlled cases, every
@@ -121,8 +122,10 @@ whenever they disagree.
 - Proofing and Asset Projection are boundaries with no implementation; Gateway has
   the one in-process route named above and nothing more.
   Observation has five of eight operations built, self-tested, and independently
-  witnessed through their declared surface (`witness/observation-service.md`),
-  the first `WITNESSED` standing on file; no service's runs are observed yet, so
+  witnessed through their declared surface (`witness/observation-service.md`).
+  That was the first `WITNESSED` standing on file and it no longer holds:
+  `decisions/0104` replaced the five-edge walk those passes read with seven, so
+  the standing is back to `BUILT`. No service's runs are observed yet, so
   the independent-observation check in `AI-NATIVE.md` still reads
   `UNATTESTABLE` everywhere.
 - The SDLC loop is a skeleton, and Sov has no live activation.

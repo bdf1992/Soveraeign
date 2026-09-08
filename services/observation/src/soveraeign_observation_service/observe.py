@@ -25,7 +25,8 @@ from .errors import (
     Unreadable,
 )
 from .record import RunRecord, digest_address
-from .relation import require_independent
+from .admission import require_independent
+from .version import is_version_of_any
 
 Reader = Callable[[str], bytes]
 
@@ -108,17 +109,24 @@ def observe_run(
     observer unless someone relayed it. An executor relaying a finding is the executor's
     report wearing an observer's name, so it refuses `OBSERVER_NOT_INDEPENDENT`
     (`decisions/0104`, Ruling 6: this is the hazard retiring the grant edge left behind).
+    The comparison is `version.py`'s, not an id match: an independent witness defeated the
+    id match with a second session of the executor under another name.
+
+    `observer_relation` quotes the inference's own outcome and completeness rather than
+    asserting them. The same witness found this field stating `COMPLETE` over an inference
+    that said otherwise, which is a sentence about evidence nobody read.
 
     Refuses `OBSERVER_NOT_INDEPENDENT` and `RELATION_UNDETERMINED` from the inference,
     `PREDICATES_UNDECLARED` when the declaration is absent, later than the looking, about
     another run, or names an address the run did not report, `UNREADABLE` when an output cannot
     be read, and `DIGEST_MISMATCH` when the bytes disagree with the record.
     """
-    require_independent(inference, observer_id)
+    require_independent(inference, observer_id, record.run_id)
     submitter = observer_id if submitted_by is None else submitted_by
-    if submitter != observer_id and submitter in record.executors():
+    if submitter != observer_id and is_version_of_any(record, submitter, record.executors()):
         raise ObserverNotIndependent(
-            f"{submitter} executed this run and is relaying {observer_id}'s observation")
+            f"{submitter} is a version of an actor that executed this run and is relaying "
+            f"{observer_id}'s observation")
     if not declaration or declaration.get("run_id") != record.run_id:
         raise PredicatesUndeclared(f"no declaration for {record.run_id}")
     if _moment(declaration.get("declared_at")) >= _moment(observed_at):
@@ -164,8 +172,9 @@ def observe_run(
         "run_id": record.run_id,
         "observer_id": observer_id,
         "observer_relation": (
-            f"INDEPENDENT per {inference['inference_id']}: none of "
-            f"{', '.join(inference['edges_examined'])} found over a COMPLETE record; "
+            f"{inference['outcome']} per {inference['inference_id']}: none of "
+            f"{', '.join(inference['edges_examined'])} found over a "
+            f"{inference['record_completeness']} record; "
             f"outputs read directly, not through the executor's report"),
         "observed_state_addresses": addresses,
         "observed_state_digests": digests,

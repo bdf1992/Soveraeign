@@ -34,8 +34,9 @@ from __future__ import annotations
 from typing import Any
 import hashlib
 
-from .errors import ObserverNotIndependent, RelationUndetermined, RunNotTerminal, Unreadable
-from .record import CONSTRUCTION_CONTEXT, RunRecord
+from .errors import RelationUndetermined, RunNotTerminal, Unreadable
+from .record import CONSTRUCTION_CONTEXT, PREDICATE_SOURCE_KINDS, RunRecord
+from .version import DIFFERENT, SAME, UNKNOWN, _version_of
 
 EDGES = (
     "SAME_ACTOR_VERSION",
@@ -69,14 +70,6 @@ class _Walk:
                 self.read.append(entry)
 
 
-def _same_version(record: RunRecord, candidate: str, actor: str) -> bool:
-    """Is the candidate a version of this actor: the same actor, or the same loaded profile?"""
-    if candidate == actor:
-        return True
-    theirs = record.profile_of(actor)
-    return theirs is not None and theirs == record.profile_of(candidate)
-
-
 def _walk_perspective(record: RunRecord, candidate: str, walk: _Walk) -> None:
     """Is the candidate a version of an actor that executed this run?
 
@@ -84,12 +77,12 @@ def _walk_perspective(record: RunRecord, candidate: str, walk: _Walk) -> None:
     candidate being an executor outright is answerable without any profile at all.
     """
     executors = record.executors()
+    readings = {actor: _version_of(record, candidate, actor) for actor in executors}
     for actor, entry in executors.items():
-        if _same_version(record, candidate, actor):
+        if readings[actor] == SAME:
             walk.edge("SAME_ACTOR_VERSION", entry)
             return
-    if record.profile_of(candidate) is None or any(
-            record.profile_of(actor) is None for actor in executors):
+    if not executors or any(reading == UNKNOWN for reading in readings.values()):
         walk.cannot_answer("SAME_ACTOR_VERSION")
 
 
@@ -108,10 +101,20 @@ def _walk_lifecycle(record: RunRecord, candidate: str, walk: _Walk) -> None:
         walk.cannot_answer("PRIOR_STANDING_ACTOR")
         return
     walk.cite(*arrows)
-    for entry in arrows:
-        if _same_version(record, candidate, str(entry.get("actor") or "")):
+    readings = [(entry, _version_of(record, candidate, str(entry.get("actor") or "")))
+                for entry in arrows]
+    for entry, reading in readings:
+        if reading == SAME:
             walk.edge("PRIOR_STANDING_ACTOR", entry)
             return
+    # The subject is named by the executor's own ATTEMPTED payload. A record that also shows
+    # this candidate moving some other subject cannot rule out that the named one is a decoy,
+    # so it is unanswerable rather than a pass.
+    elsewhere = [entry for entry in record.all_standings()
+                 if entry.get("subject") != subject
+                 and _version_of(record, candidate, str(entry.get("actor") or "")) != DIFFERENT]
+    if any(reading == UNKNOWN for _, reading in readings) or elsewhere:
+        walk.cannot_answer("PRIOR_STANDING_ACTOR")
 
 
 def _walk_context(record: RunRecord, candidate: str, walk: _Walk) -> None:
@@ -134,11 +137,20 @@ def _walk_context(record: RunRecord, candidate: str, walk: _Walk) -> None:
     elif any(str(kind) in CONSTRUCTION_CONTEXT for kind in passed):
         walk.edge("CONSTRUCTION_CONTEXT_INHERITED", launch)
 
+    kind = payload.get("predicates_source_kind")
     author = payload.get("predicates_source_actor")
-    if not author:
+    if kind not in PREDICATE_SOURCE_KINDS or (kind == "ACTOR" and not author):
         walk.cannot_answer("PREDICATES_SUPPLIED_BY_EXECUTOR")
-    elif any(_same_version(record, str(author), actor) for actor in record.executors()):
+        return
+    if kind != "ACTOR":
+        # A contract, a fixture, or the observer's own declaration is an address rather than a
+        # participant, so there is no version question to ask of it.
+        return
+    authored = [_version_of(record, str(author), actor) for actor in record.executors()]
+    if SAME in authored:
         walk.edge("PREDICATES_SUPPLIED_BY_EXECUTOR", launch)
+    elif UNKNOWN in authored:
+        walk.cannot_answer("PREDICATES_SUPPLIED_BY_EXECUTOR")
 
 
 def _walk_outputs(record: RunRecord, candidate: str, walk: _Walk) -> None:
@@ -205,7 +217,13 @@ def infer_relation(
             walk.cannot_answer("HOLDS_RUN_LEASE")
         else:
             lease = payload["lease"]
-            if isinstance(lease, dict) and lease.get("holder_id") == candidate_observer_id:
+            if lease is None:
+                pass
+            elif not isinstance(lease, dict):
+                # Present and unreadable. The earlier code read this as "no lease holder",
+                # which is a denial the bytes do not support.
+                walk.cannot_answer("HOLDS_RUN_LEASE")
+            elif lease.get("holder_id") == candidate_observer_id:
                 walk.edge("HOLDS_RUN_LEASE", attempt)
 
     _walk_outputs(record, candidate_observer_id, walk)
@@ -241,18 +259,4 @@ def infer_relation(
     return inference
 
 
-def require_independent(inference: dict[str, Any], observer_id: str) -> None:
-    """Refuse unless this inference admits this observer."""
-    if inference.get("candidate_observer_id") != observer_id:
-        raise RelationUndetermined(
-            f"the inference is about {inference.get('candidate_observer_id')}, not {observer_id}")
-    outcome = inference.get("outcome")
-    if outcome == "UNDETERMINED":
-        raise RelationUndetermined(
-            "the record could not answer: " + ", ".join(inference.get("unanswerable_edges", [])))
-    if outcome != "INDEPENDENT" or inference.get("edges_found"):
-        edges = ", ".join(found["edge"] for found in inference.get("edges_found", []))
-        raise ObserverNotIndependent(f"{observer_id} is joined to the run by {edges or outcome}")
-
-
-__all__ = ["EDGES", "infer_relation", "require_independent"]
+__all__ = ["EDGES", "infer_relation"]

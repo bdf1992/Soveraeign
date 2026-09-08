@@ -14,9 +14,10 @@ holding. Use `tree.json` when you need to know what is blocked on what.
 
 Exact terms stay exact. Every story ends with a **Today** line read from the
 tree (`ready` / `held` / `unrouted`) and the repository snapshot in
-`CLAUDE.md`. One thing below is `WITNESSED`, the Observation Service thin slice
-under The Inspectorate (`#9`), and nothing is `RATIFIED`; that is the accurate
-reading of a founding-phase node, not a shortfall.
+`CLAUDE.md`. Nothing below is `WITNESSED` and nothing is `RATIFIED`. The
+Observation Service thin slice under The Inspectorate (`#9`) held the one
+`WITNESSED` standing until `decisions/0104` replaced the walk its passes read.
+That is the accurate reading of a founding-phase node, not a shortfall.
 
 ## The cast
 

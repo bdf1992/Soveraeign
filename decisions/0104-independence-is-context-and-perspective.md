@@ -212,6 +212,43 @@ already answers the question the inference asks. Independence may not.
 commit `3087714` observed the five-edge walk this decision replaced. They were
 not wrong; they no longer cover what is there.
 
+## The first witness pass dissented
+
+`witness/independence-context-perspective.md`, 2026-09-07, over commit `7be1323`. It supported
+no standing and reached `INDEPENDENT` on five records the manifest forbids. Every one was the
+same shape: a datum the record did not carry, answered "no" instead of "cannot say".
+
+The deepest one defeats Ruling 3 directly. `_walk_perspective` treated a missing operating
+profile as unanswerable; `_walk_lifecycle` treated the same absence as a clean "different", so
+`PRIOR_STANDING_ACTOR` degraded to id equality and a rename defeated it — a rename being the
+exact thing the profile exists to defeat. Two walks in one module read one absence two ways.
+
+Repaired at the commit carrying this paragraph. The perspective reading is three-valued
+(`SAME`, `DIFFERENT`, `UNKNOWN`) and lives in `version.py`, one module with one reading,
+because the pass also found the executor-relay refusal comparing ids while the walk compared
+profiles: `infer_relation` called two actors the same and `observe_run` called them different,
+on one record. The gate moved to `admission.py` and now reads the whole verdict — found edges,
+unanswered edges, completeness, and whether the examination covered the closed set — after the
+pass admitted an inference saying `INDEPENDENT` over an `INCOMPLETE` record, whose observation
+then asserted the record was `COMPLETE` in the one field `SPEC.md` owns.
+
+Two things the pass found are worth stating as ruling rather than repair.
+
+**A source the record cannot place is not a source it can clear.** An id this service does not
+recognise is as likely to be an alias of the executor as a contract address, so a launch now
+declares the *kind* of the author of an observer's criteria, not only its id.
+
+**A subject named by the executor is not a subject the walk can trust.** `subject_id` comes
+from the executor's own `ATTEMPTED` payload, and a decoy carrying real arrows walked the wrong
+lifecycle and passed. A record that also shows the candidate moving another subject is now
+unanswerable rather than clear.
+
+The pass could not file its own record: `witness/*.md` is in the documentation corpus, so
+writing one turns `verify.py` red and repairing that needs a file a witness may not edit. Its
+words are filed by the builder, quoted, and the coupling is a row in `KNOWN-GAPS.md`. Custody
+of a witness record filed by the party it grades is weaker than one the witness wrote, and
+saying so is the honest form of it.
+
 ## Defaults taken
 
 - `GRANT_DESCENDS_FROM_RUN` retired rather than narrowed. Narrowing would have
@@ -264,7 +301,18 @@ axis, and it widened rather than narrowed.
 ## Residuals
 
 - Question 2 below is unanswered, and the retirement of grant-descent is built
-  on the default this record takes rather than on a ruling.
+  on the default this record takes rather than on a ruling. The first witness
+  pass sharpened it: the control the retirement leans on was defeated by a
+  second session of the executor, and though that is repaired, the pass is
+  right that a builder's power over the observer's authority is a question the
+  repair does not answer.
+- The pass's own independence is imperfect on this subject and the record says
+  so. The deliverable is partly a rationale, so the artifact under review is
+  the builder's reasoning: the context axis cannot be clean on a
+  rationale-shaped subject, and the perspective axis carried the pass. That is
+  a limit of the definition, not of the launch.
+- No second pass. The repairs are `BUILT` and self-tested; nothing here is
+  witnessed, and the standing stays demoted.
 - Both context edges read a launcher's declaration where they could not measure.
   The cross-check named in Ruling 8 — an observation citing more than its launch
   declared — is described and not computed by anything.

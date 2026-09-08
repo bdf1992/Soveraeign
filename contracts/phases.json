@@ -117,7 +117,7 @@
           "clause_id": "P15-X2",
           "text": "Consequential work converges on the common append-preserving Record. Different legitimate evaluators receive scoped, reconstructable Record projections and form separately cited Findings. Work quality and participant conduct are judged as different subjects; independent readings freeze before comparison; a comparator preserves citations and dissent and attributes a defect to work, participant, orchestration, witnessing, Record, or policy rather than averaging opinions into a score.",
           "verdict": "NOT_EARNED",
-          "reading": "python scripts/sov_standing.py reads one WITNESSED claim, the Observation Service thin slice at 3087714; no RecordProjection or Finding contract has been exercised on a real run, and no comparison of frozen findings has happened.",
+          "reading": "python scripts/sov_standing.py reads no WITNESSED claim: the Observation Service thin slice held the only one, at 3087714, and decisions/0104 replaced the walk those passes read; no RecordProjection or Finding contract has been exercised on a real run, and no comparison of frozen findings has happened.",
           "held_by": "custody:phase-1-5/evidenced-judgement"
         },
         {

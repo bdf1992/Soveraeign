@@ -118,9 +118,9 @@ declared route is a refusal."
 - **Observation.** Every `COMMITTED` `read-health` receipt carries
   `"observation_status": "UNATTESTED_ADAPTER_READING"` (`core.py`) — an explicit, self-declared
   admission that this reading is not independent observation. Host's manifest depends on
-  `observation:independent-observation`; that service has a witnessed thin slice that has
-  observed no run (`observation_service_status:
-  BUILT_THIN_SLICE_WITNESSED_REMAINDER_DECLARED`, `STATUS.yaml`).
+  `observation:independent-observation`; that service has a built thin slice, not witnessed
+  since decisions/0104 replaced the walk its passes read, that has observed no run (`observation_service_status:
+  BUILT_THIN_SLICE_REMAINDER_DECLARED_NOT_WITNESSED`, `STATUS.yaml`).
 - **Ports.** `contracts/service.json` declares four: `host-port`, `human-binding`,
   `model-binding`, `service-activity`. Only `host-port` has a concrete implementation
   (`adapters/host/local_host_adapter.py`, standard library only, no shell, no elevation); the

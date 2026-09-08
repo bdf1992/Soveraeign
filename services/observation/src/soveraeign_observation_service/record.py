@@ -51,6 +51,12 @@ STANDING = "STANDING"
 #: Context kinds a run's own construction produces. Holding one is not independence.
 CONSTRUCTION_CONTEXT = frozenset({"REASONING", "PLAN", "TRANSCRIPT", "CONCLUSION"})
 
+#: Where an observer's criteria came from. Only `ACTOR` can be a version of an executor; the
+#: rest are addresses, not participants. An independent witness showed why the record must say
+#: which: an id it does not recognise is as likely to be an alias of the executor as a
+#: contract, and reading either one as "not the executor" is a denial the bytes cannot support.
+PREDICATE_SOURCE_KINDS = frozenset({"CONTRACT", "FIXTURE", "OBSERVER", "ACTOR"})
+
 #: Events kept regardless of subject, because the walk reads them across the lifecycle.
 CROSS_SUBJECT = (OUTPUT, GRANT, LAUNCH, STANDING)
 
@@ -138,10 +144,13 @@ class RunRecord:
                 found[str(actor)] = entry
         return found
 
+    def all_standings(self) -> list[dict[str, Any]]:
+        """Every `STANDING` arrow in the slice, whatever subject it moved."""
+        return [entry for entry in self.entries if _event(entry) == STANDING]
+
     def standings(self, subject_id: str) -> list[dict[str, Any]]:
         """Every `STANDING` arrow recorded on one subject, in append order."""
-        return [entry for entry in self.entries
-                if _event(entry) == STANDING and entry.get("subject") == subject_id]
+        return [entry for entry in self.all_standings() if entry.get("subject") == subject_id]
 
     def profile_of(self, actor: str) -> str | None:
         """The digest of the operating profile an actor loaded, from a launch or an attempt.
@@ -253,5 +262,5 @@ class RunRecord:
         return digest
 
 
-__all__ = ["ATTEMPTED", "CONSTRUCTION_CONTEXT", "GRANT", "LAUNCH", "OUTPUT", "REPORTED",
-           "STANDING", "RunRecord", "digest_address"]
+__all__ = ["ATTEMPTED", "CONSTRUCTION_CONTEXT", "GRANT", "LAUNCH", "OUTPUT",
+           "PREDICATE_SOURCE_KINDS", "REPORTED", "STANDING", "RunRecord", "digest_address"]

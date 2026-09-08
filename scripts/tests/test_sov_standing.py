@@ -655,14 +655,16 @@ class TheClaimSideMustNotUnderRead(unittest.TestCase):
         Non-vacuity is proved where it belongs instead: the same entry point,
         pointed at a file this test writes, still finds a claim. That holds
         whatever STATUS.yaml says.
+
+        A first draft of that repair also compared `read_claims()` to
+        `read_claims(STATUS)`, which is the same call twice - a vacuous
+        assertion added to the one test whose job is refusing vacuity. An
+        independent witness caught it; it is gone rather than reworded.
         """
         live = sov_standing.read_claims()
         text = sov_standing.STATUS.read_text(encoding="utf-8")
         planted = [standing for line in text.splitlines() for standing in self._claims(line)]
         self.assertEqual([claim.standing for claim in live], planted)
-        self.assertEqual([(claim.field, claim.standing) for claim in live],
-                         [(claim.field, claim.standing)
-                          for claim in sov_standing.read_claims(sov_standing.STATUS)])
         self.assertEqual(self._claims("asset_service_status: BUILT_WITNESSED"), ["WITNESSED"])
 
 

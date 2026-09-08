@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest import mock
 import sys
 import unittest
 
@@ -149,6 +150,46 @@ class TheReadingIsLexicalAndSaysSo(unittest.TestCase):
     def test_a_grammar_error_with_well_formed_tokens_passes_as_declared(self):
         """The limit, asserted so it is not later mistaken for coverage."""
         self.assertIsNone(self.unread("const x = 1 2 3\n"))
+
+
+class TheGrammarReadingClosesTheLexersGap(unittest.TestCase):
+    """What an engine sees that a lexer cannot, and what its absence must not look like."""
+
+    def setUp(self):
+        self.tmp = TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.addCleanup(self.tmp.cleanup)
+        if sov_workflows.grammar(write(self.root, "probe.js", "const x = 1\n")) \
+                is sov_workflows.NODE_UNAVAILABLE:
+            self.skipTest("no JavaScript engine on this host")
+
+    def test_a_grammar_error_with_well_formed_tokens_is_caught(self):
+        """The lexer declares it cannot see this; the engine can."""
+        path = write(self.root, "a.js", "export const meta = {}\nconst x = 1 2 3\n")
+        self.assertIsNone(unreadable(path.read_text(encoding="utf-8")),
+                          "vacuous unless the lexer really passes this")
+        self.assertTrue(any("rejects it" in d for d in sov_workflows.grade(path)))
+
+    def test_the_module_mode_is_what_reads_these_files(self):
+        """`node --check` on a .js returns zero on this, because it opens with `export`.
+        That is what was hand-run while two shipped workflows were unparseable."""
+        source = "export const meta = {}\nconst p = 'a workflow's envelope'\n"
+        path = write(self.root, "b.js", source)
+        self.assertIsNotNone(sov_workflows.grammar(path))
+
+    def test_a_top_level_return_is_not_a_defect(self):
+        """This harness's runtime wraps a workflow body, so `return` at the top is legal
+        there. Reporting it would refuse all twenty-three shipped files."""
+        path = write(self.root, "c.js", "export const meta = {}\nreturn { ok: true }\n")
+        self.assertEqual(sov_workflows.grade(path), [])
+
+    def test_an_absent_engine_is_reported_and_never_read_as_clean(self):
+        """A skipped check that satisfies its own requirement is trap T5."""
+        with mock.patch.object(sov_workflows.shutil, "which", return_value=None):
+            path = write(self.root, "d.js", "const x = 1\n")
+            self.assertIs(sov_workflows.grammar(path), sov_workflows.NODE_UNAVAILABLE)
+            self.assertEqual(sov_workflows.grade(path), [],
+                             "an unread grammar must not become a defect either")
 
 
 if __name__ == "__main__":

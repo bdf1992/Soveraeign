@@ -14,6 +14,18 @@ import sys
 from sovverify.shape import ROOT, Check
 
 HARNESS_CHECKS = (
+    Check("carried cores", [sys.executable, "scripts/sov_vendor.py"], ROOT,
+          "recomputes each copy's digest from the bytes on disk and reads the expected value "
+          "out of the decision that carried it, so neither side can supply the other; it "
+          "does not reimplement bdos's own artifact_digest, which answers a different "
+          "question and belongs to bdos",
+          (".claude/skills", "decisions/0103-carry-two-bdos-cores.md",
+           "scripts/sov_vendor.py")),
+    Check("carried core refusals fire",
+          [sys.executable, "scripts/sov_vendor.py", "selfcheck"], ROOT,
+          "builds a tree carrying a drifted copy, an unrecorded copy and a decision with no "
+          "pin, and asserts each is refused while a faithful carry is not",
+          ("scripts/sov_vendor.py",)),
     Check("harness claims", [sys.executable, "scripts/sov_harness.py"], ROOT,
           "reads the harness surface and the records that own its claims by separate paths - "
           "STATUS.yaml line by line so the eight legitimately doubled subjects are not "

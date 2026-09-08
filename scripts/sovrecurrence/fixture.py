@@ -94,8 +94,8 @@ def build(root: Path) -> Path:
                                "phase": "phase:fixture", "custodies": custodies})
     _write(root / "STATUS.yaml", "phase: phase:fixture\n")
     _write(root / "contracts/phases.json", {"phases": [{"phase_id": "phase:fixture"}]})
-    for primitive, relative in neutrality.PRIMITIVES.items():
-        _write(root / relative, {"title": f"Fixture {primitive} declaration",
+    for primitive, (relative, term) in neutrality.PRIMITIVES.items():
+        _write(root / relative, {"title": f"Fixture {term} declaration",
                                  "$comment": f"declares the {primitive} primitive",
                                  "properties": {"actor_id": {"type": "string"}}})
     return root
@@ -131,9 +131,9 @@ The reading that produced it was sound; what the oracle must catch is the candid
 def _defeat_root(root: Path, variant: str) -> None:
     """Variants that defeat the basis rather than the candidate, applied to the fixture root."""
     if variant == "primitive-undeclared":
-        (root / neutrality.PRIMITIVES["custody"]).unlink()
+        (root / neutrality.PRIMITIVES["custody"][0]).unlink()
     elif variant == "role-vocabulary-closed":
-        _write(root / neutrality.PRIMITIVES["finding"],
+        _write(root / neutrality.PRIMITIVES["finding"][0],
                {"title": "Fixture finding declaration",
                 "properties": {"evaluator_role": {"enum": ["CONTROLLER", "ORCHESTRATOR",
                                                            "WORKER", "WITNESS"]}}})

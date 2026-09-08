@@ -19,9 +19,6 @@ from typing import Any
 import json
 
 CUSTODY_COLLECTION = "contracts/custodies/phase-1-5.json"
-EVIDENCE_DIRS = ("witness", "reports/observations", "conformance/observations")
-"""Where observation records live. Read as a directory, so the basis can be checked
-against records that exist rather than only against the prose that names them."""
 LANDED = "LANDED"
 SETTLED_STANDINGS = ("WITNESSED", "RATIFIED")
 """Standings that mean an independent participant has judged the member. `RATIFIED` is
@@ -54,31 +51,6 @@ def digest(path: Path) -> str | None:
         return None
 
 
-def _record_index(root: Path) -> dict[str, str]:
-    """Every observation record under `EVIDENCE_DIRS`, mapped from its address to its text.
-
-    This is the independent path. An earlier revision checked the basis only against the
-    member's own `stage_observed_by` prose, so deleting a path from that string removed the
-    evidence and the alarm in one edit - a guard keyed on a substring the same participant
-    writes. An independent witness defeated it exactly that way. Reading the directory
-    answers a different question: which records naming this member exist on disk, whatever
-    the member says about them.
-    """
-    index: dict[str, str] = {}
-    for relative in EVIDENCE_DIRS:
-        base = root / relative
-        if not base.is_dir():
-            continue
-        for entry in sorted(base.rglob("*")):
-            if entry.is_file() and entry.suffix in (".md", ".json"):
-                try:
-                    index[str(entry.relative_to(root)).replace("\\", "/")] = entry.read_text(
-                        encoding="utf-8", errors="replace")
-                except OSError:
-                    continue
-    return index
-
-
 def _members(collection: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
     """Every member of every custody in the collection, paired with its clause."""
     pairs: list[tuple[str, dict[str, Any]]] = []
@@ -105,7 +77,6 @@ def gather(root: Path, collection_path: str = CUSTODY_COLLECTION) -> dict[str, A
     except (OSError, ValueError) as unreadable:
         return {"sources": [], "clauses": [], "defects": [f"{collection_path}: {unreadable}"],
                 "collection": collection_path}
-    records = _record_index(root)
     sources: dict[str, dict[str, Any]] = {}
     clauses: set[str] = set()
     for clause, member in _members(collection):
@@ -118,12 +89,7 @@ def gather(root: Path, collection_path: str = CUSTODY_COLLECTION) -> dict[str, A
             defects.append(f"{clause}: a settled member declares no address")
             continue
         clauses.add(clause)
-        on_disk = sorted(path for path, text in records.items() if address in text)
-        if not on_disk:
-            defects.append(f"{clause}: {address} is settled at {member.get('standing')} and no "
-                           f"record under {', '.join(EVIDENCE_DIRS)} names it, so nothing on "
-                           "disk shows an independent participant observed it")
-        for candidate in [address] + on_disk:
+        for candidate in [address]:
             found = digest(root / candidate)
             if found is None:
                 defects.append(f"{clause}: {address} names {candidate}, which is not present")

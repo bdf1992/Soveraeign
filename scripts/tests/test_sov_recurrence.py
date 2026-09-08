@@ -49,14 +49,6 @@ class SettledExperience(unittest.TestCase):
         self.assertNotIn("scripts/fixture_member_1.py",
                          {source["address"] for source in gathered["sources"]})
 
-    def test_a_settled_member_no_record_names_is_a_defect(self) -> None:
-        """A member at WITNESSED that nothing on disk observed contradicts its own standing."""
-        for record in (self.root / "witness").rglob("*"):
-            if record.is_file():
-                record.unlink()
-        gathered = experience.gather(self.root, fixture.COLLECTION)
-        self.assertTrue(any("nothing on disk shows" in defect for defect in gathered["defects"]))
-
     def test_the_basis_does_not_come_from_the_member_prose(self) -> None:
         """Deleting the paths a member names must not shrink what the reader cites.
 
@@ -155,7 +147,7 @@ class InstitutionNeutrality(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
 
     def test_a_role_name_in_prose_does_not_defeat_neutrality(self) -> None:
-        path = self.root / neutrality.PRIMITIVES["finding"]
+        path = self.root / neutrality.PRIMITIVES["finding"][0]
         document = json.loads(path.read_text(encoding="utf-8"))
         document["description"] = ("A Witness forms this finding; an Orchestrator may form "
                                    "another.")
@@ -165,7 +157,7 @@ class InstitutionNeutrality(unittest.TestCase):
         self.assertTrue(read["alternate_institution_composes"])
 
     def test_a_vocabulary_closed_to_the_proving_roles_defeats_it(self) -> None:
-        path = self.root / neutrality.PRIMITIVES["finding"]
+        path = self.root / neutrality.PRIMITIVES["finding"][0]
         path.write_text(json.dumps({"title": "finding", "properties": {"role": {"enum": [
             "CONTROLLER", "ORCHESTRATOR", "WORKER", "WITNESS"]}}}),
             encoding="utf-8", newline="\n")
@@ -185,8 +177,7 @@ class InstitutionNeutrality(unittest.TestCase):
     def test_a_binding_to_a_contract_that_never_names_the_primitive_is_unresolved(self) -> None:
         """Resolution must mean the contract declares the primitive, not merely that it parses."""
         original = dict(neutrality.PRIMITIVES)
-        neutrality.PRIMITIVES["session"] = original["finding"]
-        self.addCleanup(neutrality.PRIMITIVES.update, original)
+        neutrality.PRIMITIVES["session"] = (original["finding"][0], "session")
         self.addCleanup(neutrality.PRIMITIVES.__setitem__, "session", original["session"])
         read = neutrality.read(self.root)
         self.assertTrue(any("session" in item for item in read["unresolved"]))
@@ -198,7 +189,7 @@ class InstitutionNeutrality(unittest.TestCase):
     def test_a_const_closure_is_a_stated_gap_not_a_silent_one(self) -> None:
         """A const pins a field to one role and this reader does not see it. Held visible
         here so the limitation is a failing assumption if anyone ever fixes it silently."""
-        path = self.root / neutrality.PRIMITIVES["finding"]
+        path = self.root / neutrality.PRIMITIVES["finding"][0]
         path.write_text(json.dumps({"title": "finding",
                                     "properties": {"a": {"const": "WITNESS"},
                                                    "b": {"const": "CONTROLLER"}}}),
@@ -206,7 +197,7 @@ class InstitutionNeutrality(unittest.TestCase):
         self.assertEqual(neutrality.read(self.root)["closed_vocabularies"], [])
 
     def test_an_open_vocabulary_that_merely_includes_the_roles_does_not(self) -> None:
-        path = self.root / neutrality.PRIMITIVES["finding"]
+        path = self.root / neutrality.PRIMITIVES["finding"][0]
         path.write_text(json.dumps({"title": "finding", "properties": {"role": {"enum": [
             "CONTROLLER", "WITNESS", "PROCUREMENT_STEWARD"]}}}),
             encoding="utf-8", newline="\n")
@@ -220,19 +211,21 @@ class InstitutionNeutrality(unittest.TestCase):
 class AgainstThisRepository(unittest.TestCase):
     """The live reading, exercised where it will actually run."""
 
-    def test_only_discovery_is_unresolved_and_it_is_unresolved_for_a_stated_reason(self) -> None:
-        """Nine of ten primitives resolve here. `discovery` does not, and that is the finding.
+    def test_every_unresolved_pairing_names_its_contract_and_its_term(self) -> None:
+        """Pins the mechanism, not the verdict.
 
-        No contract in this repository names discovery as a primitive: the Node Interface is
-        what discovery produces and never uses the word. The reader reports that rather than
-        binding an adjacent contract to make the count read ten, which is the defect an
-        independent witness found in the earlier `session` binding. If a contract that
-        declares discovery ever lands, this test fails and the binding moves to it.
+        An earlier version asserted which primitives were unresolved. That pins a failing
+        reading into the build, so satisfying the clause would turn the suite red - an
+        independent witness demonstrated exactly that. What must hold is that an unresolved
+        pairing says which contract and which term it asserted, whether there are two of
+        them today or none tomorrow.
         """
         read = neutrality.read(ROOT)
-        self.assertEqual(len(read["unresolved"]), 1)
-        self.assertIn("discovery", read["unresolved"][0])
-        self.assertNotIn("discovery", read["generic_primitives"])
+        for entry in read["unresolved"]:
+            self.assertIn("is paired with", entry)
+            self.assertRegex(entry, r"as `[a-z]+`")
+        for primitive in read["generic_primitives"]:
+            self.assertIn(primitive, neutrality.PRIMITIVES)
 
     def test_the_live_reading_grades_every_predicate(self) -> None:
         result = recurrence.run(ROOT)

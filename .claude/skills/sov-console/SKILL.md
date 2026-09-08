@@ -1,6 +1,6 @@
 ---
 name: sov-console
-description: Domain know-how for the Soveraeign console domain - the services/console chartered boundary (Console Service). Load when a task mentions "sov-console", "console domain", "Console Service", "operator session", "thread", "post", "notification", "judgement request", "operator setting", "dashboard projection", "activity view", "human in the loop", "human on the loop", or names the artifacts CHARTER.md, README.md, contracts/service.json, or conformance/ seed fixtures under services/console. Covers charter gap closure, schema refinement, seed-fixture authoring, doc coherence, sibling read-path precondition mapping, and Human Binding interface declaration while the service is accepted but unbuilt. Not for the Asset Service, Proofing Service, kernel contracts, conformance oracle, byom, or governance work - those have sibling sov-* skills.
+description: Domain know-how for the Soveraeign console domain - the services/console chartered boundary (Console Service). Load when a task mentions "sov-console", "console domain", "Console Service", "operator session", "thread", "post", "notification", "judgement request", "operator setting", "dashboard projection", "activity view", "human in the loop", "human on the loop", or names the artifacts CHARTER.md, README.md, contracts/service.json, or conformance/ seed fixtures under services/console. Covers charter gap closure, schema refinement, seed-fixture authoring, doc coherence, sibling read-path precondition mapping, and Human Binding interface declaration. Resolve what is built from STATUS.yaml, not from this description. Not for the Asset Service, Proofing Service, kernel contracts, conformance oracle, byom, or governance work - those have sibling sov-* skills.
 ---
 
 # sov-console
@@ -66,7 +66,8 @@ renderer's report count as observation; modify `lineage/evidence/`; create
 
 ## Standing and constraints
 
-- `console_service_status: OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED` (STATUS.yaml).
+- `console_service_status: BUILT_CONTINUITY_PATH_SELF_TESTED_REMAINDER_BOUNDARY`
+  (STATUS.yaml).
 - The boundary, the name `Console`, and the provisional Human Binding target are
   accepted (`decisions/0033-close-the-founding-docket.md`, O14/O18). What is
   missing is not permission - it is the contract and the defeating fixtures.

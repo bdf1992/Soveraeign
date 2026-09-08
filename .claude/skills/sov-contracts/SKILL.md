@@ -40,8 +40,8 @@ schema without a positive and a defeating conformance case; touch
 
 ## Standing and blockers
 
-`specification_status: OWNER_ACCEPTED_PHASE_I_LOGICAL_SPEC_WITH_SOVEREIGNTY_CLARIFICATION`;
-`classification_status: OWNER_ACCEPTED_CANONICAL_VOCABULARY`. Constraints that
+`specification_status: OWNER_ACCEPTED_A2_PHASE_I_LOGICAL_SPEC`;
+`classification_status: RULED_CANONICAL_FOR_PHASE_O9`. Constraints that
 still bind (STATUS.yaml, `decisions/0024-open-decision-drain.md`):
 
 - `SPEC.md` and `CLASSIFICATION.md` are accepted. A schema that disagrees with

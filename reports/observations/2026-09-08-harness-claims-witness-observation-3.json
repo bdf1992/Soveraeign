@@ -1,0 +1,103 @@
+{
+  "case_id": "HARNESS-CLAIMS-WITNESS-3",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08",
+  "artifact_revision": "3b1b578d68d34ed6fdebf7eb9c0e8bfee10eb758",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "the repair of F9 through F13: the kind set derived from ALL_CHECKS membership, SELFCLAIM made a member and described in the contract, the regression count moved onto a per-case shipped flag, both observes tuples widened, five fixture cases added or strengthened, and check_provenance split into scripts/sovharness/provenance.py",
+    "verdict": "REPRODUCED_WITH_RESIDUALS",
+    "standing_supported": "BUILT -> WITNESSED",
+    "standing_note": "An observation, not a settlement and not a ratification.",
+    "supersedes": "reports/observations/2026-09-08-harness-claims-witness-observation-2.json (7373456) and -observation.json (99b7942). Neither is withdrawn; both subjects are ancestors of this one and what they attest still holds.",
+    "candidate_commit": "3b1b578d68d34ed6fdebf7eb9c0e8bfee10eb758",
+    "candidate_tree": "a98be790a19bbf74bd75130fe7ecb366c391572e",
+    "base_commit": "d00f46ad38448856fa692399d12cf0a324266004",
+    "observed_at": "2026-09-08",
+    "observer_id": "claude-opus-5/sov-witness@2026-09-08",
+    "observer_relation": "INDEPENDENT_OF_BUILDER",
+    "contributed_to_build": false,
+    "observer_independence_basis": "Same separate witness invocation as records 1 and 2. Built, edited, staged, committed, merged, reset or rebased nothing in the repository. All readings in a clone pinned by full SHA outside the tree; all mutation in throwaway copies restored between cases. The builder named which mutations to try; every result below is this witness's own measurement, and one of the builder's reported results did not reproduce.",
+    "tree_state": "Additive: 7373456 is an ancestor of 3b1b578, 7 construction commits, 0 merge commits, base d00f46a an ancestor. Delta 6 files. Live HEAD 3b1b578d68d34ed6fdebf7eb9c0e8bfee10eb758, git status --porcelain empty; pinned clone tree hash equals the live tree hash.",
+    "commands": {
+      "verify": "python scripts/verify.py -> exit 0; 'PASS: 57 checks in 15.675s wall'; 69 headers",
+      "lint": "python scripts/lint.py -> exit 0",
+      "harness": "python scripts/sov_harness.py -> exit 0; '80 files graded across 7 kinds'",
+      "selfcheck": "python scripts/sov_harness.py selfcheck -> exit 0; 15 cases, 10 regressions",
+      "mutations": "M1 delete check_volatile from ALL_CHECKS only; M2 delete it from all three places; M3 add an eighth check with its name; M4 add an eighth check without its name; M5a/b/c rename a kind in exactly one of the Defect literal, the name tuple, the contract",
+      "module_sizes": "sov_harness.py 289, fixtures.py 191, contract.py 76, provenance.py 27 - all under the 300-line limit"
+    },
+    "predicate_results": {
+      "no_mutation_leaves_a_real_defect_passing_with_a_green_build": {
+        "held": true,
+        "detail": "This is the test the builder proposed and it holds, though not always through SELFCLAIM. M2, the honest removal in all three places, is correctly silent at exit 0. M3 fires with the right diagnosis: 'the module emits [NEWKIND], which the contract does not describe'. M5b and M5c each fire naming the renamed kind correctly. M4, an eighth check with no name in the tuple, raises AttributeError in kinds() and exits 1 - fail-loud rather than fail-silent, ugly but safe. M5a, renaming only the Defect literal so check_reference emits 'REF', leaves the grader at exit 0 and SELFCLAIM silent, but selfcheck exits 1 because the REFERENCE case no longer fires. Under every mutation tried, the build refuses. Last round M1 left a real VOLATILE defect passing at exit 0; it no longer does. That is a measurable improvement, not a cosmetic one.",
+        "caveat": "Strictly on the builder's own wording - 'if any of those leaves a real defect of that kind passing while SELFCLAIM stays silent' - M5a is such a case. It is caught by the sibling check, not by SELFCLAIM."
+      },
+      "the_builders_reported_M1_result_reproduces": {
+        "held": false,
+        "detail": "It does not. The builder reports re-running this witness's exact mutation - delete check_volatile from ALL_CHECKS, leave the contract untouched - and getting \"the contract describes ['VOLATILE'], which the module does not emit\". Run here, that mutation yields \"the contract describes ['SELFCLAIM'], which the module does not emit\". The reason is the zip: with six checks and seven names, zip truncates and every label after the deletion point shifts, so check_retired is labelled VOLATILE, check_provenance is labelled RETIRED, check_selfclaim is labelled PROVENANCE, and kinds() reports a VOLATILE that no longer runs while omitting the SELFCLAIM that does. The reported output corresponds to deleting the name from the tuple as well, which is a two-place mutation, not the one-place mutation described. The substantive conclusion the builder drew is still sound - the build does refuse - but the reported evidence is not the evidence the shipped code produces."
+      },
+      "the_kind_set_is_now_derived_from_what_runs": {
+        "held": true,
+        "detail": "Partly, and materially better than the frozenset it replaces. kinds() reads check.kind off ALL_CHECKS membership, so len(kinds()) is 7 and equals len(ALL_CHECKS), the summary line is computed rather than incremented, and adding or removing a check changes the set. What is still asserted is the mapping: the kind names remain a literal tuple positionally zipped onto ALL_CHECKS, so the name is a declaration about a function rather than a measurement of what that function emits. M5a is the proof - a function can emit 'REF' while its label says 'REFERENCE' and SELFCLAIM cannot tell. The data needed to close this already exists in the CASES table, which maps a triggering fixture to an expected kind; asserting each check's emitted Defect.kind against its declared kind would make the label a measurement."
+      },
+      "F10_is_closed": {
+        "held": true,
+        "detail": "check_selfclaim is a member of ALL_CHECKS, the contract's coverage.derived describes SELFCLAIM, and the build is green with it described - the structural self-exemption is gone. The kind count in the summary is len(kinds()), computed from membership, and the hardcoded +1 is removed. The contract now describes exactly the seven kinds the module runs, verified by set comparison."
+      },
+      "the_shipped_flag_framing_is_honest": {
+        "held": true,
+        "detail": "Judged as asked rather than verified, and the framing is honest. Whether a defect actually reached this repository is a historical fact with no in-tree referent to derive it from, the comment says exactly that, and it explicitly names why the previous shape was worse: nothing tied a name in the separate tuple to a case, and the old comment claimed a basis - reading the why field - that no code implemented. Moving the flag onto the case it describes removes the drift surface without pretending to a derivation. Declaring a fact that cannot be derived, and saying so, is the correct move; that is not dressing up a literal."
+      },
+      "the_provenance_split_lost_nothing": {
+        "held": true,
+        "detail": "Compared field by field. FIELDS is the same five names in the same order, the 'bdos: true' gate is unchanged, the glob is unchanged, the per-field regex is unchanged, and the Defect message and where-string are reconstructed identically in the caller. The clean tree yields 0 PROVENANCE defects and the PROVENANCE fixture still fires. All four modules are under the 300-line limit, sov_harness.py at 289."
+      },
+      "the_reference_fixtures_test_what_they_claim": {
+        "held": true,
+        "detail": "Both halves verified against the fixture's actual index rather than its intent. REFERENCE/tracked-copy: index holds 9 entries including archives/old/contracts/gone.json, no untracked files, REFERENCE fires - a tracked archived copy at a colliding suffix does not validate. REFERENCE/untracked: index holds 8 entries, git ls-files --others reports exactly ['contracts/gone.json'], REFERENCE fires - so the file is genuinely outside the index, at the exact named path, which is the strongest form of the case. The footprint fixture now carries a real citation and tests 2 files and 2 occurrences against a patched 10, not 8 against 0."
+      },
+      "the_observes_tuples_now_name_everything_each_check_reads": {
+        "held": false,
+        "detail": "Third iteration, third omission, and the builder was right to assume there were more. `.claude` and contracts/harness-hosts.json are both correctly added, and 'harness claim refusals fire' is now complete. 'harness claims' still omits `services`. This is not pedantry about a directory listing: _roots() enumerates services/* to build REFERENCE's resolution roots, and the set of those directories changes the verdict. Demonstrated - the address contracts/zzz-witness-probe.json in CLAUDE.md exits 1 with no such file anywhere, and exits 0 once a tracked file exists at services/asset/contracts/zzz-witness-probe.json. A landing that added or removed a service directory could therefore flip this check while services appears in nothing it declares. The remaining honest gap after that is the whole git index, which git ls-files reads and no path expresses."
+      },
+      "the_hand_written_population_count_is_gone_from_this_module": {
+        "held": false,
+        "detail": "It is not, and it is in the file the repair was made in. scripts/sovharness/fixtures.py opens with 'Four of these are regressions for defects that actually shipped in this repository', while the same file's selfcheck computes and prints 10. The docstring was correct when there were nine cases and four flags; there are now fifteen cases and ten flags. This is the third appearance of the same category in three commits: the contract summary's 'two of the five claim kinds' at 7373456, the SHIPPED tuple at 7373456, and this docstring at 3b1b578."
+      }
+    },
+    "findings": [
+      "F9 CLOSED IN SUBSTANCE, RESIDUAL AT F14. No mutation tried leaves a real defect passing with a green build, which is the property that matters.",
+      "F10 CLOSED. SELFCLAIM is a member, described in the contract, and the count is computed.",
+      "F11 CLOSED, AND THE FRAMING IS HONEST. A historical fact declared on the case that carries it, with the absence of a derivation stated rather than implied.",
+      "F12 OPEN, LOW, THIRD ITERATION. 'harness claims' omits `services` from observes, an input proven to flip its verdict.",
+      "F13 CLOSED. Both REFERENCE halves verified against real index state; the footprint fixture is no longer degenerate.",
+      "F14 OPEN, MEDIUM, INSIDE THIS CONCERN. The kind label is positionally zipped onto ALL_CHECKS, so a length mismatch silently misaligns every label after the deletion point and SELFCLAIM reports the wrong kind; and the label is a declaration about a function, not a measurement of what it emits, so a rename confined to the Defect literal is invisible to SELFCLAIM. Binding the kind at the point of definition removes the first; asserting emitted kind against declared kind using the CASES table removes the second.",
+      "F15 OPEN, LOW, INSIDE THIS CONCERN. scripts/sovharness/fixtures.py's docstring states four regressions while the same file computes ten.",
+      "F16 OPEN, LOW, REPORTING. The builder's account of re-running the M1 mutation does not match what the shipped code produces; the conclusion drawn was right, the evidence cited was not."
+    ],
+    "judgement_asked_by_the_builder": {
+      "question": "Five of the ten regression cases are defects in this branch's own grader. Is that a grader converging, or a grader whose design keeps producing the same defect in new places? Withdraw SELFCLAIM if the second.",
+      "answer": "Do not withdraw SELFCLAIM. It is converging on the mechanism and not converging on the category, and those need different remedies.",
+      "converging": "The mutation battery is materially harder to defeat than one commit ago. Last round deleting a check left a real defect passing at exit 0; now every mutation tried refuses, the honest removal is correctly silent, and four of the five kind mutations are diagnosed correctly by SELFCLAIM itself. The footprint derivation is live rather than pinned - it caught a planted thirteenth citation. Fixtures went from nine to fifteen cases, and the two weaknesses named last round were not patched over but replaced with stronger cases whose index state verifies. Four findings closed outright. That is convergence, and SELFCLAIM is load-bearing in it.",
+      "not_converging": "One category has now recurred three times in three commits: a hand-maintained list that must be kept in step with something the code already knows. The contract summary's kind tally, then the SHIPPED tuple, then the fixtures docstring. The observes tuple has recurred three times. The kind-name tuple is the same category again, now positionally coupled. Each repair has been local to the instance named rather than to the category, so the category keeps reappearing one layer out.",
+      "correction_to_the_premise": "These were not found by reading rather than running. F9 was found by running a mutation, and so were the zip misalignment and the services input this round. What is true is that they were found by running the grader against trees the shipped fixtures do not build. The fixtures test the tree the grader reads; nothing tests the grader under mutation of itself. That is the missing check, and it is buildable from the CASES table already present rather than as new machinery.",
+      "recommendation": "Stop repairing instances and put one check on the category. Bind each kind at its definition so no zip can misalign it; assert each check's emitted kind against its declared kind using the fixtures that already exist; and stop writing a population count in prose that the same file computes. Grading observes against the paths a check opens is the same category and is already named repository-wide in scripts/sovland/isolation.py, so it is larger than this concern."
+    },
+    "residuals": [
+      "F3, F5, F6 and F7 unchanged from the prior records and still as judged.",
+      "No GitHub check-run state observed at this subject either; gh is not installed on this host. The T5-skipped red lane remains unattested by both the builder and this witness, and neither can say whether it is a required check.",
+      "verify exit 0 is still not conformance (trap T2); the FAIL: lines inside the transcript remain declared negative controls inside passing checks.",
+      "Nothing grades scripts/sovharness/contract.py's or provenance.py's own claims. Stopping the recursion is correct; it means findings of the F14 and F15 class continue to depend on an independent reading.",
+      "This record conforms to contracts/participant-observation.schema.json, which the landing gate is recorded as refusing (OPEN-SEAMS.md S29). Not this witness's to settle.",
+      "Not settled here: whether the change may land; any service, requirement or phase standing; whether any claim outside the grader's declared reach is true."
+    ],
+    "judgement_items": [
+      "None requiring an owner seat. F12, F14, F15 and F16 are derivation, declaration and reporting repairs inside this concern and belong to the builder under AGENTS.md Closure ownership."
+    ]
+  },
+  "telemetry": {
+    "method": "One clone pinned by full SHA outside the repository at 3b1b578; all mutation in throwaway copies restored with git checkout and git clean between cases. Verdicts read from process exit codes. The kind-derivation claim was settled by seven structural mutations of the module itself and by inspecting the per-check .kind mapping after each, not by reading the code's description of itself. The services input was settled by flipping a real verdict. Fixture index state was read with git ls-files and git ls-files --others inside the built fixture trees.",
+    "host": "Linux, Python 3.11, no gh, shared working tree with sibling sessions",
+    "writes_by_this_witness": "this record only; no work, fixture, contract, test, script or implementation file was created, edited, staged, committed or deleted at any point"
+  }
+}

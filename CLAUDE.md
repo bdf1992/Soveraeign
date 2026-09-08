@@ -215,10 +215,14 @@ to be edited when it changes. The check still grades every count this page does
 state, and still refuses a count deleted without this paragraph naming the
 command that replaces it.
 
-## Host facts (Claude Code on Windows)
+## Host facts (Claude Code, any platform)
 
-- Shell: PowerShell 5.1 is primary (no `&&`/`||`); a Git Bash tool also
-  exists. Use absolute paths; do not `cd`.
+- Shell: which tool reaches one depends on the environment, so read the
+  invocation rather than this file. `contracts/harness-hosts.json` declares each
+  working environment and what it provides: `Bash` everywhere, `PowerShell` on
+  the workstation, where `&&` and `||` do not chain. Use absolute paths; do not
+  `cd`. `python scripts/sov_harness.py` refuses an agent definition naming a
+  tool no declared environment provides, and admits one only some provide.
 - Line endings: the repository pins LF via `.gitattributes`, and
   `scripts/lint.py` checks working-tree bytes. The host's Write/Edit tools can
   emit CRLF, so run `python scripts/lint.py` after editing repository text. A
@@ -243,7 +247,7 @@ command that replaces it.
 | --- | --- |
 | Which tier settles a decision | `decisions/0033-close-the-founding-docket.md`, Ruling 1 |
 | Whether something is built/witnessed | `STATUS.yaml`, `services/README.md` |
-| Product requirement | `PRD.md`, `contracts/requirements.json` |
+| Product requirement | `PRD.md`, `conformance/requirements.py` |
 | Product semantics / architecture | `SPEC.md`, `SYSTEM.md`, `CLASSIFICATION.md` |
 | Operation / capability shape | `contracts/capability-map.schema.json`, `contracts/fixtures/capability-map.reference.json` |
 | Whether an operation is reachable | `contracts/fixtures/node-interface.reference.json`, `docs/surface.html` |

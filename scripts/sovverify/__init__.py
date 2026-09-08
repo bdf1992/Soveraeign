@@ -9,8 +9,13 @@ grade must not be able to remove the guard that catches it.
 
 from sovverify import checks as _checks
 from sovverify.commissioning import COMMISSIONING_CHECKS
+from sovverify.harness import HARNESS_CHECKS
 from sovverify.integrity import INTEGRITY_CHECKS
 
 
-_checks.CHECKS = (_checks.REPOSITORY_CHECKS + INTEGRITY_CHECKS + COMMISSIONING_CHECKS
-                  + _checks.PARTICIPANT_CHECKS)
+#: Every group is named here explicitly. A group added to `checks.py` but not to
+#: this tuple is imported, registered and never run, which reads as a passing
+#: check that does not exist; `sovverify.harness` was in exactly that state
+#: between its split and 2026-09-08.
+_checks.CHECKS = (_checks.REPOSITORY_CHECKS + HARNESS_CHECKS + INTEGRITY_CHECKS
+                  + COMMISSIONING_CHECKS + _checks.PARTICIPANT_CHECKS)

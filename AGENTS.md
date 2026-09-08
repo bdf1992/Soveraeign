@@ -422,8 +422,9 @@ dependency or a substitute for repository verification.
 ## Context hygiene
 
 - Work one named operation or repository concern at a time.
-- Read the governing set plus only the service, contract, decision, and fixture
-  relevant to that operation. Use search before opening broad files.
+- Load only what the discovered concern actually reaches, under the targeted
+  reading rule at the top of this file; that rule is stated once and this is not
+  a second copy of it. Use search before opening broad files.
 - Do not paste complete logs, large diffs, generated files, database contents,
   or historical evidence into model context. Provide addresses and bounded
   excerpts.

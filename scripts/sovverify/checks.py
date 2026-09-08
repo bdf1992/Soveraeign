@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import sys
 
+from sovverify.harness import HARNESS_CHECKS
 from sovverify.participants import PARTICIPANT_CHECKS
 from sovverify.staleness import STALENESS_CHECKS
 from sovverify.shape import ROOT, Check
@@ -284,8 +285,7 @@ REPOSITORY_CHECKS = STALENESS_CHECKS + (
           "population and fails if any shard fails",
           ("scripts/tests", "scripts/run_tooling_tests.py", "scripts/sovtooling")),
 )
-
-#: Staleness checks, then the rest of the repository's, then the participants';
-#: the package `__init__` splices the
+#: Staleness checks lead REPOSITORY_CHECKS, then the harness checks, then the
+#: participants'; the package `__init__` splices the
 #: integrity and commissioning groups in, so import the table through the package.
-CHECKS = REPOSITORY_CHECKS + PARTICIPANT_CHECKS
+CHECKS = REPOSITORY_CHECKS + HARNESS_CHECKS + PARTICIPANT_CHECKS

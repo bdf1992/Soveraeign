@@ -69,9 +69,11 @@ def build(root: Path) -> Path:
     for index, clause in enumerate(SETTLED, start=1):
         _write(root / f"scripts/fixture_member_{index}.py", f'"""Fixture member {index}."""\n')
         _write(root / f"witness/fixture-{index}.md",
-               f"# Fixture witness record {index}\n\nstanding_supported: WITNESSED\n")
+               f"# Fixture witness record {index}\n\nsubject: scripts/fixture_member_{index}.py\n"
+               f"standing_supported: WITNESSED\n")
         _write(root / f"witness/observations/fixture-{index}.json",
                {"observer": f"principal:fixture-witness-{index}", "contributed_to_build": False,
+                "subject": f"scripts/fixture_member_{index}.py",
                 "standing_supported": "WITNESSED"})
     _write(root / BUILT_ONLY_ADDRESS, '"""Fixture member nobody independently observed."""\n')
     custodies = [
@@ -92,8 +94,9 @@ def build(root: Path) -> Path:
                                "phase": "phase:fixture", "custodies": custodies})
     _write(root / "STATUS.yaml", "phase: phase:fixture\n")
     _write(root / "contracts/phases.json", {"phases": [{"phase_id": "phase:fixture"}]})
-    for relative in neutrality.PRIMITIVES.values():
-        _write(root / relative, {"$comment": f"fixture declaration at {relative}",
+    for primitive, relative in neutrality.PRIMITIVES.items():
+        _write(root / relative, {"title": f"Fixture {primitive} declaration",
+                                 "$comment": f"declares the {primitive} primitive",
                                  "properties": {"actor_id": {"type": "string"}}})
     return root
 
@@ -131,7 +134,8 @@ def _defeat_root(root: Path, variant: str) -> None:
         (root / neutrality.PRIMITIVES["custody"]).unlink()
     elif variant == "role-vocabulary-closed":
         _write(root / neutrality.PRIMITIVES["finding"],
-               {"properties": {"evaluator_role": {"enum": ["CONTROLLER", "ORCHESTRATOR",
+               {"title": "Fixture finding declaration",
+                "properties": {"evaluator_role": {"enum": ["CONTROLLER", "ORCHESTRATOR",
                                                            "WORKER", "WITNESS"]}}})
 
 

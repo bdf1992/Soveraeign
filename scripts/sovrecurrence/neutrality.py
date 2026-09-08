@@ -109,6 +109,43 @@ def _closed_enums(node: Any, path: str) -> list[tuple[str, list[str]]]:
     return found
 
 
+def _declares(document: Any, primitive: str) -> bool:
+    """True when the bound contract actually names the primitive it is bound to.
+
+    Resolution used to mean only that the path parsed as JSON, so any ten readable files
+    satisfied the ten names and the fixture - which writes stubs at whatever paths
+    `PRIMITIVES` gives it - could never disagree. An independent witness rebound `session`
+    to the verification budget and watched the reader report ten resolved. The name must
+    appear in the contract's own text, in a title, an identifier, a description, or a
+    property, which is the weakest check that the earlier binding of `session` to the
+    Source schema would have failed.
+    """
+    wanted = primitive.replace("_", "")
+    return wanted in json.dumps(document).lower().replace("_", "").replace("-", "")
+
+
+def _closed_elsewhere(root: Path, bound: set[str]) -> list[str]:
+    """Closed vocabularies in contracts outside the ten bound paths, reported not graded.
+
+    P15-Q4.3 is about the primitives, so grading scans the contracts that declare them. A
+    role vocabulary closed somewhere else does not defeat those primitives, but hiding it
+    would make the reading look wider than it is: an independent witness found four, and
+    the reader that missed them said nothing. They are printed on every run.
+    """
+    found: list[str] = []
+    for path in sorted((root / "contracts").rglob("*.json")):
+        relative = str(path.relative_to(root)).replace("\\", "/")
+        if relative in bound:
+            continue
+        try:
+            document = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        for where, values in _closed_enums(document, ""):
+            found.append(f"{relative}{where} admits {values} and no alternate role")
+    return found
+
+
 def read(root: Path) -> dict[str, Any]:
     """Resolve the ten primitives under `root` and compose them as an alternate institution.
 
@@ -127,11 +164,16 @@ def read(root: Path) -> dict[str, Any]:
         except (OSError, ValueError):
             unresolved.append(f"{primitive} declared at {relative}, which is absent or unreadable")
             continue
+        if not _declares(document, primitive):
+            unresolved.append(f"{primitive} is bound to {relative}, which never names it, so "
+                              "the binding asserts a declaration the contract does not make")
+            continue
         resolved[primitive] = relative
         for where, values in _closed_enums(document, ""):
             closed.append(f"{primitive} closes {relative}{where} to {values}")
     composes = not unresolved and not closed
     return {
+        "closed_elsewhere": _closed_elsewhere(root, set(PRIMITIVES.values())),
         "generic_primitives": sorted(resolved),
         "primitive_addresses": resolved,
         "unresolved": unresolved,

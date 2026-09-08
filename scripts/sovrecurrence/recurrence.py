@@ -68,6 +68,9 @@ def observe(root: Path, collection_path: str = experience.CUSTODY_COLLECTION,
     }
     if mutate is not None:
         observed = mutate(observed)
+    for elsewhere in composition["closed_elsewhere"]:
+        trace.append(f"closed vocabulary outside the bound primitives, reported not graded: "
+                     f"{elsewhere}")
     after = candidate.governing_digests(root)
     moved = sorted(name for name in before if before[name] != after[name])
     if moved:

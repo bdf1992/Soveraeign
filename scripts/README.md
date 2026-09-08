@@ -5,8 +5,8 @@ whole of how the node is operated from a terminal, and it is the index
 `contracts/publication-surface.json` requires: an entrypoint absent from this
 page is unreachable by anyone who did not write it.
 
-That rule is not currently met. Most of these commands have a row below; a couple
-of dozen do not, and are reachable only by listing the directory. The count in the
+That rule is not currently met. Most of these commands have a row below; about a third
+do not, and are reachable only by listing the directory. The count in the
 sentence above is graded against the files by `python scripts/sov_counts.py check`,
 so it cannot go stale; the rows are not graded by anything, which is why they
 drifted apart. Compare them with

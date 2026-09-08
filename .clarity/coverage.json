@@ -1223,7 +1223,7 @@
       "changed": false
     },
     "scripts/README.md": {
-      "artifact_digest": "sha256:b01d062c2272987412d78b56291e9b63db7807f2190b3753c7713359ae130c4d",
+      "artifact_digest": "sha256:22275922bf86ea9fb28d0ec9691c29e88765e6f01ad9eb4b5ed35e48b07358a0",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",

@@ -1,0 +1,87 @@
+{
+  "case_id": "WITNESS-2026-09-07-OFFICE-ACT-AND-CITATION-4",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07-office-act",
+  "artifact_revision": "8ef29e12e4213c3f67516bb428688186cee35b71",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "observed_at": "2026-09-07T20:05:00Z",
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07-office-act",
+    "observer_relation": "INDEPENDENT_CONFIRMING_PASS_OVER_A_REBASED_CANDIDATE",
+    "observer_independence_basis": "This participant built nothing at 8ef29e1 and edited no file the commit carries. It wrote the findings this commit answers and none of the repairs. Fifteen adversarial citation cases, ten mutants and two witness-authored unittest cases were run in a clean full-history clone at 8ef29e1 with empty porcelain. One of the witness-authored cases had to be repaired before it could be trusted, and that is recorded below rather than quietly fixed.",
+    "subject": "office-act-and-citation",
+    "pass": 4,
+    "candidate_commit": "8ef29e12e4213c3f67516bb428688186cee35b71",
+    "candidate_tree": "02d4247d7bfce83d304446c5bb9cc1a7003c1710",
+    "base_commit": "b1448eeb458afa4a8c60b57c1cb46906246af7f7",
+    "verdict": "RATIFIABLE",
+    "the_rebase": {
+      "linearity": "Five commits, each with one parent, on b1448ee. Zero merge commits in the range. Confirmed twice: by git log --format='%h %p' and by the repository's own instrument, which emits construction_history LINEAR, construction_commits 5, base_is_ancestor true, candidate_tree 02d4247, matching the tree this witness froze.",
+      "blob_identity": "Stronger than the four files asked for: a full-tree diff of each rebased commit against its pre-rebase original shows exactly three paths - .clarity/coverage.json and ROADMAP.md, which the trunk brought, and docs/documentation.html, which is generated. Every other blob in all five trees is byte-identical. a13b888->7918314, d56fff5->a6f7c42, 575d65f->4b978aa, d03772a->bce972d, e6ee165->8ef29e1.",
+      "receipts_replayed": "Each earlier receipt's declared digests were recomputed against the blobs of its rebased counterpart: 13 of 13 for pass 1 at 7918314, 10 of 11 for pass 2 at 4b978aa, 11 of 12 for pass 3 at bce972d. The only two that differ are docs/documentation.html in each. So 34 of 36 digests replay exactly, and the code readings of passes 1 to 3 carry to this history by blob identity.",
+      "the_rule": "The correction is right by the contract's own words, not only by the gate. contracts/repository-candidate-lifecycle.json rewrite_policy.mutable_allowed contains rebase-onto-current-target; rewrite_policy.frozen_forbidden contains rebase. The prohibition attaches to a FROZEN candidate; this carrier was MUTABLE.",
+      "the_gate_checked_both_ways": "Not taken from the report. On the linear branch sov_ci_subject.py candidate emits a receipt and exits 0. On a merge commit this witness built - a side commit off b1448ee merged into the candidate with --no-ff - it exits 2 with REFUSED: CANDIDATE_HISTORY_NONLINEAR naming the merge commit. The clone was returned to 8ef29e1 with empty porcelain afterwards.",
+      "what_the_rebase_cost": "The SHA binding and nothing else. All 33 witness receipts in the tree now read STALE against their subjects, including this participant's three, because every subject SHA moved; sov_witness_layer grades that as record ageing rather than failure, which is the right grade. Had these been FROZEN the rebase would have been forbidden and the move would have been SUPERSEDED and a fresh freeze."
+    },
+    "dispositions": {
+      "H1_CLOSED": "The T3 case now declares node:loc against this fixture's node:local with an address otherwise exactly right, and the mutant that reads the declared node as contained in the real one dies on it. Both containment directions were tested; see the residual for the other one.",
+      "H2_CLOSED": "The comparison the pass-3 commit called unreachable is now reached by a shipped case, and my two-node case still passes unmutated against these bytes.",
+      "H3_CLOSED": "The suffix mutant on the address dies on two shipped cases.",
+      "H4_CLOSED": "A declared node is checked whether or not the address is live. A report naming the current export while declaring node:gone is refused. The early return that carried this open since pass 2 is gone.",
+      "H5_CLOSED_AND_IT_WAS_THE_RIGHT_COMPRESSION": "One equality replaces three comparisons. An address reaching the right node directory from an invented parent is refused, an address under another node's directory is refused, a missing address is refused, and an invented filename is refused - all by the same line. The compression is sound because node and head genuinely determine the address: one directory per node, each export named by the head it replays to.",
+      "G1_G2_NOT_REGRESSED": "entries as null and as a dict still give clean defects with no exception; the cited-head prefix mutant still dies."
+    },
+    "measurements": {
+      "adversarial_cases": "Fifteen, all behaving correctly. The 2026-09-06 shape passes; a declared node containing the real one is refused; a declared node contained by the real one is refused; a live address with a contradictory node is refused; an address under another node's directory is refused; an address from an invented parent is refused; a missing address is refused; a citation of an earlier head whose address does not name that head is refused, and the same citation with the address that head names passes, which is the behaviour that keeps a superseded citation readable.",
+      "mutants": "Ten. Nine die on the shipped 30-case suite: both directions of the address equality, the shortened head, the cited-head prefix, the unchecked address, the swallowed count, the any-address branch, node-blind resolution, and expected-built-from-the-address. One survives; see the residual."
+    },
+    "residual_not_held_against_the_change": {
+      "R2_the_other_containment_direction": "The mutant reading the real node as contained in the declared one - _node_id_of(_export_node(path)) in node - survives the shipped suite. It is killed by the case this witness handed over in pass 3, declaring node:local-2 against a node:local export, which was replaced by the node:loc case rather than joined to it. The two directions of one comparison want two lines in the same case. This is recorded as a residual and not as a condition, because the harm it admits is bounded: the address equality is still built from the real node's directory, so what would pass is a report whose node field names something that does not exist while its address is otherwise correct. Handing over the case and letting the concern absorb it is the right end for it."
+    },
+    "small_caution": "Two of the repaired cases now assert on generic fragments - 'names /' or 'names nodes/' - where the earlier wording pinned a specific refusal. They do discriminate here, since three mutants die on them, but an assertion that broad pins the shape of a message rather than its meaning. Related and this witness's own: my pass-3 two-node case asserted a refusal string the repair reworded, so it failed against these bytes until I updated it. Cases coupled to message text age with the messages; that is worth knowing before the next rewording, not a defect in this change.",
+    "judgement_items": [
+      "Unchanged, unanswered, and correctly neither the builder's nor this witness's to answer: does Bdo affirm that he directed the act recorded at entries 118 to 123 of node:local, in the words quoted in office_act.direction?"
+    ],
+    "commands": [
+      "git -C <this worktree> rev-parse HEAD -> 8ef29e1, tree 02d4247, porcelain empty",
+      "git log --format='%h %p' b1448ee..HEAD -> five commits, one parent each; git log --merges b1448ee..HEAD -> none",
+      "git diff --name-only <old> <new> for each of the five rebase pairs -> exactly .clarity/coverage.json, ROADMAP.md, docs/documentation.html",
+      "each earlier receipt's digests recomputed at its rebased counterpart -> 34 of 36 match; both misses are docs/documentation.html",
+      "python3 scripts/sov_ci_subject.py candidate --base b1448ee --candidate 8ef29e1 -> exit 0, construction_history LINEAR, 5 commits",
+      "the same over a merge commit this witness built -> exit 2, REFUSED: CANDIDATE_HISTORY_NONLINEAR",
+      "python3 scripts/verify.py -> exit 0, PASS: 52 checks in 12.630s; documentation page matches 287 documents",
+      "python3 scripts/lint.py -> exit 0; python3 scripts/sov_node.py journals -> exit 0",
+      "python3 -m unittest scripts.tests.test_sov_node_journal -> exit 0, 30 tests OK",
+      "sov_witness_layer records / sov_clarity check / sov_diagrams / sov_surface check / sov_docs check -> exit 0",
+      "fifteen adversarial citation cases -> all as expected",
+      "ten mutants against the shipped suite -> nine killed, one survived (R2); with the two witness cases added, ten killed; control unmutated exits 0"
+    ],
+    "observed_state_addresses": [
+      "AGENTS.md",
+      "scripts/sovnode/journal.py",
+      "scripts/tests/test_sov_node_journal.py",
+      "scripts/sov_ci_subject.py",
+      "contracts/repository-candidate-lifecycle.json",
+      "contracts/fixtures/node-registry.reference.json",
+      "nodes/node-local/journal/a8b989484adf.json",
+      "reports/observations/2026-09-07-office-act-claude-fable-5-1.json",
+      "reports/observations/2026-09-06-fresh-participation-live-node-2.json",
+      "witness/observations/2026-09-07-office-act-and-citation-observation.json",
+      "witness/observations/2026-09-07-office-act-and-citation-observation-2.json",
+      "witness/observations/2026-09-07-office-act-and-citation-observation-3.json"
+    ],
+    "observed_state_digests": [
+      "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
+      "sha256:2525d12ba35187d60efe9583c5f1ca7bb50f1d81e4570c5d82bcd0936a7631bf",
+      "sha256:59963ad8b2e0f5140ae6778b965e77ec33a6a1b3a6b17fa3bb5b13dfb5f83053",
+      "sha256:38136e9e40b3bc4ad2d7cffe6defc098ae03c89c690ab0dd0d0da32a57ebd951",
+      "sha256:7f9bdf8cda768e926d626ead42c5c9bf528f1472c94991d8bbddb08f33dc3e26",
+      "sha256:9c94292cca2ac136f7b0cb86926d62f3dec59e537408c1d17b5e2f552299e2da",
+      "sha256:a178194104b7e6d01c8ca945ea6c32421031ec5a921819500edf86d54d47f07d",
+      "sha256:026d05836bdc727c250defbf77829489a4a2c7e26f2c0d6f58a0763fa05cd812",
+      "sha256:3d4e10370cffd7b8f1aa8ba96a5caa3007a8aea801b5701f804e6f8f9ac77d7e",
+      "sha256:c458f75e1f89f024b0a2c54fc197b396f3d5dafbebd8b55bdbc1998596c8f4d0",
+      "sha256:86e35e258ceafc968704ced8a73829cdb01220d4b58e29af7a93b86ff30eb6c7",
+      "sha256:ea61f2397abe142ca899800f03071f5118b3d476b72ce7ffc09cedcacb96bec6"
+    ]
+  }
+}

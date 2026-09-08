@@ -1,0 +1,80 @@
+{
+  "case_id": "WITNESS-2026-09-07-OFFICE-ACT-AND-CITATION-2",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07-office-act",
+  "artifact_revision": "575d65f5efb32036183ffdc9ed4bbf557677c103",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "observed_at": "2026-09-07T18:20:00Z",
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07-office-act",
+    "observer_relation": "INDEPENDENT_REPROBE_OF_THE_REPAIRED_GATE_ON_A_CLEAN_CLONE",
+    "observer_independence_basis": "This participant built nothing at 575d65f and edited no file the commit carries. It wrote pass 1's findings; it did not write the repairs, choose their shape, or see the builder's mutant commands. Every disposition below was re-derived: twelve adversarial citation cases and ten mutants of the repaired code, run in a clean full-history clone at 575d65f with empty porcelain, against fixtures this participant authored.",
+    "subject": "office-act-and-citation",
+    "pass": 2,
+    "candidate_commit": "575d65f5efb32036183ffdc9ed4bbf557677c103",
+    "candidate_tree": "e9d7359fbf698f405396871c028105bb76871cfa",
+    "base_commit": "6498fc7b3172476df54882d7b65c47f52366c8c8",
+    "current_trunk_at_witness_time": "b1448eeb458afa4a8c60b57c1cb46906246af7f7",
+    "verdict": "RATIFIABLE-WITH-CONDITIONS",
+    "attestability_of_the_moved_base": "Attestable. The frozen subject is candidate 575d65f, tree e9d7359, on base 6498fc7, which is exactly git merge-base of this branch and b1448ee. b1448ee changes three paths over that base: .clarity/coverage.json, ROADMAP.md and docs/documentation.html. The only overlap with this candidate is docs/documentation.html, which is generated. A test merge of b1448ee into a clone of 575d65f produces exactly one conflict, in that generated page; the other two merge clean. So the un-reconciled state hides no source conflict and does not make this pass unattestable. Two limits: this observation covers the candidate, not the merge result; and if reconciliation is done by rebase the candidate gets a new SHA and this observation does not transfer to it.",
+    "dispositions": {
+      "F1_CLOSED_WITH_A_RESIDUAL": "The exact pass-1 case is caught. A report whose address names a file no longer under nodes/, with no node declared, now earns 'which is no export under nodes/'. Residual G3 below: declaring node switches the address check off entirely.",
+      "F2_TWO_OF_THREE_CLOSED": "Understating the count is refused (int(...) != position, new case) and a six-character export filename is refused (head[:12] == stem, new case). The third is not closed; see G2.",
+      "F3_CLOSED": "grant_id is in ID_KEYS and _recorded_ids reads grants out of payloads. A fabricated grant id is refused; a real grant at or below the cited head passes; and a real grant the node recorded only after the cited head is refused, which is stronger than pass 1 asked for. The session_id lesson is verified independently: adding session_id to ID_KEYS makes sov_node.py journals exit 1 on the real tree with 'names ids the node had not recorded at its cited head: fresh-e39c72b9', the probe's own host session name, exactly as the docstring says.",
+      "F4_F5_F6_RECORDED_ADEQUATELY": "observation_schema_note states that no such schema exists at v1, v2 or v3 and that nothing validates the file. what_the_record_does_not_hold states the direction's absence from the node, the unauthenticated name principal:bdo, and the stale serving-model claim routed as owner-held identity naming. All three are accurate and placed in the object they are about.",
+      "F7_ANSWERED_WITH_A_SMALL_INACCURACY": "journal_narrative carries all five spans including 111-117. Two small things: the 111-117 line omits the sharpest fact in that span, the console.open-session receipt REFUSED NO_LIVE_GRANT at entry 111; and 124-173 is described as one entry-and-crossing, where the chain holds two sessions, session_0fc948f67d3c40d8 at 124-148 and session_5bbe1d42cdd64427 at 149-173, each entering, crossing once and being refused three times.",
+      "F8_HALF_MINE_TO_CORRECT": "docs/documentation.html was genuinely staled by the pass-1 deposits and is rebuilt here; the real check reads PASS: documentation page matches 287 documents. docs/surface.html was never stale: the 'FAIL: docs/surface.html is stale' line is a planted case inside test_sov_surface in tooling shard 4, and python scripts/sov_surface.py check exits 0 with PASS. Pass 1 read a planted line out of stdout as a real failure, which is the defect this repository names by example. The correction is this witness's, not the builder's."
+    },
+    "findings": {
+      "G1_regression_a_traceback_where_a_defect_used_to_be": "int(journal['entries']) raises out of grade() when a report states a non-numeric or null count. At a13b888 the same two reports produced clean defects ('cites many entries, but its head is entry 10 of ...'; 'cites None entries, ...'). At 575d65f they raise ValueError and TypeError, which propagate through command_journals and out of the check. It fails closed, so nothing bad passes; but the repository keeps a case named test_an_edited_entry_is_a_defect_not_a_traceback, and this is the defect that case is about, introduced by the F2 count repair. A coerce-or-refuse around the count, plus a case, closes it.",
+      "G2_the_mutant_pass_1_named_is_still_alive": "Pass 1's third surviving mutant was the cited-head position lookup matched by str.startswith instead of equality, in _grade_citation. It survives the 23-case suite unchanged. The repair fixed a real second instance of the same shape, the export filename in _grade_export, and reported the finding closed. Nothing pins full-digest equality on the cited head, and the twelve-character head prefix is the form this repository writes into every export filename and every journals output line, so a report citing head '23d3b48086be' would resolve under that mutant.",
+      "G3_the_address_is_unmeasured_whenever_a_node_is_declared": "_cited_export returns early on an exact address match and otherwise resolves on node alone, so once node is present the address is never read. Four independently constructed reports pass with no defect: a fabricated address under the right node; an address naming a different node's directory entirely; no address at all; and a live address contradicted by a node that has no export. The repaired 2026-09-06 report is itself in the first of those states, its address still naming a file this branch deleted, and the address_note gives the stated reason for the repair as 'so a reader is not sent to a file that is no longer in the tree'. That is now true of verify and not of address. Two comparisons using functions already in the module close it: when node is declared and address is non-empty, require _node_id_of(_export_node(address)) == node; when address is in heads, require the declared node to agree.",
+      "G4_node_equality_is_right_and_unpinned": "The node comparison is == today. A mutant weakening it to substring containment survives the suite. CLAUDE.md T3 records that this repository has already shipped a substring comparison over exactly this kind of token and had it produce a false claim in a governed document. One case with a node id that contains another closes it."
+    },
+    "judgement_items": [
+      "Unchanged and unanswered by design: does Bdo affirm that he directed the act recorded at entries 118 to 123 of node:local, in the words quoted in office_act.direction?",
+      "Of the three routed items, this witness reads F6 as correctly routed - minting or amending a model principal is identity naming and owner-held. F4 is repairable inside this concern: either write the schema, drop the field, or carry the note on all three reports that declare v1, v2 and v3, since only the newest carries it. F5 is repairable in part inside this concern - open-office could record the direction and directed_in as an entry the node keeps, which would put the words in the record instead of a gitignored ndjson without authenticating anyone - but it changes a recorded shape, and whether that stays inside this concern or crosses into the console record contract is the builder's call to make and state."
+    ],
+    "repair_or_rewrite": "Repair, on this witness's reading. Nothing that constitutes the 2026-09-06 report's claim moved: head, entries and cited_entries are byte-identical, and the diff is three lines - address_note added, node added, verify repointed. The verify string was an instruction to a reader that named a file the repository no longer contains; it was wrong, not evidence. The change is disclosed inside the same object rather than made silently, and the original bytes survive at a13b888 and earlier. What would have made it a rewrite: touching head, entries or cited_entries, or making the change without the note. The one thing left undone is that address still names the deleted file, which is G3.",
+    "commands": [
+      "git clone --no-local <this worktree> <clone>; git -C <clone> checkout 575d65f -> tree e9d7359, porcelain empty",
+      "python3 scripts/verify.py -> exit 0, PASS: 52 checks in 15.030s; the real documentation check reads PASS: documentation page matches 287 documents",
+      "python3 scripts/lint.py -> exit 0, PASS: repository hygiene (1230 text files, 562 Python modules, 10 named debt)",
+      "python3 scripts/sov_node.py journals -> exit 0, one export, every citation resolves",
+      "python3 -m unittest scripts.tests.test_sov_node_journal -> exit 0, 23 tests OK",
+      "python3 scripts/sov_surface.py check -> exit 0, PASS (the stale line in the verify log is a planted case in tooling shard 4)",
+      "python3 scripts/sov_witness_layer.py records -> exit 0, 31 receipts, 0 unusable",
+      "python3 scripts/sov_clarity.py check -> exit 0; python3 scripts/sov_diagrams.py -> exit 0",
+      "twelve adversarial citation cases against journal.grade() -> eight as expected, four admitted (G3), two raised (G1)",
+      "ten mutants of scripts/sovnode/journal.py against the 23-case suite -> eight killed, two survived (G2, G4)",
+      "ID_KEYS + session_id on a copy of the tree; python3 scripts/sov_node.py journals -> exit 1 on fresh-e39c72b9, confirming the F3 reasoning",
+      "the same non-numeric and null counts replayed against a13b888 -> clean defects, no exception, establishing G1 as a regression",
+      "git merge --no-commit --no-ff b1448ee in a clone of 575d65f -> exit 1, one conflict, docs/documentation.html only; .clarity/coverage.json and ROADMAP.md merge clean"
+    ],
+    "observed_state_addresses": [
+      "AGENTS.md",
+      "scripts/sovnode/journal.py",
+      "scripts/tests/test_sov_node_journal.py",
+      "scripts/sov_node.py",
+      "scripts/sov_fresh.py",
+      "nodes/node-local/journal/a8b989484adf.json",
+      "reports/observations/2026-09-07-office-act-claude-fable-5-1.json",
+      "reports/observations/2026-09-06-fresh-participation-live-node-2.json",
+      "contracts/principals.json",
+      "witness/observations/2026-09-07-office-act-and-citation-observation.json",
+      "docs/documentation.html"
+    ],
+    "observed_state_digests": [
+      "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
+      "sha256:963b1871efde21510ab145a3c06cc41c3159654508c47ac8bcd5fa3eb8fe6e46",
+      "sha256:82577fe440cb334c8190064addde1af243197a17b479812dc0e975680cbf906e",
+      "sha256:edd580f69ae2c7364e32344df21f1129571485752e0bee5e31af4ba144b6892d",
+      "sha256:026d2db3f50b48c3da5147bc52eeca116de5417670162bd6d1e75656c0727a01",
+      "sha256:a178194104b7e6d01c8ca945ea6c32421031ec5a921819500edf86d54d47f07d",
+      "sha256:78f5b6fb1d92549bfcabb48215c630b340a558693ce9788b709c571584c51cb0",
+      "sha256:3d4e10370cffd7b8f1aa8ba96a5caa3007a8aea801b5701f804e6f8f9ac77d7e",
+      "sha256:2f672d7ab812011f28943e5e3e755ccac6ddc1d32b5f0c2147543a4987264e86",
+      "sha256:c458f75e1f89f024b0a2c54fc197b396f3d5dafbebd8b55bdbc1998596c8f4d0",
+      "sha256:31552c7dd962d8d56c7043fd6ed3dd6d8651154f7cc9df41c15a6c915440d61d"
+    ]
+  }
+}

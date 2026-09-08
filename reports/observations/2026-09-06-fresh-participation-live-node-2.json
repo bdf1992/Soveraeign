@@ -13,9 +13,11 @@
   ],
   "journal": {
     "address": "nodes/node-local/journal/23d3b48086be.json",
+    "address_note": "the export named in address was this node's head when this report was written; the node has recorded more since, so its export is named by a later head. head, entries and cited_entries are unchanged and are the claim; node was added and verify was repointed so a reader is not sent to a file that is no longer in the tree.",
     "entries": 85,
     "head": "23d3b48086becd541d6054d78185f730e41a10054848ad4f654191315f87b342",
-    "verify": "python scripts/sov_node.py journals; PYTHONPATH=services/record/src python -m soveraeign_record_service.cli verify-export --export nodes/node-local/journal/23d3b48086be.json --expect-head <the witness's head>"
+    "node": "node:local",
+    "verify": "python scripts/sov_node.py journals; PYTHONPATH=services/record/src python -m soveraeign_record_service.cli verify-export --export <the current export of node:local under nodes/> --expect-head <the witness's head>"
   },
   "live_run": {
     "actor": "principal:claude-fable-5",

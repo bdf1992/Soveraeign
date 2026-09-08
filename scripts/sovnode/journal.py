@@ -30,7 +30,7 @@ NODES = ROOT / "nodes"
 REPORTS = ROOT / "reports" / "observations"
 NODE_REGISTRY = ROOT / "contracts" / "fixtures" / "node-registry.reference.json"
 HEAD_PREFIX = 12
-ID_KEYS = ("entry_id", "receipt_id")
+ID_KEYS = ("entry_id", "receipt_id", "grant_id")
 """Keys whose string values in a self-report must name entries of the cited export."""
 
 
@@ -103,7 +103,7 @@ def _grade_export(path: Path, registered: set[str]) -> tuple[str | None, list[st
     except (OSError, ValueError, custody.RestoreRefused, BrokenChain) as failure:
         return None, [f"{shown}: {failure}"]
     defects: list[str] = []
-    if not head.startswith(path.stem):
+    if head[:HEAD_PREFIX] != path.stem:
         defects.append(f"{shown}: replays to {head[:HEAD_PREFIX]}, filename says {path.stem}")
     expected = _node_id_of(path.parent.parent.name)
     carried = {str(entry["payload"].get("node_id")) for entry in document["entries"]
@@ -131,28 +131,105 @@ def _ids_in(value: Any) -> set[str]:
     return found
 
 
+def _cited_export(journal: dict[str, Any], heads: dict[str, str]) -> tuple[str | None, str]:
+    """The export a citation resolves to, and the defect its address earns, if any.
+
+    A report cites the journal as it stood when it was written, and an export is named by
+    the head it replays to, so the filename a report names is replaced as soon as the node
+    records anything more. The node is what the citation is about. But resolving by
+    directory alone stops measuring the address, and a report whose address names a
+    deleted file still sends its reader there: witnessed on this very commit, which
+    deleted the file the 2026-09-06 report names while the gate called every citation
+    resolved. So an address that no longer names an export is a defect unless the report
+    says which node it means, which is the citation stated in the terms it was about.
+    """
+    address = str(journal.get("address") or "")
+    node = str(journal.get("node") or "")
+    head = str(journal.get("head") or "")
+    if not node:
+        # No node named: the address must be the export it says it is, as it always had to.
+        if address in heads:
+            return address, ""
+        return None, (f"cites {address or '(no address)'}, which is no export under nodes/; a "
+                      "report whose node has recorded more since names its node so the "
+                      "citation keeps its meaning")
+    # A named node is checked whether or not the address is live. Returning early on a live
+    # address let a report name one node and address another, which is the contradiction
+    # naming a node was supposed to remove rather than introduce.
+    held = next((path for path in sorted(heads)
+                 if _node_id_of(_export_node(path)) == node), None)
+    if held is None:
+        return None, f"names node {node}, which has no export under nodes/"
+    # One equality, because `node` and `head` already say everything the address can:
+    # a node's exports live in one directory and each is named by the head it replays to.
+    # Comparing the parts separately left three ways to disagree with the whole - a live
+    # address under another node, a filename pinned at one end only, and any prefix at all
+    # above the node directory - and this reaches all three at once.
+    expected = held.rsplit("/", 1)[0] + "/" + head[:HEAD_PREFIX] + ".json"
+    if not head or address != expected:
+        return None, (f"cites {address or '(no address)'}, where node {node} at head "
+                      f"{head[:HEAD_PREFIX] or '(none)'} names {expected}")
+    return held, ""
+
+
+def _export_node(path: str) -> str:
+    """The node directory name inside an export's address: `nodes/<node>/journal/<head>`."""
+    return path.rsplit("/", 2)[0].rsplit("/", 1)[-1]
+
+
+def _recorded_ids(entries: list[dict[str, Any]]) -> set[str]:
+    """Every id the node actually recorded in these entries, not only their entry ids.
+
+    A report names grants as well as entries, and until grants were read a fabricated
+    grant id passed the gate untouched because only entry ids were compared. `session_id`
+    is deliberately not among them: a report names its own host session there, which the
+    node never records and must not be asked to.
+    """
+    found = {str(entry["entry_id"]) for entry in entries}
+    for entry in entries:
+        payload = entry.get("payload")
+        if isinstance(payload, dict):
+            found |= {str(payload[key]) for key in ID_KEYS if payload.get(key)}
+    return found
+
+
 def _grade_citation(path: Path, report: dict[str, Any], heads: dict[str, str]) -> list[str]:
+    """Grade one self-report's citation against the node's current chain.
+
+    The cited head must be the digest of the entry at the cited position, which proves the
+    state the report read is an ancestor of the state the node is in now, and the report
+    may name only ids the node had recorded at that head.
+    """
     journal = report.get("journal")
     if not isinstance(journal, dict):
         return []
-    address = str(journal.get("address") or "")
     shown = _relative(path)
-    if address not in heads:
-        return [f"{shown}: cites {address or '(no address)'}, which is not a verified export "
-                "under nodes/"]
+    resolved, refusal = _cited_export(journal, heads)
+    if resolved is None:
+        return [f"{shown}: {refusal}"]
     defects: list[str] = []
-    if journal.get("head") != heads[address]:
-        defects.append(f"{shown}: cites head {str(journal.get('head'))[:HEAD_PREFIX]} but "
-                       f"{address} replays to {heads[address][:HEAD_PREFIX]}")
-    export = json.loads((ROOT / address).read_text(encoding="utf-8"))
-    if "entries" in journal and journal["entries"] != export["entry_count"]:
-        defects.append(f"{shown}: cites {journal['entries']} entries, the export carries "
-                       f"{export['entry_count']}")
-    ids = {entry["entry_id"] for entry in export["entries"]}
+    export = json.loads((ROOT / resolved).read_text(encoding="utf-8"))
+    entries = export["entries"]
+    cited_head = str(journal.get("head") or "")
+    position = next((index for index, entry in enumerate(entries, 1)
+                     if entry["entry_digest"] == cited_head), None)
+    if position is None:
+        return defects + [f"{shown}: cites head {cited_head[:HEAD_PREFIX] or '(none)'}, which is "
+                          f"not an entry in {resolved}"]
+    if "entries" in journal:
+        try:
+            declared = int(journal["entries"])
+        except (TypeError, ValueError):
+            declared = None
+        if declared != position:
+            defects.append(f"{shown}: cites {journal['entries']} entries, but its head is entry "
+                           f"{position} of {resolved}")
+    ids = _recorded_ids(entries[:position])
     mentioned = set(report.get("cited_entries") or []) | _ids_in(report)
     missing = sorted(item for item in mentioned if item not in ids)
     if missing:
-        defects.append(f"{shown}: names entries absent from {address}: " + ", ".join(missing[:5]))
+        defects.append(f"{shown}: names ids the node had not recorded at its cited head: "
+                       + ", ".join(missing[:5]))
     return defects
 
 

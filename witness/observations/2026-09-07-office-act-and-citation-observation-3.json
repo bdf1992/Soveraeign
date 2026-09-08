@@ -1,0 +1,78 @@
+{
+  "case_id": "WITNESS-2026-09-07-OFFICE-ACT-AND-CITATION-3",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07-office-act",
+  "artifact_revision": "d03772afac294084c62d2ed68f20d0c90d768d13",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "observed_at": "2026-09-07T19:05:00Z",
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07-office-act",
+    "observer_relation": "INDEPENDENT_REPROBE_WITH_WITNESS_AUTHORED_FIXTURES_ON_A_CLEAN_CLONE",
+    "observer_independence_basis": "This participant built nothing at d03772a and edited no file the commit carries. It wrote the findings the commit answers; it did not write the repairs or see the builder's mutant commands. Eleven adversarial citation cases, seven mutants and two witness-authored unittest cases were run in a clean full-history clone at d03772a with empty porcelain. The two cases were validated against the unmutated tree first, and the first version of one of them was wrong and was discarded rather than reported.",
+    "subject": "office-act-and-citation",
+    "pass": 3,
+    "candidate_commit": "d03772afac294084c62d2ed68f20d0c90d768d13",
+    "candidate_tree": "e062edc9eec0d50a470dfc2bee0ee3437fb26118",
+    "base_commit": "6498fc7b3172476df54882d7b65c47f52366c8c8",
+    "current_trunk_at_witness_time": "b1448eeb458afa4a8c60b57c1cb46906246af7f7",
+    "verdict": "RATIFIABLE-WITH-CONDITIONS",
+    "dispositions": {
+      "G1_CLOSED_WIDER_THAN_THE_CASE": "A non-numeric count is a clean defect again. Verified beyond the shipped case: entries as a string, as null, as a list and as a dict all produce 'cites ... entries, but its head is entry N of ...' and no exception. The mutant that swallows the failure and accepts the count silently is killed by the shipped case.",
+      "G2_CLOSED": "test_a_truncated_head_does_not_resolve_by_prefix kills the startswith mutant on the cited-head lookup, which is the mutant pass 1 named and pass 2 found still alive. It is dead.",
+      "G3_CLOSED_FOR_WHAT_WAS_RAISED": "Every state pass 2 listed is now refused except one: an address of another node, a substring node, a missing address and an invented filename all earn defects. The 2026-09-06 report is legitimately resolved and I checked it directly rather than by reading the code: its address is not in heads, it declares node:local, its filename 23d3b48086be.json equals its own head[:12], and _cited_export returns the current export with no refusal. Two narrow residuals and one by-design limit remain; see H4, H5 and the note on C4.",
+      "G4_PARTLY_AND_THE_COVERAGE_CLAIM_IS_FALSIFIED": "The collapse is a good shape: after the address-node comparison the two values are provably equal, so one comparison is better than two. But the second comparison is not gone - it moved from node ids to directory names - and both containment mutants are reachable by cases. See H1 and H2, which carry the two case bodies."
+    },
+    "findings": {
+      "H1_the_T3_case_is_still_in_the_harmless_direction": "test_a_declared_node_must_equal_the_nodes_name_and_not_merely_contain_it declares node:loc against a node:local export. Under the containment mutant _node_id_of(_export_node(address)) not in node, 'node:local' is not in 'node:loc', so the mutant still refuses and the case still passes: the mutant survives the shipped suite. The killing direction is a declared node that CONTAINS the real one. Changing node:loc to node:local-2 in that same case kills it, verified. No second node is needed. This is the second pass in a row where a coverage claim ran ahead of the fixture, and it is the same direction error the commit message says was caught and rerun.",
+      "H2_the_remaining_comparison_is_reachable_and_the_commit_says_it_is_not": "The comment and the commit say one comparison remains that no case can reach while the registry holds a single node. It is reachable. The node layer pins node_id to the registry's single SELF, which is why building the second node through it fails; building it one level below, with RecordService and ConsoleService told a second node id, produces a chain the export replays, and pointing journal.NODE_REGISTRY at a two-node registry puts both exports in heads. Naming matters: the wrong candidate must sort first under a containment reading, so the nodes must be node:loc and node:local, not node:local and node:local-2. With that, the mutant _export_node(path) in _export_node(address) resolves a node:local citation to node:loc's export and the case fails. Verified: control passes unmutated, mutant killed. The case body is in the witness record.",
+      "H3_the_filename_check_is_pinned_in_one_direction": "The mutant that compares the address by endswith instead of by exact basename survives both the shipped suite and my cases. An address whose basename is xx<head12>.json would pass under it. The shipped code is right; nothing pins it. One case with a prefixed basename closes it.",
+      "H4_a_live_address_may_still_contradict_its_declared_node": "The early return on address in heads happens before any node comparison, so a report naming the current export while declaring a node that has no export passes with no defect. Carried unchanged from pass 2's B4. Nothing is misdirected, because the address is correct and authoritative; what passes unremarked is a false node field in a report, which is the one field whose whole purpose is to be checked.",
+      "H5_everything_above_the_node_directory_in_an_address_is_unread": "_export_node reads only the second-to-last directory, so an address missing the nodes/ prefix, or under an invented parent, resolves: node-local/journal/<head12>.json and ../../elsewhere/node-local/journal/<head12>.json both pass. A reader following either lands nowhere. Worth noting that after this repair the address is fully derivable from node and head, so a single equality against nodes/<node dir>/journal/<head[:12]>.json would replace three comparisons and close H4 and H5 at once. The test harness uses absolute addresses, so that shape would need the fixtures to move to repository-relative ones."
+    },
+    "by_design_limit_recorded_not_faulted": "An address whose filename is the cited head's prefix but which was never exported cannot be told from a genuinely superseded export, because the gate cannot know at which heads a node was exported. Verified: such a citation passes. That is the honest boundary of the pin and not a defect; the pin is what stops a fabricated address from naming anything the node never reached.",
+    "boundary_reading_on_F5": "Sound. open_office records grants through ConsoleService.grant, whose payload authority.grant_payload owns, so adding the direction to that payload changes a shape the Console Service records and crosses into that contract. The alternative of appending a separate entry from the node layer does not obviously avoid the crossing either: a new record_kind is vocabulary CLASSIFICATION.md owns. Naming it and not taking it is the right call, and the report now says so in the object it concerns.",
+    "judgement_items": [
+      "Unchanged and correctly unanswered: does Bdo affirm that he directed the act recorded at entries 118 to 123 of node:local, in the words quoted in office_act.direction?"
+    ],
+    "witnessing_hazard_recorded": "One command this pass was issued without an explicit repository path and ran against the sibling worktree at <the sibling worktree>, which is on a different HEAD and carries another session's uncommitted work. It was caught on the next command and nothing from it entered this Finding. Recording it because CLAUDE.md T6 is about the tree moving, and this is its neighbour: the reader moving. Every measurement in this pass names its repository explicitly.",
+    "commands": [
+      "git -C <this worktree> rev-parse HEAD -> d03772a, tree e062edc9, porcelain empty",
+      "git clone --no-local <this worktree> <clone>; checkout d03772a -> tree e062edc9, porcelain empty",
+      "python3 scripts/verify.py -> exit 0, PASS: 52 checks in 14.222s; documentation page matches 287 documents",
+      "python3 scripts/lint.py -> exit 0; python3 scripts/sov_node.py journals -> exit 0",
+      "python3 -m unittest scripts.tests.test_sov_node_journal -> exit 0, 29 tests OK",
+      "python3 scripts/sov_witness_layer.py records / sov_clarity.py check / sov_diagrams.py / sov_surface.py check -> exit 0",
+      "journal._cited_export over both real reports -> 2026-09-06 resolves by the superseded path with no refusal; 2026-09-07 resolves by exact address",
+      "eleven adversarial citation cases -> eight as expected, three admitted (H4, H5, and the by-design limit); no case raised an exception",
+      "seven mutants against the shipped suite -> four killed, three survived (H1, H2, H3)",
+      "the same seven against the shipped suite plus two witness-authored cases -> six killed, one survived (H3); control unmutated exits 0"
+    ],
+    "observed_state_addresses": [
+      "AGENTS.md",
+      "scripts/sovnode/journal.py",
+      "scripts/tests/test_sov_node_journal.py",
+      "scripts/sovfresh/node.py",
+      "scripts/sovnode/composition.py",
+      "services/console/src/soveraeign_console_service/core.py",
+      "contracts/fixtures/node-registry.reference.json",
+      "nodes/node-local/journal/a8b989484adf.json",
+      "reports/observations/2026-09-07-office-act-claude-fable-5-1.json",
+      "reports/observations/2026-09-06-fresh-participation-live-node-2.json",
+      "witness/observations/2026-09-07-office-act-and-citation-observation-2.json",
+      "docs/documentation.html"
+    ],
+    "observed_state_digests": [
+      "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
+      "sha256:d20a5e6de3e19742f7483be45bcd769854925d636d9b5c058bbd35775b0d328b",
+      "sha256:6cf0df3702de2e689724217de01b702f2350ef1edbf0ee0155dd4d781946c3c2",
+      "sha256:7f9d3d14b22ea34004ce1c812d4f784d77bea829d3b3b267bf55000233377a66",
+      "sha256:e7320557b3d5239e576317668bd299c4a5c63bbc3f3a0fdc90d13100d8bd60ce",
+      "sha256:48b42c6d1fdb40942dcf23201e883eb3ac6361a149e61495a75633501a13d8cb",
+      "sha256:9c94292cca2ac136f7b0cb86926d62f3dec59e537408c1d17b5e2f552299e2da",
+      "sha256:a178194104b7e6d01c8ca945ea6c32421031ec5a921819500edf86d54d47f07d",
+      "sha256:026d05836bdc727c250defbf77829489a4a2c7e26f2c0d6f58a0763fa05cd812",
+      "sha256:3d4e10370cffd7b8f1aa8ba96a5caa3007a8aea801b5701f804e6f8f9ac77d7e",
+      "sha256:86e35e258ceafc968704ced8a73829cdb01220d4b58e29af7a93b86ff30eb6c7",
+      "sha256:adcab9f3900f474d0ff7c2b8776133c5c6e9f922c81a2a70f92d91a3ed069966"
+    ]
+  }
+}

@@ -497,7 +497,7 @@ and the root seat owns that question.
 
 Evidence basis, preserved: this report; `FINDING-WORK.md` and
 `FINDING-PARTICIPANT.md` and `LAP-EXECUTION-REPORT.md` in the schematically
-repository at `d406790`; `DISCOVERY-REPORT.md` in this repository; the payload
+repository at `d406790`; `reports/2026-09-08-commissioning-circuit-discovery.md`; the payload
 at `schematically@e51b999`.
 
 ## Closing count

@@ -69,7 +69,12 @@ def _mispaired(term: str) -> dict[str, Any]:
     So every prose key says the term at the root and again below it, every instance key carries
     an instance that declares it at the root, below the root, and inside a declared-name
     subtree, `sections` holds it as an ordinary dict key that no schema keyword reaches, and a
-    contract identifier naming it sits below the root in three places. The last two directions
+    contract identifier naming it sits below the root in three places. At the root it also
+    sits under `id`, under `id_` and under `kind`, and one level below a declared name as
+    `row/<term>_id`: a tenth witness found three loosenings that passed everything while
+    flipping the verdict - matching keys ending in `id` rather than `_id`, dropping the key
+    filter and taking every whitespace-free root string, and harvesting the keys of a declared
+    name's own dict value. The last two directions
     a ninth witness found open: the nested instance data sat outside `properties`, which is the
     shape a real schema puts examples in, and identity read below the root had no refusal case
     at all. A reader that reads any of those resolves
@@ -90,13 +95,16 @@ def _mispaired(term: str) -> dict[str, Any]:
         nested[key] = [dict(instance)] if key.endswith("s") else dict(instance)
     below_root_identity = {"policy_id": f"soveraeign-{term}/v1",
                            "$id": f"https://soveraeign.local/contracts/{term}.schema.json"}
+    loose_identity = {"id": f"{term}-v1", "kind": f"{term}-record", "id_": f"{term}/v1"}
     stub: dict[str, Any] = {
         "$id": "https://soveraeign.local/contracts/fixture-unrelated.schema.json",
         "properties": {"actor_id": dict({"type": "string"}, **prose, **nested,
-                                        **below_root_identity)},
+                                        **below_root_identity),
+                       "row": {f"{term}_id": {"type": "string"}}},
         "sections": dict({term: {"kind": "string"}}, **below_root_identity),
         "elsewhere": dict(prose, **{"deeper": dict(nested)}, **below_root_identity),
     }
+    stub.update(loose_identity)
     stub.update(prose)
     stub.update(nested)
     return stub

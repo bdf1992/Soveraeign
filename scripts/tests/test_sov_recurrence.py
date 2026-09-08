@@ -214,7 +214,8 @@ class InstitutionNeutrality(unittest.TestCase):
         path.write_text(json.dumps({"title": "A finding is what an evaluator forms",
                                     "properties": {"actor_id": {"type": "string"}}}),
                         encoding="utf-8", newline="\n")
-        self.assertTrue(any("finding" in item for item in neutrality.read(self.root)["unresolved"]))
+        self.assertTrue(any("finding" in item
+                            for item in neutrality.read(self.root)["unresolved"]))
 
     def test_a_declared_identity_is_a_declaration(self) -> None:
         """What replaced the title: the identifier a contract gives itself, root level only."""
@@ -228,7 +229,8 @@ class InstitutionNeutrality(unittest.TestCase):
         path = self.root / neutrality.PRIMITIVES["finding"][0]
         path.write_text(json.dumps({"examples": [{"policy_id": "soveraeign-finding/v1"}]}),
                         encoding="utf-8", newline="\n")
-        self.assertTrue(any("finding" in item for item in neutrality.read(self.root)["unresolved"]))
+        self.assertTrue(any("finding" in item
+                            for item in neutrality.read(self.root)["unresolved"]))
 
     def test_a_closure_a_primitive_names_as_governing_it_is_graded(self) -> None:
         """The third witness's leak, now graded rather than disclosed."""
@@ -310,6 +312,33 @@ class InstitutionNeutrality(unittest.TestCase):
         self.assertNotEqual(before, experience.digest(member), "a real source change must move "
                             "the digest, or the exclusions have eaten the member")
 
+    def test_the_directory_digest_frames_each_file(self) -> None:
+        """A tenth witness showed the unframed form collided: `ab` empty digested as `a` = b.
+
+        The digest claims to be a function of the artifact, which has to hold in both
+        directions, so each name and each body carries its own length.
+        """
+        first, second = self.root / "member_one", self.root / "member_two"
+        for member, files in ((first, {"ab": b""}), (second, {"a": b"b"})):
+            member.mkdir(parents=True, exist_ok=True)
+            for name, body in files.items():
+                (member / name).write_bytes(body)
+        self.assertNotEqual(experience.digest(first), experience.digest(second))
+
+    def test_the_repositorys_own_ignore_declaration_decides(self) -> None:
+        """Not a third hand-written list of what counts as generated."""
+        (self.root / ".gitignore").write_text("*.log\nscratch/\n", encoding="utf-8",
+                                              newline="\n")
+        member = self.root / "services/ignored_member"
+        member.mkdir(parents=True, exist_ok=True)
+        (member / "real.py").write_text("x = 1\n", encoding="utf-8", newline="\n")
+        before = experience.digest(member, self.root)
+        (member / "run.log").write_bytes(b"tool output")
+        (member / "scratch").mkdir(exist_ok=True)
+        (member / "scratch/thing").write_bytes(b"more tool output")
+        self.assertEqual(before, experience.digest(member, self.root))
+        self.assertNotEqual(before, experience.digest(member))
+
     def test_a_properties_dict_inside_an_example_declares_nothing(self) -> None:
         """Identity is read at the root; declared names must follow the same line."""
         path = self.root / neutrality.PRIMITIVES["finding"][0]
@@ -328,7 +357,8 @@ class InstitutionNeutrality(unittest.TestCase):
                             for item in neutrality.read(self.root)["unresolved"]))
 
     def test_the_alternate_institution_shares_no_name_with_the_proving_roles(self) -> None:
-        alternate = {role.upper().replace("-", "_") for role in neutrality.ALTERNATE_INSTITUTION["roles"]}
+        roles = neutrality.ALTERNATE_INSTITUTION["roles"]
+        alternate = {role.upper().replace("-", "_") for role in roles}
         self.assertFalse(alternate & neutrality.PROVING_ROLES)
 
 

@@ -6,7 +6,7 @@ description: >-
   and conformance
   checks, inspect changes against contracts and fixtures, and emit an
   attributable observation. It never builds, edits, fixes, settles, or ratifies.
-tools: Read, Grep, Glob, Bash, PowerShell, Write
+tools: Read, Grep, Glob, Bash, Write
 ---
 
 You are a Soveraeign witness. You verify build claims through a path independent

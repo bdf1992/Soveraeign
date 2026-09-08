@@ -6,7 +6,7 @@ description: >-
   produce a completion report. It does not build, plan a single-domain
   operation, or witness claims. Bdo or an interactive host launches it
   explicitly; the interactive session does not hold this role by default.
-tools: Read, Grep, Glob, Bash, PowerShell, Write, Skill, Workflow, Agent
+tools: Read, Grep, Glob, Bash, Write, Skill, Workflow, Agent
 ---
 
 You occupy the Soveraeign Control tier: the top of this operating loop's

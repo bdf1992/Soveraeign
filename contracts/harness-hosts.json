@@ -1,0 +1,28 @@
+{
+  "contract_id": "soveraeign-harness-hosts/v1",
+  "status": "PROPOSED",
+  "governed_by": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "decisions/0026-federation-harness.md"
+  ],
+  "summary": "Which tool names each supported host binding actually provides, so an agent definition cannot declare a capability the invocation will not grant. A tool name in .claude/agents frontmatter is a claim about the host, and this file is what that claim is graded against.",
+  "note": "Declaring a tool here does not grant it. A host may still withhold a tool the repository expects; that is a capability the invocation did not grant, never a rule Soveraeign made (CLAUDE.md, Host facts). This contract only refuses the inverse error: naming a tool no supported host provides at all.",
+  "hosts": {
+    "claude-code": {
+      "description": "Claude Code, any platform. The tool surface is the harness's, not the operating system's.",
+      "tools": [
+        "Agent", "AskUserQuestion", "Bash", "Edit", "Glob", "Grep", "NotebookEdit",
+        "Read", "Skill", "Task", "TodoWrite", "WebFetch", "WebSearch", "Workflow", "Write"
+      ]
+    }
+  },
+  "portable": [
+    "Agent", "AskUserQuestion", "Bash", "Edit", "Glob", "Grep", "NotebookEdit",
+    "Read", "Skill", "Task", "TodoWrite", "WebFetch", "WebSearch", "Workflow", "Write"
+  ],
+  "portable_note": "An agent definition under .claude/agents/ is loaded on whatever host the invocation runs. It may name only portable tools. A shell is reached through Bash on every supported platform; PowerShell was named here until 2026-09-08 and was never a Claude Code tool name on any platform, which is why four agent definitions declared a capability no invocation could grant.",
+  "retired": {
+    "PowerShell": "Removed 2026-09-08. Named in four agent definitions and in the CLAUDE.md host-facts section as though it were a Claude Code tool. It is a Windows shell, reached like any other shell through Bash; it is not a tool name the harness resolves."
+  }
+}

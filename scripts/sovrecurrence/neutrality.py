@@ -20,29 +20,39 @@ PROVING_ROLES = frozenset({"CONTROLLER", "ORCHESTRATOR", "WORKER", "WITNESS"})
 institution, which is the defeating condition `contracts/custodies/phase-1-5.json` states
 for this clause."""
 
-PRIMITIVES: dict[str, str] = {
-    "identity": "contracts/principal.schema.json",
-    "session": "services/console/contracts/operator-session.schema.json",
-    "authority": "contracts/authority-grant.schema.json",
-    "work": "contracts/work-circuit.json",
-    "custody": "contracts/custody.schema.json",
-    "record_projection": "contracts/record-projection.schema.json",
-    "observation": "contracts/observation.schema.json",
-    "finding": "contracts/finding.schema.json",
-    "settlement": "contracts/ticket-settlement.json",
-    "discovery": "contracts/node-interface.schema.json",
+PRIMITIVES: dict[str, tuple[str, str]] = {
+    "identity": ("contracts/principal.schema.json", "principal"),
+    "session": ("services/console/contracts/operator-session.schema.json", "session"),
+    "authority": ("contracts/authority-grant.schema.json", "authority"),
+    "work": ("contracts/work-circuit.json", "work"),
+    "custody": ("contracts/custody.schema.json", "custody"),
+    "record_projection": ("contracts/record-projection.schema.json", "recordprojection"),
+    "observation": ("contracts/observation.schema.json", "observation"),
+    "finding": ("contracts/finding.schema.json", "finding"),
+    "settlement": ("contracts/ticket-settlement.json", "settlement"),
+    "discovery": ("contracts/node-interface.schema.json", "discovery"),
 }
-"""The ten primitives `conformance/commissioning.py` requires, each with the contract that
-declares it. The name on the left is the primitive; the path on the right is where a
-participant reads what it is, and is checked to exist rather than assumed.
+"""The ten primitives `conformance/commissioning.py` requires: the contract claimed to
+declare each, and the term that contract is expected to declare it under.
 
-`session` binds to the Console Service's operator session because that is the only contract
-in the repository that declares a session object. It is service-scoped rather than kernel
-scoped, which is a real residual: an earlier revision bound `contracts/source.schema.json`,
-which declares the SPEC Source information object - an immutable captured input - and is
-not a session at all. An independent witness read that as a synonym for an existing domain
-term, which `AGENTS.md` forbids, and it was. A kernel-level session contract does not
-exist; when one lands, this binding moves to it."""
+The second half of each pair exists because the pairing is the weakest thing this reader
+does, and three independent witnesses each attacked it. It is an **asserted mapping**, not
+a measured one. What is measured is narrow and stated: that the path parses, and that the
+named term appears in the contract's structure - an identifier, a title, a definition, or
+a property key, never prose. What is asserted is that the term is the repository's name for
+the primitive. `identity` is paired with `principal` because Principal is what this
+repository calls the identity of an actor; a reader who disagrees should say so, and that
+is the point of writing the pairing down instead of hiding it inside a substring match.
+
+Two pairings do not hold and are reported rather than forced. `settlement` is bound to a
+policy file that declares no schema structure at all, so nothing in it can be read as a
+declaration. `discovery` is bound to the Node Interface, which is what discovery produces
+and never declares discovery itself; no contract in this repository does. An earlier
+revision searched the whole JSON dump instead, which passed `session` against a note about
+this host's live sessions and `authority` against the sentence "it grants no authority" -
+49 of 78 contracts. Loosening the check until the count reads ten is the defect two
+witnesses already caught here under a different name."""
+
 
 ALTERNATE_INSTITUTION = {
     "institution": "institution:procurement",
@@ -109,29 +119,66 @@ def _closed_enums(node: Any, path: str) -> list[tuple[str, list[str]]]:
     return found
 
 
-def _declares(document: Any, primitive: str) -> bool:
-    """True when the bound contract actually names the primitive it is bound to.
+def _structural_names(document: Any) -> set[str]:
+    """The names a contract declares structurally: identifiers, titles, definitions, keys.
 
-    Resolution used to mean only that the path parsed as JSON, so any ten readable files
-    satisfied the ten names and the fixture - which writes stubs at whatever paths
-    `PRIMITIVES` gives it - could never disagree. An independent witness rebound `session`
-    to the verification budget and watched the reader report ten resolved. The name must
-    appear in the contract's own text, in a title, an identifier, a description, or a
-    property, which is the weakest check that the earlier binding of `session` to the
-    Source schema would have failed.
+    Prose is excluded on purpose. An earlier revision searched the whole JSON dump, so
+    `session` matched the word "sessions" in a note about this host and `authority` matched
+    the sentence "it grants no authority" - 49 of 78 contracts satisfied `authority` that
+    way. A third independent witness showed that both bindings the previous commit claimed
+    to defeat still passed, and that appending one sentence to a `description` flipped the
+    whole reading. A declaration is a structural fact, so only structure is read.
     """
+    names: set[str] = set()
+
+    def walk(node: Any, in_defs: bool) -> None:
+        if isinstance(node, dict):
+            for field in ("$id", "title", "name"):
+                value = node.get(field)
+                if isinstance(value, str):
+                    names.add(value)
+            for key, value in node.items():
+                if key in ("$defs", "definitions", "properties", "patternProperties"):
+                    if isinstance(value, dict):
+                        names.update(value)
+                    walk(value, True)
+                elif key not in ("description", "note", "$comment", "warrant", "enum"):
+                    walk(value, in_defs)
+        elif isinstance(node, list):
+            for value in node:
+                walk(value, in_defs)
+
+    walk(document, False)
+    return {str(name).lower().replace("_", "").replace("-", "").replace(" ", "")
+            for name in names}
+
+
+def _declares(document: Any, primitive: str) -> bool:
+    """True when the contract declares the primitive structurally, not merely mentions it."""
     wanted = primitive.replace("_", "")
-    return wanted in json.dumps(document).lower().replace("_", "").replace("-", "")
+    return any(wanted in name for name in _structural_names(document))
 
 
 def _closed_elsewhere(root: Path, bound: set[str]) -> list[str]:
-    """Closed vocabularies in contracts outside the ten bound paths, reported not graded.
+    """Closed vocabularies outside the ten bound paths, reported not graded.
 
-    P15-Q4.3 is about the primitives, so grading scans the contracts that declare them. A
-    role vocabulary closed somewhere else does not defeat those primitives, but hiding it
-    would make the reading look wider than it is: an independent witness found four, and
-    the reader that missed them said nothing. They are printed on every run.
+    Grading follows the primitives, so a role vocabulary closed in an unrelated contract
+    does not defeat them. That line is drawn at file boundaries, and a third witness showed
+    where it leaks: `contracts/ticket-settlement.json` names
+    `contracts/issue-metadata.schema.json` in its own `governed_by`, and two of the
+    closures live there, so the `settlement` primitive is governed by a contract that shuts
+    `requested_by` to the proving roles. A closure reached through a bound primitive's own
+    `governed_by` is marked as such below rather than lost in the list.
     """
+    governed: set[str] = set()
+    for relative in sorted(bound):
+        try:
+            document = json.loads((root / relative).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        for reference in document.get("governed_by") or []:
+            if isinstance(reference, str):
+                governed.add(reference)
     found: list[str] = []
     for path in sorted((root / "contracts").rglob("*.json")):
         relative = str(path.relative_to(root)).replace("\\", "/")
@@ -141,8 +188,10 @@ def _closed_elsewhere(root: Path, bound: set[str]) -> list[str]:
             document = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
             continue
+        reached = " (reached through a bound primitive's governed_by)" if relative in governed \
+            else ""
         for where, values in _closed_enums(document, ""):
-            found.append(f"{relative}{where} admits {values} and no alternate role")
+            found.append(f"{relative}{where} admits {values} and no alternate role{reached}")
     return found
 
 
@@ -157,23 +206,25 @@ def read(root: Path) -> dict[str, Any]:
     resolved: dict[str, str] = {}
     unresolved: list[str] = []
     closed: list[str] = []
-    for primitive, relative in sorted(PRIMITIVES.items()):
+    for primitive, (relative, term) in sorted(PRIMITIVES.items()):
         path = root / relative
         try:
             document = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
             unresolved.append(f"{primitive} declared at {relative}, which is absent or unreadable")
             continue
-        if not _declares(document, primitive):
-            unresolved.append(f"{primitive} is bound to {relative}, which never names it, so "
-                              "the binding asserts a declaration the contract does not make")
+        if not _declares(document, term):
+            unresolved.append(f"{primitive} is paired with {relative} as `{term}`, which that "
+                              "contract does not declare structurally, so the pairing asserts "
+                              "a declaration the contract does not make")
             continue
         resolved[primitive] = relative
         for where, values in _closed_enums(document, ""):
             closed.append(f"{primitive} closes {relative}{where} to {values}")
     composes = not unresolved and not closed
     return {
-        "closed_elsewhere": _closed_elsewhere(root, set(PRIMITIVES.values())),
+        "closed_elsewhere": _closed_elsewhere(
+            root, {relative for relative, _ in PRIMITIVES.values()}),
         "generic_primitives": sorted(resolved),
         "primitive_addresses": resolved,
         "unresolved": unresolved,

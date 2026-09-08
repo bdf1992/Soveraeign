@@ -124,6 +124,15 @@ def blocks(source: str, name: str) -> list[str]:
         index += 1
     else:
         raise Unreadable(f"{name}'s return array is unterminated")
+    after = masked(body[index + 1:]).lstrip()
+    if not after.startswith(".join"):
+        # What sits between the array and `.join` decides the order the evaluator reads in,
+        # and this reader does not evaluate it. `].reverse().join(...)` is one word, and it
+        # made the frame open on its last block while every ordering rule still graded the
+        # source order and passed. Refused rather than read.
+        raise Unreadable(
+            f"{name}'s blocks are transformed before they are joined, so the order they "
+            "reach an evaluator in is not the order they are written in")
     inner = body[start + len("return ["):index]
     # Where the separating commas are is a structural question, and it is answered on the
     # one mask rather than by a scan of this module's own. This split used to be a private

@@ -25,7 +25,7 @@ from sovprompts.bindings import derives_from_agent_result
 from sovprompts.calls import _agent_names, _writes_by_name, agent_calls, scan_is_stable
 from sovprompts.dispatch import dispatches, interpolated, prompt_of, resolved_prompt
 from sovprompts.lexer import unreadable
-from sovprompts.render import EXPR, Unreadable, blocks, rendered
+from sovprompts.render import EXPR, Unreadable, _literals, blocks, rendered
 from sovprompts.scan import masked
 
 WITNESS = "sov-witness"
@@ -119,21 +119,43 @@ def _dispatch_violations(name: str, source: str) -> list[str]:
                     out.append(f"{name}: {expression.strip()[:40]!r} reaches a witness "
                                "ahead of the frame")
             continue
-        if INVERTED in prompt:
+        try:
+            # What the evaluator receives, not the source that builds it. `LABEL in prompt`
+            # was a substring test over source while `interpolated` skipped comments, so a
+            # demotion sitting in a `//` comment, a dead string or an untaken ternary branch
+            # satisfied the rule and reached nobody. That asymmetry covered twenty-one of
+            # twenty-two workflows: the rendering grader was aimed at the one file a reading
+            # had complained about rather than at the rule. A prompt this cannot render is
+            # refused rather than fallen back on.
+            delivered = _literals(body)
+        except Unreadable as defect:
+            out.append(f"{name}: what this prompt delivers cannot be read, so the rule "
+                       f"cannot reach it: {defect}")
+            continue
+        if INVERTED in delivered:
             out.append(f"{name}: a witness prompt names the builder's account its oracle")
-        spliced = interpolated(prompt)
-        if spliced and LABEL in prompt:
+        # Read from the body, so the slots counted in the delivered text and the
+        # expressions they correspond to come from the same string. Counting one in
+        # the resolved text and the other in the body puts the name of the prompt
+        # itself in slot zero and shifts every position by one.
+        spliced = interpolated(body)
+        if spliced and LABEL in delivered:
             # Position, outside the frame as well as inside it. A prompt may carry the
             # label and still put the builder's account first and name it the oracle, with
             # the demotion in a closing footnote; two independent readings defeated the
             # rule that way. Twenty workflows hand-assemble their prompts, so presence was
             # the only rule reaching them, and presence is not position.
-            head = body[:body.index(LABEL)] if LABEL in body else ""
-            for expression in interpolated(head):
+            # Delivered order, and only the builder's account. `_literals` marks every
+            # interpolation `<expr>` in the order `interpolated` reports them, so the nth
+            # marker before the demotion is the nth spliced expression. Counting markers
+            # alone convicts a repository path; asking provenance of the source text
+            # ignores the transformation that decides what order the evaluator reads in.
+            before = delivered[:delivered.index(LABEL)].count(EXPR)
+            for expression in spliced[:before]:
                 if derives_from_agent_result(source, expression):
-                    out.append(f"{name}: {expression.strip()[:40]!r} reaches a witness "
-                               "before the sentence demoting it")
-        if spliced and LABEL not in prompt:
+                    out.append(f"{name}: {expression.strip()[:40]!r} is delivered before "
+                               "the sentence demoting it")
+        if spliced and LABEL not in delivered:
             measured = any(derives_from_agent_result(source, e) for e in spliced)
             out.append(f"{name}: a witness prompt splices {len(spliced)} expression(s) "
                        f"with no label demoting the builder's account"

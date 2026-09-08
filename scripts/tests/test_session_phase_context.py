@@ -76,7 +76,8 @@ class SessionPhaseContext(unittest.TestCase):
 
     def test_briefing_renders_registered_intent_and_phase_authority(self) -> None:
         data = {
-            "session": "alpha", "intent": "close the recorder seam", "tree": "/repo",
+            "session": "alpha", "registered": True,
+            "intent": "close the recorder seam", "tree": "/repo",
             "branch": "feat/x", "position": "1 ahead of main, 0 behind",
             "shared_tree": [], "peers": [], "held": {}, "next_decision": 2,
             "principal": {

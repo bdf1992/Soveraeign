@@ -77,6 +77,7 @@ def collect(root: Path, directory: Path, session: str, tree: str) -> dict[str, A
                             str(principal.get("principal") or ""))
     return {
         "session": session,
+        "registered": bool(own.get("registered")),
         "intent": own.get("intent", ""),
         "concern": own.get("concern") or concerns.resolve(None, session)[0],
         "concern_binding_source": own.get("concern_binding_source", "SESSION_FALLBACK"),
@@ -108,6 +109,30 @@ def _discovery(lines: list[str]) -> None:
     """
     lines.append("  discover what this node exposes: python scripts/sov_interface.py show")
     lines.append("  then load the owning contract for the operation or constraint you touch")
+
+
+def _registration(lines: list[str], data: dict[str, Any]) -> None:
+    """Say whether this session is in the registry at all, which `intent` cannot.
+
+    `intent: (not registered)` never meant an unregistered session: a registered
+    session that named no intent printed the identical line. A reader auditing
+    this environment on 2026-09-08 took the string at its word, was right by
+    accident, and could not have told the two states apart from the output.
+
+    They differ in what they cost. An unregistered session holds no path claims,
+    is invisible to every peer, and gets no collision refusal on a shared tree -
+    the guard that exists because three files were clobbered on 2026-08-23. That
+    is worth naming where it is read, because the hooks that would have
+    registered it fail silently by design and nothing else reports their absence.
+    """
+    if data.get("registered"):
+        lines.append(f"  intent: {data['intent'] or '(none recorded)'}")
+        return
+    lines.append("  NOT REGISTERED: no register event for this session. It holds no path "
+                 "claims, no peer can see it, and the shared-tree guard will refuse "
+                 "nothing on its behalf.")
+    lines.append("  register it: python scripts/sov_session.py register "
+                 "--intent '<what you are here to do>'")
 
 
 def _work_context(lines: list[str], data: dict[str, Any]) -> None:
@@ -156,7 +181,7 @@ def render(data: dict[str, Any]) -> str:
     if not peers and not data["held"]:
         lines = [f"Session registry: you are the only live session. "
                  f"{data['branch']}, {data['position']}.", f"  {identity}"]
-        lines.append(f"  intent: {data['intent'] or '(not registered)'}")
+        _registration(lines, data)
         _work_context(lines, data)
         _phase(lines, data["phase"])
         _lease_context(lines, data)
@@ -167,7 +192,7 @@ def render(data: dict[str, Any]) -> str:
     lines.append(f"  you: {data['session']} in {data['tree']} "
                  f"on {data['branch']}, {data['position']}")
     lines.append(f"  {identity}")
-    lines.append(f"  intent: {data['intent'] or '(not registered)'}")
+    _registration(lines, data)
     _work_context(lines, data)
     _phase(lines, data["phase"])
     _lease_context(lines, data)

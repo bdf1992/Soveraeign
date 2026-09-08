@@ -17,11 +17,28 @@
       ".claude/agents/sov-worker.md"
     ],
     "surfaces_why": "Agent definitions are read by launched participants carrying no other context, so a false claim in one is repeated by everything it launches. This is the surface the turn-count statistic survived in. Grading every role's definition here is a truth check, not a style one: Controller, Orchestrator, Worker and Witness write for machines and their register is correct. UNGLOSSED_TOKEN, the one kind that is about register, deliberately does not run over these files at all.",
-    "message": "Text submitted through `check`, which is how the seat grades a draft before sending it. A message is not in the tree, so it is graded on submission or not at all."
+    "message": "Text submitted through `check`, which is how the seat grades a draft before sending it. A message is not in the tree, so it is graded on submission or not at all.",
+    "human_surfaces": {
+      "glob": "acceptance/*.json",
+      "prose_fields": [
+        "claim",
+        "visible_result",
+        "why_it_matters",
+        "what_could_defeat_it",
+        "residuals",
+        "on_accept",
+        "on_reject"
+      ],
+      "why": "An acceptance packet is addressed to a person - AGENTS.md requires the claim in one sentence, why it matters, and what would defeat it, written for the seat one edge up. That is the only prose in this repository whose reader is known to be human, so it is where UNGLOSSED_TOKEN belongs. Agent definitions are excluded on purpose: their readers are launched participants and their register is correct.",
+      "exempt": [
+        "acceptance/accepted/"
+      ],
+      "exempt_why": "A settled packet records what was presented and accepted. Grading it would demand editing the record of a past presentation, which is the exemption scripts/sov_harness.py makes for drafts and contracts/counted-populations.json makes for dated readings. Two accepted packets carry an unglossed first use and stay as written."
+    }
   },
   "coverage": {
     "UNSOURCED_FIGURE": "A quantified claim about how participants, sessions or the owner behaved, in a paragraph that names no command, path or record producing the figure. Generalizes: any number carrying a measurement marker fails unless its own paragraph cites what derives it, so an invented statistic nobody anticipated fails without being listed. Motivated by `sov.md` and `sov-controller.md` asserting five genuine rulings and 78 instances of the word 'go' across 379 of Bdo's turns, with no transcript corpus in the repository and no command producing any part of it. Provenance only: the named command is never run and its output is never compared.",
-    "UNGLOSSED_TOKEN": "A repository type token used in front of a person whose first use carries no gloss. Progressive disclosure rather than prohibition: WITNESSED (independently confirmed) passes and teaches the vocabulary, a bare WITNESSED does not, and later uses are free. The gloss test reads a marker followed by two words, so a determined non-gloss passes; this prompts disclosure and does not prove it.",
+    "UNGLOSSED_TOKEN": "A repository type token used in front of a person whose first use carries no gloss. Progressive disclosure rather than prohibition: WITNESSED (independently confirmed) passes and teaches the vocabulary, a bare WITNESSED does not, and later uses are free. The gloss test reads a marker followed by two words, so a determined non-gloss passes; this prompts disclosure and does not prove it. Runs in `grade` over the declared human surfaces, and over any text submitted to `check`. It does not run over agent definitions, whose readers are machines.",
     "UNSUPPORTED_STANDING": "A claim that a named subject is WITNESSED or RATIFIED, graded against `python scripts/sov_standing.py`, which reads STATUS.yaml and the witness records by separate paths. Whole-token comparison with NOT read as denial, because NOT_WITNESSED contains WITNESSED (CLAUDE.md trap T3). This kind does reproduce: it runs the command and compares."
   },
   "not_covered": {

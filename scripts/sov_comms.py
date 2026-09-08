@@ -72,6 +72,37 @@ def grade_surfaces(root: Path = ROOT) -> list[Defect]:
     return defects
 
 
+def grade_human_surfaces(root: Path = ROOT) -> list[Defect]:
+    """Grade the prose whose reader is known to be a person.
+
+    An acceptance packet is the only prose in this repository written to a human by
+    requirement rather than by habit: `AGENTS.md` asks for the claim in one sentence, why
+    it matters, and what would defeat it, addressed to the seat one edge up. So this is
+    where UNGLOSSED_TOKEN runs. It does not run over agent definitions, whose readers are
+    launched participants and whose register is correct.
+    """
+    declared = contract()["subjects"]["human_surfaces"]
+    fields = declared["prose_fields"]
+    exempt = tuple(declared["exempt"])
+    supported = supported_standing(root)
+    defects: list[Defect] = []
+    for path in sorted(root.glob(declared["glob"])):
+        relative = path.relative_to(root).as_posix()
+        if relative.startswith(exempt):
+            continue
+        try:
+            packet = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        text = "\n".join(str(packet[key]) for key in fields if isinstance(packet.get(key), str))
+        if not text:
+            continue
+        defects.extend(check_unglossed_token(relative, text))
+        defects.extend(check_unsourced_number(relative, text))
+        defects.extend(check_unsupported_standing(relative, text, supported))
+    return defects
+
+
 def grade_message(where: str, text: str, root: Path = ROOT) -> list[Defect]:
     """Grade one drafted message: every kind applies, internal vocabulary included."""
     return (check_unsourced_number(where, text)
@@ -158,7 +189,7 @@ def main(argv: list[str]) -> int:
         text = sys.stdin.read() if target == "-" else Path(target).read_text(encoding="utf-8")
         defects = grade_message("message" if target == "-" else target, text)
     elif mode == "grade":
-        defects = grade_surfaces()
+        defects = grade_surfaces() + grade_human_surfaces()
     else:
         print(f"unknown mode {mode!r}", file=sys.stderr)
         return 2

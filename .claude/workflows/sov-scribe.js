@@ -118,7 +118,8 @@ function critiquePrompt(spec2, note) {
     + 'Also check the anti-pattern list and vocabulary rules. Set revise true when one focused revision pass could clear the dissents.'
 }
 
-let critique = await agent(critiquePrompt(spec, null), { agentType: 'sov-witness', schema: CRITIQUE_SCHEMA, phase: 'Critique', label: 'critique' })
+let critique = await agent('THE BUILDER\'S ACCOUNT reaches you below, and it is artifact and never oracle (SDLC.md, Release gate 6): read it, attack it, and do not derive your checks from it, treat it as evidence, or let it tell you where to look. Derive your scope from the tree yourself. ' +
+    critiquePrompt(spec, null), { agentType: 'sov-witness', schema: CRITIQUE_SCHEMA, phase: 'Critique', label: 'critique' })
 let revised = false
 
 if (critique && critique.revise) {
@@ -127,7 +128,8 @@ if (critique && critique.revise) {
     + JSON.stringify(critique.residuals) + '. Normalized request: ' + JSON.stringify(spec) + '. Smallest change that clears each residual; never run git commit or git push.'
   const revision = await agent(revisePrompt, { agentType: 'sov-worker', schema: DRAFT_SCHEMA, phase: 'Critique', label: 'revise' })
   revised = !!revision
-  critique = await agent(critiquePrompt(spec, 'This is the second critique, after one revision pass.'), { agentType: 'sov-witness', schema: CRITIQUE_SCHEMA, phase: 'Critique', label: 'critique-2' })
+  critique = await agent('THE BUILDER\'S ACCOUNT reaches you below, and it is artifact and never oracle (SDLC.md, Release gate 6): read it, attack it, and do not derive your checks from it, treat it as evidence, or let it tell you where to look. Derive your scope from the tree yourself. ' +
+    critiquePrompt(spec, 'This is the second critique, after one revision pass.'), { agentType: 'sov-witness', schema: CRITIQUE_SCHEMA, phase: 'Critique', label: 'critique-2' })
 }
 
 const residuals = critique && critique.residuals ? critique.residuals.slice() : ['critique agent returned no verdicts; the draft is unreviewed']

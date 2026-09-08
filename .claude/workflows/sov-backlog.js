@@ -157,7 +157,8 @@ if (disposable.length > 0) {
   const checked = await agent(
     'You are independently checking claims that unlanded work in the Soveraeign repository is '
     + 'disposable. Another agent judged these branches; you did not, and you must re-derive '
-    + 'rather than agree.\n\n' + JSON.stringify(disposable, null, 1) + '\n\n'
+    + 'rather than agree. Its judgement is artifact and never oracle: you may attack it, and may '
+    + 'not derive your checks from them or let it tell you where to look.\n\n' + JSON.stringify(disposable, null, 1) + '\n\n'
     + 'For each claim, verify it yourself with git. ALREADY_HOME means every outstanding commit '
     + 'patch is present on ' + survey.trunk + ' - check with `git cherry ' + survey.trunk
     + ' <branch>` and by reading the diff, not by trusting the count. SUPERSEDED means specific '

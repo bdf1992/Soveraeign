@@ -29,17 +29,6 @@ def _direction_defects(message: dict[str, Any], act: dict[str, Any],
     target_id = message["to_seat"]
     if target_id not in seats:
         return [f"{label}: addressed to {target_id}, which is not a seat in the topology"]
-    if act["direction"] == "ADJACENT":
-        # Communications travels either way along an edge the speaker already holds, and
-        # never to a seat it has no relationship with. That is what keeps rendering on an
-        # edge rather than making it another level: no new authority is implied by being
-        # able to speak in both directions, because the edges are the ones already owned.
-        if seats[speaker_id].get("owner_seat") == target_id:
-            return []
-        if seats[target_id].get("owner_seat") == speaker_id:
-            return []
-        return [f"{label}: {message['act']} travels along an edge {speaker_id} holds, and "
-                f"it holds no edge to {target_id}"]
     if act["direction"] == "UPWARD":
         owner = seats[speaker_id].get("owner_seat")
         if owner is None:
@@ -140,25 +129,39 @@ def _self_witness_defects(message: dict[str, Any], earlier: list[dict[str, Any]]
     return []
 
 
+def _occupant_defects(message: dict[str, Any], seats: dict[str, dict[str, Any]],
+                      label: str) -> list[str]:
+    """Nobody speaks from a seat they do not occupy.
+
+    A participant that phrased another seat's statement belongs in `rendered_by`. Putting
+    it in `speaker` reads as that seat itself speaking, and every standing and authority
+    rule downstream is then applied to the wrong participant.
+    """
+    speaker = message["speaker"]
+    seat = seats.get(speaker["seat_id"])
+    if seat is None:
+        return []
+    occupant = (seat.get("occupant") or {}).get("actor_id")
+    if occupant is None or speaker["actor_id"] == occupant:
+        return []
+    return [f"{label}: {speaker['actor_id']} speaks from {speaker['seat_id']}, which "
+            f"{occupant} occupies; a participant that only phrased this belongs in rendered_by"]
+
+
 def _duty_defects(message: dict[str, Any], earlier: list[dict[str, Any]],
                   by_id: dict[str, dict[str, Any]], etiquette: dict[str, Any],
-                  label: str) -> list[str]:
+                  seats: dict[str, dict[str, Any]], label: str) -> list[str]:
     """Dispatch the declared carriage duties. An undeclared duty name is itself a defect."""
     defects: list[str] = []
     carry_kinds: list[str] = []
     no_edit_kinds: list[str] = []
     for duty in etiquette["carriage_duties"]:
         name = duty["duty"]
-        if name == "NO_SELF_WITNESS":
+        if name == "SPEAKER_IS_THE_OCCUPANT":
+            defects.extend(_occupant_defects(message, seats, label))
+        elif name == "NO_SELF_WITNESS":
             if message["speaker"]["relation_to_subject"] == duty.get("applies_to_relation"):
                 defects.extend(_self_witness_defects(message, earlier, label))
-        elif name == "NO_STANDING_IN_RENDERING":
-            if message["act"] in duty.get("applies_to_acts", []) \
-                    and message.get("standing_proposed") is not None:
-                proposed = message["standing_proposed"]
-                defects.append(f"{label}: {message['act']} changes representation, never "
-                               f"standing, but this one proposes {proposed['from']} -> "
-                               f"{proposed['to']}")
         elif name in {"CARRY_EVERYTHING_RECEIVED", "NO_EDIT_IN_TRANSIT"}:
             if message["act"] not in duty.get("applies_to_acts", []):
                 continue
@@ -186,6 +189,7 @@ def conversation_defects(conversation: list[dict[str, Any]], topology: dict[str,
     for index, message in enumerate(conversation):
         label = f"{message.get('message_id', index)}"
         defects.extend(_message_defects(message, etiquette, seats, label))
-        defects.extend(_duty_defects(message, conversation[:index], by_id, etiquette, label))
+        defects.extend(_duty_defects(message, conversation[:index], by_id, etiquette,
+                                     seats, label))
         by_id[message["message_id"]] = message
     return defects

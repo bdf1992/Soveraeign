@@ -104,13 +104,6 @@
       "direction": "DOWNWARD",
       "requires_relation": "INDEPENDENT",
       "standing_ceiling": null
-    },
-    "RENDER": {
-      "means": "Here is another seat's statement, said again for a different reader.",
-      "plain_english": "Communications. The speaker changes how something reads - translating vocabulary, compressing, adding context for the audience - and changes nothing about what it is. The rendering goes in the body, which no checker reads. Everything carried comes through verbatim, and the act proposes no standing at all, so a rendering cannot promote what it renders. This is the only act available on every edge in both directions, because meaning is lost between a controller and a worker as readily as between a controller and the root.",
-      "direction": "ADJACENT",
-      "requires_relation": "FORWARDED",
-      "standing_ceiling": null
     }
   },
   "seats": {
@@ -130,8 +123,7 @@
         "AGGREGATE",
         "ASK",
         "REFUSE",
-        "STALL",
-        "RENDER"
+        "STALL"
       ]
     },
     "orchestration": {
@@ -142,8 +134,7 @@
         "AGGREGATE",
         "ASK",
         "REFUSE",
-        "STALL",
-        "RENDER"
+        "STALL"
       ]
     },
     "work": {
@@ -155,8 +146,7 @@
         "UNATTESTABLE",
         "ASK",
         "REFUSE",
-        "STALL",
-        "RENDER"
+        "STALL"
       ]
     }
   },
@@ -172,8 +162,7 @@
       "rule": "Every item_id present in an aggregated message must be present in the aggregate.",
       "plain_english": "A listener owes its own listener everything it heard. Dropping a question, a dissent, a residual, or a proven stall is the failure this whole contract exists to catch.",
       "applies_to_acts": [
-        "AGGREGATE",
-        "RENDER"
+        "AGGREGATE"
       ]
     },
     {
@@ -187,8 +176,7 @@
       "rule": "A carried item forwarded under an existing item_id must be byte-identical to the item it forwards.",
       "plain_english": "Summarising someone else's dissent is editing it. Add your own item if you have something to add; do not rewrite theirs.",
       "applies_to_acts": [
-        "AGGREGATE",
-        "RENDER"
+        "AGGREGATE"
       ]
     },
     {
@@ -199,16 +187,14 @@
       "applies_to_relation": "INDEPENDENT"
     },
     {
-      "duty": "NO_STANDING_IN_RENDERING",
-      "applies_to_acts": [
-        "RENDER"
-      ],
+      "duty": "SPEAKER_IS_THE_OCCUPANT",
+      "applies_to_acts": [],
       "kinds": [],
-      "rule": "A RENDER statement carries standing_proposed null.",
-      "plain_english": "A Communications participant may change representation and may not change semantic standing. Restating a builder's report in plain words does not make it witnessed, and the reader of a rendering is owed the same standing the original carried."
+      "rule": "A speaker's actor_id must be the actor_id the topology records as that seat's occupant.",
+      "plain_english": "Nobody speaks from a seat they do not occupy. A participant that phrases another seat's statement is named in rendered_by and leaves the speaker alone: the Controller stays the source of a Controller claim however the words were chosen. Without this, putting a communications actor into the control seat reads as the controller itself speaking, and every standing and authority rule downstream is being applied to the wrong participant."
     }
   ],
-  "generative_rule": "A seat type absent from `seats` has no admissible acts, and an act absent from `acts` cannot be spoken. Adding a seat or an act is a change to this table alone: the message schema, the fixtures format, and the checker all read from here. Nothing in this file constrains a message body, and no checker reads inside one. Communications is an act on an edge, not a seat type: no participant is added to the topology to carry meaning, and every seat renders on the edges it already holds.",
+  "generative_rule": "A seat type absent from `seats` has no admissible acts, and an act absent from `acts` cannot be spoken. Adding a seat or an act is a change to this table alone: the message schema, the fixtures format, and the checker all read from here. Nothing in this file constrains a message body, and no checker reads inside one. Communications needs no act of its own: AGGREGATE already forwards under relation FORWARDED, proposes no standing, and owes every carried item onward verbatim, and the body it forwards is unconstrained. What Communications needed was attribution, which is `rendered_by` on the message.",
   "not_in_scope": [
     "The content, shape, length, or wording of a message body.",
     "Whether a statement is true. Etiquette is about who may say a thing, never about whether it is so.",

@@ -129,6 +129,18 @@ def observe() -> int:
     press(observed, "SEATMSG-POS-WORK-REPORT", "a work seat may not DISPATCH",
           lambda m: m.__setitem__("act", "DISPATCH"))
 
+    # Nobody speaks from a seat they do not occupy. This is the defect the first draft of
+    # the Communications work shipped in its own fixtures: a communications actor placed in
+    # the control seat, which reads as the controller speaking.
+    press(observed, "SEATMSG-POS-CONTROL-AGGREGATE",
+          "a participant may not speak from a seat it does not occupy",
+          lambda m: m["speaker"].__setitem__("actor_id", "sov-comms@1"))
+    press(observed, "SEATMSG-POS-WORK-REPORT",
+          "naming a renderer does not license impersonating the speaker",
+          lambda m: (m.__setitem__("rendered_by", {"actor_id": "sov-comms@1",
+                                                   "actor_kind": "MODEL"}),
+                     m["speaker"].__setitem__("actor_id", "sov-comms@1")))
+
     # The relation each act requires.
     press(observed, "SEATMSG-POS-CONTROL-AGGREGATE", "an AGGREGATE claiming PERFORMED is refused",
           lambda m: m["speaker"].__setitem__("relation_to_subject", "PERFORMED"))

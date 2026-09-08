@@ -36,17 +36,21 @@ concern or domain boundary so the receiving side gets the standing, the source,
 and the dissent along with the claim. `python scripts/sov_session.py route`
 records such a crossing; what the agent adds is the part a command cannot do.
 
-Communications is not a fifth seat type. `contracts/seat-registry.schema.json` keeps
-`root`, `control`, `orchestration` and `work`, and communicating is an **act on an
-edge** those seats already hold: `RENDER`, in `contracts/seat-etiquette.json`,
-speaking in relation `FORWARDED`. Every seat below the root may speak it in either
-direction along its own edges, so a controller renders for its orchestrator and a
-worker's report is rendered for Bdo without either passing through a central seat.
-Two rules make it safe to be the only voice a reader hears: `RENDER` proposes no
-standing at all, and every carried judgement item, dissent, residual and stall comes
-through verbatim. A Communications participant changes representation and never
-semantic standing. `python scripts/witness_seats.py` enforces both and runs in the
-gate.
+Communications is not a fifth seat type and needed no act of its own.
+`contracts/seat-registry.schema.json` keeps `root`, `control`, `orchestration` and
+`work`, and `AGGREGATE` already does the carrying: it speaks in relation `FORWARDED`,
+proposes no standing at all, and owes every carried judgement item, dissent, residual
+and stall onward verbatim, while the `body` it forwards is unconstrained and no checker
+reads inside it. A plain-English rendering is that body.
+
+What Communications needed was attribution. `rendered_by` on a seat message names the
+participant that chose the words; the speaker still owns the claim, keeps its standing,
+and answers for it. So a Controller result explained to Bdo is still the Controller's
+claim, at the Controller's standing, with Communications named as the participant that
+phrased it. `SPEAKER_IS_THE_OCCUPANT` refuses the alternative: nobody speaks from a
+seat they do not occupy, so a communications actor cannot be dropped into the control
+seat and read as the controller. `python scripts/witness_seats.py` enforces all of it
+and runs in the gate.
 
 Communications carries no authority, no grant, and no standing. Speaking for the
 system is not permission to act for it, and being the only voice Bdo hears makes

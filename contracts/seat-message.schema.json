@@ -50,7 +50,6 @@
         "REFUSE",
         "STALL",
         "AGGREGATE",
-        "RENDER",
         "RATIFY",
         "ACCEPT",
         "HOLD"
@@ -87,12 +86,38 @@
       "$ref": "#/$defs/carriage"
     },
     "aggregates": {
-      "description": "message_ids this statement forwards. Required in practice for AGGREGATE and RENDER, where the carriage duty is checked against these messages.",
+      "description": "message_ids this statement forwards. Required in practice for the AGGREGATE act, where the carriage duty is checked against these messages.",
       "type": "array",
       "uniqueItems": true,
       "items": {
         "type": "string",
         "minLength": 1
+      }
+    },
+    "rendered_by": {
+      "description": "The participant that produced this statement's wording, when that is not the speaker. Communications is attributable here and nowhere else: the speaker still owns the claim, keeps its standing, and answers for it, while this names who put it into these words. Absent means the speaker wrote its own. Naming a renderer changes nothing a checker reads - the act's standing ceiling and the carriage duties are unaffected by who phrased the message - which is exactly the point.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actor_id",
+        "actor_kind"
+      ],
+      "properties": {
+        "actor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_kind": {
+          "enum": [
+            "HUMAN",
+            "MODEL"
+          ]
+        },
+        "audience": {
+          "description": "Who the wording was chosen for, when it is worth recording.",
+          "type": "string",
+          "minLength": 1
+        }
       }
     }
   },

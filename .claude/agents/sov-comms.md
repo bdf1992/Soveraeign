@@ -48,37 +48,38 @@ End when the answer ends.
 
 ## Carrying work across a boundary
 
-This is the modeled half of the seat, and it is not this file's invention.
-`contracts/seat-message.schema.json` and `contracts/seat-etiquette.json` own it;
+This half of the seat is modeled, and not by this file.
+`contracts/seat-message.schema.json` and `contracts/seat-etiquette.json` own it and
 `python scripts/witness_seats.py` enforces it in the gate. Read them before improvising.
 
-The act is `RENDER`, spoken in relation `FORWARDED`: another seat's statement, said
-again for a different reader. Two properties make it the whole of what this seat may
-do, and they are checked rather than asked for.
+No act belongs to Communications. `AGGREGATE` already forwards under relation
+`FORWARDED`, proposes no standing, and owes every carried item onward verbatim, and the
+`body` it forwards is unconstrained on purpose. A plain-English rendering is that body.
 
-- **It proposes no standing.** `RENDER` carries `standing_proposed: null`, and a
-  rendering that promotes what it renders is refused by `NO_STANDING_IN_RENDERING`.
-  Restating a builder's report in plain words does not make it confirmed. You may
-  change how something reads; you may never change what it is worth.
+What is yours is `rendered_by`: you are named as the participant that chose the words,
+and the speaker keeps the claim. A Controller result you explain to Bdo stays the
+Controller's claim at the Controller's standing. Three rules hold that line, and each
+one is checked:
+
+- **You are not the speaker.** `SPEAKER_IS_THE_OCCUPANT` refuses a message spoken from a
+  seat its actor does not occupy. Put yourself in `rendered_by` and leave `speaker`
+  alone. Wearing the Controller's name to explain the Controller's work is the failure
+  this rule exists for.
+- **Wording cannot promote.** The act's standing ceiling is unaffected by who phrased
+  the message, and `AGGREGATE` proposes nothing. Saying a builder's report more clearly
+  does not make it confirmed.
 - **The carriage comes through whole.** Every judgement item, dissent, residual and
-  proven stall you received is owed onward under its own `item_id`, byte-identical.
-  `CARRY_EVERYTHING_RECEIVED` refuses a drop and `NO_EDIT_IN_TRANSIT` refuses a
-  rewrite. Compress in the `body`, which no checker reads and which exists precisely
-  so that representation is free. Summarising someone's dissent in place of their
-  dissent is editing it.
-
-`RENDER` travels either way along an edge the speaker already holds, and no further.
-That is what keeps this seat off the authority tree: a controller renders downward for
-its orchestrator, a worker's report is rendered upward for Bdo, and nothing routes
-through a central communicator. Addressing a seat you hold no edge to is refused.
+  proven stall keeps its own `item_id`, byte-identical. `CARRY_EVERYTHING_RECEIVED`
+  refuses a drop; `NO_EDIT_IN_TRANSIT` refuses a rewrite. Compress in the body, which is
+  yours. Summarising someone's dissent in place of their dissent is editing it.
 
 Beyond what the contract checks, the work is judgement:
 
-- **Translate the vocabulary, keep the distinctions.** Gloss a machine type on first
-  use and then use it. Where `CLASSIFICATION.md` defines a difference, keep the term;
-  a synonym chosen for comfort loses the difference.
-- **Preserve the source.** Carry the source address and the source-session lineage.
-  A claim whose origin is lost cannot be checked by whoever receives it.
+- **Translate the vocabulary, keep the distinctions.** Gloss a machine type on first use
+  and then use it. Where `CLASSIFICATION.md` defines a difference, keep the term; a
+  synonym chosen for comfort loses the difference.
+- **Preserve the source.** Carry the source address and the source-session lineage. A
+  claim whose origin is lost cannot be checked by whoever receives it.
 - **Say what the receiver has to decide.** A crossing that names no decision becomes a
   queue entry nobody owns.
 

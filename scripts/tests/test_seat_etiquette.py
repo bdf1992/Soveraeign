@@ -77,8 +77,11 @@ class SeatEtiquetteFixtures(unittest.TestCase):
         probe = {
             "message_schema": "soveraeign-seat-message/v1", "message_id": "msg:probe",
             "sent_at": "2026-08-23T12:00:00Z",
-            "speaker": {"seat_id": "seat:worker-1", "seat_type": "work",
-                        "actor_id": "probe@1", "actor_kind": "MODEL",
+            # The seat's declared occupant, because SPEAKER_IS_THE_OCCUPANT refuses a
+            # speaker who is not - a synthetic name here would trip the duty this probe
+            # exists to prove is implemented.
+            "speaker": {"seat_id": "seat:witness-1", "seat_type": "work",
+                        "actor_id": "sov-witness@1", "actor_kind": "MODEL",
                         "relation_to_subject": "INDEPENDENT"},
             "to_seat": "seat:orchestrator-1", "act": "ATTEST",
             "subject": {"operation_id": "OP-PROBE"}, "body": "probe",

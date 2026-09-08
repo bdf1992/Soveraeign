@@ -993,6 +993,81 @@
     }
   },
   {
+    "id": "CONF-RUN-DEF-UNANSWERED-EDGE",
+    "predicates": [
+      "TRANS-observe_run"
+    ],
+    "requirement": "SPEC-RUN",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "run_id": "run-1",
+      "begin": {
+        "operation_plan_id": "plan-1",
+        "actor_id": "worker-a",
+        "delegated": true,
+        "gates": {
+          "capability": "PASS",
+          "budget": "PASS",
+          "input": "PASS",
+          "effect": "PASS"
+        },
+        "input_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "event": "ATTEMPTED",
+        "lease": {
+          "holder_id": "worker-a",
+          "fence": 1,
+          "expires_at": 2000
+        },
+        "receipt_id": "rcpt-begin-1"
+      },
+      "report": {
+        "worker_id": "worker-a",
+        "lease_fence": 1,
+        "reported_at": 1500,
+        "output_record_addresses": [
+          "out/1"
+        ],
+        "standing": "REPORT",
+        "settled": false
+      },
+      "observation": {
+        "observation_id": "obs-1",
+        "observer_id": "witness-z",
+        "relation_inference": {
+          "inference_id": "inf-1",
+          "outcome": "INDEPENDENT",
+          "edges_found": [],
+          "record_completeness": "COMPLETE",
+          "unanswerable_edges": [
+            "CONSTRUCTION_CONTEXT_INHERITED"
+          ]
+        },
+        "observed_state_addresses": [
+          "out/1"
+        ],
+        "observed_state_digests": [
+          "sha256:5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a"
+        ],
+        "predicate_results": {
+          "output-digest-declared": true
+        },
+        "predicates_declared_at": 1600,
+        "observed_at": 1700,
+        "standing": "OBSERVATION"
+      },
+      "settlement": {
+        "input_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "current_state_digest": "sha256:1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+        "observation_id": "obs-1",
+        "outcome": "COMMITTED",
+        "receipt_id": "rcpt-settle-1",
+        "settled_by": "kernel"
+      }
+    },
+    "note": "An inference reading INDEPENDENT over a record that names an edge nobody could answer. Absence of a recorded edge is not absence of a relation, at this boundary as much as inside the Observation Service. The predicate that catches this was added for pass 1's F7 and had no control in either direction, so deleting it changed no result (reports/2026-09-08-independence-repairs.md, F4)."
+  },
+  {
     "id": "CONF-RUN-DEF",
     "predicates": [
       "TRANS-observe_run",

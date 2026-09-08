@@ -550,18 +550,25 @@ class WitnessFindingsOnF28e43b(unittest.TestCase):
         self.assertEqual("DIRECT", inference["outcome"])
         self.assertEqual("PRODUCED_THE_OUTPUT", inference["edges_found"][0]["edge"])
 
-    def test_an_observer_with_prior_work_on_another_subject_is_still_admitted(self) -> None:
-        """D4. The earlier decoy repair asked whether the candidate had moved anything else,
-        which made every observer with prior work anywhere permanently unattestable. This case
-        and the decoy case above must pass together or the repair is not a repair."""
+    def test_an_observer_with_prior_work_elsewhere_is_refused_not_admitted(self) -> None:
+        """D4, and the cost pass 2 named, now taken deliberately.
+
+        Pass 2 objected that charging a candidate for prior work anywhere makes an experienced
+        observer unattestable. Pass 3 then defeated the alternative: corroborating the subject
+        alone is satisfied by any decoy the executor has itself moved, and admits the subject's
+        own builder as its independent observer. The subject is the executor's word either way,
+        so the walk refuses rather than guesses. This is a refusal, not a pass, and the cost is
+        a KNOWN-GAPS row.
+        """
         entries = journal()
         entries.insert(6, _entry("e-standing-elsewhere", "EVENT", "urn:soveraeign:work:other",
                                  "witness-z", {"event": "STANDING", "from": "OPEN",
                                                "to": "BUILT"}))
         record = RunRecord.from_entries(RUN, entries)
-        inference = self.service.infer_relation(record, "witness-z", "MODEL")
-        self._valid(inference, INFERENCE_SCHEMA)
-        self.assertEqual("INDEPENDENT", inference["outcome"])
+        with self.assertRaises(RelationUndetermined):
+            self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertEqual(["PRIOR_STANDING_ACTOR"],
+                         self.service.inferences[-1]["unanswerable_edges"])
 
     def test_an_unreadable_context_kind_is_a_question_not_subject_side(self) -> None:
         """D2. The launcher told the truth and the service could not read the word."""
@@ -648,6 +655,91 @@ class WitnessFindingsOnF28e43b(unittest.TestCase):
         self.service.declare_predicates(RUN, PREDICATES)
         with self.assertRaises(ObserverNotIndependent):
             self.service.observe_run(record, "witness-z", reader, submitted_by="ghost")
+
+
+class WitnessFindingsOn3c24420(unittest.TestCase):
+    """The third pass. It defeated two repairs the previous commit stated as complete.
+
+    Its deepest finding is not repaired here and is not repairable here: every field this walk
+    reads to establish either axis is written by the party being graded. See `CHARTER.md`,
+    "What this walk detects", and `decisions/0104` judgement item 4.
+    """
+
+    def setUp(self) -> None:
+        self.service = ObservationService(Clock())
+        self.record = RunRecord.from_entries(RUN, journal())
+
+    def test_a_decoy_the_executor_itself_moved_does_not_clear_the_candidate(self) -> None:
+        """F1. Corroboration asks only that an actor of the run appear on the named subject,
+        and the executor writes the name, so it satisfies that on any subject it has moved.
+        The candidate's arrow on the real subject sat in the same record, unread."""
+        entries = journal(subject="urn:soveraeign:work:decoy")
+        entries.insert(6, _entry("e-standing-decoy", "EVENT", "urn:soveraeign:work:decoy",
+                                 "worker-a", {"event": "STANDING", "from": "OPEN",
+                                              "to": "BUILT"}))
+        entries.insert(7, _entry("e-standing-real", "EVENT", SUBJECT, "witness-z",
+                                 {"event": "STANDING", "from": "OPEN", "to": "BUILT"}))
+        record = RunRecord.from_entries(RUN, entries)
+        with self.assertRaises(RelationUndetermined):
+            self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertEqual(["PRIOR_STANDING_ACTOR"],
+                         self.service.inferences[-1]["unanswerable_edges"])
+
+    def test_an_uncorroborated_subject_refuses_even_when_the_candidate_is_clear(self) -> None:
+        """M3. The corroboration guard had no case that failed when it was deleted: its own
+        declared defeating case was killed by the UNKNOWN arm instead, because the decoy's
+        mover carried no profile. This one gives that mover a profile, so only corroboration
+        can refuse it."""
+        stranger = _profile("stranger")
+        entries = journal(subject="urn:soveraeign:work:decoy")
+        entries.insert(6, _entry("e-standing-decoy", "EVENT", "urn:soveraeign:work:decoy",
+                                 "outsider-o", {"event": "STANDING", "from": "OPEN",
+                                                "to": "BUILT"}))
+        entries.append(_entry("e-launch-outsider", "EVENT", "outsider-o", "worker-a",
+                              {"event": "LAUNCH", "launched_actor_id": "outsider-o",
+                               "launched_by": "worker-a", "context_passed": ["OBJECTIVE"],
+                               "profile": stranger, "predicates_source_kind": "CONTRACT",
+                               "predicates_source_actor": "contract:observation"}))
+        record = RunRecord.from_entries(RUN, entries)
+        with self.assertRaises(RelationUndetermined):
+            self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertEqual(["PRIOR_STANDING_ACTOR"],
+                         self.service.inferences[-1]["unanswerable_edges"])
+
+    def test_a_correctly_hashed_forged_inference_is_refused(self) -> None:
+        """F2. The gate re-hashed three fields the caller supplies, so the id was identical for
+        every verdict the walk could reach about one subject: an honest DIRECT and a forged
+        INDEPENDENT carried the same one. The earlier fixture used an obviously invalid id,
+        which is not the threat model - the recipe is in the repository."""
+        honest = self.service.infer_relation(self.record, "worker-a", "WORKER")
+        forged = dict(honest, outcome="INDEPENDENT", edges_found=[],
+                      record_completeness="COMPLETE")
+        forged.pop("unanswerable_edges", None)
+        self.assertEqual(honest["inference_id"], forged["inference_id"])
+        self.service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(RelationUndetermined):
+            observe_run(self.record, forged, self.service.declarations[-1], "worker-a",
+                        reader, "2026-09-08T02:00:00+00:00")
+
+    def test_a_verdict_that_disagrees_with_the_walk_is_refused_field_by_field(self) -> None:
+        genuine = self.service.infer_relation(self.record, "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, PREDICATES)
+        for field, value in (("executor_id", "someone-else"),
+                             ("evidence_addresses", ["e-attempt"]),
+                             ("edges_examined", list(reversed(EDGES)))):
+            with self.subTest(field=field):
+                with self.assertRaises(RelationUndetermined):
+                    observe_run(self.record, dict(genuine, **{field: value}),
+                                self.service.declarations[-1], "witness-z", reader,
+                                "2026-09-08T02:00:00+00:00")
+
+    def test_the_observer_relation_never_prints_an_empty_evidence_list(self) -> None:
+        """F2's tail: the sentence read `record read at ; outputs read directly`, a hole where
+        its evidence goes, on a record the pass had forged its way past."""
+        self.service.infer_relation(self.record, "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, PREDICATES)
+        observation = self.service.observe_run(self.record, "witness-z", reader)
+        self.assertNotIn("read at ;", observation["observer_relation"])
 
 
 class WitnessFindingsOn169182f(unittest.TestCase):

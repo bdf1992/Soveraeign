@@ -269,24 +269,66 @@ sets are closed now, and an unrecognised kind on either is a question.
 
 **A gate reads the record, not a report about it.** `admission.py` graded a verdict and never
 the record that verdict described, so the run's own executor observed its own run through the
-exported `observe_run` on a hand-written dict. It now takes the record, re-derives the
-`inference_id` from the material the walk hashes, and refuses an inference citing entries the
-record does not carry.
+exported `observe_run` on a hand-written dict. It now takes the record. *(Pass 3 defeated the
+first repair: re-deriving `inference_id` proved nothing, because that id hashes three fields
+the caller supplies and is therefore identical for every verdict the walk could reach about one
+subject. The gate now re-runs the walk and refuses unless the handed verdict is the one it
+reaches, field by field. A verdict is a convenience for the caller and never a credential.)*
 
-**Corroborate the subject; do not charge the candidate.** The decoy repair above asked whether
-the candidate had moved any other subject, and the pass showed that made admission *decrease*
-as the record grew: one unrelated arrow by an unrelated party refused every candidate, and the
-only route to admission was handing the walk a narrowed record — the thing
-`record_completeness` exists to punish. The question is now asked of the subject instead. An
-actor of this run must appear on the subject the run names. The decoy still refuses and an
-observer with prior work elsewhere is admitted, and the two cases are pinned together, because
-either alone can be satisfied by a rule that is wrong.
+**Both guards, and the cost taken deliberately.** The decoy repair asked whether the candidate
+had moved any other subject, and pass 2 showed that made admission *decrease* as the record
+grew. Corroborating the subject instead — an actor of this run must appear on the subject the
+run names — admitted the experienced observer, and pass 3 then defeated it: the executor writes
+the name, so it corroborates any decoy it has itself moved, and the subject's own builder was
+admitted as its independent observer with the candidate's arrow on the real subject sitting
+unread in the same record.
+
+So both, and pass 2's objection is accepted as a cost rather than answered. An observer the
+record shows moving any other subject is refused. That makes an experienced observer
+unattestable, which is real, disclosed in `KNOWN-GAPS.md`, and better than admitting a
+subject's builder as its witness. A subject nobody can verify is not one the walk may guess at.
 
 The pass's envelope was `UNATTESTABLE` for a contract-typed `Finding`: no `RecordProjection`
 has been exercised on a real run, and minting an id to satisfy the schema would be inventing
 evidence. It said plainly that the standing answer was no either way. It also declined to be
 the next pass, on the ground that from that point its own probes are inside the repair loop.
 That is the correct reading of this decision applied to the pass itself.
+
+## The third pass found the axis itself is declarable
+
+`reports/2026-09-08-independence-repairs.md`, over commit `3c24420`. It dissented too, defeated
+the two repairs corrected above, and found the section they sit in stating them as complete two
+paragraphs after the sentence naming that exact defect. That is this record repeating the thing
+it names, twice now, and the second time it was pass 3 rather than the builder who noticed.
+
+It also found this record citing a report that had never existed. The script that should have
+written `reports/2026-09-08-independence-repairs.md` aborted, the retry re-ran only the other
+half, and three artifacts — this one among them — cited it for a day. A governing decision
+record citing a file in no commit is the same defect as a check that grades a declaration, made
+by the same participant one layer up, and nothing in the repository resolves a path named in
+prose. That is now a `KNOWN-GAPS` row.
+
+**The finding that is not repaired.** Ruling 3 makes perspective the axis a declaration cannot
+remove, read from the operating profile because a rename defeats an id and does not defeat a
+frame. Its stated safeguard is that the launcher is not the observer.
+
+`decisions/0100` has a builder launch its own witness. So the launcher *is* the executor, and
+every field this walk reads to establish either axis — `context_passed`,
+`predicates_source_kind`, `predicates_source_actor`, `subject_id`, `lease`, and the profile
+digest — is written by the party being graded. `RunRecord.profile_of` resolves that digest
+against nothing. A rename does not defeat the frame; the executor typing a different digest
+does.
+
+Ruling 3's safeguard names the wrong adversary. It stops the observer vouching for itself and
+leaves the executor vouching for the observer. That is why three repairs failed in the same
+shape: each moved where a declaration is read, not that one is read.
+
+This is not repaired, because it is not repairable at that boundary. What changed instead is
+what the repository claims: `CHARTER.md` now states the property the walk has — it detects
+carelessly recorded dependence and does not detect declared independence — and `KNOWN-GAPS.md`
+carries the perspective axis as declared, beside the context axis that was already disclosed.
+Whether Ruling 3 and `decisions/0100` are a conflict to settle or a gap to carry is the owner's
+and is judgement item 4.
 
 ## Defaults taken
 
@@ -336,6 +378,20 @@ axis, and it widened rather than narrowed.
 2. Is retiring `GRANT_DESCENDS_FROM_RUN` right, or does a builder's power over
    the observer's authority stay an independence question in its own right,
    separately from its power over the finding?
+3. May showing the walk more record ever reduce admission? Both answers change
+   what `record_completeness` means, which is `SPEC.md`-adjacent rather than an
+   engineering choice inside this concern. The walk currently refuses an
+   observer the record shows working elsewhere, which is that shape.
+4. Ruling 3 makes perspective the non-declarable axis; `decisions/0100` makes
+   the executor the launcher that declares it. Conflict to settle, or a gap to
+   carry disclosed as the context axis already is?
+5. Does a witness record admit a builder's section at all, or must the
+   builder's disposition live in a report that cites it? Two repairs put the
+   prose below the certifying line and then above it before it left the file.
+6. A governing decision record cited a report that existed in no commit, and
+   every gate stayed green. Is a check that resolves cited repository paths in
+   covered prose worth its cost, and is repairing a Record defect in a decision
+   record the builder's to do?
 
 ## Residuals
 

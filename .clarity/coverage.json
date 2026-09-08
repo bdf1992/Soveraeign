@@ -1885,7 +1885,7 @@
       "changed": false
     },
     "services/observation/CHARTER.md": {
-      "artifact_digest": "sha256:181e09fd91e5d1dbe2746f5132124fb00e0036f66534ccd180a9dd488e6c0b96",
+      "artifact_digest": "sha256:7332a8c612d492bcb22fe5a2738e8af2e037e8a79fc1246d5b5e9daad3cf4bb1",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
@@ -1903,7 +1903,7 @@
       "changed": true
     },
     "services/observation/KNOWN-GAPS.md": {
-      "artifact_digest": "sha256:35769b1a640aaa381726705a7bc496c2816b9a5aa04100b292b85c690bd5c3d7",
+      "artifact_digest": "sha256:3e6f36cba8e7c30e9d2ea5dbd661a288758163560d0027a4ef041a3aea353a13",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",

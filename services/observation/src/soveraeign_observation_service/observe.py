@@ -165,6 +165,9 @@ def observe_run(
 
     results = {predicate["predicate_id"]: _evaluate(predicate, payloads[predicate["address"]])
                for predicate in predicates}
+    # An empty address list printed as "read at ; ", a sentence with a hole where its evidence
+    # goes. A third witness pass found it on a record it had forged its way past.
+    read_at = ", ".join(inference["evidence_addresses"]) or "NO ADDRESS"
     material = f"{record.run_id}|{observer_id}|{'|'.join(addresses)}".encode("utf-8")
     return {
         "observation_id": "urn:soveraeign:observation:"
@@ -175,7 +178,7 @@ def observe_run(
             f"{inference['outcome']} per {inference['inference_id']}: none of "
             f"{', '.join(inference['edges_examined'])} found over a "
             f"{inference['record_completeness']} record read at "
-            f"{', '.join(inference['evidence_addresses'])}; "
+            f"{read_at}; "
             f"outputs read directly, not through the executor's report"),
         "observed_state_addresses": addresses,
         "observed_state_digests": digests,

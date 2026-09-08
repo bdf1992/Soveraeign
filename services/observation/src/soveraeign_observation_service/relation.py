@@ -41,6 +41,7 @@ from .record import (
     PREDICATE_SOURCE_KINDS,
     RunRecord,
 )
+from .lifecycle import walk_lifecycle
 from .version import SAME, UNKNOWN, _version_of
 
 EDGES = (
@@ -89,53 +90,6 @@ def _walk_perspective(record: RunRecord, candidate: str, walk: _Walk) -> None:
             return
     if not executors or any(reading == UNKNOWN for reading in readings.values()):
         walk.cannot_answer("SAME_ACTOR_VERSION")
-
-
-def _corroborated(record: RunRecord, arrows: list[dict[str, Any]]) -> bool:
-    """Does an actor of this run appear on the subject the run names?
-
-    The subject is the executor's own word. A subject no actor of this run ever moved is not
-    this run's lifecycle, whoever named it.
-    """
-    executors = record.executors()
-    return any(_version_of(record, str(entry.get("actor") or ""), actor) == SAME
-               for entry in arrows for actor in executors)
-
-
-def _walk_lifecycle(record: RunRecord, candidate: str, walk: _Walk) -> None:
-    """Did the candidate, or a version of it, already move this subject along an arrow?
-
-    Without a subject the run belongs to, there is no lifecycle to walk and the edge is
-    unanswerable. That is the shape a per-run inference had for every subject.
-    """
-    subject = record.subject_id()
-    if subject is None:
-        walk.cannot_answer("PRIOR_STANDING_ACTOR")
-        return
-    arrows = record.standings(subject)
-    if not arrows:
-        walk.cannot_answer("PRIOR_STANDING_ACTOR")
-        return
-    walk.cite(*arrows)
-    # The subject is named by the executor's own ATTEMPTED payload, so it is corroborated
-    # before it is walked: an actor of this run must appear on it. A decoy the executor names
-    # to send the walk down an unrelated lifecycle fails that and is unanswerable.
-    #
-    # An earlier repair asked the opposite question - whether the candidate had moved anything
-    # else - and a second witness pass showed that made admission decrease as the record grew,
-    # so every observer with prior work anywhere was refused. Corroborating the subject refuses
-    # the decoy without charging a candidate for having worked before.
-    if not _corroborated(record, arrows):
-        walk.cannot_answer("PRIOR_STANDING_ACTOR")
-        return
-    readings = [(entry, _version_of(record, candidate, str(entry.get("actor") or "")))
-                for entry in arrows]
-    for entry, reading in readings:
-        if reading == SAME:
-            walk.edge("PRIOR_STANDING_ACTOR", entry)
-            return
-    if any(reading == UNKNOWN for _, reading in readings):
-        walk.cannot_answer("PRIOR_STANDING_ACTOR")
 
 
 def _walk_context(record: RunRecord, candidate: str, walk: _Walk) -> None:
@@ -238,7 +192,7 @@ def infer_relation(
     walk.cite(*attempts, *record.executors().values())
 
     _walk_perspective(record, candidate_observer_id, walk)
-    _walk_lifecycle(record, candidate_observer_id, walk)
+    walk_lifecycle(record, candidate_observer_id, walk)
     _walk_context(record, candidate_observer_id, walk)
 
     # Every attempt ran under its own lease; a retry's lessee is as direct as the first

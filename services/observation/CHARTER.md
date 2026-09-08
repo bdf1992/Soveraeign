@@ -121,6 +121,30 @@ passes found it again in a place the previous repair had claimed to close. Every
 comparison in this service goes through `version.py`, and an edge that compares an id by hand
 is that defect returning.
 
+## What this walk detects
+
+Stated as the property it has, because three witness passes each defeated a claim of the
+property it was asserted to have.
+
+**This walk detects carelessly recorded dependence. It does not detect declared
+independence.** Every field it reads to establish either axis — `context_passed`,
+`predicates_source_kind`, `predicates_source_actor`, `subject_id`, `lease`, and the operating
+profile digest itself — is written into the record by the party being graded.
+`decisions/0100` has a builder launch its own witness, so the launcher is the executor, and
+`RunRecord.profile_of` resolves that digest against nothing.
+
+A rename does not defeat the frame. The executor typing a different digest does.
+
+That is not a defect this boundary can repair, and pretending otherwise is what produced three
+rounds of the same failure in new places. `decisions/0104` Ruling 3 makes perspective the axis
+that cannot be removed by declaration, and under the current launch model it can. Whether that
+is a conflict to settle or a gap to carry is the owner's; it is `KNOWN-GAPS.md`'s first two
+rows and `decisions/0104`'s fourth judgement item until then.
+
+What the walk is still worth: a record written without that intent, by a participant that did
+not think to lie, is read faithfully and refuses. Every defeat the three passes found now
+refuses. None of them needed an adversary — the first was a launch entry nobody wrote.
+
 ## What this service is not
 
 **It is not the log.** The append-preserving journal belongs to the Record Service; an

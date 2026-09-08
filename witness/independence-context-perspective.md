@@ -8,27 +8,18 @@ Pass 1, 2026-09-07. Verdict **FINDING**, dissenting. The pass supported no stand
 
 ## Filing note
 
-Everything below this note is the witness's, quoted, and nothing else is. An earlier version of
-this file carried a `Builder's disposition` section after the witness's closing line, at the
-same heading level, inside a document declared to be quoted witness bytes. Pass 2 named that as
-a custody defect larger than the one this note admitted: the disclosed weakness was "the
-builder typed the witness's words", and the undisclosed one was "the builder also added its
-own". That section now lives in `reports/2026-09-08-independence-repairs.md`, which cites this
-record rather than sitting inside it.
+Everything below this note is pass 1's, quoted, and nothing else is.
 
-Pass 1 recorded its five defeats as prose and kept no probe, so its central finding is not
-re-derivable from this file; pass 2 had to write its own from scratch, and a reader would have
-to as well. Pass 2's probes are checked in at `witness/probes/probe_independence_walk.py`.
-Pass 1's are lost.
+The witness could not file it: `scripts/sovdocs/facets.py` classifies `witness/*.md` into the
+documentation corpus, so a new file here turns `verify.py` red and repairing that needs a file
+a witness may not edit. The builder filed these bytes. That is weaker custody than a witness
+writing its own record, and it is a `KNOWN-GAPS` row rather than a thing smoothed over.
 
-The observation below is the witness's, quoted. The witness could not file it itself:
-`scripts/sovdocs/facets.py` classifies `witness/*.md` into the documentation corpus, so a new
-file here makes `sov_docs check` report `docs/documentation.html` stale and turns `verify.py`
-red, and repairing that means regenerating a file a witness is not permitted to edit. The
-witness proved that with a temporary file, removed it, and recorded the coupling as its
-residual R8. The builder filed these bytes and rebuilt the page. That is a weaker custody than
-a witness writing its own record and it is named rather than hidden;
-`services/observation/KNOWN-GAPS.md` carries R8 as an open row.
+Two earlier versions of this note were themselves the defect. The first carried a
+`Builder's disposition` section below the witness's closing line; the second moved that out and
+put two paragraphs of builder prose about pass 2 *above* the line certifying the file as quoted
+witness bytes. Pass 3 found the second. Everything the builder has to say about these passes is
+in `reports/2026-09-08-independence-repairs.md`, which cites this record.
 
 ## Independence of this pass
 

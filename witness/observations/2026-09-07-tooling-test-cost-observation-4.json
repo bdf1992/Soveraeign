@@ -1,0 +1,102 @@
+{
+  "case_id": "WITNESS-2026-09-07-TOOLING-TEST-COST-4",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-07-tooling-cost",
+  "artifact_revision": "d6383a5b32f5001963f0a8849d06466520c8be39",
+  "participant_claim": "COMPLETED",
+  "observed": {
+    "subject": "tooling-test-cost pass 4: frozen candidate d6383a5 on base 6498fc7, the whole concern reconciled onto main as one commit over three paths; supersedes 479ac74, cd006b0 and e08af89",
+    "record": "witness/tooling-test-cost.md",
+    "record_section": "Pass 4: frozen candidate d6383a5 (2026-09-07)",
+    "prior_receipts": [
+      "witness/observations/2026-09-07-tooling-test-cost-observation.json",
+      "witness/observations/2026-09-07-tooling-test-cost-observation-2.json",
+      "witness/observations/2026-09-07-tooling-test-cost-observation-3.json"
+    ],
+    "pass": 4,
+    "verdict": "CONFIRMED",
+    "standing_supported": "none",
+    "standing_note": "No STATUS.yaml field names this subject. This is an observation and settles nothing.",
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-07-tooling-cost",
+    "observer_independence_basis": "This participant built nothing and edited no file outside its own witness record, receipts and landing records. Coordinator and commit messages located the subject and were not taken as evidence; the freeze defect reported for the sibling concern was re-derived from scripts/sovland/ and reproduced independently. Measurements ran in full-history clones at d6383a5 and 6498fc7, both with empty porcelain, and in the feat/tooling-test-cost worktree, whose porcelain was empty before this pass wrote anything.",
+    "observer_relation": "INDEPENDENT_OF_BUILDER",
+    "observed_at": "2026-09-07T17:40:00Z",
+    "candidate_commit": "d6383a5b32f5001963f0a8849d06466520c8be39",
+    "candidate_tree": "bcab54cf5fb632d633e1e7a2e35c756426887c83",
+    "base_commit": "6498fc7b3172476df54882d7b65c47f52366c8c8",
+    "superseded_revisions": ["479ac74becae9fbb05b22ed4079379f116f5fcf8", "cd006b0f244f78f86c74be33180f2a537c4e9a47", "e08af8930587fdc3586ac517ca7188f98cb8702c"],
+    "observed_state_addresses": [
+      "scripts/tests/test_sov_fresh.py",
+      "scripts/run_tooling_tests.py",
+      "scripts/tests/test_run_tooling_tests.py",
+      "scripts/sovland/candidates.py",
+      "scripts/sovland/tree.py",
+      "scripts/sovland/isolation.py",
+      "scripts/sovfresh/layers.py",
+      "scripts/verify.py",
+      ".local/candidates/d6383a5b32f5001963f0a8849d06466520c8be39.json"
+    ],
+    "observed_state_digests": [
+      "sha256:8736ae6a46d08bedeeeae71f87195f7549113c1444d9c157773181d5f09f127c",
+      "sha256:9c278f4650d1e4104f587b378d9a883126673b8ddd5d26f5a71575b1f75fb8cc",
+      "sha256:dff9fd8ab1616a4d4aa0f56ceef35c73aa91d384e9ef38bb46be185859fe87ff",
+      "sha256:c274140a69a42afdd0ec87f386348eea4fb6f40219d88fd3aebf3e52fdc991f3",
+      "sha256:dcad09b963bba024bdd0db41657c513b1c0409c46e86faf1d84d10ecab498f63",
+      "sha256:cd95ed31c3033fc2406e0be1858a926452da516fb21abf0788db1c2877d344ee",
+      "sha256:afc7e7578e47fe3e8b4d0a7daf4ea4fa80d631c0ae02551096fe8b0f9cf5ac44",
+      "sha256:e5d9cb750636c3828cb7e58f007fda6b4bd4b30af242fb7fdfba8d3088384364",
+      "sha256:9e77318b9e750ee20b19cee82ea251bc403a9c66381a202999af0e0cbb07c574"
+    ],
+    "commands": {
+      "subject": {"command": "git rev-parse HEAD HEAD^{tree}; git diff --name-status 6498fc7..d6383a5; git rev-list --count 6498fc7..d6383a5; git merge-base --is-ancestor for each superseded commit", "exit": "0", "excerpt": "d6383a5b32f5001963f0a8849d06466520c8be39, tree bcab54cf5fb632d633e1e7a2e35c756426887c83; three M paths: scripts/run_tooling_tests.py, scripts/tests/test_run_tooling_tests.py, scripts/tests/test_sov_fresh.py; 1 commit; 479ac74, cd006b0, e08af89 all unreachable"},
+      "blob_carry": {"command": "git rev-parse d6383a5:<path> vs e08af89:<path> for the three paths", "exit": 0, "excerpt": "identical blobs 6049859e, 53e8b1a2, 216c380a; passes 1-3's readings of those bytes carry"},
+      "untracked_check": {"command": "diff -rq -x .git -x __pycache__ -x .local <clone d6383a5> <worktree>", "exit": 0, "excerpt": "no output: the worktree holds exactly the candidate's bytes and no untracked file"},
+      "verify": {"command": "python scripts/verify.py, clean full-history clone of d6383a5", "exit": 0, "excerpt": "PASS: 52 checks in 20.297s wall; orientation snapshot PASS 10 of 10 claims; repository tooling tests PASS 19.445s; fresh participation slice PASS 5.461s"},
+      "lint": {"command": "python scripts/lint.py, same clone", "exit": 0, "excerpt": "PASS: repository hygiene (1224 text files, 562 Python modules, 10 named debt)"},
+      "partition_suite": {"command": "python -m unittest scripts.tests.test_run_tooling_tests", "exit": 0, "excerpt": "Ran 7 tests OK"},
+      "mutant_inherited_variable_wins": {"command": "scratch copy of d6383a5; layers.py:63 -> os.environ.get(ENV_PRINCIPAL) or principal_id; loader order and reverse; SOV_PRINCIPAL unset", "exit": "1 / 1", "excerpt": "one failure each order: test_an_inherited_principal_variable_does_not_reach_the_resolver"},
+      "reverse_order": {"command": "custom TestLoader, reversed then forward", "exit": "0; 0", "excerpt": "24 ok both; 2.574 s reversed, 2.565 s forward"},
+      "resource_warning": {"command": "python -W error::ResourceWarning -m unittest scripts.tests.test_sov_fresh", "exit": 0, "excerpt": "OK; 0 ResourceWarning lines; in-process probe: shared directory absent after the suite"},
+      "unittest_timing": {"command": "perf_counter around python -m unittest scripts.tests.test_sov_fresh, three sequential runs each, alone", "exit": "0 x6", "excerpt": "d6383a5: 24 cases, 2.800 / 2.713 / 2.685 s; 6498fc7: 25 cases, 4.430 / 4.217 / 4.199 s"},
+      "tooling_candidate": {"command": "scripts/run_tooling_tests.py via a wrapper timing _run, clone d6383a5, twice, alone", "exit": "0; 0", "excerpt": "run 1 shards 9.81 / 10.12 / 10.23 (holds test_sov_fresh, 23 modules) / 10.93 s, wall 10.93 s; run 2 shards 7.79 / 9.02 / 9.29 (holds fresh) / 10.28 s, wall 10.28 s"},
+      "tooling_base": {"command": "same, clone 6498fc7", "exit": 0, "excerpt": "shards 10.19 / 11.07 / 11.57 (holds fresh, 27 modules) / 12.18 s, wall 12.19 s"},
+      "per_module_timing": {"command": "all 111 modules alone, twice each, minimum taken, sequential", "exit": "110 x 0; test_sov_clarity 1", "excerpt": "total 35.7 s; measured seconds times ten are a median 0.66 of the declared weight, so this host is about 1.5x quicker than the table's; by ratio to that median 15 of 18 entries are within a quarter; test_automation_control 0.97 (about 45% heavier than predicted), test_sov_node_journal 0.48 and test_sov_surface 0.50 (about a quarter lighter); no module at or above 1.0 s is absent from the table; test_sov_branch now under 1.0 s"},
+      "clarity_alone": {"command": "python -m unittest scripts.tests.test_sov_clarity", "exit": 1, "excerpt": "ModuleNotFoundError: No module named 'sovclarity'; also fails alone at aeecc60; the only one of 111"},
+      "f6_reproduction": {"command": "throwaway clone: git rm --cached scripts/sov_fresh.py (file stays on disk, untracked); python scripts/sov_fresh.py selfcheck in the working directory; commit; clone the commit; same command from the candidate tree", "exit": "0 then 2", "excerpt": "the check gather_checks would record passes over the working directory and fails over the tree the candidate has; changed_paths would read scripts/sov_fresh.py and look consistent"}
+    },
+    "findings": {
+      "F1_pass1": {"severity": "MATERIAL", "held": true, "detail": "Repair carries to d6383a5: mutant fails in both orders."},
+      "F2_pass1": {"severity": "MINOR", "held": true, "detail": "Repair carries: no ResourceWarning under -W error; shared directory released."},
+      "F4_pass2": {"severity": "MATERIAL", "held": true, "detail": "Repair carries: partition suite 7/7 OK, runner exit 0 twice, wall 10.93 / 10.28 s against the base's 12.19 s."},
+      "F5_pass3": {"severity": "MINOR", "held": true, "withdrawn": true, "detail": "Withdrawn. test_sov_branch measured 1.22 s on a loaded host and is under a second here, reproducing the commit's 0.9 s; the earlier disagreement was host load, not a defect."},
+      "F6": {"severity": "MATERIAL", "held": false, "scope": "the freeze mechanism in scripts/sovland, not this candidate", "detail": "tree.gather_checks runs lint via _run_check with cwd=repo.ROOT and verify via isolation.verify_reading with cwd=root, so both grade the working directory rather than the staged set or the resulting tree; the graded set is staged | carried_paths, which no untracked file enters; changed_paths is read back from the commit range so the record stays self-consistent while its checks field describes different bytes, and the record names no tree. isolation.foreign_paths already reads git status --porcelain -z but only to turn a failing check into a PASS attributed elsewhere, never to ask whether a passing check leaned on bytes the candidate lacks: the guard is asymmetric in the permissive direction. Reproduced with git rm --cached scripts/sov_fresh.py: selfcheck exits 0 in the working directory and 2 from the resulting candidate tree. candidates.freeze requires explicit --path and never derives the set, so the sibling concern's omission came from the operator's path derivation, not the tool."},
+      "F7": {"severity": "MINOR", "held": true, "detail": "The table is host-relative: measured seconds times ten are a median 0.66 of the declared weights on this quieter host. By ratio, test_automation_control is about 45% heavier than the host factor predicts and test_sov_node_journal and test_sov_surface about a quarter lighter. Weights are declared scheduling hints, the packing cases pass and the wall is shorter than the base's; recorded, not failed."}
+    },
+    "reproduced": [
+      "the candidate carries exactly three paths and its blobs for them are identical to the superseded e08af89",
+      "verify exit 0 and lint exit 0 on a clean full-history clone, orientation snapshot included",
+      "partition suite 7/7; runner exit 0 twice, wall 10.93 / 10.28 s against the base's 12.19 s",
+      "F1, F2 and F4 repairs all hold at the candidate",
+      "24 cases in 2.80 / 2.71 / 2.69 s against the base's 25 in 4.43 / 4.22 / 4.20 s; same verdicts in both orders",
+      "no untracked file in the worktree: it is byte-identical to the candidate tree"
+    ],
+    "dissented": [
+      "pass 3's F5 dissent is withdrawn on better evidence: test_sov_branch is under a second on a quiet host"
+    ],
+    "residuals": [
+      "R1 pass 1-3's orientation-snapshot residual is discharged by the base moving",
+      "R2 carried, pre-existing, outside the concern: test_sov_clarity fails alone with ModuleNotFoundError 'sovclarity', the only one of 111 modules",
+      "R3 F6 is unrepaired and belongs to the sibling concern's holder; that the discarded candidate was never pushed or landed is the coordinator's report and was not independently verified here"
+    ],
+    "judgement_items": [
+      "J1 discharged by the base moving; no owner act was needed",
+      "J2 Does a checks: verify PASS recorded against the working directory satisfy the standing grant's evidence precondition in decisions/0064, or must the grant read the candidate's own bytes? F6 shows the two can differ"
+    ],
+    "stage_observed_by": "claude-fable-5-1/sov-witness@2026-09-07-tooling-cost pass 4 at d6383a5, CONFIRMED (witness/tooling-test-cost.md; witness/observations/2026-09-07-tooling-test-cost-observation-4.json)"
+  },
+  "telemetry": {
+    "host": "Linux, Python 3.11, a worktree of the main checkout on feat/tooling-test-cost; noticeably quieter than during passes 1 to 3, which F7 accounts for",
+    "principal": "SOV_PRINCIPAL=principal:claude-fable-5-1 for every command except the two mutant runs, which unset it deliberately",
+    "tree_state": "worktree porcelain empty before this pass wrote anything; HEAD d6383a5 throughout; passes 1 to 3 of witness/tooling-test-cost.md kept byte-identical (sha256 of the body compared before and after the rewrite)",
+    "predecessors": "receipts 1 to 3 left intact; their subjects are superseded but their readings of the three blobs carry, since the blobs are identical at d6383a5"
+  }
+}

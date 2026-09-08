@@ -74,6 +74,26 @@ def cmd_selfcheck(_args: argparse.Namespace | None = None) -> int:
     return selfcheck.run()
 
 
+def cmd_numbers(_args: argparse.Namespace | None = None) -> int:
+    """Print what the record holds, so the page does not have to carry the numbers.
+
+    Every count the page used to state is derived here on demand. A number written
+    into CLAUDE.md is stale the moment the thing it counts changes, and correcting
+    it means editing a document `grant:standing-landing-loop` excludes -- so adding a
+    check, a skill, a workflow, a service or an operation could not be landed under
+    the standing grant at all. Deriving them removes both the staleness and that
+    coupling.
+    """
+    answered = claims.derive_all()
+    for claim in claims.CLAIMS:
+        if claim.name in answered.values:
+            print(f"  {answered.values[claim.name]:>8}  {claim.name}")
+        else:
+            print(f"  {'-':>8}  {claim.name}: "
+                  f"{answered.reasons.get(claim.name, 'not derivable here')}")
+    return 0
+
+
 def cmd_check(args: argparse.Namespace | None = None) -> int:
     """Grade the page, after proving the grader still works."""
     if cmd_selfcheck(args) != 0:
@@ -95,6 +115,9 @@ def cmd_check(args: argparse.Namespace | None = None) -> int:
             # environment, and failing on it reported a correct page as wrong in
             # the one place the gate is mandatory.
             print(f"NOT CHECKED HERE: {finding.claim} - {finding.detail}")
+    deferred = [f for f in findings if f.kind == grading.DEFERRED]
+    for finding in deferred:
+        print(f"NOT STATED: {finding.claim} - {finding.detail}")
     drifted = grading.drift(findings)
     if drifted:
         for finding in drifted:
@@ -107,13 +130,23 @@ def cmd_check(args: argparse.Namespace | None = None) -> int:
               "tolerance.")
         return 1
     total = len(claims.CLAIMS)
-    checked = total - len([f for f in findings if f.kind == grading.UNANSWERABLE])
-    if checked < total * MIN_CHECKABLE:
-        print(f"\nREFUSED: only {checked} of {total} claims could be checked here, which "
-              "is not enough of the page to call this a pass. The verdict would be about "
-              "this environment rather than about the snapshot.")
+    stated = total - len(deferred)
+    checked = stated - len([f for f in findings if f.kind == grading.UNANSWERABLE])
+    if not stated:
+        print(f"PASS: the page states none of the {total} counts and defers to "
+              f"`{grading.DEFERRAL_MARKER}`, so it has no number that can go stale")
+        return 0
+    # MIN_CHECKABLE is measured against what the page states, not against every
+    # declared claim. It exists to stop a green verdict that this environment could
+    # not actually reach; a number the page deliberately does not state is a property
+    # of the page, and counting it as unreachable would refuse the very page that has
+    # nothing left to drift.
+    if checked < stated * MIN_CHECKABLE:
+        print(f"\nREFUSED: only {checked} of the {stated} claim(s) the page states could "
+              "be checked here, which is not enough of it to call this a pass. The "
+              "verdict would be about this environment rather than about the snapshot.")
         return 1
-    print(f"PASS: {checked} of {total} snapshot claim(s) match the record")
+    print(f"PASS: {checked} of {stated} stated snapshot claim(s) match the record")
     return 0
 
 
@@ -122,11 +155,13 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command")
     sub.add_parser("check", help="grade the snapshot against the record")
     sub.add_parser("selfcheck", help="prove the check fires and does not over-fire")
+    sub.add_parser("numbers", help="print the counts the record holds")
     # argv=None must fall through to sys.argv, not to a default subcommand.
     # Defaulting here once swallowed `selfcheck` entirely and ran `check` instead.
     supplied = argv if argv is not None else sys.argv[1:]
     args = parser.parse_args(supplied or ["check"])
-    return {"check": cmd_check, "selfcheck": cmd_selfcheck}[args.command](args)
+    return {"check": cmd_check, "selfcheck": cmd_selfcheck,
+            "numbers": cmd_numbers}[args.command](args)
 
 
 if __name__ == "__main__":

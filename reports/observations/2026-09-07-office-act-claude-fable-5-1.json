@@ -1,0 +1,101 @@
+{
+  "branch": "present-journal",
+  "cited_entries": [
+    "entry_35966897a48749fe989e89164d63e040",
+    "entry_42b7681ddff4445c94bb23022bf47b4e",
+    "entry_95535bca7fc6439f87ca6aa47b16ef56"
+  ],
+  "journal": {
+    "address": "nodes/node-local/journal/a8b989484adf.json",
+    "entries": 173,
+    "head": "a8b989484adf37a4728ec4b17aceacafb47187ad00be1ce48ad8233f20b1ca16",
+    "verify": "python scripts/sov_node.py journals; PYTHONPATH=services/record/src python -m soveraeign_record_service.cli verify-export --export nodes/node-local/journal/a8b989484adf.json --expect-head <the witness's head>"
+  },
+  "journal_narrative": {
+    "1-85": "the node as the committed export held it on main before this session; restored here",
+    "111-117": "principal:claude-fable-5-1 before the act: console.open-session REFUSED NO_LIVE_GRANT at entry 111, then a gateway request, its session attribution and REFUSED receipts. This is the live defeating case, and the first draft of this report omitted the span entirely, which understated its own evidence.",
+    "118-123": "the office act itself: three authority-grant entries and their receipts",
+    "124-173": "principal:claude-fable-5-1 after the act, across two console sessions rather than one: session_0fc948f6 at entries 124-148 and session_5bbe1d42 at 149-173. Each enters, crosses once and is refused three times for the node's declared reasons.",
+    "86-110": "principal:claude-fable-5, the operator the node already granted, entering and crossing once: the before reading, which passed and is not the defeating case"
+  },
+  "live_run": {
+    "crossing": {
+      "operation": "registry.resolve",
+      "outcome": "COMMITTED"
+    },
+    "grades": {
+      "P15-Q1.1": "holds",
+      "P15-Q1.2": "holds",
+      "P15-Q1.3": "holds"
+    },
+    "identities": {
+      "grant_id": "grant_553ce95769c74292",
+      "interface_binding_id": "urn:soveraeign:binding:node-interface:model-json-v1",
+      "principal_id": "principal:claude-fable-5-1",
+      "session_id": "session_5bbe1d42cdd64427"
+    },
+    "passed": true,
+    "principal": "principal:claude-fable-5-1",
+    "refusals": {
+      "beyond_the_grant": "AUTHORITY_REFUSED",
+      "foreign_session": "ACTOR_ATTRIBUTION_MISMATCH",
+      "other_actor_on_this_session": "ACTOR_ATTRIBUTION_MISMATCH"
+    }
+  },
+  "node_state": ".local/node-interface (gitignored runtime state; restore from journal.address to bring the node back)",
+  "note": "Builder's self-report of an office act performed in Bdo's name at his recorded direction, quoted verbatim in office_act.direction, and of the reading it enabled. REPORTED is the executor's word. What the record cannot show, unchanged from the 2026-09-06 act: nothing in the node, the export or this file authenticates who passed the name principal:bdo. Second, an attribution drift this session must state rather than hide: the host's serving model changed to Claude Opus 5 partway through this session, by Bdo's own /model command, while the session continued to declare principal:claude-fable-5-1, which contracts/principals.json describes as the model the host serves. The grantee is the principal Bdo named, so the grant is what he asked for; the actor that ran the command was a model the registry does not name. The registry has no entry for the serving model and this session minted none.",
+  "observation_schema": "soveraeign-fresh-participation-live-node/v3",
+  "observation_schema_note": "observation_schema names no schema this repository declares; no soveraeign-fresh-participation-live-node schema exists at v1, v2 or v3, and nothing validates any of these self-reports against one. The name is a convention the three reports carry. Only this one says so, which is a gap in the older two rather than a reason for this one to stay quiet.",
+  "office_act": {
+    "act": "open-office",
+    "directed_in": "session_01V3f5xow8d6Ar6gths2Sr1h (Bdo, 2026-09-07, in his own words)",
+    "direction": "merge 220 and grant claude-fable-5-1 on node:local",
+    "grants": [
+      {
+        "capability": "open:session",
+        "entry_id": "entry_35966897a48749fe989e89164d63e040",
+        "grant_id": "grant_fdf1477d279244db",
+        "granted_at": "2026-09-07T17:15:56Z",
+        "granted_by": "principal:bdo",
+        "scope": "principal:claude-fable-5-1"
+      },
+      {
+        "capability": "close:session",
+        "entry_id": "entry_42b7681ddff4445c94bb23022bf47b4e",
+        "grant_id": "grant_e37a2885580a4e62",
+        "granted_at": "2026-09-07T17:15:56Z",
+        "granted_by": "principal:bdo",
+        "scope": "principal:claude-fable-5-1"
+      },
+      {
+        "capability": "read:registry",
+        "entry_id": "entry_95535bca7fc6439f87ca6aa47b16ef56",
+        "grant_id": "grant_553ce95769c74292",
+        "granted_at": "2026-09-07T17:15:56Z",
+        "granted_by": "principal:bdo",
+        "scope": "registry:any"
+      }
+    ],
+    "issuer": "principal:bdo",
+    "operator": "principal:claude-fable-5-1",
+    "record_head_after": "8fee1987ae62eef3d1927e9b7554536b67a3e52416498cd602544911351b1fd9",
+    "record_head_before": "310eeb1856885ad8b2c1d0f090213c89b39da2b393da49cfc8537ac2ca3454f8",
+    "registry": {
+      "digest": "sha256:2f672d7ab812011f28943e5e3e755ccac6ddc1d32b5f0c2147543a4987264e86",
+      "path": "contracts/principals.json"
+    }
+  },
+  "restored_from": {
+    "export": "nodes/node-local/journal/23d3b48086be.json",
+    "head": "23d3b48086becd541d6054d78185f730e41a10054848ad4f654191315f87b342",
+    "note": "this host held no node; the committed export was restored into an empty state under the head witness pass 6 holds outside it, which is the capability P15-X3 names"
+  },
+  "session": "session-e0662f",
+  "status": "REPORTED",
+  "what_the_record_does_not_hold": [
+    "the direction itself: office_act.direction is written to the gitignored office-acts.ndjson and to this file, and to nothing the node records. The journal holds the grants and their granted_by, never the words that asked for them, so a reader has the builder's word for the direction and the node's word for the grant.",
+    "who passed the name principal:bdo: nothing in the node, the export, this report or the witness authenticates it.",
+    "a registry entry for the model that ran the act: contracts/principals.json describes principal:claude-fable-5-1 as the model the host serves, which stopped being true when the serving model changed to Claude Opus 5 partway through this session by Bdo's own /model command. Minting an entry is identity naming and owner-held, so none was minted; the stale claim stands in the registry and is named here and at the pull request rather than repaired.",
+    "the direction as a node record: open-office could append it as an entry the node keeps, which would put the words beside the grants they asked for. That changes a shape the Console Service records, so it crosses out of this concern's service into that contract and is not taken here."
+  ]
+}

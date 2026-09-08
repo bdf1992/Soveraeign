@@ -6,15 +6,27 @@ suite became the critical path because hundreds of otherwise independent test
 modules were still executed serially inside one subprocess. This runner keeps
 unittest as the test oracle, assigns each discovered module to exactly one
 stable worker, and reports failure if any worker fails.
+
+It also reports what each module cost. A shard total cannot name the module that
+grew, so a suite reported only in aggregate can indict nobody but whoever pushed
+last: on 2026-09-07 a change measuring one second against a fifteen-second suite
+took the refusal for a ceiling the trunk was already sitting against. The weights
+below were each set by a hand campaign that measured every module alone and then
+kept only prose. `--weights` regenerates them from a real run instead.
 """
 
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+import argparse
 import os
 import subprocess
 import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from sovtooling.driver import COST_PREFIX  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 TEST_ROOT = ROOT / "scripts" / "tests"
@@ -22,6 +34,13 @@ TEST_ROOT = ROOT / "scripts" / "tests"
 # tooling workers provide useful module-level concurrency without the hosted
 # runner contention observed when this nested pool was widened to five or eight.
 DEFAULT_WORKERS = 4
+# The table below was set by hand campaigns that measured every module alone and then
+# kept only prose; three of them each found the previous table inverted, because a
+# suite reported only in aggregate cannot say which module moved. That measurement is
+# now taken on every run: `python scripts/run_tooling_tests.py --weights` prints the
+# table this run measures. Regenerating is deliberate, not automatic — the derived
+# values are seconds times ten, and packing is not monotonic in the weight, so a new
+# table has to be checked against test_run_tooling_tests before it is pasted in.
 # Most tooling modules exercise bounded fixtures. test_sov_docs deliberately renders
 # the complete published corpus several times and is an order-of-magnitude different
 # unit of work. Hosted observations showed that giving it ordinary module weight left
@@ -103,9 +122,9 @@ def partition(modules: tuple[Path, ...], workers: int) -> tuple[tuple[Path, ...]
 
 
 def _run(bucket: tuple[Path, ...]) -> tuple[int, str]:
-    names = [f"scripts.tests.{path.stem}" for path in bucket]
+    names = [path.stem for path in bucket]
     result = subprocess.run(
-        [sys.executable, "-m", "unittest", *names],
+        [sys.executable, "-m", "scripts.sovtooling.driver", *names],
         cwd=ROOT,
         check=False,
         capture_output=True,
@@ -114,7 +133,79 @@ def _run(bucket: tuple[Path, ...]) -> tuple[int, str]:
     return result.returncode, result.stdout + result.stderr
 
 
-def main() -> int:
+def module_costs(output: str) -> dict[str, float]:
+    """Read the per-module wall costs the driver reported, keyed by module stem."""
+    costs: dict[str, float] = {}
+    for line in output.splitlines():
+        if not line.startswith(COST_PREFIX + " "):
+            continue
+        parts = line.split()
+        if len(parts) < 3:
+            continue
+        try:
+            costs[parts[1]] = float(parts[2])
+        except ValueError:
+            continue
+    return costs
+
+
+def failing_modules(output: str) -> set[str]:
+    """The modules the driver reported as failing, read from the same lines as the cost.
+
+    The driver has always printed this verdict and nothing consumed it, so a failing
+    module's seconds sat in the cost table indistinguishable from a passing one's. The
+    run's verdict still comes from the shard's exit code and never from this text.
+    """
+    failing = set()
+    for line in output.splitlines():
+        if not line.startswith(COST_PREFIX + " "):
+            continue
+        parts = line.split()
+        if len(parts) >= 4 and parts[3] == "FAIL":
+            failing.add(parts[1])
+    return failing
+
+
+def measured_weights(costs: dict[str, float]) -> dict[str, int]:
+    """Derive the scheduling table from measurement: seconds times ten, at or above 1s.
+
+    This is the same rule each hand campaign applied and then discarded. Deriving it
+    means a stale table is a run away from repair rather than a campaign away.
+    """
+    return {
+        f"{name}.py": round(seconds * 10)
+        for name, seconds in sorted(costs.items(), key=lambda item: (-item[1], item[0]))
+        if seconds >= 1.0
+    }
+
+
+def report_costs(costs: dict[str, float], shards: int, threshold: float = 1.0,
+                 failing: set[str] | None = None) -> None:
+    """Print what each module cost, so an overrun names the module that owns it."""
+    if not costs:
+        return
+    failing = failing or set()
+    ranked = sorted(costs.items(), key=lambda item: (-item[1], item[0]))
+    named = [item for item in ranked if item[1] >= threshold or item[0] in failing]
+    rest = [item for item in ranked if item[1] < threshold and item[0] not in failing]
+    print(f"\n== tooling cost: {len(costs)} modules, {shards} shards ==")
+    for name, seconds in named:
+        mark = "  FAILED" if name in failing else ""
+        print(f"  {seconds:7.3f}s  {name}{mark}")
+    if rest:
+        total = sum(seconds for _, seconds in rest)
+        print(f"  {total:7.3f}s  ({len(rest)} module(s) under {threshold:.3f}s)")
+    print(f"  {sum(costs.values()):7.3f}s  TOTAL module cost across {shards} shards")
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Run the repository tooling test suite.")
+    parser.add_argument(
+        "--weights",
+        action="store_true",
+        help="print the MODULE_WEIGHTS table this run measures, instead of the shard log",
+    )
+    args = parser.parse_args(argv)
     modules = test_modules()
     if not modules:
         print("FAIL: no repository tooling test modules discovered")
@@ -124,13 +215,38 @@ def main() -> int:
     with ThreadPoolExecutor(max_workers=len(buckets)) as pool:
         results = list(pool.map(_run, buckets))
     failed = False
+    costs: dict[str, float] = {}
+    failing: set[str] = set()
+    shard_log: list[str] = []
     for index, ((code, output), bucket) in enumerate(zip(results, buckets), start=1):
+        costs.update(module_costs(output))
+        failing |= failing_modules(output)
         names = ", ".join(path.stem for path in bucket)
-        print(f"\n== tooling shard {index}/{len(buckets)}: {names} ==")
-        if output.rstrip():
-            print(output.rstrip())
+        shard_log.append(f"\n== tooling shard {index}/{len(buckets)}: {names} ==")
+        body = "\n".join(
+            line for line in output.rstrip().splitlines() if not line.startswith(COST_PREFIX + " ")
+        )
+        if body.strip():
+            shard_log.append(body)
         if code:
             failed = True
+    if args.weights:
+        for name, weight in measured_weights(costs).items():
+            print(f'    "{name}": {weight},')
+        return 1 if failed else 0
+    for line in shard_log:
+        print(line)
+    report_costs(costs, len(buckets), failing=failing)
+    # Every module reports its cost before its verdict, so a module with no cost line
+    # never ran. A shard that dies quietly -- a module calling sys.exit(0) at import
+    # takes its whole shard with it -- returns 0 and its modules simply vanish. Before
+    # this run held the costs there was nothing to compare and the suite reported PASS
+    # over tests that never executed. This is that comparison.
+    silent = sorted({path.stem for path in modules} - set(costs))
+    if silent:
+        print(f"FAIL: {len(silent)} module(s) reported no cost, so they did not run: "
+              f"{', '.join(silent)}")
+        failed = True
     if failed:
         print(f"FAIL: repository tooling tests ({len(modules)} modules, {len(buckets)} shards)")
         return 1

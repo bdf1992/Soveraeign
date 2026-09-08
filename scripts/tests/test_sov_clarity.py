@@ -100,5 +100,54 @@ class ClarityCoverageTests(unittest.TestCase):
         self.assertEqual({"UNCHECKED"}, non_exempt)
 
 
+
+class BasisAddresses(unittest.TestCase):
+    def test_a_basis_may_address_a_part_of_a_file(self) -> None:
+        whole = sov_clarity.basis_digest(sov_clarity.ROOT, "STATUS.yaml")
+        part = sov_clarity.basis_digest(sov_clarity.ROOT, "STATUS.yaml#owner_holds")
+        self.assertTrue(whole and part and whole != part)
+        self.assertIsNone(sov_clarity.basis_digest(sov_clarity.ROOT, "STATUS.yaml#no_such_key"))
+        self.assertIsNone(sov_clarity.basis_digest(sov_clarity.ROOT, "NO-SUCH-FILE.md"))
+
+
+class AnUnreadableBasisIsStale(unittest.TestCase):
+    """The refusal a refactor lost, measured by a witness on identical input.
+
+    `basis_digest` returns None when a basis is gone or its fragment stops
+    resolving. `review_state` compared that against `basis.get("digest")`, which
+    is also None when a receipt entry records no digest, so None != None was False
+    and a basis the grader could not read reported CURRENT. The expression it
+    replaced could not collapse, because `not source.is_file()` short-circuited
+    first. Base read BASIS_STALE here; the refactor read CURRENT.
+    """
+
+    def review(self, basis: list[dict]) -> dict:
+        artifact = sov_clarity.ROOT / "AGENTS.md"
+        return {"artifact_digest": sov_clarity.digest(artifact), "basis": basis}
+
+    def test_a_basis_that_cannot_be_read_and_records_no_digest_is_stale(self) -> None:
+        state = sov_clarity.review_state(
+            "AGENTS.md", self.review([{"path": "contracts/does-not-exist.json"}]))
+        self.assertEqual("BASIS_STALE", state)
+
+    def test_a_basis_that_cannot_be_read_but_records_a_digest_is_stale(self) -> None:
+        state = sov_clarity.review_state(
+            "AGENTS.md",
+            self.review([{"path": "contracts/does-not-exist.json", "digest": "sha256:x"}]))
+        self.assertEqual("BASIS_STALE", state)
+
+    def test_a_readable_basis_whose_digest_matches_is_current(self) -> None:
+        """The defeat: staleness must not become the answer to everything."""
+        found = sov_clarity.basis_digest(sov_clarity.ROOT, "GROUND.md")
+        state = sov_clarity.review_state(
+            "AGENTS.md", self.review([{"path": "GROUND.md", "digest": found}]))
+        self.assertEqual("CURRENT", state)
+
+    def test_a_readable_basis_whose_digest_moved_is_stale(self) -> None:
+        state = sov_clarity.review_state(
+            "AGENTS.md", self.review([{"path": "GROUND.md", "digest": "sha256:moved"}]))
+        self.assertEqual("BASIS_STALE", state)
+
+
 if __name__ == "__main__":
     unittest.main()

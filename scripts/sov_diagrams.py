@@ -23,6 +23,11 @@ import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(ROOT / "scripts"))
+
+import sovaddress  # noqa: E402
+
 DIAGRAMS = ROOT / "diagrams"
 # The provenance block is the `Recording` shape from SPEC.md. Only these two fields
 # are graded; `reader`, `fidelity`, and `omissions` are read by people, not by this.
@@ -39,6 +44,11 @@ class ProvenanceError(Exception):
 def digest_of(path: Path) -> str:
     """The recorded digest shape: a sha256 prefix over the file's exact bytes."""
     return sha256(path.read_bytes()).hexdigest()[:DIGEST_CHARACTERS]
+
+
+def source_digest(source: str) -> str:
+    """The digest of a declared source, which may address a part of a file (`sovaddress`)."""
+    return sovaddress.digest(ROOT, source)[len(sovaddress.DIGEST_PREFIX):][:DIGEST_CHARACTERS]
 
 
 def provenance(text: str) -> dict[str, str]:
@@ -84,12 +94,17 @@ def grade(path: Path) -> dict[str, object]:
     defects: list[str] = []
     graded: list[dict[str, str]] = []
     for source, declared in pairs:
-        target = ROOT / source
+        target = ROOT / sovaddress.split(source)[0]
         if not target.is_file():
             defects.append(f"declares {source}, which is not a file")
             graded.append({"source": source, "declared": declared, "actual": "MISSING"})
             continue
-        actual = digest_of(target)
+        try:
+            actual = source_digest(source)
+        except sovaddress.AddressError as refused:
+            defects.append(f"declares {source}, which does not resolve: {refused}")
+            graded.append({"source": source, "declared": declared, "actual": "MISSING"})
+            continue
         graded.append({"source": source, "declared": declared, "actual": actual})
         if actual != declared:
             defects.append(f"{source} moved: declared {declared}, actual {actual}")
@@ -109,7 +124,7 @@ def stamp(path: Path) -> list[str]:
     text = path.read_text(encoding="utf-8")
     header = provenance(text)
     sources = [part.strip() for part in header["source"].split(SEPARATOR) if part.strip()]
-    fresh = [digest_of(ROOT / source) for source in sources]
+    fresh = [source_digest(source) for source in sources]
     changed = [f"{source}: {old} -> {new}"
                for (source, old), new in zip(readings(header), fresh) if old != new]
     if not changed:

@@ -63,15 +63,17 @@ def freeze(args: Any, grants: list[dict]) -> tuple[dict, dict, dict]:
     graded_paths = sorted(set(staged) | set(carried))
     graded_as = tree.fingerprint(staged)
     graded_blobs = {path: repo.worktree_blob(path) for path in staged}
-    checks, reading = tree.gather_checks(args.skip_checks, set(graded_paths))
-    by_checks = tree.drifted(graded_as, tree.fingerprint(staged))
-    request = _request(args, "repository.commit", graded_paths, checks)
-    result = authority.evaluate(grants, request)
-    if result["verdict"] != authority.PERMITTED:
-        raise CandidateRefused(f"{result['code']}: {result['detail']}")
+
+    # Scope, type, budget, time and revocation are judged before the commit, with no
+    # checks offered: a refusal for any of those must land before the effect. Only the
+    # check-dependent preconditions wait for the committed tree.
+    unchecked = authority.evaluate(grants, _request(args, "repository.commit", graded_paths, {}))
+    if (unchecked["verdict"] != authority.PERMITTED
+            and unchecked["code"] != authority.MISSING_PRECONDITION):
+        raise CandidateRefused(f"{unchecked['code']}: {unchecked['detail']}")
 
     _ahead, behind = repo._commit_span(args.target, branch)
-    detail = preflight.refusal(args, staged, behind, graded_as, by_checks)
+    detail = preflight.refusal(args, staged, behind, graded_as, [])
     if detail is not None:
         raise CandidateRefused(detail)
 
@@ -92,11 +94,25 @@ def freeze(args: Any, grants: list[dict]) -> tuple[dict, dict, dict]:
     candidate_tree = repo.commit_tree("HEAD")
     if candidate_commit is None or candidate_tree is None:
         raise CandidateRefused("git committed the candidate but its commit/tree cannot be resolved")
-    # The record describes the exact base...commit range, read after the commit. The
-    # graded set above is read before it and can be wider: a staged path whose bytes
-    # return to the base's leaves the range, and a record that still named it was
-    # refused at landing for not describing its own range (2026-09-07, ea01dcc).
+    # Everything the record states is read after the commit, from the tree the commit
+    # made. Reading before it produced two refused candidates on 2026-09-07: a path
+    # list that no longer described the base...commit range (ea01dcc), and a verify
+    # reading that never saw the commit which tipped the orientation snapshot's
+    # commit count (a57d736). A refusal here leaves the commit on the branch, which
+    # is a mutable carrier, and writes no record.
     landed_paths = sorted(repo.carried_paths(args.target, branch))
+    checks, reading = tree.gather_checks(args.skip_checks, set(graded_paths))
+    by_checks = tree.drifted(graded_as, tree.fingerprint(staged))
+    if by_checks:
+        raise CandidateRefused(
+            f"committed as {candidate_commit[:12]} on {branch}, then the checks modified the "
+            "paths they checked; no candidate record written")
+    request = _request(args, "repository.commit", graded_paths, checks)
+    result = authority.evaluate(grants, request)
+    if result["verdict"] != authority.PERMITTED:
+        raise CandidateRefused(
+            f"{result['code']}: {result['detail']} (committed as {candidate_commit[:12]} on "
+            f"{branch}; no candidate record written)")
 
     candidate = {
         "candidate_schema": "soveraeign-repository-candidate/v1",

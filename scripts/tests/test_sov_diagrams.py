@@ -14,6 +14,8 @@ from __future__ import annotations
 
 from hashlib import sha256
 from pathlib import Path
+import contextlib
+import io
 import sys
 import tempfile
 import unittest
@@ -74,6 +76,22 @@ class HeaderParsing(unittest.TestCase):
             sov_diagrams.readings(header)
 
 
+class ScratchViewsStayOutOfTheTree(unittest.TestCase):
+    """The scratch views the suite and the selfcheck write never touch diagrams/."""
+
+    def test_the_suite_scratch_view_is_outside_diagrams(self) -> None:
+        case = Grading("test_a_view_whose_sources_are_unchanged_reads_current")
+        case.setUp()
+        self.assertFalse(case.scratch.is_relative_to(ROOT / "diagrams"))
+        case.doCleanups()
+
+    def test_the_selfcheck_leaves_diagrams_as_it_found_it(self) -> None:
+        before = sorted(p.name for p in (ROOT / "diagrams").iterdir())
+        with contextlib.redirect_stdout(io.StringIO()):
+            sov_diagrams.selfcheck()
+        self.assertEqual(sorted(p.name for p in (ROOT / "diagrams").iterdir()), before)
+
+
 class Grading(unittest.TestCase):
     """A verdict is derived from the bytes, never from what the view asserts."""
 
@@ -97,6 +115,19 @@ class Grading(unittest.TestCase):
         self.assertEqual(result["verdict"], "STALE")
         self.assertEqual(len(result["defects"]), 1)
         self.assertIn("SPEC.md", result["defects"][0])
+
+    def test_a_source_may_address_a_part_of_a_file(self):
+        source = ("contracts/custodies/phase-1-5.json#/custodies"
+                  "[custody_id=custody:phase-1-5/discovery-and-reuse]/custody_id")
+        view = wrapped_view().replace("CONTRACT.md", source, 1).replace(
+            live("CONTRACT.md"), sov_diagrams.source_digest(source), 1)
+        self.scratch.write_text(view, encoding="utf-8")
+        self.assertEqual(sov_diagrams.grade(self.scratch)["verdict"], "CURRENT")
+        broken = view.replace("/custody_id", "/no_such_field")
+        self.scratch.write_text(broken, encoding="utf-8")
+        result = sov_diagrams.grade(self.scratch)
+        self.assertEqual(result["verdict"], "INVALID")
+        self.assertIn("does not resolve", result["defects"][0])
 
     def test_a_declared_source_that_does_not_exist_is_invalid_not_stale(self):
         self.scratch.write_text(

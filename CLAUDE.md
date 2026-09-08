@@ -75,16 +75,17 @@ been receiving merged pull requests. This section is orientation, not standing.
 `STATUS.yaml`, the working tree, and the newest relevant report override it
 whenever they disagree.
 
-- `python scripts/verify.py` runs 52 checks. Total wall time is graded by the
-  bands in `contracts/verification-budget.json` but is advisory rather than a
+- `python scripts/verify.py` runs the repository's checks. Total wall time is
+  graded by the bands in `contracts/verification-budget.json` but is advisory
+  rather than a
   repository failure by itself. The landed budget policy reruns a pooled suspect
   alone and fails catastrophically only when that isolated read still exceeds the
   contract's catastrophic ceiling. `scripts/sovverify/budget.py` implements that
   distinction. A total overrun on a busy host is performance evidence, not
   automatic semantic failure. `python scripts/lint.py` remains the required
   text/syntax/hygiene companion.
-- 10 service boundaries under `services/`, 135 declared operations
-  across 10 manifests. Asset and Record are built and self-tested; Console's
+- Service boundaries under `services/` declare their operations in service
+  manifests. Asset and Record are built and self-tested; Console's
   continuity path is built; Gateway has one in-process Asset route; Registry has
   a built resolve slice; Observation has a built thin slice (relation
   inference and observe-run), no longer witnessed since decisions/0104
@@ -96,8 +97,8 @@ whenever they disagree.
   states carries both polarities (`python scripts/sov_f2_gate.py` reads none
   open); the F2 gate waits only on its second bound participant. Participant
   binding still open.
-- Harness (`.claude/`): 5 agent definitions (four roles and the Sov binding),
-  31 skills, 23 workflows, the epic-tree walk, and scheduled-run gates with a
+- Harness (`.claude/`): agent definitions (four roles and the Sov binding),
+  skills, workflows, the epic-tree walk, and scheduled-run gates with a
   kernel-envelope ledger.
   Every shipped schedule is disabled. Executable harness workflows are
   admissible before their defeating fixtures exist, for host plumbing only
@@ -196,15 +197,26 @@ classification contract, the Phase-I logical spec, Proofing, BYOM, and the
 engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
 Sov, the federation harness, defeating fixtures for receipts and proofing,
 LF line-ending enforcement, and the stack certification. At the end of day two
-the record held 26 commits, 17 decision records and 8 reports; it now holds
-970 commits, 91 decision records and 34 reports. The
-first independently witnessed work landed on 2026-08-25; owner-accepted packets
-now exist and are enumerated under `STATUS.yaml` `owner_accepted`.
+the record held 26 commits, 17 decision records and 8 reports. The first
+independently witnessed work landed on 2026-08-25; owner-accepted packets now
+exist and are enumerated under `STATUS.yaml` `owner_accepted`.
 
-Those two sentences are checked. `python scripts/sov_snapshot.py` grades the
-numbers on this page against the record and fails when they drift, because this
-snapshot was stale within a day of being written and every launched agent reads
-it as current (`LESSONS.md` L-0001). Correct the page rather than the tolerance.
+This page states no current count. Run `python scripts/sov_snapshot.py numbers`
+for what the record holds: checks, commits, decision records, reports, service
+boundaries, manifests, declared operations, agent definitions, skills and
+workflows.
+
+The page used to state all ten, and `python scripts/sov_snapshot.py check`
+failed the build when any of them drifted, because this snapshot was stale
+within a day of being written and every launched agent reads it as current
+(`LESSONS.md` L-0001). That check caught real drift, and it also made ordinary
+work unlandable: correcting a number means editing this file, and
+`grant:standing-landing-loop` excludes it, so adding a check, a skill, a
+workflow, a service or an operation could not be landed under the standing
+grant at all. A number the command derives cannot go stale, and no document has
+to be edited when it changes. The check still grades every count this page does
+state, and still refuses a count deleted without this paragraph naming the
+command that replaces it.
 
 ## Host facts (Claude Code on Windows)
 

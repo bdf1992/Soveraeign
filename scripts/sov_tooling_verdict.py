@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 ROOT = Path(__file__).resolve().parent.parent
 RUNNER = ROOT / "scripts" / "run_tooling_tests.py"
+DRIVER = ROOT / "scripts" / "sovtooling"
 GRADED_CHECK = "repository tooling tests"
 GRADED_COMMAND = "scripts/run_tooling_tests.py"
 
@@ -21,6 +22,10 @@ PASSING = (
     "class Ok(unittest.TestCase):\n"
     "    def test_true(self):\n"
     "        self.assertTrue(True)\n"
+)
+SWALLOWING = (
+    "import sys\n\n"
+    "sys.exit(0)   # exits at import and takes the rest of its shard with it\n"
 )
 FAILING = (
     "import unittest\n\n"
@@ -34,6 +39,10 @@ def miniature(root: Path, modules: dict[str, str]) -> Path:
     tests = root / "scripts" / "tests"
     tests.mkdir(parents=True)
     shutil.copy(RUNNER, root / "scripts" / "run_tooling_tests.py")
+    # The runner reads per-module costs from the driver, so a miniature tree without
+    # it grades a runner that cannot start. This copy is what makes these trees a
+    # reading of the real runner rather than of a decapitated one.
+    shutil.copytree(DRIVER, root / "scripts" / "sovtooling")
     for name, body in modules.items():
         (tests / f"{name}.py").write_text(body, encoding="utf-8", newline="\n")
     return root / "scripts" / "run_tooling_tests.py"
@@ -65,9 +74,22 @@ def run_case(
 def verdict_defects() -> list[str]:
     cases = (
         ({"test_ok": PASSING, "test_bad": FAILING}, (), False, "one failing module"),
-        ({"test_ok": PASSING, "test_bad": FAILING}, ("--failfast",), False, "failing module under --failfast"),
+        # This slot held `--failfast`, which the runner never implemented: argv was
+        # ignored, so the flag did nothing and the case graded the runner by accident.
+        # Once the runner grew a real parser the same case began grading argparse's
+        # usage error instead, before any module loaded. Both halves are now named.
+        ({"test_ok": PASSING, "test_bad": FAILING}, ("--weights",), False,
+         "failing module under a flag the runner does implement"),
+        ({"test_ok": PASSING}, ("--no-such-flag",), False,
+         "an unrecognized flag is refused rather than ignored"),
         ({"test_ok": PASSING}, (), True, "one passing module"),
         ({}, (), False, "no test modules"),
+        # A module that exits at import kills its shard, which then returns 0 and
+        # simply omits its modules. Until the runner reported per-module costs there
+        # was nothing to compare against the discovered population, and this tree
+        # reported PASS over tests that never executed. Base b1448ee exits 0 here.
+        ({"test_ok": PASSING, "test_gone": SWALLOWING}, (), False,
+         "a module that exits at import is not silently dropped"),
     )
     return [
         defect

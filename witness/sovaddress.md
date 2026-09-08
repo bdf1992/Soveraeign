@@ -3,17 +3,330 @@
 ```witness
 standing_supported  WITNESSED
 subject  sovaddress
-revision  a63b09be32d9d34824f694e26e133de4ffd3dec2
-pass  3
+revision  b8012544a5a4c30e089a02876145840b1f5d213a
+pass  5
 ```
 
-Three passes by the same role, different commits. Pass 3 (commit `a63b09b`) is current and owns
-the declaration above. Pass 2 (commit `e835205`) and pass 1 (commit `a57d736`) follow it
-unchanged as history. No `*_status` field in `STATUS.yaml` names this subject and no custody
-member carries `scripts/sovaddress.py`; the work was carried under
-`custody:phase-1-5/discovery-and-reuse`. The declaration binds to the module's claim, its four
-adoptions, and the freeze ordering in `scripts/sovland/candidates.py`. It does not bind to the
-branch as a landable unit; see the verdict.
+Five passes by the same role. Pass 5 (candidate `b801254`) is current and owns the declaration
+above. Passes 4, 3, 2 and 1 follow it unchanged as history; their subjects `f957987`, `a63b09b`,
+`e835205` and `a57d736` are superseded, and their bytes are carried into `b801254` unaltered.
+No `*_status` field in `STATUS.yaml` names this subject and no custody member carries
+`scripts/sovaddress.py`; the work was carried under `custody:phase-1-5/discovery-and-reuse`.
+
+## Pass 5: candidate b801254 (2026-09-07)
+
+Verdict: **RATIFIABLE**. Landing **CONFIRMED**.
+
+The reading is the narrow one this record drew at pass 4: blob identity carries the code reading,
+the integration reading is retaken at the new base. Both halves were measured. All 14 blobs are
+identical to `f957987`, and so to `a63b09b`, which passes 1 to 3 observed; the declared
+`changed_paths` equal `git diff --name-only b1448ee...b801254` and the two-dot range, 14 for 14,
+with nothing in the range undeclared, nothing declared outside it, and nothing removed. On a
+clean full-history clone `verify.py` exits 0 and `lint.py` exits 0; the eleven suites pass, the
+tooling runner passes twice, the four readers grade `b801254` with the same verdict per receipt
+and the same summary as `b1448ee`, and 164 of 165 present committed addresses digest identically.
+The sixteen mutants were **not** rerun, because no blob moved; that is said here rather than left
+to be assumed from a pass that did run them.
+
+One measured detail worth its own line: the three paths this candidate adds relative to its base
+are `scripts/sovaddress.py`, `scripts/sovclarity/digests.py` and
+`scripts/tests/test_sovaddress.py` - exactly the three the discarded candidate `434c6a5` left
+out. The failure mode F17 describes is absent from this candidate, and that is measured rather
+than assumed.
+
+**F18 is discharged.** `base_commit` is `b1448ee`, which is both `origin/main` and the local
+`main` ref, so `scripts/sov_candidate.py:83` has nothing to refuse.
+
+Subject frozen: candidate `b8012544a5a4c30e089a02876145840b1f5d213a`, tree `f0c7ce1b1c4251bdaf0ef2bb2bcc416dcbfc6368`, base `b1448eeb458afa4a8c60b57c1cb46906246af7f7`, record
+`.local/candidates/b8012544a5a4c30e089a02876145840b1f5d213a.json`, one commit past the base. `git rev-parse HEAD` read the commit
+before and after every command and `git status --porcelain` was empty until the deposits.
+
+### The two questions put to this witness
+
+**Is F17 a precondition of landing, or a finding to route? A finding to route. Land this
+candidate.** The reason is specific and it is not indulgence. My confirmation does not rest on
+the candidate record's `checks` field at all. I ran `verify.py` and `lint.py` on a clean
+full-history clone of this exact commit - which is precisely the reading F17 says the freeze
+fails to take - so the defect in how the record's `PASS` was obtained does not reach the
+evidence this landing stands on. That is what an independent witness is for, and here it did the
+job the freeze did not.
+
+Two conditions attach to that answer, and they are not decoration. First, **the landing must
+cite this receipt rather than the record's `checks` field**; that field is not evidence about its
+own tree until F17 is repaired, this candidate's included. Second, **F17 becomes a precondition
+the moment a landing rests on that field alone** - an unattended run, a skipped witness, a
+`--skip-checks` freeze taken as qualification. This observation does not cover such a landing.
+Routing F17 and J5 to Bdo as the next concern is right, and I am not treating the coordinator's
+message as consent for anything; this is my own reading, stated because it was asked for.
+
+**Should `.local/candidates/434c6a5….json` be moved to `SUPERSEDED`? Not yet, and never
+erased.** Leave it exactly as it is until the F17 concern has read it: it is the only artifact in
+the tree that shows a `FROZEN` record whose `checks verify PASS` is false of the tree it names,
+and I measured that falsity from the commit itself (`run_tooling_tests.py` exits 1 there). After
+that concern has taken it as evidence, moving it to `SUPERSEDED` is right and overdue - with the
+`checks` bytes preserved as written, because a retraction adds a counter-record and never
+rewrites the original. Not tidying away evidence one produced is the correct instinct and I would
+keep it.
+
+### Findings
+
+- **F17 (high) - stands, routed, not held.** Above. Unrepaired in this candidate by decision, not
+  by oversight.
+- **F18 - discharged.** The base is current.
+- **F19 (low) - stands by agreement.** Eight candidate records, all `FROZEN`, including the
+  discarded `434c6a5` and four superseded ones. Owed after F17 reads them.
+- **F1, F4, F13 discharged; F2, F3, F5-F8, F11, F12 repaired; F15 retracted at pass 3.** All as
+  recorded in passes 2 to 4, on bytes identical to these.
+- **F21 (info).** This concern has now been frozen five times against four different bases in one
+  day, and each move cost a witness pass. Nothing here is wrong - the base moving is other work
+  landing - but the pattern is worth naming: what made the re-passes cheap was that the bytes
+  were provably unchanged, so only the integration reading had to be retaken. Without blob
+  identity each re-freeze would have cost a full re-witness.
+
+### Judgement items
+
+- **J5** (from pass 4) stands and is routed with F17: should
+  `contracts/repository-candidate-lifecycle.json` require a candidate's `checks` to be true of
+  its `candidate_tree`, and require the record to name the tree they graded?
+- J1, J2 discharged; J4 answered at pass 3.
+
+### Verified
+
+Every command ran with `SOV_PRINCIPAL=principal:claude-fable-5-1`.
+
+- `git rev-parse HEAD` -> `b8012544a5a4c30e089a02876145840b1f5d213a` before and after every command; `git status --porcelain` ->
+  empty until the deposits; `git rev-parse b801254^{tree}` -> `f0c7ce1b1c4251bdaf0ef2bb2bcc416dcbfc6368`; `git ls-remote origin`
+  -> branch at `b801254`, `main` at `b1448ee`; `git rev-list --count b1448ee..b801254` -> 1.
+- Blob identity: `git rev-parse f957987:<p>` equals `b801254:<p>` for all 14 declared paths;
+  0 differ. The object ids are recorded in the receipt.
+- Completeness: declared `changed_paths` (14) equals the three-dot range (14) and the two-dot
+  range (14); nothing in the range undeclared; nothing declared outside it; paths added -
+  `scripts/sovaddress.py`, `scripts/sovclarity/digests.py`, `scripts/tests/test_sovaddress.py`;
+  paths removed - none; every declared path byte-equal to the working tree.
+- Clean full-history clone at `b801254`: `python scripts/verify.py` -> **exit 0**, `PASS: 10 of
+  10 snapshot claim(s) match the record`; `python scripts/lint.py` -> **exit 0**;
+  `python scripts/run_tooling_tests.py` twice -> exit 0, exit 0, 112 modules; tree clean after.
+- Eleven suites on a `git archive` copy: `test_sovaddress` 18, `test_sov_witness_layer` 72,
+  `test_witness_record` 14, `test_sov_diagrams` 16, `test_sov_clarity` 7, `test_sov_reuse` 15,
+  `test_repository_candidate_effects` 10, `test_repository_candidate` 4, `test_sov_land` 31,
+  `test_landing_isolation` 16, `test_landing_ledger` 15 - all OK; `test_sovaddress` also runs as
+  a script.
+- Four readers at `b801254` against `b1448ee`: `records` exit 0 both, identical verdict per
+  receipt and identical summary (27 graded, 0 unusable, 27 stale); `sov_diagrams.py` and
+  `sov_clarity.py check` exit 0 both, byte-identical; `sov_reuse.py run` exit 1 both, identical
+  verdict, predicates and drifted set. 165 committed addresses, 164 identical both ways, 1
+  absent (pre-existing), 0 containing `#`.
+- Mutants: not rerun; no blob moved from `f957987`, where all sixteen were caught.
+- After the deposits: `python scripts/sov_witness_layer.py records` -> exit 0, this pass's
+  receipt `CURRENT`; `python scripts/sov_clarity.py check` -> exit 0; `python scripts/lint.py`
+  -> exit 0; `python scripts/sov_standing.py` -> PASS; `git -C <root> status --porcelain` ->
+  ` M witness/sovaddress.md` and two untracked receipts.
+
+### Uncovered
+
+`sov_land.py land` was not executed. The pass-4 probes and the sixteen mutants were not rerun.
+Nothing under `conformance/` or `services/` changed. The pass-4 record and receipt were
+re-deposited from byte-identical scratch copies after checking the tracked record's passes 3 to 1
+matched them exactly; this witness did not re-observe `f957987` to do so.
+
+### Standing supported
+
+`WITNESSED` for `scripts/sovaddress.py`, its four adoptions, and the freeze ordering in
+`scripts/sovland/candidates.py`, as carried by candidate `b8012544a5a4c30e089a02876145840b1f5d213a`. `stage_observed_by`, if a
+custody member is ever minted: `claude-fable-5-1/sov-witness@2026-09-07-sovaddress, pass 5 at
+b8012544a5a4c30e089a02876145840b1f5d213a`. Not supported: any reading of a candidate record's `checks` field as evidence about its
+own tree, until F17 is repaired. Receipt:
+`witness/observations/2026-09-07-sovaddress-observation-5.json`. Landing observation:
+`.local/observations/2026-09-07-sovaddress-landing-5.json`, `CONFIRMED`. This record is an
+observation; it ratifies nothing and settles nothing.
+
+## Pass 4: candidate f957987 (2026-09-07)
+
+Verdict: **RATIFIABLE**. **REPRODUCED**: all 14 declared paths are carried by the commit and
+equal the working tree, the declared `changed_paths` equal the `6498fc7..f957987` range exactly,
+and all 14 blobs are identical to `a63b09b`. On a clean full-history clone `verify.py` exits 0
+and `lint.py` exits 0, so **F1 is discharged - by the base moving, not by any code change**.
+Eleven suites pass, tooling passes twice, all sixteen mutants are caught with the control green,
+the four readers grade `f957987` with the same verdict per receipt and the same summary as
+`6498fc7`. Landing is **CONFIRMED** on the evidence. Two things that confirmation does not
+cover: **F17**, the freeze runs its checks against the working directory rather than the
+committed tree, which I reproduced and which the discarded candidate `434c6a5` demonstrates on
+disk today; and **F18**, `origin/main` has moved to `b1448ee`, so the lander's own gate will
+refuse this base until the work is reconciled and re-frozen.
+
+Two questions were put to this witness beyond re-confirming the earlier dispositions. Both are
+answered below: F17 for the untracked-file gap, and the "Does WITNESSED bind to f957987"
+paragraph for the second.
+
+Subject frozen: candidate `f957987b45e02d86341c0c348a5c8f3f90af0777`, tree `d89cedaacd75eae4ff420f89937bfa6761eb9158`, base `6498fc7b3172476df54882d7b65c47f52366c8c8`, record
+`.local/candidates/f957987b45e02d86341c0c348a5c8f3f90af0777.json`. `git rev-parse HEAD` read the commit before and after every
+command and `git status --porcelain` was empty until the deposits. Every mutating command ran in
+a scratch clone at `f957987`, a worktree at `6498fc7`, a `git archive` copy of `f957987` or of
+`434c6a5`, or a throwaway repository.
+
+### Does WITNESSED bind to f957987?
+
+Yes, and not by inheritance. A standing claim binds to bytes read in a context, so blob identity
+alone would carry only half of it. Both halves were taken here. The code reading transfers by
+measurement: `git rev-parse a63b09b:<p>` equals `f957987:<p>` for all 14 paths, and the blob ids
+are recorded in the receipt so a later reader can check that claim without repeating this pass.
+The integration reading does not transfer, because the base changed from `aeecc60` to `6498fc7`
+and the readers run against the whole tree, so it was retaken: verify, lint, the eleven suites,
+tooling twice, the sixteen mutants and the four readers' equivalence were all rerun at this base.
+The `a63b09b` SHA being gone costs nothing that was not re-measured.
+
+### F17: the freeze's checks read the working directory, not the committed tree
+
+The repair landed at `a63b09b` moved the checks *after* the commit, and that much holds: in my
+reproduction the check ran with `HEAD` equal to the candidate commit. But `tree.gather_checks`
+runs `verify.py` as a subprocess with `cwd=repo.ROOT`, which is the working directory. So the
+checks are late in time and wrong in space: they read a tree that is the commit *plus whatever
+is untracked or dirty*, and `freeze` stages only `--path`, which the operator computed with
+`git diff --name-only main` - a command that by construction cannot name an untracked file.
+
+Reproduced through the real `candidates.freeze` in a throwaway repository: one tracked file
+staged, one untracked file the change needs, check present at check time, commit tree without it,
+record written `checks {"verify": "PASS"}` and `changed_paths ["x.py"]`, `git status` after the
+freeze still showing the file untracked.
+
+Confirmed on the artifact rather than from the report. `.local/candidates/434c6a5...json` is
+still on disk, `state FROZEN`, `checks verify PASS`, 11 `changed_paths`. `git cat-file` on its
+tree shows `scripts/sovaddress.py`, `scripts/sovclarity/digests.py` and
+`scripts/tests/test_sovaddress.py` all absent. A `git archive` copy of that exact commit runs
+`python scripts/run_tooling_tests.py` and exits **1**, `FAILED (failures=1, errors=1)`. So this
+is not "a check that might have read the wrong tree": a candidate record exists whose recorded
+`PASS` is provably false of the tree it names, and it is the record of a candidate about a module
+its own tree does not contain.
+
+**Refuse or isolate: isolate.** Refusing on the presence of untracked files is the wrong rule and
+would be wrong most days in this tree - `CLAUDE.md` trap T6 says several sessions write it at
+once, witness deposits are routinely untracked, and the three deposits of my own passes 1 to 3 sat
+untracked here for hours while other freezes ran. A rule that refuses on dirt refuses honest work
+and teaches operators to clean the tree before freezing, which loses the evidence.
+
+Three readings, in the order I would take them:
+
+1. **Run the checks against the committed tree.** `git worktree add --detach` or `git archive` at
+   `candidate_commit`, run `verify` and `lint` there, and the record's `checks` become true of
+   `candidate_tree` by construction - immune both to an untracked file the candidate lacks and to
+   another session's dirt that this landing did not cause. Cost is one extra verify run, 21 to 35
+   seconds on this host. This is the one that settles it; the module named
+   `scripts/sovland/isolation.py` is where the repository already keeps this concern.
+2. **Report the dirty paths the freeze was not asked to carry.** `repo.dirty_paths()` already
+   exists and `sov_land.py`'s gate path already uses it; `git status --porcelain` includes
+   untracked files where `git diff --name-only` does not. I measured it against the three files
+   actually omitted at `434c6a5`: it names all three. One reading, no refusal, and the operator
+   sees by name what the freeze is about to leave out.
+3. **Intersect what each check declares it read with what the tree holds foreign.**
+   `isolation.foreign_paths` and `isolation._touches` already do exactly this for *failing*
+   checks; extending it to passing ones would name the defect precisely. I measured its reach and
+   it is a lower bound: of the three omitted files, only `scripts/tests/test_sovaddress.py` is
+   covered, by two checks that declare the directory `scripts/tests`; nothing declares an address
+   covering `scripts/sovaddress.py` or `scripts/sovclarity/digests.py`. It reads a declaration
+   where reading 1 measures, which is the defect class this repository keeps rediscovering.
+
+Whatever is chosen, the record should say which tree the checks graded. Today `checks: {"verify":
+"PASS"}` carries no tree identity at all, so a reader cannot tell a true PASS from `434c6a5`'s.
+The mechanism is the builder's to choose; only J5 below is anyone else's.
+
+### Findings
+
+- **F1 - discharged.** `verify.py` exits 0 at `f957987`; `CLAUDE.md` at the base reads 970
+  commits against a record of 977. Discharged by the base moving, not by a code change; nothing
+  in this concern repaired it, and the earlier passes' reading of it stands as it was written.
+- **F2, F3, F5, F6, F7, F8, F11, F12 - repaired and re-measured** at these bytes: all sixteen
+  mutants caught, control green.
+- **F4 - discharged.** The sibling branch's scratch-view change landed in the base through
+  PR #220; `f957987`'s diagram diff is the `sovaddress` adoption alone. The duplication resolved
+  by one branch landing first.
+- **F13 - partly discharged.** A record exists for `f957987`. See F19.
+- **F15 - retracted at pass 3**, unchanged.
+- **F17 (high, new) - the freeze's checks read the working directory.** Above.
+- **F18 (medium, new) - the base has moved.** `git ls-remote` reads `origin/main` at
+  `b1448ee` (PR #224) while this candidate declares base `6498fc7` and the local `main` ref still
+  reads `6498fc7`. `scripts/sov_candidate.py:83` refuses `LAND` when `base_commit` differs from
+  the target head, so this candidate is landable only against a `main` that has since moved. The
+  reconciliation is ordinary work; if it leaves the 14 blobs identical, this observation carries
+  to the new SHA and the receipt records the blob ids so that can be checked rather than assumed.
+- **F19 (low, new) - superseded and discarded candidates still read FROZEN.**
+  `.local/candidates/` holds eight records, all `state FROZEN`, including `434c6a5` (discarded)
+  and `a57d736` (superseded). `contracts/repository-candidate-lifecycle.json` has a `SUPERSEDED`
+  state and nothing moved them into it. A discarded record that still declares itself frozen and
+  passing is the artifact F17 is read from, which is how I found it.
+- **F20 (info).** The pass 1 to 3 records and receipts are now tracked in the base, committed
+  byte-identically at `25e1f7b` and `64aba4b`; I verified the committed bytes equal what I wrote.
+
+### Conditions
+
+None on this candidate. F17 and F19 are repairs owed inside the concern that owns the freeze;
+F18 is ordinary reconciliation before landing.
+
+### Judgement items
+
+- **J5 (new).** Should `contracts/repository-candidate-lifecycle.json` require a candidate's
+  `checks` to be true of its `candidate_tree`, and require the record to name the tree they
+  graded? That binds every future candidate and every reader of a frozen record, so it is a
+  contract question rather than an implementation choice. Which of the three readings above is
+  used to satisfy it is the builder's, not the owner's.
+- J1, J2 discharged by F1 and F4. J4 answered at pass 3.
+
+### Verified
+
+Every command ran with `SOV_PRINCIPAL=principal:claude-fable-5-1`.
+
+- `git rev-parse HEAD` -> `f957987b45e02d86341c0c348a5c8f3f90af0777` before and after every command; `git status --porcelain` ->
+  empty until the deposits; `git rev-parse f957987^{tree}` -> `d89cedaacd75eae4ff420f89937bfa6761eb9158`;
+  `git diff --stat 6498fc7..f957987` -> 14 files, +735/-36.
+- Completeness: record `changed_paths` (14) equals `git diff --name-only 6498fc7 f957987` (14);
+  every declared path present in `git ls-tree -r f957987` and byte-equal to the working tree;
+  none absent.
+- Blob identity: `git rev-parse a63b09b:<p>` equals `f957987:<p>` for all 14 paths.
+- Clean full-history clone at `f957987`: `python scripts/verify.py` -> **exit 0**, `PASS: 10 of
+  10 snapshot claim(s) match the record`; `python scripts/lint.py` -> **exit 0**;
+  `python scripts/run_tooling_tests.py` twice -> exit 0, exit 0, 112 modules.
+- Eleven suites on a `git archive` copy: `test_sovaddress` 18, `test_sov_witness_layer` 72,
+  `test_witness_record` 14, `test_sov_diagrams` 16, `test_sov_clarity` 7, `test_sov_reuse` 15,
+  `test_repository_candidate_effects` 10, `test_repository_candidate` 4, `test_sov_land` 31,
+  `test_landing_isolation` 16, `test_landing_ledger` 15 - all OK.
+- Sixteen mutants, eleven suites each: M1, M2, M3, M4, M10, M11, M12 caught by `test_sovaddress`
+  (M1 also by `test_sov_diagrams`); M5, M6, M7 by `test_sov_witness_layer`; M8 by
+  `test_sov_reuse`; M9 by `test_sov_clarity`; M13, M14, M15, M16 by
+  `test_repository_candidate_effects`; unmutated control green on all eleven.
+- Four readers at `f957987` against `6498fc7`: `records` exit 0 both, identical verdict per
+  receipt and identical summary (27 graded, 0 unusable, 27 stale); `sov_diagrams.py` and
+  `sov_clarity.py check` exit 0 both, byte-identical; `sov_reuse.py run` exit 1 both, identical
+  verdict, predicates and drifted set. 165 committed addresses, 164 identical both ways, 1
+  absent (pre-existing), 0 containing `#`.
+- F17 reproduction and the `434c6a5` measurement: as described above, including
+  `run_tooling_tests.py` -> exit 1 on that commit's own tree.
+- After the deposits: `python scripts/sov_witness_layer.py records` -> exit 0, 28 receipts
+  graded, 0 unusable, this pass's receipt `CURRENT`; `python scripts/sov_clarity.py check` ->
+  exit 0; `python scripts/lint.py` -> exit 0; `python scripts/sov_standing.py` -> PASS;
+  `git -C <root> status --porcelain` -> ` M witness/sovaddress.md` and
+  `?? witness/observations/2026-09-07-sovaddress-observation-4.json`.
+  The first draft of this receipt digested `witness/sovaddress.md`, the record it sits
+  beside, and the grader read it `STALE_PROBE` the moment that record was rewritten. That
+  is the check working on its author: a receipt that digests its own record declares probe
+  drift. The address was removed before the deposit stood, and no receipt of mine names an
+  address under `witness/`.
+
+### Uncovered
+
+`sov_land.py land` was not executed; F18 is read from `sov_candidate.py` and the lifecycle
+contract. The repair for F17 is described, not written - this witness edits nothing. Nothing
+under `conformance/` or `services/` changed.
+
+### Standing supported
+
+`WITNESSED` for `scripts/sovaddress.py`, its four adoptions, and the freeze ordering in
+`scripts/sovland/candidates.py`, as carried by candidate `f957987b45e02d86341c0c348a5c8f3f90af0777`. `stage_observed_by`, if a
+custody member is ever minted: `claude-fable-5-1/sov-witness@2026-09-07-sovaddress, pass 4 at
+f957987b45e02d86341c0c348a5c8f3f90af0777`. Not supported: any reading of a candidate record's `checks` field as evidence about its
+own tree, until F17 is repaired. Receipt:
+`witness/observations/2026-09-07-sovaddress-observation-4.json`. Landing observation:
+`.local/observations/2026-09-07-sovaddress-landing-4.json`, `CONFIRMED`, with F18 named as the
+precondition the lander's own gate tests. This record is an observation; it ratifies nothing and
+settles nothing.
 
 ## Pass 3: commit a63b09b (2026-09-07)
 

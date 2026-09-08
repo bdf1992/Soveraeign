@@ -4,10 +4,10 @@
 from __future__ import annotations
 
 import argparse
-from hashlib import sha256
 import json
 from pathlib import Path
 
+from sovclarity.digests import DIGEST_PREFIX, basis_digest, digest  # noqa: F401
 from sovclarity.scope import (
     campaigns,
     clarity_candidates,
@@ -23,7 +23,6 @@ from sovclarity.zero import required_paths as zero_required
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_PATH = ROOT / "contracts" / "clarity.json"
-DIGEST_PREFIX = "sha256:"
 def load(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 def save(path: Path, value: dict) -> None:
@@ -33,8 +32,6 @@ def save(path: Path, value: dict) -> None:
         encoding="utf-8",
         newline="\n",
     )
-def digest(path: Path) -> str:
-    return DIGEST_PREFIX + sha256(path.read_bytes()).hexdigest()
 def coverage_path(contract: dict) -> Path:
     return ROOT / contract["coverage_file"]
 
@@ -55,8 +52,12 @@ def review_state(path: str, review: dict | None) -> str:
     if not artifact.is_file() or digest(artifact) != review.get("artifact_digest"):
         return "TEXT_STALE"
     for basis in review.get("basis", []):
-        source = ROOT / basis["path"]
-        if not source.is_file() or digest(source) != basis.get("digest"):
+        # Unreadable is stale before it is compared: `basis_digest` returns None,
+        # a receipt entry recording no digest reads None too, and a bare `!=`
+        # collapses to None != None and calls it CURRENT. The expression this
+        # replaced short-circuited on `not source.is_file()` and could not.
+        found = basis_digest(ROOT, basis["path"])
+        if found is None or found != basis.get("digest"):
             return "BASIS_STALE"
     return "CURRENT"
 
@@ -208,10 +209,10 @@ def do_record(
     basis_paths = basis_args if basis_args is not None else default_basis(contract, path)
     basis = []
     for source in basis_paths:
-        target = ROOT / source
-        if not target.is_file():
-            raise SystemExit(f"basis file does not exist: {source}")
-        basis.append({"path": source, "digest": digest(target)})
+        found = basis_digest(ROOT, source)
+        if found is None:
+            raise SystemExit(f"basis does not resolve: {source}")
+        basis.append({"path": source, "digest": found})
     record.setdefault("reviews", {})[path] = {
         "artifact_digest": digest(artifact),
         "basis": basis,

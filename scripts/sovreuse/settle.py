@@ -10,13 +10,13 @@ report, and the reading says which stores it read.
 
 from __future__ import annotations
 
-from hashlib import sha256
 from pathlib import Path
 from typing import Any
 import subprocess
 
 from sovlease import store as lease_store
 from sovsession import store as session_store
+import sovaddress
 
 INDEPENDENT = "INDEPENDENT"
 LANDED = "LANDED"
@@ -65,11 +65,14 @@ def current_state(root: Path, receipts: list[dict[str, Any]],
     for receipt in receipts:
         for address, digest in (receipt.get("observed") or {}).items():
             covered = covered or address == result_address
-            path = root / address
-            if not path.is_file():
+            if not (root / sovaddress.split(address)[0]).is_file():
                 missing.add(address)
                 continue
-            now = "sha256:" + sha256(path.read_bytes()).hexdigest()
+            try:
+                now = sovaddress.digest(root, address)
+            except sovaddress.AddressError as refused:
+                (missing if refused.code == "FRAGMENT_NOT_FOUND" else drifted).add(address)
+                continue
             (matching if now == digest else drifted).add(address)
     return {"matching": sorted(matching), "drifted": sorted(drifted),
             "missing": sorted(missing), "covers_result": covered}

@@ -24,7 +24,8 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from sovrecurrence import candidate, experience, fixture, neutrality, recurrence  # noqa: E402
+from sovrecurrence import (candidate, declaration, experience, fixture, neutrality,
+                           recurrence)  # noqa: E402
 
 
 class SettledExperience(unittest.TestCase):
@@ -262,6 +263,18 @@ class InstitutionNeutrality(unittest.TestCase):
         read = neutrality.read(self.root)
         self.assertTrue(read["fixed_role_names_required"])
         self.assertTrue(any("is governed by" in item for item in read["closed_vocabularies"]))
+
+    def test_every_excluded_instance_key_is_exercised_by_the_mispaired_variant(self) -> None:
+        """The fixture may not be derived from the rule it exists to refuse.
+
+        `_mispaired` fills a written-out list of instance keys, not `EXAMPLE_KEYS` itself,
+        because a variant built from the constant empties itself when the constant is
+        narrowed - which is exactly the regression the variant is there to catch. The two
+        lists must still name the same keys: a key the rule reads would make the variant
+        resolve legitimately, and a key the rule excludes but the fixture skips is a hole.
+        Narrowing `EXAMPLE_KEYS` fails the self-check; widening it fails here.
+        """
+        self.assertEqual(set(declaration.EXAMPLE_KEYS), set(fixture.INSTANCE_KEYS))
 
     def test_a_properties_dict_inside_an_example_declares_nothing(self) -> None:
         """Identity is read at the root; declared names must follow the same line."""

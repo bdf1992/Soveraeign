@@ -45,7 +45,7 @@ def unquoted(value: str) -> str:
     return value
 
 
-def scalar(value: str) -> str:
+def scalar(value: str, raw: bool = False) -> str:
     """One scalar with a trailing `#` comment dropped and its quotes removed.
 
     The comment is only dropped outside an expression, so a `#` inside `${{ }}`
@@ -61,32 +61,54 @@ def scalar(value: str) -> str:
         elif char == "#" and not depth and index and value[index - 1] in " \t":
             value = value[:index]
             break
-    return unquoted(value.strip())
+    return value.strip() if raw else unquoted(value.strip())
 
 
-def decomment(line: str) -> str:
-    """One line with any comment removed, respecting quotes.
+def decomment(line: str, plain: bool = False) -> str:
+    """One line with any comment removed.
 
-    Whole-line comments are not enough. `run: python scripts/verify.py  # --observe
-    "$RUNNER_TEMP/x.json"` is a bare verifier in YAML and in shell alike, and a
-    witness used exactly that to put one into this repository's own workflow while
-    the guard read the flag out of the comment.
+    Two readings, because YAML and shell disagree. Inside a block scalar the text
+    is shell, where a `#` in quotes is literal, so quotes are tracked. A plain
+    YAML scalar has no quoting at all: `run: echo 'a # b'` ends at the `#` for
+    YAML and therefore for the runner, whatever it looks like. A witness used
+    exactly that difference - an apostrophe before the `#` - to keep a flag the
+    runner would never see.
     """
     quote = ""
     for index, char in enumerate(line):
         if quote:
             if char == quote:
                 quote = ""
-        elif char in "\"'":
+        elif not plain and char in "\"'":
             quote = char
         elif char == "#" and (not index or line[index - 1] in " \t"):
             return line[:index]
     return line
 
 
+BLOCK = re.compile(r":\s*[|>][+-]?\d*\s*$")
+
+
 def live(text: str) -> str:
-    """One block with every comment removed, whole-line and trailing alike."""
-    return "\n".join(decomment(line) for line in text.splitlines())
+    """One block with every comment removed, whole-line and trailing alike.
+
+    A block scalar's body is shell and is read as shell; every other line is YAML
+    and is read as a plain scalar unless its value opens with a quote.
+    """
+    kept, body, depth = [], False, 0
+    for line in text.splitlines():
+        here = len(line) - len(line.lstrip())
+        if body and line.strip() and here <= depth:
+            body = False
+        if body:
+            kept.append(decomment(line))
+            continue
+        value = PAIR.match(line)
+        opens = (value.group("value")[:1] in "\"'") if value and value.group("value") else False
+        kept.append(decomment(line, plain=not opens))
+        if BLOCK.search(line):
+            body, depth = True, here
+    return "\n".join(kept)
 
 
 def canonical(text: str) -> str:
@@ -101,8 +123,50 @@ def canonical(text: str) -> str:
     return REDUNDANT.sub("/", CONTINUED.sub("", text))
 
 
-def mapping_at(lines: list[str], start: int, depth: int) -> dict[str, str]:
-    """The `key: value` pairs written at exactly `depth`, until the block ends."""
+def commands_of(step: str) -> list[str]:
+    """The commands one step's `run:` declares, one per element.
+
+    `--observe` used to be searched for over the step's whole text, so a witness
+    satisfied it from the step's `name:`, from a comment, and from a neighbouring
+    `echo` on the line above a bare verifier - the last while fabricating the file
+    so `if-no-files-found: error` was satisfied too. A flag belongs to the command
+    it is written on, so that is what this returns.
+
+    A folded scalar joins onto one command, a literal scalar keeps its lines
+    apart, and a trailing backslash continues whichever it is.
+    """
+    lines = live(step).splitlines()
+    start = next((i for i, line in enumerate(lines) if BLOCK.search(line)), None)
+    if start is None:
+        found = PAIR.match(lines[0]) if lines else None
+        for line in lines:
+            pair = PAIR.match(line)
+            if pair and pair.group("key") == "run":
+                found = pair
+                break
+        return [unquoted(found.group("value"))] if found and found.group("key") == "run" else []
+    if not re.match(r"^\s*-?\s*run\s*:", lines[start]):
+        return []
+    depth = len(lines[start]) - len(lines[start].lstrip())
+    body = []
+    for line in lines[start + 1:]:
+        if line.strip() and len(line) - len(line.lstrip()) <= depth:
+            break
+        body.append(line.strip())
+    joined = "\n".join(body).replace("\\\n", " ")
+    if ">" in lines[start].rsplit(":", 1)[1]:
+        return [" ".join(part for part in joined.split("\n") if part.strip())]
+    return [part for part in joined.split("\n") if part.strip()]
+
+
+def mapping_at(lines: list[str], start: int, depth: int,
+               raw: bool = False) -> dict[str, str]:
+    """The `key: value` pairs written at exactly `depth`, until the block ends.
+
+    `raw` keeps the quotes. Most keys mean the same quoted or not, but a key read
+    as an expression does not: `continue-on-error: 'false'` is a non-empty string,
+    which is nothing like the boolean it resembles.
+    """
     found = {}
     for line in lines[start:]:
         if not line.strip() or line.lstrip().startswith("#"):
@@ -114,19 +178,19 @@ def mapping_at(lines: list[str], start: int, depth: int) -> dict[str, str]:
             continue
         pair = PAIR.match(line)
         if pair:
-            found[pair.group("key")] = scalar(pair.group("value"))
+            found[pair.group("key")] = scalar(pair.group("value"), raw)
     return found
 
 
-def keys_of(step: str) -> dict[str, str]:
+def keys_of(step: str, raw: bool = False) -> dict[str, str]:
     """One step's own mapping keys, including any written on the dash line."""
     lines = step.splitlines()
     depth = len(lines[0]) - len(lines[0].lstrip()) + 2
     found = {}
     first = PAIR.match(lines[0])
     if first:
-        found[first.group("key")] = scalar(first.group("value"))
-    found.update(mapping_at(lines, 1, depth))
+        found[first.group("key")] = scalar(first.group("value"), raw)
+    found.update(mapping_at(lines, 1, depth, raw))
     return found
 
 
@@ -217,7 +281,7 @@ def under_temp(value: str) -> str:
 
 
 
-__all__ = ["JOBS_HEAD", "JOB_HEAD", "PAIR", "STEPS_KEY", "TEMP", "TEMP_ROOT",
-           "VERIFIER", "before_steps", "canonical", "decomment", "jobs_of",
+__all__ = ["BLOCK", "JOBS_HEAD", "JOB_HEAD", "PAIR", "STEPS_KEY", "TEMP", "TEMP_ROOT",
+           "VERIFIER", "before_steps", "canonical", "commands_of", "decomment", "jobs_of",
            "keys_of", "live", "mapping_at", "normalise", "scalar", "steps_of",
            "strays_of", "under_temp", "unquoted", "with_of"]

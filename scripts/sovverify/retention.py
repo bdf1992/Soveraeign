@@ -15,7 +15,11 @@ a refusal, per job and per file, and a job head the reader cannot name is its ow
 refusal. That turns a blind reader into a failure, which is the only version of
 this rule that need not be right about the shapes nobody has written yet.
 
-Known limits, stated rather than left to be found. Each fails closed:
+Limits five readings have reached. This list is what has been found, not a proof
+that nothing else is here - a fifth witness disproved the sentence that used to
+stand in its place, which called the list complete and then missed two limits
+that failed open. Read it as a record of where the sweep got to. Each of these
+fails closed:
   - flow style (`steps: [{...}]`, `with: {...}`) is unreadable, so a verify step
     written that way refuses rather than being guessed at;
   - a verify step that opens a heredoc refuses, because `--observe` inside a
@@ -28,17 +32,23 @@ spellings a witness executed, and `$(echo scripts)/verify.py` runs the same file
 under a string nothing here can see. The claim is scoped to match: every hidden
 verify step in a job this reader can name, and every job it cannot name refused
 on its own account.
+
+Every property is read off the key that declares it: the flag off the command
+its `run:` actually runs, the condition and `continue-on-error` off the step's
+own keys or the job's, the keeper off its `uses:` and its `with: path:`. Where a
+reading is textual it is named above. That sentence is a description of the code
+below and is worth checking against it rather than believing.
 """
 
 from __future__ import annotations
 
 import re
 
-from sovverify.workflows import (VERIFIER, before_steps, canonical, jobs_of, keys_of,
-                                 live, normalise, strays_of, under_temp, with_of)
+from sovverify.workflows import (VERIFIER, canonical, commands_of, jobs_of, keys_of,
+                                 live, mapping_at, normalise, strays_of, under_temp,
+                                 with_of)
 
 UPLOAD = "actions/upload-artifact@"
-CONTINUE = re.compile(r"^\s*continue-on-error:\s*(?P<value>.*?)\s*$", re.M)
 OBSERVE = re.compile(
     r"--observe[\s=]+"
     r'(?:"(?P<double>(?:\$RUNNER_TEMP|\$\{\{\s*runner\.temp\s*\}\})/[^"]+)"'
@@ -57,17 +67,27 @@ UNCONDITIONAL = frozenset({"always()", "${{ always() }}", "!cancelled()", "${{ !
 DISABLED = frozenset({"", "false"})
 
 
-def continues_on_error(text: str) -> bool:
-    """Whether one block enables `continue-on-error` in any spelling but a bare false.
+def continues_on_error(keys: dict[str, str]) -> bool:
+    """Whether a mapping enables `continue-on-error` in any spelling but a bare false.
 
-    Read unquoted and uncommented, at line starts rather than by substring. It
-    takes an expression, so `True`, `${{ true }}` and `${{ <anything> }}` all
-    enable it, and enabling it on a retention step neuters `if-no-files-found:
-    error`, which is the whole of the runtime enforcement.
+    Read off the key, never off the text around it. A line-anchored regex missed
+    the dash-line spelling entirely - `- continue-on-error: true` as a step's
+    first key - and `keys_of` had the right answer available the whole time.
     """
-    return any(found.group("value").lower() not in DISABLED
-               for found in CONTINUE.finditer(live(text)))
+    value = keys.get("continue-on-error")
+    return value is not None and value.lower() not in DISABLED
 
+
+def job_keys(block: str) -> dict[str, str]:
+    """One job's own keys, from anywhere in the job rather than above its steps.
+
+    `continue-on-error` is legal after `steps:` and means the same thing there. An
+    earlier read stopped at `steps:`, so writing it below the list disabled the
+    runtime enforcement wherever the keeper was not the last step.
+    """
+    lines = block.splitlines()
+    depth = len(lines[0]) - len(lines[0].lstrip()) + 2
+    return mapping_at(lines, 1, depth, raw=True)
 
 
 def _keeper_faults(job: str, name: str, keeper: str) -> list[str]:
@@ -90,7 +110,6 @@ def unretained(text: str) -> list[str]:
     """
     text = normalise(text)
     missing = []
-    graded = 0
     accounted = 0
     for job, (block, steps) in jobs_of(text).items():
         # Read `uses:` at its own key. Selecting upload steps by substring made a
@@ -110,7 +129,10 @@ def unretained(text: str) -> list[str]:
             if "<<" in body:
                 missing.append(f"{job}: a verify step runs through shell this cannot read")
                 continue
-            found = OBSERVE.search(body)
+            # Off the command that runs the verifier, never off the step's text.
+            running = [one for one in commands_of(step) if VERIFIER in canonical(one)]
+            found = next((match for match in
+                          (OBSERVE.search(one) for one in running) if match), None)
             if found is None:
                 missing.append(f"{job}: a verify step does not pass --observe")
                 continue
@@ -126,12 +148,12 @@ def unretained(text: str) -> list[str]:
                 continue
             for keeper in keepers:
                 missing.extend(_keeper_faults(job, name, keeper))
-                if continues_on_error(keeper) or continues_on_error(before_steps(block)):
+                if (continues_on_error(keys_of(keeper, raw=True))
+                        or continues_on_error(job_keys(block))):
                     missing.append(
                         f"{job}: {name} refuses an absent file and nothing listens")
         named = canonical(live(block)).count(VERIFIER)
         accounted += named
-        graded += seen
         if named > seen:
             missing.append(f"{job}: runs the verifier in a shape the reader cannot see")
     for stray in strays_of(text):
@@ -147,4 +169,4 @@ def graded_steps(text: str) -> int:
                for _, steps in jobs_of(normalise(text)).values() for step in steps)
 
 
-__all__ = ["continues_on_error", "graded_steps", "unretained"]
+__all__ = ["continues_on_error", "graded_steps", "job_keys", "unretained"]

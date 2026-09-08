@@ -49,6 +49,45 @@ class SettledExperience(unittest.TestCase):
         self.assertNotIn("scripts/fixture_member_1.py",
                          {source["address"] for source in gathered["sources"]})
 
+    def test_a_member_whose_evidence_resolves_to_nothing_is_a_defect(self) -> None:
+        """The basis may not silently shrink; a dead extractor is the way it would."""
+        original = experience.EVIDENCE_PATH
+        experience.EVIDENCE_PATH = __import__("re").compile(r"(?!x)x")
+        self.addCleanup(setattr, experience, "EVIDENCE_PATH", original)
+        gathered = experience.gather(self.root, fixture.COLLECTION)
+        self.assertTrue(any("smaller than the record" in defect
+                            for defect in gathered["defects"]))
+
+    def test_a_member_settled_at_ratified_is_admitted(self) -> None:
+        """RATIFIED is above WITNESSED; admitting only the exact token would drop it."""
+        path = self.root / fixture.COLLECTION
+        collection = json.loads(path.read_text(encoding="utf-8"))
+        collection["custodies"][0]["members"][0]["standing"] = "RATIFIED"
+        path.write_text(json.dumps(collection, indent=2), encoding="utf-8", newline="\n")
+        gathered = experience.gather(self.root, fixture.COLLECTION)
+        self.assertIn("scripts/fixture_member_1.py",
+                      {source["address"] for source in gathered["sources"]})
+
+    def test_a_member_with_no_work_state_is_not_admitted(self) -> None:
+        """An absent field must refuse, never default open."""
+        path = self.root / fixture.COLLECTION
+        collection = json.loads(path.read_text(encoding="utf-8"))
+        del collection["custodies"][0]["members"][0]["work_state"]
+        path.write_text(json.dumps(collection, indent=2), encoding="utf-8", newline="\n")
+        gathered = experience.gather(self.root, fixture.COLLECTION)
+        self.assertNotIn("scripts/fixture_member_1.py",
+                         {source["address"] for source in gathered["sources"]})
+
+    def test_the_tree_digest_reads_bytes_not_just_paths(self) -> None:
+        """A directory member is pinned by what it contains, not by its file names."""
+        tree = self.root / "tree"
+        (tree / "inner").mkdir(parents=True)
+        leaf = tree / "inner" / "file.txt"
+        leaf.write_text("before\n", encoding="utf-8", newline="\n")
+        before = experience.digest(tree)
+        leaf.write_text("after\n", encoding="utf-8", newline="\n")
+        self.assertNotEqual(before, experience.digest(tree))
+
     def test_an_address_that_is_not_present_is_a_defect_not_a_silent_drop(self) -> None:
         (self.root / "witness/fixture-1.md").unlink()
         gathered = experience.gather(self.root, fixture.COLLECTION)
@@ -114,6 +153,23 @@ class InstitutionNeutrality(unittest.TestCase):
         read = neutrality.read(self.root)
         self.assertTrue(read["fixed_role_names_required"])
         self.assertFalse(read["alternate_institution_composes"])
+
+    def test_a_vocabulary_admitting_two_roles_and_no_alternate_is_closed(self) -> None:
+        """The witness's counterexample: closed against procurement without being four-of-four."""
+        self.assertTrue(neutrality._closes(["worker", "orchestrator", "controller", "owner"]))
+
+    def test_an_actor_kind_taxonomy_sharing_one_word_is_not_closed(self) -> None:
+        """WORKER is also a kind of actor; one overlapping word is not the institution."""
+        self.assertFalse(neutrality._closes(["HUMAN", "MODEL", "WORKER", "SYSTEM"]))
+
+    def test_a_const_closure_is_a_stated_gap_not_a_silent_one(self) -> None:
+        """A const pins a field to one role and this reader does not see it. Held visible
+        here so the limitation is a failing assumption if anyone ever fixes it silently."""
+        path = self.root / neutrality.PRIMITIVES["finding"]
+        path.write_text(json.dumps({"properties": {"a": {"const": "WITNESS"},
+                                                   "b": {"const": "CONTROLLER"}}}),
+                        encoding="utf-8", newline="\n")
+        self.assertEqual(neutrality.read(self.root)["closed_vocabularies"], [])
 
     def test_an_open_vocabulary_that_merely_includes_the_roles_does_not(self) -> None:
         path = self.root / neutrality.PRIMITIVES["finding"]

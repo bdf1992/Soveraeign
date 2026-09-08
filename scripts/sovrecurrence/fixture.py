@@ -139,9 +139,8 @@ def run_variant(root: Path, variant: str) -> dict[str, Any]:
     """One reading of the fixture basis under `variant`; `positive` defeats nothing."""
     if variant == "policy-moved":
         def mutate(observed: dict[str, Any]) -> dict[str, Any]:
+            """Move a governing record and declare nothing; the reader must notice."""
             _write(root / "STATUS.yaml", "phase: phase:fixture\nedited_by_synthesis: true\n")
-            observed["automatic_policy_change"] = True
-            observed["automatic_phase_transition"] = True
             return observed
         return recurrence.run(root, COLLECTION, mutate)
     _defeat_root(root, variant)

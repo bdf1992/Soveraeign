@@ -21,8 +21,13 @@ import re
 
 CUSTODY_COLLECTION = "contracts/custodies/phase-1-5.json"
 EVIDENCE_PATH = re.compile(r"(?:witness|reports)/[A-Za-z0-9_./-]+?\.(?:md|json)")
+EVIDENCE_MARKERS = ("witness/", "reports/")
 LANDED = "LANDED"
-WITNESSED = "WITNESSED"
+SETTLED_STANDINGS = ("WITNESSED", "RATIFIED")
+"""Standings that mean an independent participant has judged the member. `RATIFIED` is
+above `WITNESSED` on the lifecycle, so admitting only the exact token `WITNESSED` would
+silently drop a member that a seat had since settled. Compared as whole tokens, never as
+substrings: `NOT_WITNESSED` contains `WITNESSED` (`CLAUDE.md`, trap T3)."""
 
 
 def digest(path: Path) -> str | None:
@@ -78,14 +83,22 @@ def gather(root: Path, collection_path: str = CUSTODY_COLLECTION) -> dict[str, A
     sources: dict[str, dict[str, Any]] = {}
     clauses: set[str] = set()
     for clause, member in _members(collection):
-        if member.get("standing") != WITNESSED or member.get("work_state") != LANDED:
+        if member.get("standing") not in SETTLED_STANDINGS:
+            continue
+        if member.get("work_state") != LANDED:
             continue
         address = member.get("address")
         if not isinstance(address, str) or not address:
             defects.append(f"{clause}: a settled member declares no address")
             continue
         clauses.add(clause)
-        for candidate in [address] + EVIDENCE_PATH.findall(str(member.get("stage_observed_by") or "")):
+        observed_by = str(member.get("stage_observed_by") or "")
+        named = EVIDENCE_PATH.findall(observed_by)
+        if not named and any(marker in observed_by for marker in EVIDENCE_MARKERS):
+            defects.append(f"{clause}: {address} names evidence under "
+                           f"{' or '.join(EVIDENCE_MARKERS)} that this reader resolved none of, "
+                           "so the basis it cites is smaller than the record it read")
+        for candidate in [address] + named:
             found = digest(root / candidate)
             if found is None:
                 defects.append(f"{clause}: {address} names {candidate}, which is not present")

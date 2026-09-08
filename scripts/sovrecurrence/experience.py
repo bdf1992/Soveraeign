@@ -12,8 +12,9 @@ silently shrinks is what P15-Q4.1 is written against.
 Three limits, stated because a reader would otherwise assume otherwise. The standing and the
 work state are taken from the custody record itself; nothing here corroborates them, so a
 member falsely written as settled is admitted. A directory member is digested from the files
-under it that are not known tool output, which is a list of names rather than a rule, so a
-generator writing somewhere unnamed would move the identity. And in the live path the addresses gathered
+under it that this repository's own `.gitignore` does not exclude, over a floor of generated
+names for a root that declares none; the matcher implements the subset of ignore syntax this
+repository uses, not git's whole grammar. And in the live path the addresses gathered
 here are both the basis and what the candidate cites, so P15-Q4.1 grades whether synthesis
 preserved what it was given, not whether the gathering was right. That the predicate can
 fail at all is proved by the fixture's `basis-dropped` and `no-sources` variants, not by
@@ -22,8 +23,9 @@ the live reading.
 
 from __future__ import annotations
 
+from fnmatch import fnmatch
 from hashlib import sha256
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 import json
 
@@ -38,53 +40,100 @@ a `NOT_WITNESSED` member for that reason, and the self-check refuses a reading t
 it; a sixth witness pointed out that the rule was asserted here with nothing proving it."""
 
 
+IGNORE_DECLARATION = ".gitignore"
+"""Where this repository says which bytes it does not keep.
+
+A ninth witness found that a directory member was digested from every file beneath it, so
+importing the service wrote bytecode and the candidate's identity moved: three clean
+checkouts of one commit produced three different proposal ids, and a fourth appeared after
+running the repository's own verification command. The first repair excluded a hand-written
+list of generated names, and a tenth witness showed that list was a third declaration of
+"generated" in this repository, agreeing with neither `.gitignore` nor `scripts/lint.py`:
+six ordinary ignored forms it missed - an editor swap file, a local database, a log, an
+egg-info directory, a coverage file, a `.DS_Store` - each moved the digest.
+
+So the declaration is read rather than restated. `.gitignore` is a tracked file and needs no
+git to open. What is implemented is the subset of its syntax this repository uses: a
+directory pattern ending in `/`, a glob, a plain name, and a `!` negation. An anchored or
+path-bearing pattern is matched against the member-relative path as well as the name. That
+is narrower than git's own matching and is stated as such."""
+
 GENERATED_DIRS = frozenset({"__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache",
                             ".ipynb_checkpoints", ".tox", ".venv", "node_modules"})
-"""Directory names holding output a tool produced, not content the repository declares."""
+"""A floor under the declaration, for a root whose `.gitignore` is absent or unreadable."""
 
 GENERATED_SUFFIXES = frozenset({".pyc", ".pyo", ".pyd"})
 """File suffixes of the same kind."""
 
 
-def _is_artifact(entry: Path, base: Path) -> bool:
-    """True when this file is part of what the member declares, rather than tool output.
+def _ignore_patterns(root: Path) -> tuple[list[str], list[str]]:
+    """The ignore and negation patterns this repository declares, in declaration order."""
+    try:
+        text = (root / IGNORE_DECLARATION).read_text(encoding="utf-8")
+    except OSError:
+        return [], []
+    ignore: list[str] = []
+    negate: list[str] = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        (negate if stripped.startswith("!") else ignore).append(stripped.lstrip("!").strip("/"))
+    return ignore, negate
 
-    A ninth witness showed why this exists. A directory member digested every file beneath
-    it, so importing the service wrote `__pycache__` and the candidate's identity moved:
-    three clean checkouts of one commit, each reporting no modified files, produced three
-    different proposal ids, and running the repository's own verification command changed it
-    again. An identity that is not a function of the artifact cannot be cited as evidence
-    about the artifact, and two records had already cited a value the ordinary workflow does
-    not reproduce.
 
-    This is a list of names and not a rule, and the difference matters: without reading git
-    there is no way to ask what the repository tracks, so what is excluded is what is known
-    to be generated. A tool writing somewhere not named here would move the identity again.
-    Recorded as a limit rather than described as a guarantee.
+def _matches(relative: PurePosixPath, patterns: list[str]) -> bool:
+    """True when any pattern matches this member-relative path, one of its parents, or a name."""
+    candidates = [str(relative), relative.name, *(part for part in relative.parts)]
+    return any(fnmatch(candidate, pattern) for pattern in patterns for candidate in candidates)
+
+
+def _is_artifact(entry: Path, base: Path, ignore: list[str], negate: list[str]) -> bool:
+    """True when this file is content the repository keeps, rather than output a tool left.
+
+    The floor applies whatever the declaration says, so a root with no `.gitignore` still
+    refuses bytecode. Beyond it the repository's own declaration decides, and a negation in
+    that declaration wins, which is what `!.env.example` is for.
     """
-    relative = entry.relative_to(base).parts
-    return (not any(part in GENERATED_DIRS for part in relative)
-            and entry.suffix not in GENERATED_SUFFIXES)
+    relative = PurePosixPath(entry.relative_to(base).as_posix())
+    if any(part in GENERATED_DIRS for part in relative.parts):
+        return False
+    if entry.suffix in GENERATED_SUFFIXES:
+        return False
+    if _matches(relative, negate):
+        return True
+    return not _matches(relative, ignore)
 
 
-def digest(path: Path) -> str | None:
+def digest(path: Path, root: Path | None = None) -> str | None:
     """The sha256 at `path`, or None when nothing is readable there.
 
-    A directory digests as its tree: every declared file under it, in sorted relative-path
-    order, each contributing its path and its bytes. A member whose address is a service is
-    then pinned by what the service contains, not merely by the fact that a directory
-    exists, and not by what a tool left there.
+    A directory digests as its tree: every file under it the repository keeps, in sorted
+    relative-path order, each contributing its path and its bytes. A member whose address is
+    a service is then pinned by what the service contains, not merely by the fact that a
+    directory exists, and not by what a tool left there. `root` says where to read the ignore
+    declaration; without it only the floor applies.
+
+    Each contribution is length-framed. A tenth witness showed the unframed form was not
+    injective: a member holding `ab` with empty contents and one holding `a` containing `b`
+    digested identically, so "the identity is a function of the artifact" held in one
+    direction only. Framing moved the live identity once, at the commit that introduced it.
     """
     if path.is_dir():
+        ignore, negate = _ignore_patterns(root) if root is not None else ([], [])
         rolling = sha256()
         for entry in sorted(path.rglob("*")):
-            if not entry.is_file() or not _is_artifact(entry, path):
+            if not entry.is_file() or not _is_artifact(entry, path, ignore, negate):
                 continue
-            rolling.update(str(entry.relative_to(path)).replace("\\", "/").encode("utf-8"))
+            name = str(entry.relative_to(path)).replace("\\", "/").encode("utf-8")
             try:
-                rolling.update(entry.read_bytes())
+                content = entry.read_bytes()
             except OSError:
                 return None
+            rolling.update(f"{len(name)}:".encode("ascii"))
+            rolling.update(name)
+            rolling.update(f"{len(content)}:".encode("ascii"))
+            rolling.update(content)
         return rolling.hexdigest()
     try:
         return sha256(path.read_bytes()).hexdigest()
@@ -136,7 +185,7 @@ def gather(root: Path, collection_path: str = CUSTODY_COLLECTION) -> dict[str, A
             defects.append(f"{clause}: a settled member declares no address")
             continue
         clauses.add(clause)
-        found = digest(root / address)
+        found = digest(root / address, root)
         if found is None:
             defects.append(f"{clause}: the settled member {address} is not present")
             continue

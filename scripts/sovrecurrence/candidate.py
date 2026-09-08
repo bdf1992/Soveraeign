@@ -88,4 +88,4 @@ def synthesize(root: Path, gathered: dict[str, Any],
 
 def governing_digests(root: Path) -> dict[str, str | None]:
     """The digest of each governing record, for comparison across synthesis."""
-    return {relative: experience.digest(root / relative) for relative in GOVERNING}
+    return {relative: experience.digest(root / relative, root) for relative in GOVERNING}

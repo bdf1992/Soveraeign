@@ -124,13 +124,19 @@ def install_styles(repo: Path, user: Path) -> tuple[int, list[str]]:
     target.mkdir(parents=True, exist_ok=True)
     copied, kept = 0, []
     for style in sorted(source.glob("*.md")):
-        aside = replace_file(
-            user, f"output-styles/{style.name}", target / style.name,
-            style.read_text(encoding="utf-8"))
+        try:
+            aside = replace_file(
+                user, f"output-styles/{style.name}", target / style.name,
+                style.read_text(encoding="utf-8"))
+        except OSError as exc:
+            # One style nobody can read must not cost the session its hooks.
+            print(f"sov-bootstrap: {style.name} not installed ({type(exc).__name__}).")
+            continue
         if aside:
             kept.append(aside)
         copied += 1
     return copied, kept
+
 
 def hook_entries(repo: Path, event: str) -> list[dict]:
     """Build this repository's hook entries for one event, with absolute paths."""
@@ -155,11 +161,19 @@ def hook_entries(repo: Path, event: str) -> list[dict]:
     return entries
 
 
-def merge_hooks(existing: dict, repo: Path) -> dict:
-    """Replace only this repository's hook entries, preserving everyone else's."""
+def merge_hooks(existing: object, repo: Path) -> dict:
+    """Replace only this repository's hook entries, preserving everyone else's.
+
+    A `hooks` value that is not an object used to raise out of here and be
+    swallowed by the top-level handler, so a session registered nothing and said
+    nothing, at every start.
+    """
+    if not isinstance(existing, dict):
+        existing = {}
     merged = {key: value for key, value in existing.items() if key not in HOOKS}
     for event in HOOKS:
-        kept = [e for e in existing.get(event) or [] if not ours(e, repo)]
+        entries = existing.get(event)
+        kept = [e for e in entries if not ours(e, repo)] if isinstance(entries, list) else []
         merged[event] = kept + hook_entries(repo, event)
     return merged
 
@@ -194,11 +208,6 @@ def main() -> int:
     user = Path.home() / ".claude"
     user.mkdir(parents=True, exist_ok=True)
     settings = user / "settings.json"
-    if settings.is_symlink():
-        # Replacing the link would destroy the operator's indirection silently.
-        settings = settings.resolve()
-        print(f"sov-bootstrap: settings.json points at {settings}; writing through it.")
-
     current, intact = read_settings(settings)
     styles, kept_styles = install_styles(repo, user)
     current["outputStyle"] = STYLE_NAME

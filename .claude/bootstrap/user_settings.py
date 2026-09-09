@@ -27,6 +27,18 @@ Modes are carried and never widened. The temporary file is created private and
 raised to the target's mode only just before the rename, so the window exposes
 nothing the target did not. `Path.write_text` creates at `0666 & ~umask`, which
 left the full settings content readable at `0644` while the target was `0600`.
+Every write in this module goes through `write_private`, including this module's
+own state file: the first draft named that call as the bug and then made it,
+forty lines below the sentence naming it.
+
+Files are compared as bytes. Reading them as text folds CRLF into LF, so a file
+this tool had never seen matched one it had and was replaced with nothing kept,
+and a file it could not decode had no digest at all, so its aside copies grew at
+every session start.
+
+The one file exempt from all of this is `.sov-bootstrap-state.json`, which is this
+tool's own record rather than anyone else's. Keys in it that this tool did not
+write are carried forward, and it is not backed up.
 """
 
 from __future__ import annotations
@@ -36,22 +48,27 @@ import hashlib
 import json
 import os
 import shutil
-import time
 
 STATE_NAME = ".sov-bootstrap-state.json"
 BACKUP_SUFFIX = ".sov-bootstrap-backup"
 
 
 def digest(text: str) -> str:
-    """Content address of a file's bytes, as written."""
+    """Content address of the bytes `write_private` will put on disk for this text."""
     return "sha256:" + hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def digest_of(path: Path) -> str | None:
-    """Content address of a file on disk, or None when it cannot be read as text."""
+    """Content address of a file's bytes, or None when they cannot be read.
+
+    Bytes, not decoded text. Reading as text folds CRLF into LF and fails outright
+    on anything that is not UTF-8, and both cost a file: one matched a digest it
+    should not have and was replaced with nothing kept, the other had no digest and
+    was copied aside again at every session start.
+    """
     try:
-        return digest(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeDecodeError):
+        return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+    except OSError:
         return None
 
 
@@ -87,11 +104,19 @@ def load_state(user: Path) -> dict:
 
 
 def save_state(user: Path, written: dict) -> None:
-    """Record what this run wrote, readable only by its owner."""
+    """Record what this run wrote, never widening the file and never dropping a key.
+
+    Anything else in the file is carried forward: this tool owns the `written`
+    key and nothing else in there is its to discard.
+    """
     path = state_path(user)
-    path.write_text(
-        json.dumps({"written": written}, indent=2) + "\n", encoding="utf-8", newline="\n")
-    os.chmod(path, 0o600)
+    try:
+        loaded = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        loaded = {}
+    document = loaded if isinstance(loaded, dict) else {}
+    document["written"] = written
+    write_private(path, json.dumps(document, indent=2) + "\n", default_mode=0o600)
 
 
 def is_own_output(user: Path, key: str, path: Path) -> bool:
@@ -127,12 +152,14 @@ def keep_aside(user: Path, key: str, path: Path, intact: bool = True) -> str | N
     """
     if not path.exists() or not path.is_file():
         return None
-    if intact and is_own_output(user, key, path):
+    if is_own_output(user, key, path):
+        # A file this tool wrote parses by construction, so `intact` adds nothing
+        # here. It still decides the name the copy is kept under, below.
         return None
     held = digest_of(path)
     stem = path.name + BACKUP_SUFFIX
     if not intact:
-        stem = f"{path.name}.unparsed-{time.strftime('%Y%m%dT%H%M%S')}"
+        stem = f"{path.name}.unparsed"
     if held is not None and already_held(path, stem, held):
         return None
     kept = free_name(path, stem)
@@ -140,9 +167,15 @@ def keep_aside(user: Path, key: str, path: Path, intact: bool = True) -> str | N
     return kept.name
 
 
-def write_private(path: Path, text: str) -> None:
-    """Replace a file atomically, keeping its mode and never widening it in between."""
-    mode = path.stat().st_mode & 0o777 if path.is_file() else 0o600
+def write_private(path: Path, text: str, default_mode: int = 0o600) -> None:
+    """Replace a file atomically, keeping its mode and never widening it in between.
+
+    A symlink is written through rather than replaced, so an operator's
+    indirection survives a run.
+    """
+    if path.is_symlink():
+        path = path.resolve()
+    mode = path.stat().st_mode & 0o777 if path.is_file() else default_mode
     tmp = free_name(path, f"{path.name}.tmp-{os.getpid()}")
     handle = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     try:

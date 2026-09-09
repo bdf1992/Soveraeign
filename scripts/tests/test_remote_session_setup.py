@@ -305,6 +305,107 @@ class Replacement(Sandbox):
         self.assertIn("console_session.py", names)
 
 
+class TheStateFile(Sandbox):
+    """This tool's own record is still a file it writes into somebody's directory."""
+
+    def test_it_is_never_more_readable_than_its_final_mode(self):
+        """Path.write_text created it at 0666 & ~umask, the bug this module names."""
+        self.modes()
+        seen, real = [], os.chmod
+
+        def spy(path, mode):
+            seen.append(Path(path).stat().st_mode & 0o777)
+            real(path, mode)
+
+        store.os.chmod = spy
+        try:
+            store.save_state(self.user, {"settings.json": "sha256:x"})
+        finally:
+            store.os.chmod = real
+        self.assertTrue(seen, "no mode was set at all")
+        self.assertTrue(all(mode == 0o600 for mode in seen), [oct(m) for m in seen])
+        self.assertEqual(0o600, store.state_path(self.user).stat().st_mode & 0o777)
+
+    def test_keys_this_tool_did_not_write_are_carried_forward(self):
+        store.state_path(self.user).write_text(
+            json.dumps({"operator": "notes", "written": {}}), encoding="utf-8")
+        store.save_state(self.user, {"settings.json": "sha256:x"})
+        document = json.loads(store.state_path(self.user).read_text(encoding="utf-8"))
+        self.assertEqual("notes", document["operator"])
+        self.assertIn("settings.json", document["written"])
+
+    def modes(self):
+        old = os.umask(0)
+        self.addCleanup(os.umask, old)
+
+
+class BytesNotText(Sandbox):
+    """Files are compared as bytes; decoding them cost two files."""
+
+    def test_a_file_that_is_not_utf8_is_held_aside_only_once(self):
+        """Without a byte digest its copies grew at every session start."""
+        self.settings.write_bytes(b"\xff\xfe operator binary \x00")
+        for _ in range(4):
+            store.keep_aside(self.user, "settings.json", self.settings)
+        self.assertEqual(1, len(list(self.user.glob("settings.json.sov-bootstrap-backup*"))))
+
+    def test_a_crlf_file_is_not_mistaken_for_its_lf_twin(self):
+        """Reading as text folds CRLF into LF, and the CRLF bytes were destroyed."""
+        self.settings.write_bytes(b'{"a": 1}\n')
+        first = store.keep_aside(self.user, "settings.json", self.settings)
+        self.settings.write_bytes(b'{"a": 1}\r\n')
+        second = store.keep_aside(self.user, "settings.json", self.settings)
+        self.assertIsNotNone(first)
+        self.assertIsNotNone(second)
+        self.assertNotEqual(first, second)
+
+
+class TheUnparsedPath(Sandbox):
+    """Reachable only through main(), where the intact flag is wired."""
+
+    def test_a_run_against_an_unparseable_file_keeps_its_bytes(self):
+        """Deleting main()'s intact argument passed every case before this one."""
+        self.seed('{"model": "keep-me", ')
+        self.run_bootstrap()
+        kept = [p for p in self.user.glob("settings.json.unparsed*")
+                if "keep-me" in p.read_text(encoding="utf-8")]
+        self.assertEqual(1, len(kept))
+        self.assertIn("outputStyle", json.loads(self.settings.read_text(encoding="utf-8")))
+
+    def test_the_unparsed_copy_is_named_apart_from_the_backup(self):
+        """A stem swap to the plain backup name passed every case before this one."""
+        self.seed("not json at all")
+        kept = store.keep_aside(self.user, "settings.json", self.settings, False)
+        self.assertTrue(kept.startswith("settings.json.unparsed"), kept)
+
+
+class HostileSettings(Sandbox):
+    """Shapes that used to stop the run without saying so."""
+
+    def test_a_hooks_value_that_is_not_an_object_does_not_stop_the_run(self):
+        """It raised out of merge_hooks and was swallowed: no hooks, no message, ever."""
+        for shape in ('"none"', "[{}]", "3"):
+            self.seed('{"model": "opus", "hooks": ' + shape + "}")
+            result = self.run_bootstrap()
+            self.assertIn("SessionStart", result["hooks"], shape)
+
+    def test_a_style_that_cannot_be_read_does_not_cost_the_session_its_hooks(self):
+        (self.repo / ".claude" / "output-styles" / "broken.md").mkdir()
+        result = self.run_bootstrap()
+        self.assertIn("SessionStart", result["hooks"])
+        self.assertTrue((self.user / "output-styles" / "communications.md").is_file())
+
+    def test_a_symlinked_style_is_written_through(self):
+        styles = self.user / "output-styles"
+        styles.mkdir()
+        real = self.user / "elsewhere.md"
+        real.write_text("operator style", encoding="utf-8")
+        (styles / "communications.md").symlink_to(real)
+        self.run_bootstrap()
+        self.assertTrue((styles / "communications.md").is_symlink())
+        self.assertEqual("repository style", real.read_text(encoding="utf-8"))
+
+
 class Guard(unittest.TestCase):
     """The one refusal that keeps this off a machine it has no business on."""
 

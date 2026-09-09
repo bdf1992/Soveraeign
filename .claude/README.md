@@ -418,16 +418,20 @@ lacks here.
 - No file it replaces is replaced without a copy kept beside it, the output
   styles included: under `<name>.sov-bootstrap-backup` the first time and an
   indexed name after that, never reusing a name already taken, and never keeping
-  bytes that are already held beside the file. A settings file that does not
-  parse cannot have its keys carried forward, so its bytes are kept under a
-  `settings.json.unparsed-<stamp>` name and the loss is reported.
-- It knows what it wrote by recording each write's digest in
-  `.sov-bootstrap-state.json` and comparing. Judging authorship from a file's
-  shape instead misread an operator's own settings file and withheld the backup
-  it needed; proving it for the settings file alone left the operator's own
-  output style overwritten with no copy kept, on every session start.
-- A `settings.json` that is a symlink is written through rather than replaced,
-  so the operator's indirection survives.
+  bytes already held beside the file. Files are compared as bytes, so a CRLF file
+  is not mistaken for its LF twin and a file it cannot decode still deduplicates.
+  A settings file that does not parse cannot have its keys carried forward, so
+  its bytes are kept under `settings.json.unparsed` and the loss is reported.
+- The one file exempt is `.sov-bootstrap-state.json`, this tool's own record of
+  what it wrote. Keys in it that this tool did not write are carried forward, and
+  it is not backed up.
+- It knows what it wrote by recording each write's digest in that state file and
+  comparing. Judging authorship from a file's shape instead misread an operator's
+  own settings file and withheld the backup it needed; proving it for the settings
+  file alone left the operator's own output style overwritten with no copy kept,
+  on every session start.
+- A file that is a symlink is written through rather than replaced, so the
+  operator's indirection survives.
 - It registers seven entries: itself, the three `SessionStart` readings, the two
   `SessionEnd` closers, and the per-turn prose reminder.
 - It leaves out the `PreToolUse` and `PostToolUse` path-claim hooks. Those stop

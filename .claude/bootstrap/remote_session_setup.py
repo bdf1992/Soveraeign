@@ -30,6 +30,14 @@ deliberately left out. They exist to stop two live sessions clobbering one share
 working tree; a remote container holds its own clone, so registering them here
 would buy no protection and could refuse a legitimate write.
 
+It also registers itself, first. A setup script may run before the repository is
+cloned and the published documentation does not say which way round. If it runs
+first, this script finds no styles to copy and writes only the hook registration,
+whose paths resolve when the hooks fire rather than when they are written. The
+`SessionStart` entry then re-runs it with the clone present, which installs the
+styles. An output style is read when a session starts, so on that path it applies
+from the next session rather than the first.
+
 It must never break a session. Any failure prints a short note and exits 0.
 """
 
@@ -47,6 +55,7 @@ BACKUP_SUFFIX = ".sov-bootstrap-backup"
 # event -> (hook script name, mode, timeout seconds, status message)
 HOOKS: dict[str, list[tuple[str, str, int, str]]] = {
     "SessionStart": [
+        ("bootstrap/remote_session_setup.py", "start", 15, "Refreshing the remote setup"),
         ("console_session.py", "start", 25, "Reading console continuity"),
         ("session_registry.py", "start", 20, "Reading the live-session registry"),
         ("stranded_work.py", "start", 20, "Checking for work left where nothing will find it"),
@@ -92,7 +101,7 @@ def hook_entries(repo: Path, event: str) -> list[dict]:
     """Build this repository's hook entries for one event, with absolute paths."""
     entries = []
     for name, mode, timeout, message in HOOKS.get(event, []):
-        script = repo / ".claude" / "hooks" / name
+        script = repo / ".claude" / (name if "/" in name else f"hooks/{name}")
         if not script.is_file():
             continue
         entries.append(

@@ -114,31 +114,43 @@ reading showed the first wording, "nothing anywhere writes into either", was fal
 disproved in one command. No implementation may resolve this by treating a human prompt, or
 a session's own registration, as a Request.
 
-### S32 · The Finding and the receipt are shaped at the edges and never in the Record — CARRIED
+### S32 · The kernel evidence contracts are met by fixtures and by nothing that settles — CARRIED
 
-`contracts/finding.schema.json` specifies a Finding and requires `frozen_at`. No Finding
-instance is checked in anywhere: `finding_schema` appears in the schema and in
-`conformance/fixtures/commissioning/evidence-contract-cases.json`, and in
-`.claude/workflows/sov-loop.js`, which shapes one at runtime and gates on
-`finding.finding_schema === 'soveraeign-finding/v1'`. So the contract is exercised by a
-harness workflow and no Finding reaches the Record, where `P15-X2` needs it.
+One standard, applied to both contracts: an instance is any object that validates against
+the contract.
 
-`contracts/receipt.schema.json` requires fifteen fields. Two artifacts carry all fifteen:
-`contracts/fixtures/receipt.fixtures.json`, which is a positive and defeating pair, and
+`contracts/finding.schema.json` has one conforming instance,
+`conformance/fixtures/commissioning/evidence-contract-cases.json` case
+`finding-work-positive`, which validates with no defects and is checked inside
+`scripts/verify.py`. `.claude/workflows/sov-loop.js` shapes another at runtime and gates it
+at `frozenFinding()`, requiring the schema token, a non-placeholder projection id,
+`frozen_at`, and both effects `NONE`.
+
+`contracts/receipt.schema.json` has two conforming instances:
+`contracts/fixtures/receipt.fixtures.json` and
 `bindings/mcp/observations/journey-02-receipt.json`, which
-`bindings/mcp/observe_journey_02.py` really emits - it runs an operation under an issued
-grant, digests the body and writes it. That is an emitted receipt, not a hand-authored
-sample. What no service operation does is emit one into the operational Record as part of
-its own settlement, which is what `AGENTS.md` requires of a consequential transition.
+`bindings/mcp/observe_journey_02.py` really emits under an issued grant.
 
-`conformance/commissioning.py` grades `P15-Q2.4` by reading `projections_frozen_before_sharing`
-as a boolean out of an `observed` mapping, so the freeze is asserted to the oracle and
-performed by nothing.
+So both contracts are exercised, by a fixture, a harness workflow and a binding. What
+neither is exercised by is a service settling its own work. Console, Registry, Host,
+Gateway, Observation and Asset all end a transition with a `receipt(...)` call carrying
+emitted addresses, grants and effect class — a real terminal record, and a different
+object. `receipt_digest` appears in no file under `services/`, so no service receipt
+validates against the kernel contract, and nothing reconciles the two shapes.
 
-Distinct from S29, which is a contradiction between a schema and a gate; here the contracts
-are coherent and the writing happens at a binding and a workflow rather than at a
-settlement. Measured 2026-09-08. Corrected 2026-09-09: the first wording claimed no
-operation had ever emitted a receipt, that exactly one object satisfied the schema, and
-that `finding_schema` appeared in exactly two files. An independent reading disproved all
-three and they are struck. No implementation may resolve this by writing a conforming
-fixture and calling the contract exercised.
+`conformance/commissioning.py` grades `P15-Q2.4` by reading
+`projections_frozen_before_sharing` as a boolean out of an `observed` mapping, so the
+freeze is asserted to the oracle and performed by nothing.
+
+Distinct from S29, which is a contradiction between a schema and a gate. Measured
+2026-09-08.
+
+Two earlier wordings are struck, both disproved by independent readings. The first
+claimed no operation had ever emitted a receipt, that exactly one object satisfied the
+schema, and that `finding_schema` appeared in exactly two files. The second denied any
+Finding instance was checked in while naming the fixture that is one, and counted the
+receipt fixture as an instance in the same seam — two incompatible standards for the same
+evidence class — and then claimed no service emits a receipt into the Record, which
+Console's `append.py` disproves. No implementation may resolve this by writing another
+conforming fixture and calling the contract exercised.
+

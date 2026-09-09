@@ -19,7 +19,9 @@ depending on the working directory. User settings apply whatever the working
 directory is, which is the property the project file lacks here.
 
 What it refuses. It writes nothing unless `CLAUDE_CODE_REMOTE` is `true`, so it
-cannot reach a workstation. It preserves every key and every hook entry that does
+cannot reach a workstation. `user_settings.py` owns what happens to the file it
+replaces: nothing this tool did not itself write is dropped without a copy kept
+beside it. It preserves every key and every hook entry that does
 not run a script inside this repository, and it decides that by path component
 rather than by substring: `/repos/Soveraeign-fork` is not inside
 `/repos/Soveraeign`, and a substring test says it is. That is trap T3 in
@@ -49,10 +51,11 @@ import json
 import os
 import shutil
 import sys
-import time
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from user_settings import preserve, read_settings, write_settings  # noqa: E402
 
 STYLE_NAME = "Communications"
-BACKUP_SUFFIX = ".sov-bootstrap-backup"
 
 # event -> (hook script path under .claude/, mode, timeout seconds, status message)
 HOOKS: dict[str, list[tuple[str, str, int, str]]] = {
@@ -77,23 +80,6 @@ def is_remote() -> bool:
     return os.environ.get("CLAUDE_CODE_REMOTE", "").strip().lower() == "true"
 
 
-def read_settings(path: Path) -> tuple[dict, bool]:
-    """Read a settings object.
-
-    Returns the object and whether the file on disk was intact. A missing file is
-    intact and empty. A file that does not parse, or parses to something other
-    than an object, is not: its keys cannot be preserved, so the caller keeps the
-    bytes aside rather than discarding them silently.
-    """
-    if not path.exists():
-        return {}, True
-    try:
-        loaded = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return {}, False
-    return (loaded, True) if isinstance(loaded, dict) else ({}, False)
-
-
 def inside(value: object, repo: Path) -> bool:
     """True when a string names a path inside this repository, by path component."""
     if not isinstance(value, str) or not value:
@@ -105,9 +91,15 @@ def inside(value: object, repo: Path) -> bool:
 
 
 def ours(entry: object, repo: Path) -> bool:
-    """True when a registered hook entry runs a script inside this repository."""
+    """True when a registered hook entry runs a script inside this repository.
+
+    The root is resolved here rather than trusted from the caller: `inside()`
+    resolves the entry's path, and comparing a resolved path against an
+    unresolved root reports every entry as foreign under a symlinked parent.
+    """
     if not isinstance(entry, dict):
         return False
+    repo = repo.resolve()
     for hook in entry.get("hooks") or []:
         if not isinstance(hook, dict):
             continue
@@ -163,51 +155,6 @@ def merge_hooks(existing: dict, repo: Path) -> dict:
     return merged
 
 
-def is_own_output(settings: dict, repo: Path) -> bool:
-    """True when a settings object looks like one this script wrote and nobody edited."""
-    if settings.get("outputStyle") != STYLE_NAME:
-        return False
-    hooks = settings.get("hooks")
-    if not isinstance(hooks, dict) or not hooks:
-        return False
-    if set(hooks) - set(HOOKS):
-        return False
-    entries = [e for event in hooks.values() for e in event or []]
-    return bool(entries) and all(ours(e, repo) for e in entries)
-
-
-def preserve(settings_path: Path, existing: dict, intact: bool, repo: Path) -> str | None:
-    """Keep the current file aside before it is replaced, and say where it went.
-
-    A file that did not parse is always kept, under a stamped name, because its
-    keys cannot be merged forward. An intact file is backed up once, and never
-    when it is this script's own previous output: a backup of that would look
-    like the state before the tool ran and would not be it.
-    """
-    if not settings_path.is_file():
-        return None
-    if not intact:
-        stamp = time.strftime("%Y%m%dT%H%M%S")
-        kept = settings_path.with_name(f"{settings_path.name}.unparsed-{stamp}")
-        shutil.copyfile(settings_path, kept)
-        return kept.name
-    backup = settings_path.with_name(settings_path.name + BACKUP_SUFFIX)
-    if backup.exists() or is_own_output(existing, repo):
-        return None
-    shutil.copyfile(settings_path, backup)
-    return backup.name
-
-
-def write_atomic(path: Path, text: str) -> None:
-    """Write a file through a temporary sibling so an interrupted run cannot truncate it."""
-    tmp = path.with_name(f"{path.name}.tmp-{os.getpid()}")
-    try:
-        tmp.write_text(text, encoding="utf-8", newline="\n")
-        os.replace(tmp, path)
-    finally:
-        tmp.unlink(missing_ok=True)
-
-
 def resolve_repo(argument: str | None) -> Path | None:
     """Resolve the repository root, ignoring an argument that is not one.
 
@@ -238,9 +185,11 @@ def main() -> int:
     user = Path.home() / ".claude"
     settings = user / "settings.json"
     current, intact = read_settings(settings)
-    kept = preserve(settings, current, intact, repo)
-    if not intact:
+    kept = preserve(settings, intact)
+    if not intact and kept:
         print(f"sov-bootstrap: {settings.name} did not parse; its bytes are kept at {kept}.")
+    elif not intact:
+        print(f"sov-bootstrap: {settings.name} is not a readable file; nothing could be kept.")
 
     styles = install_styles(repo, user / "output-styles")
 
@@ -248,7 +197,7 @@ def main() -> int:
     current["hooks"] = merge_hooks(current.get("hooks") or {}, repo)
 
     user.mkdir(parents=True, exist_ok=True)
-    write_atomic(settings, json.dumps(current, indent=2) + "\n")
+    write_settings(settings, current)
 
     total = sum(len(hook_entries(repo, event)) for event in HOOKS)
     events = ", ".join(f"{k} x{len(hook_entries(repo, k))}" for k in HOOKS)

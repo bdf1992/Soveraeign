@@ -1,0 +1,184 @@
+{
+  "observation_schema": "soveraeign-participant-observation/v1",
+  "schema_conformance": {
+    "validates": false,
+    "governing_schema": "contracts/participant-observation.schema.json",
+    "reason": "That schema sets additionalProperties false over exactly case_id, participant_id, artifact_revision, observed, participant_claim and telemetry. The landing gate reads observer_id, contributed_to_build, verdict, candidate_commit, candidate_tree and base_commit at the top level. No schema in contracts/ admits those six keys, and nothing grades reports/observations/ against a schema, so this file carries both sets and is recorded as not schema-valid rather than trimmed to validate and then refused by the gate.",
+    "residual": "The gate's required shape and the only observation schema in contracts/ disagree. That disagreement is not this concern's to settle and is raised as a judgement item."
+  },
+
+  "observer_id": "claude-opus-5/sov-witness@2026-09-08#11",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "candidate_commit": "36e3c905a80d59801be1b3e483d102da38be98e5",
+  "candidate_tree": "1926d02279fce58c8d68ada2f17c1ad437e27ebd",
+  "base_commit": "eddeff086f7efaf0546eb98d13df2341dd3537df",
+
+  "case_id": "concern:harness/witness-context",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08#11",
+  "artifact_revision": "36e3c905a80d59801be1b3e483d102da38be98e5",
+
+  "concern": "concern:harness/witness-context",
+  "target": "main",
+
+  "participant_claim": {
+    "summary": "The builder claims every witness prompt reaches its evaluator with the builder's account demoted, that nothing an earlier agent produced precedes that demotion including inside the frame, that a 48-case corpus pins each refusal by name, that agent dispatch through an unresolvable expression is refused as a class and eval outright, that every changed path is in grant scope, and that verify and lint pass at the commit.",
+    "source": "Builder account supplied with the witness task. Read last and treated as artifact, not as evidence."
+  },
+
+  "method": {
+    "independence": "No file in the candidate was edited, staged, committed or merged by this observer. All reading was done in a throwaway clone checked out detached at the pinned commit; all mutation was done on copies outside the repository. The observer did not build, review or advise on this change and read no prior observation, report or builder account until after its own measurements were complete.",
+    "working_tree_state": "The shared repository tree was clean and at 36e3c90 before and after this reading (git status --porcelain returned 0 lines both times). The isolated checkout was clean before and after verify and lint. No verdict here was taken over a tree that moved.",
+    "refusal_to_use_the_package_as_its_own_oracle": "The subject's own readers were never trusted to report on the subject. Ground truth came from executing the workflow sources in node v22.22.2 with recording stubs, and from differential comparison of that execution against the package's static readers.",
+    "instruments": [
+      "Isolated detached clone at 36e3c90; every command run from that checkout.",
+      "A node executor that runs each workflow body with a provenance-tagging Proxy in place of agent(). Every value an agent returns is tagged, so any builder-derived byte reaching a witness prompt is locatable by character offset rather than inferred. Tags are interned by field name so the workflows' own identity gates (plan.concern_id !== selected.concern_id) do not end runs early, and array elements are produced lazily so nested access resolves.",
+      "A byte-differential harness comparing render.py's rendering against node's actual string for the same function.",
+      "A refusal-branch coverage map over the 48-case corpus, classifying each produced violation against every distinct refusal message in audit.py.",
+      "Mutation probes: 4 demotion-placement variants, 14 dispatch-shape variants, 5 eval-family variants, 3 frame-ordering variants, 22 render constructions."
+    ]
+  },
+
+  "observed": {
+    "commands": [
+      {"command": "python3 scripts/verify.py", "cwd": "clean detached checkout of 36e3c90", "exit_code": 0, "excerpt": "PASS: 64 checks in 19.941s wall. DEBT: no wall-clock grade at 19.941s; SILVER needs 15.000s or less. BUDGET DEBT: 14 check(s) over ceiling, 35.384s above budget; debt is attributed and does not refuse this run."},
+      {"command": "python3 scripts/lint.py", "cwd": "clean detached checkout of 36e3c90", "exit_code": 0, "excerpt": "PASS: repository hygiene (1321 text files, 613 Python modules, 10 named debt). Warnings are pre-existing STATUS.yaml duplicate keys and two named module-size debts, none in this candidate."},
+      {"command": "python3 scripts/run_tooling_tests.py", "cwd": "clean detached checkout of 36e3c90", "exit_code": 0, "excerpt": "PASS: repository tooling tests (122 modules, 4 shards). The four test modules this candidate adds are inside that population and each passes when run alone."},
+      {"command": "git diff --name-only eddeff0..36e3c90", "exit_code": 0, "excerpt": "39 paths, identical to the candidate record's declared changed_paths."},
+      {"command": "node executor over .claude/workflows at 36e3c90", "exit_code": 0, "excerpt": "22 of 23 workflows execute; 16 reach a sov-witness dispatch; sov-review.js needs a host primitive named pipeline that this harness does not provide."}
+    ],
+
+    "claim_1_demotion_precedes_the_builders_account": {
+      "verdict": "REPRODUCED on the artifact; the check that enforces it is DEFEATED",
+      "measured": "Across 16 executed sov-witness dispatches, no agent-derived value reaches an evaluator before the demoting sentence. In the frame the demotion sits at character 89 and the first agent-derived byte at 1036, a margin of 947 characters. The tenth reading's finding, in which the builder's declared paths arrived 1,456 characters ahead of the demotion, is not reproducible on this tree.",
+      "two_prompts_carry_no_demotion": "sov-backlog.js (phase Survey) and sov-epic.js (phase Reconcile) dispatch sov-witness with no demoting sentence. Both were read in full: neither splices any agent-derived value and neither carries a builder account. They instruct the agent to run named commands and report output. No demotion is owed and their absence is not a violation.",
+      "basis": "Execution with tagged agent results, not a reading of the checker."
+    },
+
+    "claim_2_the_corpus": {
+      "verdict": "PARTIALLY REPRODUCED",
+      "confirmed": "All 48 cases are well-formed, ids unique, each names a file that exists. Every case produces at least one violation, and for every case the violation matching its declared expects string is actually present. No case passes on a refusal other than the one it names. The earlier defect of counting refusals rather than naming them is genuinely repaired.",
+      "gap_uncovered_branch": "Of 19 distinct refusal branches in audit.py, 18 are exercised. The branch producing 'provenance not resolvable, which is why a splice is what this requires' is never reached by any case, so the negative arm of derives_from_agent_result inside that message is unpinned.",
+      "gap_no_case_for_either_escape_below": "The corpus contains no case for a demotion present in source but absent from the rendered prompt, and no case for a frame whose blocks are transformed before .join. Both escapes are shown below and both currently pass."
+    },
+
+    "claim_3_dispatch_and_eval": {
+      "verdict": "DISSENTED as stated",
+      "dispatch_class_refusal_holds": "13 of 14 dispatch shapes are refused, either by being enumerated or by the unfollowable-expression class refusal: aliased const, comma operator, object member, array index, bind, conditional, Reflect.apply, and agentType given as a template literal, a ternary or a spread. Alias chains resolve at depth 3 and depth 5. No witness dispatch that node executes goes unenumerated by the static reader.",
+      "eval_is_not_refused_outright": "Only direct eval is refused. The regex requires eval immediately followed by an open parenthesis. Three constructions are not refused: (0, eval)('agent')(...), Function('return agent')()(...), and const E = eval; E('agent')(...). Each was executed: all three dispatch a real witness with no violation reported, but only when agent is a global binding. Under a host that passes agent as a parameter they throw ReferenceError, because indirect eval and the Function constructor evaluate in global scope.",
+      "docstring_is_honest_the_claim_is_not": "escaped_agent_references says direct eval sees lexical scope so the refusal is not host-specific. That statement is true and does not claim indirect eval is covered. The claim presented for witness, that eval is refused outright, overstates the code."
+    },
+
+    "claim_4_classifier": {
+      "verdict": "REPRODUCED",
+      "measured": "A dispatch whose agentType cannot be read once (template literal, spread) classifies as None and is refused. One readable two ways (ternary over two agent types) also classifies as None and is refused. Agent names resolve to a fixpoint: chains of length 3 and 5 all resolve, while a binding named agentLike assigned from a non-agent expression correctly does not, which is a fixpoint over provenance and not a name pattern."
+    },
+
+    "claim_5_grant_scope": {
+      "verdict": "REPRODUCED",
+      "measured": "All 39 changed paths pass scope.out_of_scope against grant:standing-landing-loop. Checked one path per call as well as all together, so an early return cannot hide a second offender. No changed path touches decisions/, lineage/, STATUS.yaml, .github/ or any root governing document."
+    },
+
+    "claim_6_verify_and_lint_at_the_commit": {
+      "verdict": "REPRODUCED",
+      "measured": "Re-derived, not accepted from the candidate record. In a clean detached checkout of 36e3c90 and nothing else, verify exited 0 and lint exited 0. The checkout was byte-clean before and after both commands, so neither depends on nor produces uncommitted state. The ninth reading's failure mode, in which derived artifacts pinned against sources outside the candidate, does not reproduce.",
+      "note": "Per CLAUDE.md trap T2, verify exiting 0 means unchanged, not qualified. Wall-clock and per-check budget debt are recorded by the run and are advisory."
+    },
+
+    "claim_7_ancestry": {
+      "verdict": "REPRODUCED",
+      "measured": "eddeff0 is an ancestor of 36e3c90; the range contains exactly one commit; that commit has one parent; git rev-list --merges over the range is empty; 36e3c90^{tree} is 1926d022 as declared. The base is also the current tip of main and origin/main, so the candidate is linear on main."
+    }
+  },
+
+  "reproduced": [
+    "Claim 1 as a statement about this artifact: every executed witness prompt that carries a builder account demotes it before any agent-derived value reaches the evaluator, measured by execution.",
+    "Claim 4: the classifier refuses a dispatch it cannot read once and one it can read two ways, and agent names resolve to a fixpoint.",
+    "Claim 5: every changed path is inside grant:standing-landing-loop.",
+    "Claim 6: verify and lint both exit 0 in a clean checkout of the commit alone.",
+    "Claim 7: the candidate is linear on its base, carries no merge commit, and its declared tree is the tree git holds.",
+    "Claim 2 in part: the corpus grades which refusal fires rather than how many, and no case passes for a reason other than the one it names.",
+    "Claim 3 in part: agent reaching a call through an expression no name resolves is refused as a class across 13 tested shapes."
+  ],
+
+  "dissented": [
+    {
+      "id": "F1",
+      "severity": "blocking",
+      "finding": "On the dispatch path the demotion is graded as a raw substring of source text, not of the prompt the evaluator receives. A phrase present in source but absent from the rendered prompt satisfies the rule.",
+      "where": "scripts/sovprompts/audit.py, _dispatch_violations. resolved_prompt returns source text; the tests LABEL in prompt and INVERTED in prompt run against that text, while interpolated() skips comments. The asymmetry is the defect.",
+      "scope": "21 of 22 workflows that dispatch sov-witness. Only sov-loop.js is graded through the renderer.",
+      "evidence": "Four independent constructions applied to sov-console.js, each verified by executing the mutated workflow: the demotion moved into a // comment; into a /* */ comment; into the untaken branch of a ternary; and into a dead string inside the prompt expression. In all four the rendered prompt contains no demotion and names the builder's account 'the authoritative record of this work', an agent-derived value is spliced at character 446, and audit.violations returns zero violations. The control, deleting the demotion outright with no decoy, is correctly refused with one violation, which shows the check works only when the phrase is truly absent from the bytes.",
+      "why_it_matters": "render.py's own docstring names this exact defect as the reason the package exists: the required words could sit in a comment or a dead constant while the function returned the opposite. The repair was applied to the frame and not to the path covering the other 21 workflows."
+    },
+    {
+      "id": "F2",
+      "severity": "blocking",
+      "finding": "The frame's interior is graded in source order, not in the order the evaluator receives. blocks() reads the return array's elements and ignores any array transformation applied before .join, so a reordering of the delivered frame is invisible to the check.",
+      "where": "scripts/sovprompts/render.py, blocks(): it locates 'return [', splits the array on top-level commas and returns the elements as written. Nothing reads what happens between the closing bracket and .join.",
+      "evidence": "Changing the frame's tail from ].join('\\n\\n') to ].reverse().join('\\n\\n') is a one-word edit. Executed in node, the real frame then opens on TERMINAL, delivers the builder's declared paths at character 254 and the demoting sentence only at character 531. The builder's account reaches the evaluator 277 characters ahead of its demotion. audit.violations returns zero violations, and no corpus case pins it. .slice().reverse() behaves identically.",
+      "why_it_matters": "This is the tenth reading's exact defect, the builder's account ahead of the demotion inside the frame, reachable again through a different construction. The candidate exists to repair that defect at its cause; the ordering rule it adds is real but rests on a renderer that does not model the transformation that decides the order."
+    },
+    {
+      "id": "F3",
+      "severity": "material",
+      "finding": "A module docstring states a property the module does not have. render.py claims it understands string literals, concatenation and array joins and nothing else, and that anything built another way is reported as unreadable rather than silently passing.",
+      "evidence": "A differential of 22 constructions against node: 9 diverge silently, 9 match, 1 is refused, 3 were not valid JavaScript. Silent divergences include template literals, template literals with substitutions, a nested array join, a ternary, numeric concatenation, a join with a separator other than two newlines, a regex literal containing a bracket, and unicode escapes, which render as the escape's letters rather than the character. The ternary case is the unsafe direction: render.py concatenates the literal text of both branches, so it reads text the evaluator may never receive. A join with a different separator is silently reported as if it were two newlines.",
+      "note": "Most of these divergences currently fail safe on the frame path, because losing literal text removes the demotion and the check then refuses. The docstring is nonetheless false as written, and F2 is the case where a silent divergence does not fail safe."
+    },
+    {
+      "id": "F4",
+      "severity": "minor",
+      "finding": "Claim 3 as presented, that eval is refused outright, is not what the code does. Only direct eval is refused; (0, eval), Function('return agent')() and an aliased eval are not, and all three were executed and shown to dispatch a witness under a host that binds agent globally.",
+      "note": "The docstring itself is accurate and does not make this claim. The overstatement is in the claim presented for witness, which is the thing a witness grades."
+    },
+    {
+      "id": "F5",
+      "severity": "minor",
+      "finding": "One refusal branch in audit.py has no corpus case: the arm reporting that provenance to an agent result is not resolvable. 18 of 19 branches are exercised.",
+      "note": "The refusal still fires in that situation; only its explanatory arm is unpinned. Recorded because claim 2 asserts a case per refusal."
+    }
+  ],
+
+  "unattestable": [
+    "Whether F4 is exploitable in the live harness. Whether agent is injected as a global or passed as a parameter is a property of the Claude Code host, and no workflow in this repository imports anything, so the binding cannot be established from the artifact. Under a global binding all three constructions dispatch; under a parameter binding all three throw.",
+    "sov-review.js could not be executed: it calls a host primitive named pipeline that this observer's executor does not provide. Its two static sov-witness dispatches were read but not measured by execution.",
+    "Six workflows were not driven to a witness dispatch under the arguments used (sov-baseline, sov-f2-control, sov-federation, sov-scribe, sov-witness, sov-review). Their dispatches were enumerated statically and no violation was reported against them, but claim 1 is measured by execution only for the 16 that ran."
+  ],
+
+  "residuals": [
+    "The ten prior readings of this concern are not in the candidate's ancestry. They live in commit 632ee77 on the origin branch of the same name, whose merge-base with this candidate is 05a5dde, not this candidate's base. The candidate is a re-application of 473fc81 onto current main and drops the commit carrying those readings and the concern's report.",
+    "reports/ is outside grant:standing-landing-loop. Verified: the path this observation is written to is refused by scope.out_of_scope as outside every prefix the grant admits. So neither the ten readings nor this record can land under the standing grant, while 67 observation files are tracked on main from other routes. The evidentiary record of this concern has no path onto main under the grant that would land its code.",
+    "verify records wall-clock debt at 19.941s against a 15s SILVER band and budget debt on 14 checks totalling 35.384s above ceiling. Attributed and advisory under contracts/verification-budget.json, not a refusal.",
+    "This candidate strengthens the landing gate it is graded by: authority.py gains observer-identity, self-witness and observation-inside-the-change refusals, and sov_land.py stops binding a module-level ROOT. Read in full and each change narrows rather than widens; independence_basis now requires an explicit observation_resolved assertion rather than inferring measurement from a non-empty string. Recorded because a change that edits its own gate deserves naming, not because it weakens anything.",
+    "The observer's own record cannot satisfy both the landing gate and contracts/participant-observation.schema.json; see schema_conformance."
+  ],
+
+  "design_judgement": {
+    "question": "Coherent design, or an accumulation that passes its own tests?",
+    "answer": "Coherent in its centre and still accumulated at its edge, but the edge has moved rather than closed. The tenth reading located the accumulation in what returns early, and this candidate genuinely repairs that: the frame's interior is now rendered and graded, the early return is gone, and the demotion demonstrably precedes every agent-derived byte in every prompt that carries one. The design's real idea, refusing a whole class rather than chasing one construction at a time, is sound and visibly works: 13 of 14 dispatch shapes are refused without any of them being enumerated.",
+    "where_it_still_accumulates": "The package now has two graders with different powers. One renders and grades what the evaluator receives; it covers one file. The other matches substrings against source text; it covers twenty-one. The strong instrument was pointed at the file the last reading complained about rather than at the rule, so the same defect the package was built to eliminate is still reachable on the majority of its surface. F2 is the sharper version of the same pattern: the frame is now rendered, but the renderer models the array and not the expression that orders it, so the check reads a declaration of order where the order was available to measure.",
+    "on_its_own_stated_ceiling": "The builder states the ceiling as reading whether a phrase is present and where it sits, not what a prompt means, so a label followed by an inverting correction passes. That is honestly stated and I confirmed it. But F1 and F2 are not that ceiling. They are cases where the phrase is not present in what the evaluator receives at all, and where the position the check reports is not the position delivered. Those are inside what the check claims to do, not beyond it.",
+    "on_the_withdrawals": "The parts withdrawn to acceptance/A25.json with decisions/0105 were not read before this reading froze and are not graded here. Nothing I found suggests something withdrawn should have landed. F1 and F2 are repairs inside this concern, not new concerns: same files, same effect class, same authority."
+  },
+
+  "standing_supported": "NONE. This observation does not support OPEN -> BUILT or BUILT -> WITNESSED. The artifact is compliant, but the claim under witness is a claim about a check, and the check does not measure what it reports on two independent paths. Under AGENTS.md, Change protocol, the inspection is what the claim rests on. F1 and F2 are repairable inside this concern and are returned to the builder rather than filed.",
+
+  "judgement_items": [
+    "Is the observation record's required shape owned by the landing gate or by contracts/participant-observation.schema.json? Today no observation can satisfy both, and nothing grades this directory, so every observation on file is unvalidated by construction. Which document owns that shape is a policy question this observer cannot settle.",
+    "Should the evidentiary record of a concern be landable by the grant that lands the concern's code? reports/ is excluded from grant:standing-landing-loop, so the ten readings this concern was shaped by cannot land beside the code they shaped. Whether that exclusion is intended or is an unnoticed consequence is an owner question.",
+    "Should the harness declare whether agent is bound as a global or as a parameter? F4's exploitability turns entirely on that, and it is currently unknowable from the repository."
+  ],
+
+  "telemetry": {
+    "workflows_executed": 22,
+    "workflows_total": 23,
+    "witness_dispatches_measured": 16,
+    "corpus_cases_run": 48,
+    "refusal_branches_total": 19,
+    "refusal_branches_covered": 18,
+    "mutation_probes_run": 48,
+    "defeating_constructions_found": 5,
+    "changed_paths_verified_in_scope": 39
+  }
+}

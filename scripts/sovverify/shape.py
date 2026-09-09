@@ -12,6 +12,14 @@ from typing import NamedTuple
 
 ROOT = Path(__file__).resolve().parents[2]
 
+#: The two gates `scripts/verify.py --gate` accepts. `MAIN_GATE` is every check
+#: the table holds, unchanged from what a run executes today. `DEV_GATE` is the
+#: subset that can only fail because behaviour is wrong: a check whose failure
+#: mode is a stale derived page, a stale counted claim, a stale receipt, a stale
+#: witness record, or governing prose that has drifted from the tree stays out.
+MAIN_GATE = "main"
+DEV_GATE = "dev"
+
 
 class Check(NamedTuple):
     name: str
@@ -19,3 +27,6 @@ class Check(NamedTuple):
     cwd: Path
     relation: str
     observes: tuple[str, ...]
+    #: Which gate this check belongs to. Defaults to the main gate, so an entry
+    #: that names nothing keeps running exactly where it runs today.
+    gate: str = MAIN_GATE

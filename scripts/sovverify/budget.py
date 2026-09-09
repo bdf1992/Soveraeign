@@ -6,12 +6,24 @@ grades and records debt and never refuses. Pressure moves to per-check ceilings,
 which attribute an overrun to the check that owns it rather than to whoever
 touched the repository next.
 
-One timing condition still blocks: a single check past
-`catastrophic_check_seconds`. A pooled reading past that ceiling is only a
-suspected catastrophe when confirmation is enabled; refusal requires the same
-check to cross the ceiling again when re-read alone. This keeps genuine
-pathological regressions blocking without treating host contention as proof of
-an implementation defect.
+One timing condition still blocks: a single check past its catastrophic
+threshold, ordinarily the shared `catastrophic_check_seconds` backstop but
+overridden per check in `check_ceilings.catastrophic_overrides` for a check
+that already owns a named ceiling and needs its own, rather than one sized for
+a check with none (`catastrophic_ceiling_for`). Wall accuses exactly as it
+does today: a check
+whose wall reading stays at or under the ceiling raises no suspicion, whatever
+its CPU reading is. Only once wall has accused can a measured CPU reading
+(`scripts/sovverify/clocks.py`) acquit it, by coming in at or under the
+ceiling itself; a check with no measured CPU reading still refuses on wall
+alone. CPU never raises a suspicion wall did not already raise, because a
+check that shards across processes can spend far more CPU than wall, and
+grading the accusation on CPU would make the ceiling stricter for exactly the
+checks parallelism was meant to help. A pooled reading past that ceiling is
+only a suspected catastrophe when confirmation is enabled; refusal requires
+the same check to cross the ceiling again when re-read alone. This keeps
+genuine pathological regressions blocking without treating host contention as
+proof of an implementation defect.
 
 `contracts/verification-budget.json` is the declaration; nothing here restates a
 number it owns.
@@ -117,24 +129,58 @@ def confirms_alone(table: dict[str, Any]) -> bool:
     return bool(table.get("catastrophic_confirm_alone", False))
 
 
-def judge(timings: list[tuple[str, float]],
+def catastrophic_ceiling_for(check: str, table: dict[str, Any]) -> float:
+    """The catastrophic threshold this check answers to.
+
+    Most checks answer to the shared `catastrophic_check_seconds` backstop,
+    sized for a check with no ceiling of its own. A check listed in
+    `check_ceilings.owns_its_catastrophe` instead owns its own catastrophic
+    threshold: its named ceiling times `check_ceilings.catastrophic_factor`.
+    That keeps an already-accepted, already-attributed cost from being charged
+    again against a limit built for a different kind of check, without
+    touching the backstop every other named check still answers to.
+    """
+    ceilings = table["check_ceilings"]
+    if check in ceilings.get("owns_its_catastrophe", []):
+        named = ceilings["named"][check]
+        return float(named) * float(ceilings["catastrophic_factor"])
+    return float(table["catastrophic_check_seconds"])
+
+
+def judge(timings: list[tuple[str, float]] | list[tuple[str, float, float | None, bool]],
           table: dict[str, Any]) -> tuple[list[Debt], list[Catastrophe]]:
     """Grade every check against its own ceiling.
+
+    Each entry is ``(name, wall)`` or ``(name, wall, cpu, measured)``. Debt and
+    every other purpose still grade on wall, exactly as `decisions/0081`
+    settled: the aggregate wall grade, the per-check debt table, and the
+    printed timings are unchanged. Only the catastrophic read changes: wall
+    accuses exactly as it does today, and a measured CPU reading at or under
+    the ceiling then acquits it. A check whose wall stays at or under the
+    ceiling raises no suspicion regardless of its CPU reading, because a check
+    that shards across processes can spend far more CPU than wall
+    (`#148/C0027`, PR #151); a check with no measured CPU reading still
+    refuses on wall alone, exactly as before.
 
     Returns debts and suspected catastrophes separately because they resolve
     differently. A check is never both on the first reading; a suspected
     catastrophe that clears confirmation can later be demoted back to debt.
     """
-    blocking = float(table["catastrophic_check_seconds"])
     debts: list[Debt] = []
     catastrophes: list[Catastrophe] = []
-    for name, seconds in timings:
-        if seconds > blocking:
-            catastrophes.append(Catastrophe(name, seconds, blocking))
-            continue
+    for entry in timings:
+        name, wall = entry[0], entry[1]
+        cpu = entry[2] if len(entry) > 2 else None
+        measured = bool(entry[3]) if len(entry) > 3 else False
+        blocking = catastrophic_ceiling_for(name, table)
+        if wall > blocking:
+            catastrophic_reading = cpu if measured and cpu is not None else wall
+            if catastrophic_reading > blocking:
+                catastrophes.append(Catastrophe(name, catastrophic_reading, blocking))
+                continue
         ceiling = ceiling_for(name, table)
-        if seconds > ceiling:
-            debts.append(Debt(name, seconds, ceiling))
+        if wall > ceiling:
+            debts.append(Debt(name, wall, ceiling))
     debts.sort(key=lambda entry: entry.seconds, reverse=True)
     catastrophes.sort(key=lambda entry: entry.seconds, reverse=True)
     return debts, catastrophes

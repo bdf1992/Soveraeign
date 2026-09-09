@@ -1,0 +1,157 @@
+{
+  "observer": "sov-witness (independent; did not build, edit, advise on, or review any observed file; no helper was recruited; no Orchestrator, Controller or builder evaluative conclusion was read before every probe below was executed and its verdict frozen; the two commit messages were read to establish the claim under witness, not as evidence for any verdict)",
+  "concern": "verification / a closed lease leaves a settlement record a clone can read",
+  "timestamp": "2026-09-08",
+  "witnessed_subject": {
+    "named_branch": "fix/settlement-record-a-clone-can-read",
+    "named_branch_head": "e655c9e046432b3dc32065df09ee0c8ad632b38b",
+    "sibling_branch": "fix/settlement-linear",
+    "sibling_branch_head": "b7c85c06b4c089443300a70353efc99abc46eabc",
+    "candidate_tree": "eb931213c3a482fe13cbf6aecedb400fd77031c9",
+    "tree_identity_note": "Both heads resolve to the identical tree eb931213c3a482fe13cbf6aecedb400fd77031c9 (`git rev-parse <head>^{tree}`, `git diff` between the two heads empty). The artifact under witness is therefore unambiguous even though the ancestry claim is not. Every probe was run against that tree.",
+    "construction_commits": [
+      "6561d788548248b293d9f8f3b968daada412a128",
+      "b92428a20ed8d8e2202098ad8def85915943c440"
+    ],
+    "declared_base": "main",
+    "observed_base": "64fe985 (Merge pull request #242). `git merge-base main fix/settlement-record-a-clone-can-read` = 48a0f576903c0ed96341f0460ce926a65d0cb5aa, which is current `main`.",
+    "working_tree_state": "The primary checkout of this repository sat on `docs/findings-linear` at 926f06bf, `git status --porcelain --untracked-files=all` empty before and after every probe, and the file under witness (scripts/sovlease/settlement.py) was absent from it, so the primary tree never carried the change. Reading was done in a detached `git worktree` at e655c9e (trap T6) and all live execution in a fresh `git clone` of the repository checked out at e655c9e, so no probe touched the shared lease store. The shared store .git/sov-sessions was md5-snapshotted before and after: sessions.ndjson 9ac68279e2d66ec69352605024735d53 and leases.ndjson a4718fb4dd794f8c113a171255bf40f8, byte-identical at both ends. Every artifact this witness created (one worktree, one clone, two mutation sandboxes) was removed; `git worktree list` and `git status` confirm the tree was returned to 926f06bf clean.",
+    "method": "Read settlement.py and cmd_close whole, not as a diff, before running anything. Every probe was constructed here by hand. The change's own test file was executed as a claim to be tested, never consulted as evidence for a verdict; two independent mutations were applied to sandbox copies to measure what that test can and cannot see. Live lease take/close cycles were run against the isolated clone. No repository file was modified except this record."
+  },
+  "record_defect_and_envelope": "No contract-typed Finding (contracts/finding.schema.json) is emitted. That schema requires `record_projection_id`; no RecordProjection was supplied with this task and none can be reconstructed at the declared cutoff. A projection id will not be invented to satisfy the schema. This record is an Observation in the established reports/observations/ shape. It interprets evidence, grants no authority, settles nothing, ratifies nothing.",
+  "subject_description_discrepancies": [
+    "The task describes the subject as 'Two commits, linear, base main'. The named branch head e655c9e is a MERGE commit ('merge: reconcile onto main at 64fe985'). Against current `main` (48a0f57) it carries seven merge commits and roughly sixty commits of unrelated work: `git rev-list --min-parents=2 --oneline main..fix/settlement-record-a-clone-can-read` returns e655c9e, 64fe985, eddeff0, 05a5dde, 1f8c506, ddb1a69, 97a2d55. The description is accurate only of the sibling branch `fix/settlement-linear` (b7c85c0), which is two commits linear on 64fe985 - and 64fe985 is not `main`. AGENTS.md 'Branch and commit strategy' prefers rebase over merging main into a topic branch; the named branch did the latter. Because the two heads share one tree, this does not change what was measured, but a reviewer told 'two commits, linear, base main' who then reads the named branch will not find that shape.",
+    "Pull request #240 could not be verified. `gh` is not installed on this host ('gh: command not found'), so PR number, base ref, head oid, and check status are all unavailable to this witness. Everything below is witnessed from the git objects and the working artifact only. Per CLAUDE.md trap T4/T5, no claim about branch protection or required-check status is made here in either direction.",
+    "The commit message for b92428a records 'verify.py exit 0, PASS: 55 checks'. This witness observed PASS: 64 checks. The difference is attributable to the reconciliation onto a newer base, not to a defect."
+  ],
+  "claims_reproduced": [
+    {
+      "claim": "P. The premise: the lease log travels with no clone, the committed record does.",
+      "verdict": "REPRODUCED",
+      "evidence": "`git clone <repository-root> clone && git checkout e655c9e`. In the clone, `ls reports/settlements/` returns 2026-09-08-lease-concern-soveraeign-lease-settlement-record-2.json. `ls .git/sov-sessions` returns 'No such file or directory'. The problem the change names is real and the committed half does travel."
+    },
+    {
+      "claim": "1. `take` writes no settlement record; `close` does.",
+      "verdict": "REPRODUCED, conditionally - see D1",
+      "evidence": "From the clone root: `sov_lease.py take concern:witness/settle-alpha` exit 0, and `ls reports/settlements/` afterwards showed only the one pre-existing committed record. Then `sov_lease.py close lease:concern-witness-settle-alpha --receipt receipt:witness/one --standing BUILT --evidence scripts/sovlease/settlement.py` exit 0, printing 'lease:concern-witness-settle-alpha closed at BUILT; settlement recorded at reports/settlements/2026-09-08-lease-concern-witness-settle-alpha.json'. The file exists and carries receipt_id receipt:witness/one, standing_reached BUILT, concern concern:witness/settle-alpha, closure_condition and defeating_condition populated, effect_ceiling RECORD_LOCAL. Holds when the process CWD is the repository root. Defect D1 records the case where it does not hold."
+    },
+    {
+      "claim": "2a. Re-closing a completed lease with a different receipt is refused, the first record survives, and the refusal names both receipts.",
+      "verdict": "REPRODUCED",
+      "evidence": "Real exit code captured directly ($? on the command, not through a pipeline). First attempt with --standing WITNESSED was refused by a DIFFERENT rule, UNWITNESSED_STANDING_CLAIM from the lease evaluator, exit 1 - recorded here because that refusal is not this change's and a witness who stopped there would have credited the wrong guard. Isolating the variable, re-closing at the same standing BUILT with only --receipt changed: REAL_EXIT=1, 'REFUSED SETTLEMENT_ALREADY_RECORDED: reports/settlements/2026-09-08-lease-concern-witness-settle-alpha.json already records a different settlement for lease:concern-witness-settle-alpha (receipt \\'receipt:witness/one\\', this close carries \\'receipt:witness/SECOND\\'). A closure is not amended in place: retract with a counter-record, or close a successor lease.' Re-reading the file afterwards: receipt_id receipt:witness/one, evidence ['scripts/sovlease/settlement.py'] - the first claim intact. Both receipts named, path relative, exit code 1."
+    },
+    {
+      "claim": "2b. An identical re-close is idempotent rather than refused.",
+      "verdict": "REPRODUCED, but only within one UTC day - see D3",
+      "evidence": "Re-running the identical close: REAL_EXIT=0, same path reported, file unchanged. Note the lease log gained a SECOND 'close' event for the same lease; idempotency is a property of the record only, not of the transition (see D5)."
+    },
+    {
+      "claim": "3. The record is written BEFORE the closure is appended: a failed write leaves the lease HELD with nothing recorded.",
+      "verdict": "REPRODUCED behaviorally by injection; the change's OWN TEST OF IT IS DEFECTIVE - see D2",
+      "evidence": "Injected a real write failure by replacing reports/settlements with a regular file, so `directory.mkdir(parents=True, exist_ok=True)` raises FileExistsError (an OSError). Closing lease:concern-witness-settle-beta: REAL_EXIT=1, 'REFUSED SETTLEMENT_UNWRITABLE: [Errno 17] File exists: .../reports/settlements. The lease is still held; nothing was recorded.' `sov_lease.py status` afterwards read 'lease:concern-witness-settle-beta -> HELD', and the lease log contained take events only, no close event for beta. The ordering behavior is real and correct."
+    },
+    {
+      "claim": "4. Gate and hygiene.",
+      "verdict": "REPRODUCED",
+      "evidence": "In a detached worktree at e655c9e with an empty `git status`: `python scripts/verify.py` exit 0, 'PASS: 64 checks in 22.435s wall', with wall-clock DEBT (no grade at 22.435s, SILVER needs 15s) and BUDGET DEBT on 11 checks, both attributed and non-refusing per contracts/verification-budget.json. `python scripts/lint.py` exit 0, 'PASS: repository hygiene (1311 text files, 603 Python modules, 10 named debt)'. `python -m unittest scripts.tests.test_lease_settlement -v` exit 0, 8 tests OK. `python scripts/sov_clarity.py check` exit 0, 'PASS: clarity scope and receipts are well-formed and current'. Per CLAUDE.md trap T2, verify exit 0 means unchanged, not qualified."
+    }
+  ],
+  "defects": [
+    {
+      "id": "D1",
+      "severity": "MATERIAL - defeats the change's central claim on a reachable path",
+      "title": "The settlement root is the process CWD, not the repository root. Closing from any subdirectory of the repository leaves a lease COMPLETED with no record, exit 0.",
+      "evidence": "`cmd_close` calls `settlement.record_closure(candidate, Path.cwd())`. `settlement.write` returns None when `root / 'reports'` is not a directory. Executed: from `<clone>/services`, `python <clone>/scripts/sov_lease.py --name witness-settle-a close lease:concern-witness-settle-beta --receipt receipt:witness/beta --standing BUILT --evidence x/y.py` printed 'lease:concern-witness-settle-beta closed at BUILT' with REAL_EXIT=0 and no mention of a settlement. `ls <clone>/reports/settlements/` was unchanged - no record was written anywhere. The lease log then projected 'lease:concern-witness-settle-beta -> COMPLETED'. That is exactly the state commit b92428a claims to have eliminated: a lease COMPLETED in a log that travels with no clone, with no record a clone can read, and this time not even a refusal - a success.",
+      "root_cause": "`cmd_close` opens with `_, directory, _ = _context(args.name)`. `_context` computes `root = session_store.repo_root()`, which resolves the working-tree top from the CWD correctly. cmd_close binds it to `_` and discards it, then passes `Path.cwd()` instead. `cmd_take` and `cmd_helper` on lines 133 and 148 both bind and use `root`. The correct value is already computed and thrown away.",
+      "why_the_tests_miss_it": "`test_writes_nothing_outside_a_repository_tree` passes a bare tempdir and asserts None. That fixture cannot distinguish 'outside a repository' from 'inside a repository, wrong CWD', so it codifies the defect as intended behavior. There is no case that closes from a subdirectory."
+    },
+    {
+      "id": "D2",
+      "severity": "MATERIAL - check-integrity; the check reads a declaration where it could have measured",
+      "title": "The ordering test asserts source-text positions in commands.py, not behavior. It passes under a mutation that reintroduces the exact defect the change repaired, and so do verify.py and lint.py.",
+      "evidence": "`ClosureOrdering.test_an_unwritable_record_leaves_the_lease_held` reads commands.py as text, slices cmd_close's body, and asserts `body.index('settlement.record_closure(candidate') < body.index('store.append(directory, store.LEASES_LOG')`, then asserts two literal strings appear in settlement.py. It executes neither cmd_close nor settlement.write. Two mutations were applied to sandbox copies of the tree:\\n\\nMUTATION A (swap the two blocks so the append precedes the write): the test FAILS, 'AssertionError: 1668 not less than 1474 : the settlement record must be written before the close is appended', exit 1. The builder's mutation-verification claim holds for this one mutation, and the scoping to cmd_close's own body is correct - `source.index('\\\\ndef ', start)` terminates at cmd_release, so the cmd_take occurrence the builder names is genuinely excluded.\\n\\nMUTATION B (preserve source order exactly; replace the `return 1` on the defect with `written = None`, so the refusal is swallowed): `python -m unittest scripts.tests.test_lease_settlement` exit 0, all 8 tests OK, ClosureOrdering itself OK. `python scripts/verify.py` exit 0. `python scripts/lint.py` exit 0. Behaviorally, under mutation B with the same injected write failure: close printed 'lease:concern-mutb-gamma closed at BUILT', REAL_EXIT=0, the log recorded a close event with receipt r:1, and no record was written. The original defect is fully restored and no check in the repository can see it.\\n\\nWhat the test grades is the byte order of two substrings in a source file, which is a report about the artifact rather than the artifact's behavior. The behavioral case is cheap and was available: this witness performed it by hand in one command.",
+      "note": "Separately, `if __name__ == '__main__': unittest.main()` is placed at line 123 of the test file, BEFORE the ClosureOrdering class is defined. Running `python scripts/tests/test_lease_settlement.py` directly therefore executes only the six SettlementRecord cases and exits before ClosureOrdering exists. The ordering case runs only under `-m unittest` discovery."
+    },
+    {
+      "id": "D3",
+      "severity": "MATERIAL - the anti-amendment guard is scoped to one UTC day",
+      "title": "Across midnight the same lease receives a second, contradicting settlement record with no refusal.",
+      "evidence": "The filename stem is `f\"{entry['closed_at'][:10]}-{_slug(lease_id)}\"`, and `closed_at` is the record-write time. The guard is `if path.exists()` on that dated path only. Executed against settlement.write directly: write at now=2026-09-08T23:59Z with receipt:FIRST/BUILT, then write the same lease at now=2026-09-09T00:01Z with receipt:SECOND and standing RATIFIED. Result: 'NO REFUSAL. second record written to: 2026-09-09-lease-concern-x.json'. reports/settlements/ then held BOTH 2026-09-08-lease-concern-x.json (receipt:FIRST, BUILT) and 2026-09-09-lease-concern-x.json (receipt:SECOND, RATIFIED) for the same lease_id, with nothing reconciling them. The guard prevents overwriting; it does not prevent a second contradicting claim, and the second one silently asserts a higher standing. A fresh participant reading the directory - the exact reader this change exists to serve - has no way to tell which is current. The same date scoping means an identical retry across midnight is not idempotent either: it duplicates rather than returning the existing path."
+    },
+    {
+      "id": "D4",
+      "severity": "SIGNIFICANT",
+      "title": "The record can be made to disagree with the lease log through the ordinary CLI.",
+      "evidence": "After closing lease:concern-witness-settle-alpha at BUILT and writing its record, `sov_lease.py release lease:concern-witness-settle-alpha` exited 0 and printed 'the concern is unheld and still open'. The lease log then projected the lease as RELEASED, while the committed record continued to assert standing_reached BUILT with receipt:witness/one. `release` and `fail` append no counter-record and touch no settlement file. The module docstring says 'the lease log remains the producer, and this file states what it recorded'; after this sequence the file states something the producer no longer records, and only the file travels with a clone."
+    },
+    {
+      "id": "D5",
+      "severity": "SIGNIFICANT - answers a question the task asked",
+      "title": "Nothing refuses a double close at the transition level; the only guard is the record.",
+      "evidence": "cmd_close reads the lease, sets candidate['state'] = 'COMPLETED' unconditionally, and calls work_lease.evaluate; it never tests whether the lease is ALREADY in a CLOSED_STATE ('RELEASED', 'EXPIRED', 'COMPLETED', 'FAILED' per store.CLOSED_STATES). Observed: after two successful closes of lease:concern-witness-settle-alpha the log held two 'close' events for it. The idempotent re-close appended a second close event and exited 0. So the transition is unguarded and the record is doing all the work - which is why D1 and D3, both of which bypass the record, bypass the guard entirely."
+    },
+    {
+      "id": "D6",
+      "severity": "MINOR - latent",
+      "title": "The existence check is not atomic (TOCTOU).",
+      "evidence": "`write` does `if path.exists(): ... else: path.write_text(...)`. Two writers interleaved between the check and the write both observe exists()==False and one settlement is silently lost. Reproduced with a threading.Barrier forcing the interleave: 'interleaved exists() results: [(receipt:A, False), (receipt:B, False)]', one surviving file. An O_EXCL create would close it. Exposure is two concurrent closes in the same working tree, which is narrow, but the guard is advertised as protecting a governed claim from erasure."
+    },
+    {
+      "id": "D7",
+      "severity": "MINOR - latent, not reachable through the CLI",
+      "title": "`_slug` is not injective, so two distinct lease ids can share a filename stem.",
+      "evidence": "Measured: `_slug('lease:x/y')` and `_slug('lease:x:y')` both yield 'lease-x-y'; `_slug('lease:concern-a/b')` and `_slug('lease:concern-a-b')` both yield 'lease-concern-a-b'. Its `.replace('--','-')` is also a single non-greedy pass, so it does not fully collapse runs ('lease:a---b' -> 'lease-a--b'). I could NOT reach a collision through sov_lease.py: store.slug applies `re.sub(r'[^a-z0-9]+','-',...)` first, collapsing runs, and lease ids are always 'lease:' + that, so CLI-derived ids map injectively. Recorded as a latent defect in a public function, not a currently reachable one. If it were reached, the consequence is not a silent overwrite but a legitimate close of lease B being refused with a message naming lease B while the file on disk holds lease A."
+    },
+    {
+      "id": "D8",
+      "severity": "SIGNIFICANT - contract and reader gap",
+      "title": "The record declares a schema that does not exist, nothing validates it, and nothing reads it.",
+      "evidence": "Every record carries `\"record_schema\": \"soveraeign-lease-settlement/v1\"`. `grep -rln 'soveraeign-lease-settlement' contracts/` returns nothing; there is no such schema file. contracts/ticket-settlement.json is a different object. Nothing in scripts/ validates a settlement record, and `grep -rn 'settlements'` across .py/.json/.md/.yaml finds no reader at all - only the module's own SETTLEMENTS constant and two unrelated prose hits. reports/settlements/ appears in no documentation index. AGENTS.md 'Implementation order' step 2 asks for the contract and its positive and defeating conformance case before the implementation, and the technical baseline asks for JSON Schema at machine boundaries. The originating problem was a fresh participant finding a settled result only through hand-written prose; an unindexed, unvalidated directory of JSON with no reader is a partial answer to that at best."
+    },
+    {
+      "id": "D9",
+      "severity": "MINOR",
+      "title": "The SETTLEMENT_UNWRITABLE refusal prints an absolute local path.",
+      "evidence": "Observed: 'REFUSED SETTLEMENT_UNWRITABLE: [Errno 17] File exists: /tmp/.../clone/reports/settlements. The lease is still held; nothing was recorded.' Its sibling refusal deliberately uses `path.relative_to(root).as_posix()`. AGENTS.md forbids committing local absolute paths, and refusal text of this kind routinely ends up pasted into reports."
+    },
+    {
+      "id": "D10",
+      "severity": "MINOR",
+      "title": "commands.py is at exactly 300 lines against a rule that says 'below 300'.",
+      "evidence": "`wc -l scripts/sovlease/commands.py` = 300. scripts/lint.py sets MAX_PRODUCTION_LINES = 300 and admits 300, so the gate passes. AGENTS.md states the rule twice as 'keep modules below 300 lines' and 'Keep production modules below 300 lines'. Commit b92428a describes this as 'back under the 300-line module ceiling'. It is at the ceiling, not under it, with zero headroom: the next line added to cmd_close - for instance the one-line fix for D1 - crosses it."
+    }
+  ],
+  "questions_the_change_raises": [
+    {
+      "question": "The record is derived from a log no clone carries. Is it authoritative evidence, a rebuildable projection, or neither?",
+      "observation": "Neither, as built. It is not authoritative: the module states 'the lease log remains the producer, and this file states what it recorded', and D4 shows the producer can move on without it. It is not a rebuildable projection: the only source is .git/sov-sessions/leases.ndjson, which `ls` confirms is absent from a fresh clone, so no participant that did not perform the closure can rebuild or re-derive the record - it can only be trusted. AGENTS.md 'State and execution' requires that projections be rebuildable, and D8 shows nothing rebuilds, validates, or reads these files. What follows is that the artifact currently occupies the one position the contract does not provide for: a non-rebuildable derivative of a non-travelling source, carrying a receipt id and a standing, with no schema and no reconciliation path. Whether that is admissible is a judgement, not an observation."
+    },
+    {
+      "question": "Does anything stop a lease being closed twice at the transition level, or only at the record?",
+      "observation": "Only at the record, and only within one UTC day and only when CWD is the repository root. See D5, D3, D1. Observed directly: two close events for one lease in the log, and a close-then-release sequence both exiting 0."
+    }
+  ],
+  "verdict": "DISSENT. The change's premise is real and its common path works: from the repository root, take writes nothing, close writes a record a clone carries, a differing re-close is refused with both receipts named at exit 1, an identical one is idempotent, and an injected write failure leaves the lease HELD with nothing recorded. All of that was reproduced here. But the central claim - 'closing a lease now writes a committed record' - does not hold as stated. On a reachable ordinary path (D1, closing from any subdirectory) the close succeeds at exit 0 and produces precisely the unreachable-settlement state the change exists to eliminate, with the correct repository root already computed and discarded one line above the call. The second repair claim is materially narrower than stated (D3: the anti-amendment guard is scoped to one UTC day, and across midnight a second record silently claims a higher standing). And the check that grades the third repair reads source-text order rather than behavior (D2), which this witness demonstrated by restoring the original defect under a green verify, a green lint, and a green suite. I do not support BUILT -> WITNESSED.",
+  "standing_supported": "NONE. This observation supports no standing transition. It does not support OPEN -> BUILT beyond what the builder already established, and it explicitly does not support BUILT -> WITNESSED. The findings return to the builder for repair inside this concern; they are not filed as new tickets.",
+  "residuals": [
+    "Pull request #240 is unverifiable from this host: `gh` is not installed. No claim is made about its base, head, mergeability, or check status in either direction.",
+    "The 'two commits, linear, base main' description does not match the named branch; it matches a sibling branch with an identical tree. A reader following the description to the named branch will not find that shape.",
+    "The witness could not reach a `_slug` collision through the CLI (D7) and records it as latent rather than reachable. A lease id written into the log by any path other than cmd_take/cmd_helper would change that.",
+    "Concurrency (D6) was demonstrated by forcing the interleave rather than by winning a natural race; the window is real but its practical width was not measured.",
+    "No RecordProjection was supplied and none was reconstructed, so no contract-typed Finding is emitted (see record_defect_and_envelope)."
+  ],
+  "what_would_defeat_this_finding": [
+    "D1: a demonstration that sov_lease.py close is only ever invoked with CWD at the repository root - for example an enforced wrapper, or a check that refuses a non-root CWD. This witness invoked it by absolute path from <clone>/services, which nothing prevented. Alternatively, evidence that `_context`'s `root` is unusable in cmd_close for a reason not visible in the source.",
+    "D2: a behavioral case that executes cmd_close with settlement.write raising and asserts the lease is HELD and no close event appended. If such a case exists elsewhere in the repository and this witness missed it, D2's severity collapses. I grepped scripts/ for readers of reports/settlements and found none, but I did not exhaustively read every test module in the tree.",
+    "D3: evidence that a lease's closed_at is pinned to the lease's own closure timestamp rather than to the record-write time, or a policy ruling that one settlement record per lease per UTC day is the intended granularity. As built, `record()` calls `datetime.now(timezone.utc)` and the lease carries no closure timestamp the record consults.",
+    "D4: a reconciliation path from release/fail back to the settlement record, or a ruling that a settled lease may not subsequently be released. Neither is present in the code I read.",
+    "D8: an existing contracts/ schema for soveraeign-lease-settlement/v1 under a name my grep for that literal string would not have matched.",
+    "Any of the above: a demonstration that my clone-based harness differs materially from the shared-worktree environment. The clone shares no .git/sov-sessions with the primary tree, which is what made it safe under trap T6, but it also means every lease id I used was fresh. I do not believe this affects any verdict, and I record it because it is the assumption my method rests on.",
+    "The whole finding: evidence that the tree moved underneath this reading. It did not - the primary tree was clean at 926f06bf before and after, the candidate tree read eb931213 at both ends, and the shared lease store was byte-identical before and after."
+  ],
+  "judgement_items_for_bdo": [
+    "Is a non-rebuildable derivative of a non-travelling source admissible as committed evidence under AGENTS.md 'State and execution', which requires projections to be rebuildable? The settlement record is neither the authority (the lease log is) nor rebuildable by anyone who did not perform the closure. This is the seam the change opens and does not close.",
+    "Should a completed lease be refused a second close at the transition level, rather than the record being the only guard? decisions/0056 separates lease standing from session plumbing but does not settle whether COMPLETED is terminal for the transition.",
+    "Does a settlement record carrying a receipt id and a standing_reached require a contract and a conformance case before it is written, per AGENTS.md 'Implementation order' step 2? None exists, and the record declares a schema identifier that resolves to nothing."
+  ]
+}

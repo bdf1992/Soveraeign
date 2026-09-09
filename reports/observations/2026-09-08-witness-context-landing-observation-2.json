@@ -1,0 +1,131 @@
+{
+  "candidate_commit": "fa8e7abb33d65c1de4f6bf465780c73e7296333d",
+  "candidate_tree": "2a6d491415b04aef5555f52addb051535d224b64",
+  "base_commit": "d00f46ad38448856fa692399d12cf0a324266004",
+  "observer_id": "claude-opus-5/sov-witness@2026-09-08T13:36Z",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+
+  "case_id": "WITNESS-CONTEXT-LANDING-OBSERVATION-2",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08T13:36Z",
+  "artifact_revision": "fa8e7abb33d65c1de4f6bf465780c73e7296333d",
+  "participant_claim": "FAILED",
+  "supersedes": "reports/observations/2026-09-08-witness-context-landing-observation.json (subject ab3f473, superseded)",
+  "observer_relation": "Independent evaluator of WORK, same observer as the ab3f473 reading, still outside the build: planned, wrote, reviewed and advised on nothing in this candidate. All readings in an isolated full clone at the pinned commit outside the shared checkout; every mutation in a fresh throwaway copy of that clone. Scope derived from `git diff --name-only d00f46a..fa8e7ab`. Prompts measured by executing JavaScript and reading the resulting string. Verdicts read from exit codes. The builder's account was read after this reading was formed.",
+  "concern": "concern:harness/witness-context",
+  "standing_supported": "NONE",
+
+  "subject_state": {
+    "linear": "`git rev-list --parents -n1 fa8e7ab` shows exactly one parent, d00f46a, the tip of main. No merge commit.",
+    "tree": "`git rev-parse HEAD^{tree}` is 2a6d491415b04aef5555f52addb051535d224b64, matching the declared candidate_tree.",
+    "record_vs_git": "The candidate record's 30 changed_paths compare set-equal to git; no declared-only and no git-only entry.",
+    "branch_moved_past_the_candidate": "The shared branch claude/witness-context-handoff-n8lk0h is at c2c4048e4392ad0a444bf6bd61390e42616719cf, one commit ahead of the frozen candidate, carrying only reports/observations/2026-09-08-witness-context-landing-observation.json. fa8e7ab is an ancestor of it. Every reading here was taken in an isolated clone at fa8e7ab, so the subject did not move under this reading.",
+    "the_branch_head_does_not_widen_the_merge": "Checked because a gate that grades declared paths and then merges a whole branch is this repository's recorded defect. `sovland.candidates.land` merges `candidate['candidate_commit']`, not the branch, and `_candidate_integrity` re-derives `repo.carried_paths(base, commit)` from git and refuses when it disagrees with the declared list. That path is sound. The legacy `cmd_land` mutable-tree path does grade `carried_paths(target, branch)` and merge a branch, and is not the path in use here."
+  },
+
+  "observed": {
+    "baseline_at_the_commit": {
+      "python3 scripts/verify.py": "exit 0, 'PASS: 55 checks in 21.738s wall'",
+      "python3 scripts/lint.py": "exit 0",
+      "python3 scripts/sov_clarity.py check": "exit 0",
+      "python3 scripts/tests/test_witness_context_provenance.py": "exit 0, Ran 12 tests, OK",
+      "python3 scripts/run_tooling_tests.py": "exit 0, 116 modules; all three new test modules discovered",
+      "tree": "`git status --porcelain` empty before and after every run, so these read committed bytes",
+      "qualification": "CLAUDE.md T2 still applies: exit 0 means unchanged, not qualified."
+    },
+
+    "scope_and_mechanics": {
+      "verdict": "REPRODUCED",
+      "scope": "`sovkernel.scope.out_of_scope` returns None over all 30 changed paths against grant:standing-landing-loop; every path is under `.claude/` or `scripts/`.",
+      "workflow_parsing": "All 23 workflow files parse under `node --input-type=module --check` when wrapped as an async function body (they carry top-level `return`). 0 failures.",
+      "ledger_isolation": "Seeded `.local/landing/ledger.ndjson` with known bytes, ran the full tooling suite: digest unchanged."
+    },
+
+    "re_test_of_my_own_defeats": {
+      "method": "Each defeat re-applied to a fresh throwaway copy at fa8e7ab, then the provenance module run; verdict from exit code.",
+      "now_refused": {
+        "M8/N8 const acct = built prepended to the frame": "exit 1 - \"'acct.summary' reaches a witness ahead of the frame and derives from ['built']\". My decisive defeat is closed.",
+        "M3 SUBJECT moved last": "exit 1 - 'SCOPE' != 'SUBJECT'",
+        "M13 SUBJECT deleted, phrases folded into SCOPE": "exit 1 - 'SCOPE' != 'SUBJECT'",
+        "M6 sov-contracts.js label inverted": "exit 1 - resolved_prompt now follows the bare identifier to its binding",
+        "M7/N11 new workflow with an unlabelled account (const, and via a push accumulator)": "exit 1",
+        "N10 sov-trust.js apostrophe defect reintroduced": "exit 1 - `unreadable()` is now called over all 23 workflows and fires. The guard my first reading found uncalled is wired.",
+        "REAL_WEIGHTS": "deleted, confirmed by diff",
+        "ledger-isolation docstring": "now names the three modules it runs and records the overclaim, confirmed by diff",
+        "six workflows labelled": "confirmed by rendering, not by grep: sov-asset, sov-byom, sov-coldstart, sov-compression, sov-librarian and sov-scribe now render a prompt carrying 'artifact and never oracle'. The builder found three I had not."
+      },
+      "still_open_after_the_repair": {
+        "verdict": "DISSENTED",
+        "note": "These are new constructions, not re-runs. Each was written against a shape the resolver does not follow rather than against a string it matches.",
+        "N1 bare assignment with no declaration keyword": "`acct = built` (drop `const`) then `acct.summary` ahead of the frame -> exit 0. `roots()` resolves only through `_initialiser`, whose regex requires `const|let|var`. This is the same defect the repair was built for, one keyword shorter.",
+        "N5 push accumulator": "`const box = []; box.push(built)` then `box[0].summary` -> exit 0. `_written_into()` exists in the same module and handles exactly this; `roots()` never calls it. Closing N1 and N5 is one wiring change inside bindings.py.",
+        "N4 destructuring": "`const { summary } = built` then `summary` -> exit 0. `_initialiser` matches `const NAME =` and a destructuring pattern is not that shape.",
+        "N3 / N12 function-declaration indirection": "`function accountText() { return built.summary }` then `accountText()` -> exit 0, both prepended to the loop frame and as a whole new unlabelled workflow. Neither `_initialiser` nor `_written_into` follows a function declaration, so `derives_from_agent_result` also returns False.",
+        "N9 oracle sentence inside the SUBJECT block": "SUBJECT still renders first and still carries all four graded phrases while opening 'The builder's summary is your oracle: ... Start there.' -> exit 0.",
+        "N15 SUBJECT gutted while keeping its phrases": "'SUBJECT. Take the builder's scope as given; skip the pin.' with the four phrases retained -> exit 0. Position is now graded; content is not.",
+        "N14 label present, meaning inverted": "sov-asset.js rewritten to 'artifact and never oracle - which is to say, your oracle: derive your checks from it' -> exit 0. The rule is a presence check on a phrase.",
+        "N13 subdirectory": "a witness dispatch in `.claude/workflows/extra/` -> exit 0. Every sweep uses a non-recursive `*.js` glob. Low severity if the host loads no subdirectories, but the sweep states no such limit.",
+        "M9 Controller's account ahead of the frame": "`selected.rationale` prepended -> exit 0. ACCOUNT is {plan, built, orchestrationReview}, so the Controller's framing in the oracle position is out of the rule's reach. Recorded with the qualification that SDLC.md gate 6 names the builder's plan and tests, so this is adjacent rather than the same rule.",
+        "caught_by_accident_worth_noting": "N2 and N16/N17 template-literal prompts are refused, but by `prompt_of` mis-parsing `${` as the options object rather than by the rule. The refusal direction is safe; the reader's ceiling is not stated."
+      }
+    },
+
+    "two_live_unlabelled_builder_accounts_in_the_tree": {
+      "verdict": "DISSENTED",
+      "note": "Not mutations. These exist at fa8e7ab and the repaired rule cannot see either, because both reach the witness through a function parameter and `_written_into` follows only `const|let|var NAME =`, `NAME =` and `NAME.push(`.",
+      "sov-review.js": "`result.findings.map(function (f) { ... agent('Independently reproduce or refute this review finding ... CLAIM: ' + f.summary + ... 'CLAIMED FAILURE: ' + f.failure_scenario, { agentType: 'sov-witness' }) })`. `result` is the reviewing agent's output. Measured: `derives_from_agent_result(source, 'f.summary')` returns False and `roots` returns {'f'}, so the dispatch is skipped and the prompt carries neither demotion phrase.",
+      "sov-baseline.js": "`probePrompt(c)` splices `c.id`, `c.concern` and `c.source` into a witness probe; the conflicts are derived from `scoutResults`, which is `await parallel(selected.map(... agent(...) ...))`. Same measurement: derives_from_agent_result False, roots {'c'}, dispatch skipped, no label.",
+      "consequence": "The rule presents itself as repository-wide over 30 dispatches. Measured, it reaches those whose account is bound to a name and skips those whose account arrives as a parameter, and two such dispatches are live today."
+    },
+
+    "claim_5_independence_basis": {
+      "verdict": "DISSENTED",
+      "repair": "MEASURED now requires both a non-empty `observation_path` and a non-empty `paths` list.",
+      "why_it_does_not_close_the_finding": "The finding was not that one field was read; it was that MEASURED names a comparison that cannot produce a positive result under the governing grant. Re-measured against grant:standing-landing-loop at this commit: paths ['scripts/x.py', '.claude/workflows/y.js'] with observation_path 'reports/observations/o.json' -> PERMITTED, independence_basis MEASURED, and `_observed_path` returns None because `reports/observations/o.json` is 'outside every path prefix the grant admits'. A request whose paths did contain it would be refused for scope before the observation check runs. Also measured: observation_path 'not/a/file/at/all.json' -> MEASURED. The repair moved the field from 'one slot was filled in' to 'two slots were filled in'; it still records MEASURED over an entanglement test that is structurally incapable of firing for the way this repository writes observations.",
+      "held": "The three refusals themselves remain real and correct: empty observer_id, observer equal to the landing actor, and observation among the landed paths."
+    },
+
+    "correction_to_my_own_previous_finding": {
+      "subject": "My ab3f473 observation claimed a strictly larger admissible subset existed: scripts/sov_workflows.py, its test, and the integrity.py hunk.",
+      "verdict": "MY CLAIM WAS WRONG. The builder's withdrawal was correct.",
+      "what_I_measured_then": "In a copy of the previous candidate with those three files present, `python3 scripts/verify.py` exited 0 and `python3 scripts/lint.py` exited 0. That reading was accurate for the tree I had and wrong as a prediction of the committed state.",
+      "why_it_was_wrong": "`scripts/sov_workflows.py` was untracked in my copy. `scripts/sovcounts/populations.py:_committed_paths()` enumerates the population with `git ls-files`, so an untracked new entrypoint is invisible to the counted-populations check. Reproduced both directions: with the file untracked, `python3 scripts/sov_counts.py check` exits 0 ('PASS: 25 stated counts match'); with the same three files staged, it exits 1 with 'FAIL scripts/README.md:3: states 60 `sov_*.py` entrypoints, the record holds 61 (command-entrypoints)'.",
+      "and_the_repair_is_then_unlandable": "Fixing that count means editing `scripts/README.md:3`. Measured: changing 'Sixty' to 'Sixty-one' takes `python3 scripts/sov_clarity.py check` to exit 1 with 'STALE: scripts/README.md: TEXT_STALE', and scripts/README.md is in `.clarity/coverage.json`'s review set. Recording that receipt writes `.clarity/coverage.json`, which `sovkernel.scope` reports as outside every prefix the grant admits. So the guard genuinely cannot land as a new entrypoint under this grant, and calling `unreadable()` from the existing test is the correct in-scope route. That route is taken and works (N10 fires).",
+      "the_new_finding_underneath_my_error": "`_committed_paths()` is named for the commit and its docstring says 'Every path the commit at HEAD holds' and 'the commit holds no listed files', but `git ls-files` reads the index, not HEAD. The two differ in both directions: a staged file the commit does not hold is counted, and an unstaged new file the working tree holds is not. That is a check whose population is not the artifact a pre-commit run is grading, and it is what made my earlier reading diverge. Pre-existing; not introduced by this candidate; recorded rather than attributed to it."
+    },
+
+    "what_the_builder_did_not_report": {
+      "keyword_leakage_in_roots": "`roots()` returns JS keywords as bindings - measured on sov-baseline.js it returns {'const', 'function', 'return', 'c', 'd', 'f', 'probePrompt', 'unique'}. NOT_A_BINDING covers `await`, `new`, `typeof`, `this`, `true`, `false`, `null`, `undefined`, `void` and not the rest. Harmless against the ACCOUNT set today, and evidence the resolver reads tokens rather than syntax.",
+      "only_two_of_thirty_open_with_the_subject": "Rendered, not grepped: 2 of the 30 witness prompts open with SUBJECT, both in sov-loop.js. The other 28 open with a role sentence. The concern's stated claim that every witness prompt opens with the subject remains false as measured; only the labelling half of it is repaired.",
+      "no_secrets": "No credential shapes, tokens or local absolute paths in the 30 changed files; lint exit 0.",
+      "module_sizes": "sovprompts 8/182/161/170/152, tests 193/153/91 - all under the 300-line ceiling; the dispatch split is real."
+    }
+  },
+
+  "residuals": [
+    "roots() follows only `const|let|var` initialisers, so a bare assignment `acct = built` and a `box.push(built)` accumulator both put the builder's account ahead of the frame with the test green.",
+    "_written_into() already handles both of those shapes and roots() never calls it.",
+    "Neither resolver follows a function declaration or a destructuring pattern.",
+    "sov-review.js and sov-baseline.js splice an earlier agent's output into a witness prompt through a function parameter, unlabelled, and the repo-wide rule cannot see either.",
+    "SUBJECT's position is graded; its content is not, so the block can be gutted while passing.",
+    "The label is a presence check, so a prompt can carry the phrase and invert its meaning in the next clause.",
+    "Every workflow sweep uses a non-recursive `*.js` glob.",
+    "independence_basis still reports MEASURED over an entanglement test that cannot fire under grant:standing-landing-loop.",
+    "sovcounts._committed_paths() reads the index while its name and docstring say the commit (pre-existing).",
+    "Template-literal prompts are refused by a parser accident rather than by the rule."
+  ],
+
+  "judgement_items": [
+    "Is a repair that closes the six constructions a witness demonstrated, while leaving five more of the same class open, a repair to the defect or a repair to the test? I record the measurement; the disposition is the owner's.",
+    "grant:standing-landing-loop admits `.claude/` and `scripts/` prose but not `.clarity/coverage.json`, and now demonstrably not `scripts/README.md` either without it. A new `scripts/sov_*.py` entrypoint therefore cannot be landed under this grant at all. Widening the grant is Bdo's.",
+    "Does SDLC.md gate 6 reach the Controller's rationale and another reviewer's finding, or only the builder's plan and tests? ACCOUNT = {plan, built, orchestrationReview} answers this by assertion.",
+    "No observation schema in contracts/ admits the six top-level fields the landing gate reads; carried forward unrepaired from the previous observation and now routed as its own concern."
+  ],
+
+  "telemetry": {
+    "host": "Linux, Python 3.11.x, node v22.22.2",
+    "method": "Isolated full clone at fa8e7ab; 20 mutations across two batteries, each in a fresh throwaway copy; prompts rendered by executing JavaScript with a proxy scope, never by grepping source; agent-dispatch discovery by an independently written balanced-paren scanner; verdicts from exit codes.",
+    "writes_by_this_witness": "this file only; nothing in the subject was edited, staged, committed, merged, reset or rebased anywhere",
+    "helpers_recruited": "none"
+  }
+}

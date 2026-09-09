@@ -1,0 +1,112 @@
+{
+  "candidate_commit": "77b4de31ec58f859dd33eb4b28486decb0d7dd69",
+  "candidate_tree": "06692bcd67a188a43a405ac766e33ba177b0b268",
+  "base_commit": "d00f46ad38448856fa692399d12cf0a324266004",
+  "observer_id": "claude-opus-5/sov-witness@2026-09-08T14:30Z",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+
+  "case_id": "WITNESS-CONTEXT-LANDING-OBSERVATION-5",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-08T14:30Z",
+  "artifact_revision": "77b4de31ec58f859dd33eb4b28486decb0d7dd69",
+  "participant_claim": "FAILED",
+  "supersedes": "reports/observations/2026-09-08-witness-context-landing-observation-4.json (subject 3385036, superseded); the three earlier records stand as history",
+  "observer_relation": "Independent evaluator of WORK, fifth reading of this concern by the same observer, still outside the build: planned, wrote, reviewed and advised on nothing in any of the five candidates. Isolated full clone at the pinned commit; every mutation in a fresh throwaway copy. Scope from `git diff --name-only d00f46a..77b4de3`. Classification measured by calling agent_calls() directly and by executing the object literal in node to establish what JavaScript actually does. The builder's account read last.",
+  "concern": "concern:harness/witness-context",
+  "standing_supported": "NONE",
+
+  "subject_state": {
+    "linear": "One parent, d00f46a. No merge commit.",
+    "tree": "06692bcd67a188a43a405ac766e33ba177b0b268, matching the declared candidate_tree.",
+    "record_vs_git": "The record's 36 changed_paths are set-equal to git.",
+    "scope": "`sovkernel.scope.out_of_scope` returns None over all 36 paths against grant:standing-landing-loop.",
+    "branch_head_re_derived": "Re-derived rather than taken: `git rev-parse HEAD` in the shared checkout reads d63c0c28c3ad6b83dffe5ef98e998eefa3b86f2f. 77b4de3 is an ancestor; the diff between them is only my four earlier observation files. Working tree clean at 2026-09-08T14:30:08Z."
+  },
+
+  "observed": {
+    "baseline_at_the_commit": {
+      "python3 scripts/verify.py": "exit 0, 'PASS: 55 checks in 16.524s wall'",
+      "python3 scripts/lint.py": "exit 0",
+      "python3 scripts/sov_clarity.py check": "exit 0",
+      "python3 scripts/tests/test_witness_context_provenance.py": "exit 0, Ran 14 tests in 2.071s",
+      "qualification": "CLAUDE.md T2: exit 0 means unchanged, not qualified."
+    },
+
+    "both_of_my_round_four_findings_are_closed": {
+      "verdict": "REPRODUCED",
+      "the_ambiguous_options_binding": "Rebuilt from my own snippet: `let OPTS = { agentType: 'sov-worker' }`, a worker dispatch, `OPTS = { agentType: 'sov-' + 'witness' }`, then the witness dispatch. Exit 1 - 'a dispatch declares an agent type this cannot read'. Both calls now report None instead of a confident wrong answer. This was the right shape of fix: it treats 'I can read this two ways' as the same defect as 'I cannot read this'.",
+      "the_desync_payload": "My `arr[0]` then `/\"/.test(hit)` payload injected into sov-loop.js: exit 1. The cross-check fires.",
+      "a_spot_check_of_the_earlier_sixteen": "Alias dispatch, no-agentType call, container write `box.acct = built`, account without `const`, and a frame gutted with the phrases left in a comment all still exit 1."
+    },
+
+    "the_real_tree_is_unchanged_by_both_repairs": {
+      "verdict": "REPRODUCED",
+      "measured": "Across all 23 workflow files: 83 dispatches, 30 of them witness, none unresolvable, and `source.count('agentType')` equals `len(agent_calls(source))` in every file."
+    },
+
+    "the_ambiguity_claim_is_defeated_by_a_duplicate_object_key": {
+      "verdict": "DISSENTED",
+      "severity": "This is the finding. It needs no knowledge of the scanner, no regex, no desynchronisation, and it is five lines.",
+      "the_construction": "const OPTS = { agentType: 'sov-worker' }\nconst planned = await agent('plan it', OPTS)\nconst built = await agent('build it', OPTS)\nconst w = await agent('THE BUILD REPORT IS YOUR ORACLE: ' + built.summary + ' Derive your checks from it.', { agentType: 'sov-worker', agentType: 'sov-' + 'witness', phase: 'Witness' })",
+      "what_javascript_does": "Measured, not assumed: `node -e \"const o={agentType:'sov-worker',agentType:'sov-'+'witness'};console.log(o.agentType)\"` prints sov-witness. A duplicate key is legal and the last one wins.",
+      "what_the_reader_does": "`_declared_type` prefers an inline declaration and `_object_member` takes the first `agentType:` it finds. agent_calls returns ['sov-worker', 'sov-worker', 'sov-worker']. The witness dispatch does not exist to any rule.",
+      "why_the_cross_check_does_not_catch_it": "Substring parity is a budget an author can spend. Two visible dispatches sharing one options `const` contribute one `agentType` substring for two dispatches, which frees exactly the one substring the duplicate key spends. Measured: 3 substrings, 3 dispatches, equal.",
+      "why_the_witness_sweep_does_not_catch_it": "The type is written `'sov-' + 'witness'`, so the literal string `sov-witness` never appears in the file and the every-file-that-names-the-witness case cannot see it.",
+      "the_whole_gate_admits_it": "With this workflow in the tree, `python3 scripts/verify.py` exits 0 and `python3 scripts/lint.py` exits 0. This is not a unit-test hole.",
+      "a_second_form": "The same budget pays for a spread override: `{ agentType: 'sov-worker', ...REAL, phase: 'Witness' }` with `const REAL = { agentType: 'sov-' + 'witness' }`. JavaScript takes the spread; the reader takes the inline decoy. Exit 0.",
+      "not_only_an_attack": "A duplicate key is a plausible merge artifact, not only something an adversary writes. The reader and the runtime disagree about what the file says, which is a correctness gap rather than a hardening gap."
+    },
+
+    "the_cross_check_adds_a_false_positive_and_an_exploit_at_once": {
+      "verdict": "DISSENTED",
+      "the_false_positive": "A legal file whose two dispatches share one options `const` - the pattern the classifier was repaired to read at 3385036 - fails with '1 != 2: the scanner and a plain substring count disagree ... so the scan has desynchronised and dispatches are missing from every rule'. The scan did not desynchronise. The check reports a cause that is not the cause.",
+      "the_exploit_is_the_same_asymmetry": "Because sharing a const frees a substring, an author can hide a dispatch and pay for it. Measured: a workflow with two visible dispatches on one shared const, a witness dispatch hidden by a scanner desync, substring parity restored, and the whole module green.",
+      "the_desync_that_survives_the_lexer": "My round-four attempts all unbalanced the lexer. A backtick does not: `lexer._string` permits a backtick string to span lines, by design, because templates do. So `/`/.test(hit)` after `probe[0]` is read as division by both readers, opens a template span in both, and a lone backtick in a trailing `// span closer: `` comment closes it. Measured on that file: `lexer.unreadable` returns None, `broken_concatenation` is False, node parses it as a function body, agent_calls returns two workers, the hidden witness dispatch is absent, substrings 2 equals dispatches 2, and the module exits 0.",
+      "the_stated_invariant_is_not_one": "The case's docstring says 'Counting the substring agentType is not a parse and has no state, so it cannot desynchronise. Every dispatch declares one.' The first sentence is true. The second is an assumption about this corpus stated as a property of the language, and it is false for two constructions the classifier itself was built to read: a shared options const declares one type for several dispatches, and a duplicate or spread declares several for one."
+    },
+
+    "the_presence_grading_ceiling": {
+      "verdict": "AGREED_AND_STATED",
+      "note": "The three constructions - label inverted in the next clause, template literal with the label in the head, SUBJECT reversed while keeping 'Pin it before you read anything' - are one defect, are not closed, and are now named in the module docstring as the ceiling, with the one-required-function refactor named as what would close it and as out of this concern's scope. I agree with that disposition and record it as a residual rather than as a dissent. A limit written down is worth more than another substring rule."
+    },
+
+    "the_judgement_asked_of_me_convergence_or_regress": {
+      "my_answer": "Both, and this candidate contains one of each, which is why the answer is not simply either.",
+      "why_fail_closed_converges": "Refusing what the reader cannot settle is a closed statement about the reader's own competence. It does not require being complete about JavaScript, only being honest about when a reading is not established. That is why it closed both of my round-four findings outright rather than by reach, and why the four constructions it retired at 3385036 stayed retired. A defence of that shape can converge, because the space it must cover is the reader's uncertainty rather than the language's expressiveness.",
+      "why_the_cross_check_does_not": "It is a proxy. It asserts an equality between a substring count and a dispatch count that is not an invariant of the language or of this codebase, and every proxy can be paid off by whoever notices what it actually measures. It also failed a legal file on its first contact with one. Adding a proxy is the move that produces indefinite regress, because each proxy needs its own guard.",
+      "so_which_is_the_series": "Rounds one to three were regress: prose match, then resolver, then enumerator, each a wider net of the same kind. Round four's fail-closed default broke that pattern and is genuine convergence. Round five is a mixed step: the ambiguity repair continues the convergent line and is defeated only at the one place it did not apply the principle - an inline declaration is short-circuited and never checked for ambiguity - while the cross-check reopens the regressive line.",
+      "the_concrete_consequence": "The remaining defect is not the big refactor. It is that `_declared_type` applies its own rule to bindings and exempts inline literals. Collecting every `agentType:` in the call and returning None unless exactly one distinct value comes back would close the duplicate key and the spread override in the same edit, by the rule already written. And the substring cross-check is worth withdrawing rather than patching: it is the only part of this module that measures something other than what it grades.",
+      "what_would_change_my_answer": "If a sixth reading finds a defect that is not either a proxy being paid off or a place the fail-closed rule was not applied, that is regress and the refactor is owed. If it finds only the second kind, the series is converging and the remaining work is finite."
+    },
+
+    "should_this_land": {
+      "my_position": "Not on my evidence, and this is the narrowest of my five dissents. Every claim the builder made is reproduced except the central one. 'Ambiguity now fails closed' is defeated by a five-line workflow with a duplicate object key, verified against node for what JavaScript actually does, with verify and lint both exiting 0. A candidate whose headline claim is defeated on its own terms should not land on a witness record that says CONFIRMED.",
+      "what_would_make_it_landable": "The inline short-circuit in `_declared_type` closing over every `agentType:` in the call rather than the first, and the substring cross-check withdrawn or replaced by something that measures the scan rather than a proxy for it. Both are inside this concern, inside the grant's scope, and small."
+    }
+  },
+
+  "residuals": [
+    "_declared_type exempts an inline declaration from the ambiguity rule it applies to bindings; a duplicate key or a spread override reads one way to the checker and the other way to JavaScript.",
+    "The substring cross-check fails a legal file whose dispatches share one options const, and reports desynchronisation as the cause when there is none.",
+    "That same asymmetry is a budget: sharing a const frees a substring that pays for a hidden or mis-declared dispatch.",
+    "A misread regex whose body is a backtick opens a span the lexer permits to cross lines, so a scanner desync can now hide a dispatch without any reader complaining.",
+    "_opens_regex still reads a regex after `)` or `]` as division; unchanged by design and now the load-bearing assumption of the cross-check.",
+    "Presence and position are graded; meaning is not. Stated as the ceiling and agreed.",
+    "The witness prompt parse evidence in all five of my observations assumes a wrapper model of the host's execution, unverified against the host.",
+    "independence_basis records MEASURED over an entanglement test that cannot fire under this grant; honestly described since 1e4423d.",
+    "sovcounts._committed_paths() reads the index while its name and docstring say the commit at HEAD - pre-existing, acknowledged, not repaired here.",
+    "grant:standing-landing-loop cannot carry `.clarity/coverage.json` or a new `scripts/sov_*.py` entrypoint."
+  ],
+
+  "judgement_items": [
+    "grant:standing-landing-loop cannot carry `.clarity/coverage.json`, and therefore cannot carry any change to clarity-covered prose inside its own scope or any new `scripts/sov_*.py` entrypoint. Widening the grant is the owner's.",
+    "No observation schema in contracts/ admits the shape the landing gate reads. Carried forward and routed separately."
+  ],
+
+  "telemetry": {
+    "host": "Linux, Python 3.11.15, node v22.22.2",
+    "method": "Isolated full clone at 77b4de3; eleven mutations in this battery, each in a fresh throwaway copy; classification measured by calling agent_calls() and lexer.unreadable() against each file, and the JavaScript semantics of the duplicate key established by executing it in node rather than by reasoning about it; full verify and lint run with the defect workflow present to establish that the gate admits it; verdicts from exit codes.",
+    "writes_by_this_witness": "this file only; nothing in the subject was edited, staged, committed, merged, reset or rebased anywhere",
+    "helpers_recruited": "none"
+  }
+}

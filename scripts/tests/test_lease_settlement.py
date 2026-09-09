@@ -18,6 +18,16 @@ from sovlease import settlement  # noqa: E402
 # definition hangs off the holder. A first version of this fixture guessed flat names and
 # every one of those fields serialised as null.
 
+
+def _seed_held_lease(commands, store_dir) -> None:
+    """Put one HELD lease in a fixture store, shaped as the evaluator will accept it."""
+    held = json.loads(json.dumps(CLOSED))
+    held["state"] = "HELD"
+    held.pop("closure_evidence")
+    commands.store.append(store_dir, commands.store.LEASES_LOG,
+                          {"event": "take", "lease_id": CLOSED["lease_id"], "lease": held})
+
+
 def _close_body() -> str:
     """cmd_close's own source, so an assertion cannot match cmd_take earlier in the file."""
     source = (Path(__file__).resolve().parents[1] / "sovlease" / "commands.py").read_text(
@@ -81,7 +91,8 @@ class SettlementRecord(unittest.TestCase):
                                     now=datetime(2026, 9, 8, tzinfo=timezone.utc))
             self.assertIsNotNone(path)
             assert path is not None
-            self.assertEqual("2026-09-08-lease-concern-example-thing.json", path.name)
+            self.assertTrue(path.name.startswith("2026-09-08-lease-concern-example-thing-"),
+                            f"unexpected stem: {path.name}")
             written = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual("receipt:example/thing", written["receipt_id"])
 
@@ -125,6 +136,125 @@ class SettlementRecord(unittest.TestCase):
             self.assertEqual([], list(Path(raw).iterdir()))
 
 
+    def test_a_record_for_another_lease_does_not_block_this_one(self) -> None:
+        """The first anti-amendment repair globbed `*-{slug}.json` and matched other leases.
+
+        `lease:concern-b-lease-concern-a` ends with `-lease-concern-a`, so recording it
+        left `lease:concern-a` permanently unclosable behind a refusal that named the
+        wrong record. The glob is anchored to the date shape and the record's own
+        lease_id is compared.
+        """
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "reports").mkdir()
+            longer = json.loads(json.dumps(CLOSED))
+            longer["lease_id"] = "lease:concern-b-lease-concern-a"
+            settlement.write(longer, root, now=datetime(2026, 9, 9, tzinfo=timezone.utc))
+            shorter = json.loads(json.dumps(CLOSED))
+            shorter["lease_id"] = "lease:concern-a"
+            written = settlement.write(shorter, root,
+                                       now=datetime(2026, 9, 9, tzinfo=timezone.utc))
+            self.assertIsNotNone(written)
+            self.assertEqual(2, len(list((root / settlement.SETTLEMENTS).glob("*.json"))))
+
+    def test_two_leases_that_slug_alike_keep_separate_records(self) -> None:
+        """`lease:concern-a` and `lease:concern/a` both slug to `lease-concern-a`.
+
+        The filename then matches exactly and the anchored glob cannot separate them.
+        Only comparing the record's own lease_id does. This case exists so that removing
+        that comparison fails a test rather than silently merging two settlements.
+        """
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "reports").mkdir()
+            first = json.loads(json.dumps(CLOSED))
+            first["lease_id"] = "lease:concern-a"
+            second = json.loads(json.dumps(CLOSED))
+            second["lease_id"] = "lease:concern/a"
+            second["closure_evidence"]["receipt_id"] = "receipt:example/other"
+            settlement.write(first, root, now=datetime(2026, 9, 9, tzinfo=timezone.utc))
+            written = settlement.write(second, root,
+                                       now=datetime(2026, 9, 9, tzinfo=timezone.utc))
+            self.assertIsNotNone(written)
+            records = sorted((root / settlement.SETTLEMENTS).glob("*.json"))
+            self.assertEqual(2, len(records),
+                             "a second lease whose id slugs alike must not adopt the first "
+                             "lease's record")
+            self.assertEqual({"lease:concern-a", "lease:concern/a"},
+                             {json.loads(r.read_text(encoding="utf-8"))["lease_id"]
+                              for r in records})
+
+    def test_a_record_whose_identifier_disagrees_is_not_adopted(self) -> None:
+        """The filename is a guess; the identifier inside the record is the check.
+
+        A file carrying this lease's exact name but another lease's `lease_id` - copied,
+        hand-edited, or produced by a future naming change - must not be adopted as this
+        lease's settlement.
+        """
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "reports").mkdir()
+            written = settlement.write(CLOSED, root,
+                                       now=datetime(2026, 9, 9, tzinfo=timezone.utc))
+            assert written is not None
+            impostor = json.loads(written.read_text(encoding="utf-8"))
+            impostor["lease_id"] = "lease:concern-somebody/else"
+            impostor["receipt_id"] = "receipt:somebody/else"
+            written.write_text(json.dumps(impostor, indent=2) + "\n", encoding="utf-8")
+            again = settlement.write(CLOSED, root,
+                                     now=datetime(2026, 9, 9, tzinfo=timezone.utc))
+            self.assertIsNotNone(again)
+            self.assertEqual(CLOSED["lease_id"],
+                             json.loads(Path(str(again)).read_text(encoding="utf-8"))["lease_id"])
+
+    def test_a_second_claim_on_a_later_day_is_refused(self) -> None:
+        """The stem carried the date, so the next day admitted a second, higher claim."""
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "reports").mkdir()
+            settlement.write(CLOSED, root, now=datetime(2026, 9, 8, 23, 59, tzinfo=timezone.utc))
+            amended = json.loads(json.dumps(CLOSED))
+            amended["closure_evidence"]["receipt_id"] = "receipt:example/second"
+            amended["closure_evidence"]["standing_reached"] = "RATIFIED"
+            with self.assertRaises(settlement.SettlementRefused):
+                settlement.write(amended, root,
+                                 now=datetime(2026, 9, 9, 0, 1, tzinfo=timezone.utc))
+            self.assertEqual(1, len(list((root / settlement.SETTLEMENTS).glob("*.json"))))
+
+    def test_an_unreadable_record_refuses_rather_than_raising(self) -> None:
+        """A corrupt record raised JSONDecodeError with absolute paths in the traceback."""
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "reports").mkdir()
+            written = settlement.write(CLOSED, root,
+                                       now=datetime(2026, 9, 9, tzinfo=timezone.utc))
+            assert written is not None
+            written.write_text("{ not json", encoding="utf-8")
+            with self.assertRaises(settlement.SettlementRefused) as refusal:
+                settlement.write(CLOSED, root, now=datetime(2026, 9, 9, tzinfo=timezone.utc))
+            self.assertNotIn(str(root), str(refusal.exception))
+
+    def test_the_unwritable_refusal_carries_no_absolute_path(self) -> None:
+        """The refusal reported whatever path the OSError named, which can be absolute."""
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "reports").mkdir()
+            original = settlement.write
+
+            def explode(lease, where, now=None):
+                raise OSError(28, "No space left on device", str(where / "settlements"))
+
+            settlement.write = explode
+            try:
+                path, defect = settlement.record_closure(CLOSED, root)
+            finally:
+                settlement.write = original
+            self.assertIsNone(path)
+            assert defect is not None
+            self.assertEqual("SETTLEMENT_UNWRITABLE", defect["code"])
+            self.assertNotIn(str(root), defect["message"])
+
+
 class ClosureOrdering(unittest.TestCase):
     """The committed record is written before the closure reaches the log."""
 
@@ -134,18 +264,45 @@ class ClosureOrdering(unittest.TestCase):
         self.assertLess(body.index("settlement.record_closure(candidate"),
                         body.index("store.append(directory, store.LEASES_LOG"))
 
-    def test_the_record_is_written_under_the_repository_root(self) -> None:
+    def test_the_record_lands_under_the_root_and_not_the_working_directory(self) -> None:
         """Found by closing from a subdirectory: cmd_close used the process CWD.
 
-        `_context` already returns the repository root and cmd_close discarded it, so a
-        close run from anywhere but the root wrote no record and still exited 0 - exactly
-        the state this change exists to remove. A bare temporary directory cannot tell
-        "outside a repository" from "inside it with the wrong CWD", which is why the
-        earlier case codified the defect as intended behaviour.
+        The first repair was checked by two greps over the source. A mutation of equal
+        line count reinstated the defect exactly while unittest, lint and verify all
+        stayed green, so the fatal defect's repair carried no defeating fixture. This
+        drives cmd_close with a root that is deliberately not the working directory and
+        asserts where the record actually lands.
         """
-        body = _close_body()
-        self.assertIn("record_closure(candidate, root)", body)
-        self.assertNotIn("Path.cwd()", body)
+        import argparse
+        import os
+
+        from sovlease import commands
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw) / "tree"
+            (root / "reports").mkdir(parents=True)
+            store_dir = root / "store"
+            store_dir.mkdir()
+            elsewhere = Path(raw) / "elsewhere"
+            elsewhere.mkdir()
+            _seed_held_lease(commands, store_dir)
+
+            original_context = commands._context
+            commands._context = lambda name=None: (root, store_dir, "session-test")
+            here = os.getcwd()
+            try:
+                os.chdir(elsewhere)
+                code = commands.cmd_close(argparse.Namespace(
+                    name=None, as_json=True, lease=CLOSED["lease_id"], receipt="receipt:x",
+                    evidence=["a.py"], standing="BUILT", witnessed_by=None))
+            finally:
+                os.chdir(here)
+                commands._context = original_context
+
+            self.assertEqual(0, code)
+            self.assertEqual(1, len(list((root / settlement.SETTLEMENTS).glob("*.json"))),
+                             "the record must land under the root, not the working directory")
+            self.assertEqual([], list(elsewhere.rglob("*.json")),
+                             "nothing may be written beside the working directory")
 
     def test_a_refused_record_stops_the_close(self) -> None:
         """A mutation keeping the source order and dropping the refusal passed every case.
@@ -162,12 +319,7 @@ class ClosureOrdering(unittest.TestCase):
             (root / "reports").mkdir()
             store_dir = root / "store"
             store_dir.mkdir()
-            held = json.loads(json.dumps(CLOSED))
-            held["state"] = "HELD"
-            held.pop("closure_evidence")
-            commands.store.append(store_dir, commands.store.LEASES_LOG,
-                                  {"event": "take", "lease_id": CLOSED["lease_id"],
-                                   "lease": held})
+            _seed_held_lease(commands, store_dir)
 
             original_context = commands._context
             original_record = settlement.record_closure

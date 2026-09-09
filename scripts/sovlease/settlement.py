@@ -23,6 +23,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+import hashlib
 import json
 
 SETTLEMENTS = Path("reports/settlements")
@@ -80,6 +81,42 @@ def _comparable(entry: dict[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in entry.items() if key != "closed_at"}
 
 
+
+DATED = "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]"
+"""The date shape a settlement filename opens with, anchored so a glob cannot slide."""
+
+
+def _mark(lease_id: Any) -> str:
+    """Eight hex of the lease identifier, so two ids that slug alike do not share a file.
+
+    `_slug` is not injective: `lease:concern-a` and `lease:concern/a` both reduce to
+    `lease-concern-a`, and without this the second settlement overwrote the first.
+    """
+    return hashlib.sha256(str(lease_id).encode("utf-8")).hexdigest()[:8]
+
+
+def _recorded(directory: Path, slug: str, lease_id: Any) -> tuple[Path | None, dict[str, Any]]:
+    """Find the record already standing for this lease, whatever date it carries.
+
+    Anchored to the date shape and confirmed against the record's own `lease_id`. An
+    unanchored `*-{slug}.json` matched other leases: `lease:concern-b-lease-concern-a`
+    ends with `-lease-concern-a`, so closing it left `lease:concern-a` permanently
+    unclosable behind a refusal naming the wrong record. Matching the filename is a
+    guess; reading the identifier is the check.
+    """
+    for candidate in sorted(directory.glob(f"{DATED}-{slug}-{_mark(lease_id)}.json")):
+        try:
+            standing = json.loads(candidate.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as error:
+            raise SettlementRefused(
+                f"{candidate.name} is not readable JSON ({error.msg} at line {error.lineno}); "
+                "a settlement cannot be compared against a record that cannot be parsed"
+            ) from None
+        if standing.get("lease_id") == lease_id:
+            return candidate, standing
+    return None, {}
+
+
 def write(lease: dict[str, Any], root: Path, *, now: datetime | None = None) -> Path | None:
     """Write the settlement record under `root`, returning the path, or None outside a tree.
 
@@ -99,13 +136,10 @@ def write(lease: dict[str, Any], root: Path, *, now: datetime | None = None) -> 
     directory = root / SETTLEMENTS
     directory.mkdir(parents=True, exist_ok=True)
     slug = _slug(str(entry["lease_id"] or "lease"))
-    path = directory / f"{entry['closed_at'][:10]}-{slug}.json"
-    # Any date, not just today's: a stem carrying the date let the same lease be recorded
-    # again the next day with a different receipt and a higher standing, unrefused.
-    existing = sorted(directory.glob(f"*-{slug}.json"))
-    if existing:
-        path = existing[0]
-        standing = json.loads(path.read_text(encoding="utf-8"))
+    path = directory / f"{entry['closed_at'][:10]}-{slug}-{_mark(entry['lease_id'])}.json"
+    held, standing = _recorded(directory, slug, entry["lease_id"])
+    if held is not None:
+        path = held
         if _comparable(standing) == _comparable(entry):
             return path
         raise SettlementRefused(

@@ -97,3 +97,60 @@ These seams are not carried into the gap. Their closing evidence already exists;
 - **S28 · Accepted document wording — CLOSED 2026-08-30.** The accepted wording repair is already recorded in the closed seam history.
 
 `contracts/SUCCESSOR-PREP.md` is the gap synthesis of the surviving residue. `STATUS.yaml` remains the machine source for current phase state.
+
+### S31 · No producer puts work in front of a session — CARRIED
+
+`contracts/phase-1-5-phase-ii-horizon.md` draws the commissioning circuit as Definition,
+Request, Agenda, Queue/Custody/Lease, and onward. A session can declare its own sources and
+queues: `python scripts/sov_session.py register --source S --queue Q` populates both, and
+`console` then projects them, so the projection is not inert. What does not exist is anything
+that puts work there which the session did not name itself. No Request object and no Agenda
+object exist. `scripts/sov_ticket.py` reads a ticket export produced by the GitHub registrar
+under `adapters/github/`, and nothing carries those tickets to a session. So a participant
+still learns what to do only from whoever launched it, which is the oral history `P15-X1`
+forbids, at the front of the circuit whose exit clause forbids it. Measured 2026-09-08 by
+carrying one concern around the circuit by hand; corrected 2026-09-09 after an independent
+reading showed the first wording, "nothing anywhere writes into either", was false and
+disproved in one command. No implementation may resolve this by treating a human prompt, or
+a session's own registration, as a Request.
+
+### S32 · The kernel evidence contracts are met by fixtures and by nothing that settles — CARRIED
+
+One standard, applied to both contracts: an instance is any object that validates against
+the contract.
+
+`contracts/finding.schema.json` has one conforming instance,
+`conformance/fixtures/commissioning/evidence-contract-cases.json` case
+`finding-work-positive`, which validates with no defects and is checked inside
+`scripts/verify.py`. `.claude/workflows/sov-loop.js` shapes another at runtime and gates it
+at `frozenFinding()`, requiring the schema token, a non-placeholder projection id,
+`frozen_at`, and both effects `NONE`.
+
+`contracts/receipt.schema.json` has two conforming instances:
+`contracts/fixtures/receipt.fixtures.json` and
+`bindings/mcp/observations/journey-02-receipt.json`, which
+`bindings/mcp/observe_journey_02.py` really emits under an issued grant.
+
+So both contracts are exercised, by a fixture, a harness workflow and a binding. What
+neither is exercised by is a service settling its own work. Console, Registry, Host,
+Gateway, Observation and Asset all end a transition with a `receipt(...)` call carrying
+emitted addresses, grants and effect class — a real terminal record, and a different
+object. `receipt_digest` appears in no file under `services/`, so no service receipt
+validates against the kernel contract, and nothing reconciles the two shapes.
+
+`conformance/commissioning.py` grades `P15-Q2.4` by reading
+`projections_frozen_before_sharing` as a boolean out of an `observed` mapping, so the
+freeze is asserted to the oracle and performed by nothing.
+
+Distinct from S29, which is a contradiction between a schema and a gate. Measured
+2026-09-08.
+
+Two earlier wordings are struck, both disproved by independent readings. The first
+claimed no operation had ever emitted a receipt, that exactly one object satisfied the
+schema, and that `finding_schema` appeared in exactly two files. The second denied any
+Finding instance was checked in while naming the fixture that is one, and counted the
+receipt fixture as an instance in the same seam — two incompatible standards for the same
+evidence class — and then claimed no service emits a receipt into the Record, which
+Console's `append.py` disproves. No implementation may resolve this by writing another
+conforming fixture and calling the contract exercised.
+

@@ -134,6 +134,82 @@ def _preconditions(grant: dict, request: dict) -> dict:
     }
 
 
+def _norm(path: str) -> str:
+    """One spelling of a repository path, so a comparison is not decided by punctuation."""
+    cleaned = str(path).replace("\\", "/").strip()
+    while cleaned.startswith("./"):
+        cleaned = cleaned[2:]
+    return cleaned.strip("/")
+
+
+def _covers(landed: str, target: str) -> bool:
+    """Whether a landed path is, or contains, the target file.
+
+    Compared on whole segments. An unanchored suffix match reads `docs/release-notes.json`
+    as covering `notes.json`, refusing a landing over a file it never touched.
+    """
+    landed, target = _norm(landed), _norm(target)
+    if not landed or not target:
+        return False
+    return landed == target or target.startswith(landed + "/")
+
+
+def observation_basis(request: dict) -> str:
+    """How this request came by the observation it offers: declared, or supplied and resolved.
+
+    `contributed_to_build` is a boolean the observer sets about itself, and a gate reading
+    it alone grades a declaration where a measurement was available.
+
+    An earlier form returned a measured verdict when the observer's own id appeared inside
+    a landed path: entanglement read as evidence of independence. Two readings then
+    defeated that form in turn, for any non-empty `observation_path`, and then for `"."`
+    and for a path naming no file, because a string that is merely present was taken as
+    evidence a comparison had something to compare. This module reads no files by design,
+    so the caller that read the observation asserts it with `observation_resolved`.
+
+    The name says what is established, because the previous one did not. This was
+    `independence_basis`, returning `MEASURED`, and a reading found the consequence: a
+    downstream reader of the landing ledger takes that pair for a measurement of
+    independence, which nothing here performs. What is established is that an observation
+    was supplied, from a path its caller resolved, against a change with paths to compare
+    it to. Nothing joins the observer against the session registry, which is per-machine
+    and gitignored, so a check reading it would pass wherever it is absent.
+    `SUPPLIED_AND_RESOLVED` means the comparison had both its sides, and no more.
+    """
+    if not (request.get("evidence") or {}).get("observation"):
+        return "DECLARED_ONLY"
+    observation_path = _norm(str(request.get("observation_path") or ""))
+    landed = [path for path in (request.get("paths") or []) if _norm(str(path))]
+    if not observation_path or not landed:
+        return "DECLARED_ONLY"
+    if not request.get("observation_resolved"):
+        # The caller read the observation from that path and says so. Without it this
+        # returned MEASURED for `.` and for a path naming nothing, because a comparison
+        # against a string that resolves to no file is vacuous however carefully it runs.
+        # This module reads no files, so the assertion has to come from the one that does.
+        return "DECLARED_ONLY"
+    return "SUPPLIED_AND_RESOLVED"
+
+
+def _observed_path(request: dict) -> str | None:
+    """The landed path that is, or contains, the observation file itself.
+
+    An observation written into the set of paths being landed is inside the change it is
+    offered as the reading of. The path comes from the request, which the landing tool
+    knows. It never comes from a field inside the observation:
+    `contracts/observation.schema.json` sets additionalProperties false, so an
+    `observation_file` key cannot legitimately be there and the refusal that read one
+    could never fire.
+    """
+    written = _norm(str(request.get("observation_path") or ""))
+    if not written:
+        return None
+    for path in (request.get("paths") or []):
+        if _covers(str(path), written):
+            return str(path)
+    return None
+
+
 def _observation_verdict(grant: dict, request: dict) -> tuple[str, str] | None:
     """Check the independent-observation precondition, if this capability sets one."""
     preconditions = _preconditions(grant, request)
@@ -144,9 +220,24 @@ def _observation_verdict(grant: dict, request: dict) -> tuple[str, str] | None:
     if not observation:
         return (OBSERVATION_MISSING,
                 "the grant requires an independent observation and the request carries none")
+
+    observer = str(observation.get("observer_id") or "").strip()
+    if not observer:
+        return (OBSERVER_NOT_INDEPENDENT,
+                "the observation names no observer, so nothing about its independence can "
+                "be established, declared or measured")
+    if observer == str(request.get("actor_id") or ""):
+        return (OBSERVER_NOT_INDEPENDENT,
+                f"observer {observer!r} is the actor exercising this grant; a build cannot "
+                "witness itself")
+    inside = _observed_path(request)
+    if inside:
+        return (OBSERVER_NOT_INDEPENDENT,
+                f"the observation at {inside!r} is among the paths being landed, so it is "
+                "inside the change it is offered as the reading of")
     if observation.get("contributed_to_build"):
         return (OBSERVER_NOT_INDEPENDENT,
-                f"observer {observation.get('observer_id')!r} contributed to the build it "
+                f"observer {observer!r} contributed to the build it "
                 "is offered as the observation of")
     if observation.get("verdict") != "CONFIRMED":
         return (OBSERVATION_MISSING,

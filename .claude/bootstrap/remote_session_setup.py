@@ -53,7 +53,7 @@ import shutil
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from user_settings import preserve, read_settings, write_settings  # noqa: E402
+from user_settings import read_settings, replace_file  # noqa: E402
 
 STYLE_NAME = "Communications"
 
@@ -110,18 +110,27 @@ def ours(entry: object, repo: Path) -> bool:
     return False
 
 
-def install_styles(repo: Path, target: Path) -> int:
-    """Copy every output style this repository declares into the user directory."""
-    source = repo / ".claude" / "output-styles"
-    if not source.is_dir():
-        return 0
-    target.mkdir(parents=True, exist_ok=True)
-    copied = 0
-    for style in sorted(source.glob("*.md")):
-        shutil.copyfile(style, target / style.name)
-        copied += 1
-    return copied
+def install_styles(repo: Path, user: Path) -> tuple[int, list[str]]:
+    """Copy every output style this repository declares, keeping what it replaces.
 
+    A style file is somebody else's until this tool has written it. An earlier
+    draft copied over one without a backup, on every session start, while the
+    documented guarantee said nothing was replaced without a copy kept.
+    """
+    source = repo / ".claude" / "output-styles"
+    target = user / "output-styles"
+    if not source.is_dir():
+        return 0, []
+    target.mkdir(parents=True, exist_ok=True)
+    copied, kept = 0, []
+    for style in sorted(source.glob("*.md")):
+        aside = replace_file(
+            user, f"output-styles/{style.name}", target / style.name,
+            style.read_text(encoding="utf-8"))
+        if aside:
+            kept.append(aside)
+        copied += 1
+    return copied, kept
 
 def hook_entries(repo: Path, event: str) -> list[dict]:
     """Build this repository's hook entries for one event, with absolute paths."""
@@ -183,21 +192,28 @@ def main() -> int:
         return 0
 
     user = Path.home() / ".claude"
+    user.mkdir(parents=True, exist_ok=True)
     settings = user / "settings.json"
+    if settings.is_symlink():
+        # Replacing the link would destroy the operator's indirection silently.
+        settings = settings.resolve()
+        print(f"sov-bootstrap: settings.json points at {settings}; writing through it.")
+
     current, intact = read_settings(settings)
-    kept = preserve(settings, intact)
-    if not intact and kept:
-        print(f"sov-bootstrap: {settings.name} did not parse; its bytes are kept at {kept}.")
-    elif not intact:
-        print(f"sov-bootstrap: {settings.name} is not a readable file; nothing could be kept.")
-
-    styles = install_styles(repo, user / "output-styles")
-
+    styles, kept_styles = install_styles(repo, user)
     current["outputStyle"] = STYLE_NAME
     current["hooks"] = merge_hooks(current.get("hooks") or {}, repo)
+    kept = replace_file(user, "settings.json", settings, json.dumps(current, indent=2) + "\n",
+                        intact)
 
-    user.mkdir(parents=True, exist_ok=True)
-    write_settings(settings, current)
+    aside = list(kept_styles)
+    if not intact:
+        where = f"its bytes are kept at {kept}" if kept else "nothing could be kept"
+        print(f"sov-bootstrap: {settings.name} did not parse; {where}.")
+    elif kept:
+        aside.append(kept)
+    for name in aside:
+        print(f"sov-bootstrap: what was there is kept at {name}.")
 
     total = sum(len(hook_entries(repo, event)) for event in HOOKS)
     events = ", ".join(f"{k} x{len(hook_entries(repo, k))}" for k in HOOKS)

@@ -415,14 +415,19 @@ lacks here.
   workstation, where the project file already works.
 - It carries forward every key and every hook entry in an existing
   `~/.claude/settings.json` that does not run a script inside this repository.
-- Nothing it did not itself write is replaced without a copy kept beside it:
-  under `settings.json.sov-bootstrap-backup` the first time and a stamped name
-  after that, never reusing a name already taken. A file that does not parse
-  cannot have its keys carried forward, so its bytes are kept under a
-  `settings.json.unparsed-<stamp>` name and the loss is reported. It knows what
-  it wrote by recording the digest of each write in `.sov-bootstrap-state.json`
-  and comparing; judging authorship from the file's shape instead misread an
-  operator's own file and withheld the backup it needed.
+- No file it replaces is replaced without a copy kept beside it, the output
+  styles included: under `<name>.sov-bootstrap-backup` the first time and an
+  indexed name after that, never reusing a name already taken, and never keeping
+  bytes that are already held beside the file. A settings file that does not
+  parse cannot have its keys carried forward, so its bytes are kept under a
+  `settings.json.unparsed-<stamp>` name and the loss is reported.
+- It knows what it wrote by recording each write's digest in
+  `.sov-bootstrap-state.json` and comparing. Judging authorship from a file's
+  shape instead misread an operator's own settings file and withheld the backup
+  it needed; proving it for the settings file alone left the operator's own
+  output style overwritten with no copy kept, on every session start.
+- A `settings.json` that is a symlink is written through rather than replaced,
+  so the operator's indirection survives.
 - It registers seven entries: itself, the three `SessionStart` readings, the two
   `SessionEnd` closers, and the per-turn prose reminder.
 - It leaves out the `PreToolUse` and `PostToolUse` path-claim hooks. Those stop

@@ -17,6 +17,15 @@ from sovlease import settlement  # noqa: E402
 # closed lease rather than assumed: concern, closure and grant are nested objects and the
 # definition hangs off the holder. A first version of this fixture guessed flat names and
 # every one of those fields serialised as null.
+
+def _close_body() -> str:
+    """cmd_close's own source, so an assertion cannot match cmd_take earlier in the file."""
+    source = (Path(__file__).resolve().parents[1] / "sovlease" / "commands.py").read_text(
+        encoding="utf-8")
+    start = source.index("def cmd_close(")
+    return source[start:source.index("\ndef ", start)]
+
+
 CLOSED = {
     "lease_id": "lease:concern-example/thing",
     "concern": {"kind": "concern", "reference": "concern:example/thing"},
@@ -24,6 +33,8 @@ CLOSED = {
     "holder": {
         "principal_id": "urn:soveraeign:principal:instance:session-a",
         "parent_lease": None,
+        "relation": "PARENT",
+        "controller_principal": None,
         "definition": {"definition_id": "example/definition", "provenance": "USER_AUTHORED"},
     },
     "closure": {
@@ -114,31 +125,68 @@ class SettlementRecord(unittest.TestCase):
             self.assertEqual([], list(Path(raw).iterdir()))
 
 
+class ClosureOrdering(unittest.TestCase):
+    """The committed record is written before the closure reaches the log."""
+
+    def test_the_source_order_holds(self) -> None:
+        """Scoped to cmd_close: cmd_take appends to the same log earlier in the file."""
+        body = _close_body()
+        self.assertLess(body.index("settlement.record_closure(candidate"),
+                        body.index("store.append(directory, store.LEASES_LOG"))
+
+    def test_the_record_is_written_under_the_repository_root(self) -> None:
+        """Found by closing from a subdirectory: cmd_close used the process CWD.
+
+        `_context` already returns the repository root and cmd_close discarded it, so a
+        close run from anywhere but the root wrote no record and still exited 0 - exactly
+        the state this change exists to remove. A bare temporary directory cannot tell
+        "outside a repository" from "inside it with the wrong CWD", which is why the
+        earlier case codified the defect as intended behaviour.
+        """
+        body = _close_body()
+        self.assertIn("record_closure(candidate, root)", body)
+        self.assertNotIn("Path.cwd()", body)
+
+    def test_a_refused_record_stops_the_close(self) -> None:
+        """A mutation keeping the source order and dropping the refusal passed every case.
+
+        The order assertion above cannot see that, so this drives the behaviour against a
+        fixture store: when record_closure reports a defect, cmd_close returns non-zero
+        and appends nothing. Deleting the `return 1` in cmd_close fails here.
+        """
+        import argparse
+
+        from sovlease import commands
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "reports").mkdir()
+            store_dir = root / "store"
+            store_dir.mkdir()
+            held = json.loads(json.dumps(CLOSED))
+            held["state"] = "HELD"
+            held.pop("closure_evidence")
+            commands.store.append(store_dir, commands.store.LEASES_LOG,
+                                  {"event": "take", "lease_id": CLOSED["lease_id"],
+                                   "lease": held})
+
+            original_context = commands._context
+            original_record = settlement.record_closure
+            commands._context = lambda name=None: (root, store_dir, "session-test")
+            settlement.record_closure = lambda lease, where: (
+                None, {"code": "SETTLEMENT_UNWRITABLE", "message": "injected"})
+            try:
+                code = commands.cmd_close(argparse.Namespace(
+                    name=None, as_json=True, lease=CLOSED["lease_id"], receipt="receipt:x",
+                    evidence=["a.py"], standing="BUILT", witnessed_by=None))
+            finally:
+                commands._context = original_context
+                settlement.record_closure = original_record
+
+            self.assertEqual(1, code, "a refused record must refuse the close")
+            events = [entry.get("event") for entry
+                      in commands.store.read(store_dir, commands.store.LEASES_LOG)]
+        self.assertNotIn("close", events, "the closure was appended despite a refused record")
+
+
 if __name__ == "__main__":
     unittest.main()
-
-
-class ClosureOrdering(unittest.TestCase):
-    """The committed record is written before the closure is appended to the log."""
-
-    def test_an_unwritable_record_leaves_the_lease_held(self) -> None:
-        """Found by injecting a write failure: the log said COMPLETED and no record existed.
-
-        Appending first marks the lease closed in a log that travels with no clone while
-        the record a clone can read does not exist, and nothing reconciles the two.
-        """
-        source = (Path(__file__).resolve().parents[1] / "sovlease" / "commands.py").read_text(
-            encoding="utf-8")
-        # Scoped to cmd_close's own body: cmd_take appends to the same log earlier in the
-        # file, and a first version of this test read that occurrence and failed the
-        # correct implementation.
-        start = source.index("def cmd_close(")
-        body = source[start:source.index("\ndef ", start)]
-        write_at = body.index("settlement.record_closure(candidate")
-        append_at = body.index("store.append(directory, store.LEASES_LOG")
-        self.assertLess(write_at, append_at,
-                        "the settlement record must be written before the close is appended")
-        policy = (Path(__file__).resolve().parents[1] / "sovlease" / "settlement.py").read_text(
-            encoding="utf-8")
-        self.assertIn("SETTLEMENT_UNWRITABLE", policy)
-        self.assertIn("SETTLEMENT_ALREADY_RECORDED", policy)

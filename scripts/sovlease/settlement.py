@@ -98,9 +98,13 @@ def write(lease: dict[str, Any], root: Path, *, now: datetime | None = None) -> 
     entry = record(lease, now=now)
     directory = root / SETTLEMENTS
     directory.mkdir(parents=True, exist_ok=True)
-    stem = f"{entry['closed_at'][:10]}-{_slug(str(entry['lease_id'] or 'lease'))}"
-    path = directory / f"{stem}.json"
-    if path.exists():
+    slug = _slug(str(entry["lease_id"] or "lease"))
+    path = directory / f"{entry['closed_at'][:10]}-{slug}.json"
+    # Any date, not just today's: a stem carrying the date let the same lease be recorded
+    # again the next day with a different receipt and a higher standing, unrefused.
+    existing = sorted(directory.glob(f"*-{slug}.json"))
+    if existing:
+        path = existing[0]
         standing = json.loads(path.read_text(encoding="utf-8"))
         if _comparable(standing) == _comparable(entry):
             return path
@@ -126,4 +130,6 @@ def record_closure(lease: dict[str, Any], root: Path) -> tuple[Path | None, dict
         return None, {"code": "SETTLEMENT_ALREADY_RECORDED", "message": str(refusal)}
     except OSError as error:
         return None, {"code": "SETTLEMENT_UNWRITABLE",
-                      "message": f"{error}. The lease is still held; nothing was recorded."}
+                      "message": f"{type(error).__name__}: {error.strerror or 'write failed'}"
+                                 f" under {SETTLEMENTS.as_posix()}. The lease is still "
+                                 "held; nothing was recorded."}

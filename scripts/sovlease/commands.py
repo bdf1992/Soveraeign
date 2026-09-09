@@ -209,7 +209,7 @@ def _report(directory: Path, lease: dict[str, Any], as_json: bool) -> int:
 
 def cmd_close(args: argparse.Namespace) -> int:
     """Declare closure with evidence, refusing the claim the record cannot support."""
-    _, directory, _ = _context(args.name)
+    root, directory, _ = _context(args.name)
     leases = store.leases(directory)
     lease = leases.get(args.lease)
     if lease is None:
@@ -232,7 +232,7 @@ def cmd_close(args: argparse.Namespace) -> int:
     # Written before the closure is appended: a failure here leaves the lease HELD and
     # nothing recorded, rather than a log marking it COMPLETED with no record a clone
     # can read. See sovlease/settlement.py for the refusals.
-    written, defect = settlement.record_closure(candidate, Path.cwd())
+    written, defect = settlement.record_closure(candidate, root)
     if defect is not None:
         _emit([defect], args.as_json, f"REFUSED {defect['code']}: {defect['message']}")
         return 1
@@ -241,7 +241,7 @@ def cmd_close(args: argparse.Namespace) -> int:
                   "closure_evidence": candidate["closure_evidence"]})
     detail = f"{args.lease} closed at {args.standing}"
     if written is not None:
-        detail += f"; settlement recorded at {written.relative_to(Path.cwd()).as_posix()}"
+        detail += f"; settlement recorded at {written.relative_to(root).as_posix()}"
     _emit(candidate, args.as_json, detail)
     return 0
 

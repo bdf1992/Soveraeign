@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import json
+import re
 import subprocess
 
 from sovaccept import seats as registry
@@ -29,10 +30,15 @@ def load(root: Path, packet_id: str) -> dict:
     what is still waiting, but it stays readable: the packet is the evidence the
     owner acted against and outlives the acting.
     """
+    if not re.fullmatch(r"A[0-9]+", packet_id):
+        raise ValueError("PACKET_INCOMPLETE: invalid packet identifier")
     for folder in ("acceptance", "acceptance/accepted"):
         path = root / folder / f"{packet_id}.json"
         if path.is_file():
-            return json.loads(path.read_bytes().decode("utf-8"))
+            packet = json.loads(path.read_bytes().decode("utf-8"))
+            if not isinstance(packet, dict) or packet.get("packet_id") != packet_id:
+                raise ValueError("PACKET_INCOMPLETE: packet content does not identify the selected id")
+            return packet
     raise FileNotFoundError(f"no packet {packet_id} in acceptance/ or acceptance/accepted/")
 
 
@@ -43,7 +49,7 @@ def _actor(actor: dict | None) -> str:
     return f"{actor['actor_id']} ({actor['actor_kind']})"
 
 
-def render(packet: dict) -> str:
+def render(packet: dict, reviewed: str | None = None) -> str:
     """The owner-facing presentation of one finished result."""
     subject = packet["subject"]
     lines = [
@@ -82,10 +88,14 @@ def render(packet: dict) -> str:
         "    STRIKE    the claim is withdrawn from the record entirely",
         "    REDIRECT  the result stands as evidence; the work turns elsewhere",
         "",
-        f"    $ python scripts/sov_accept.py accept {packet['packet_id']} \\",
-        f"          --seat {packet['accepted_by_seat']} --actor <the actor holding it>",
-        RULE,
     ]
+    if reviewed:
+        lines += [f"    $ python scripts/sov_accept.py accept {packet['packet_id']} \\",
+                  f"          --seat {packet['accepted_by_seat']} --actor <the actor holding it> \\",
+                  f"          --review {reviewed}"]
+    else:
+        lines.append("    Read-only presentation; no current review token.")
+    lines.append(RULE)
     return "\n".join(lines)
 
 
@@ -132,24 +142,13 @@ def refusals(root: Path, packet: dict, action: str, seat_id: str,
 
 
 def record(root: Path, packet: dict, action: str, seat_id: str, actor_id: str,
-           when: str, note: str | None) -> dict:
-    """Append one owner action to the local acceptance ledger and return the entry."""
-    entry = {
-        "recorded_at": when,
-        "packet_id": packet["packet_id"],
-        "claim": packet["claim"],
-        "artifact": packet["subject"]["artifact"],
-        "action": action,
-        "presented_by_seat": packet["presented_by_seat"],
-        "accepted_by_seat": seat_id,
-        "claim_type": packet["claim_type"],
-        "actor_id": actor_id,
-        "note": note,
-        "effect_class": "RECORD_LOCAL",
-        "standing_change_lands_in": packet["subject"]["artifact"],
-    }
-    ledger = root / ".local" / "acceptance" / "ledger.ndjson"
-    ledger.parent.mkdir(parents=True, exist_ok=True)
-    with ledger.open("a", encoding="utf-8", newline="\n") as handle:
-        handle.write(json.dumps(entry, sort_keys=True) + "\n")
-    return entry
+           when: str, note: str | None, reviewed: str | None = None) -> dict:
+    """Validate and durably record, or return the receipt for an identical retry.
+
+    The packet is reloaded inside the transaction. A caller's stale dict cannot
+    supply the content being accepted or bypass the CLI's checks.
+    """
+    from sovaccept import actions
+
+    return actions.record(root, packet["packet_id"], action, seat_id, actor_id,
+                          when, note, reviewed)

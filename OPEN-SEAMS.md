@@ -98,31 +98,47 @@ These seams are not carried into the gap. Their closing evidence already exists;
 
 `contracts/SUCCESSOR-PREP.md` is the gap synthesis of the surviving residue. `STATUS.yaml` remains the machine source for current phase state.
 
-### S31 · Work cannot be requested into the node — CARRIED
+### S31 · No producer puts work in front of a session — CARRIED
 
 `contracts/phase-1-5-phase-ii-horizon.md` draws the commissioning circuit as Definition,
-Request, Agenda, Queue/Custody/Lease, and onward. `python scripts/sov_session.py console`
-projects `sources: (none)` and `queues: (none)`, and nothing anywhere writes into either.
-No Request object and no Agenda object exist. `scripts/sov_ticket.py` reads a ticket
-export produced by the GitHub registrar under `adapters/github/`, and nothing carries those
-tickets to a session. Work therefore reaches a participant only because a person tells it,
-which is the oral history `P15-X1` forbids, at the front of the circuit whose exit clause
-forbids it. Measured 2026-09-08 by carrying one concern around the circuit by hand. No
-implementation may resolve this by treating a human prompt as a Request, which would make
-the clause unfalsifiable.
+Request, Agenda, Queue/Custody/Lease, and onward. A session can declare its own sources and
+queues: `python scripts/sov_session.py register --source S --queue Q` populates both, and
+`console` then projects them, so the projection is not inert. What does not exist is anything
+that puts work there which the session did not name itself. No Request object and no Agenda
+object exist. `scripts/sov_ticket.py` reads a ticket export produced by the GitHub registrar
+under `adapters/github/`, and nothing carries those tickets to a session. So a participant
+still learns what to do only from whoever launched it, which is the oral history `P15-X1`
+forbids, at the front of the circuit whose exit clause forbids it. Measured 2026-09-08 by
+carrying one concern around the circuit by hand; corrected 2026-09-09 after an independent
+reading showed the first wording, "nothing anywhere writes into either", was false and
+disproved in one command. No implementation may resolve this by treating a human prompt, or
+a session's own registration, as a Request.
 
-### S32 · Nothing ever writes a Finding or a receipt — CARRIED
+### S32 · The Finding and the receipt are shaped at the edges and never in the Record — CARRIED
 
-`contracts/finding.schema.json` specifies a Finding and requires `frozen_at`. Across the
-tree the token `finding_schema` appears in exactly two files: that schema and
-`conformance/fixtures/commissioning/evidence-contract-cases.json`. No instance exists and
-no code constructs one. `contracts/receipt.schema.json` requires fifteen fields, and
-exactly one object in the tree carries all fifteen —
-`bindings/mcp/observations/journey-02-receipt.json`, a binding demonstration. No operation
-in this repository has ever emitted a receipt. `conformance/commissioning.py` grades
-`P15-Q2.3` by reading `projections_frozen_before_sharing` as a boolean out of an `observed`
-mapping, so the freeze `P15-X2` requires is asserted to the oracle and performed by nothing.
-Distinct from S29, which is a contradiction between a schema and a gate; here the
-contracts are coherent and nothing writes them. Measured 2026-09-08. No implementation
-may resolve this by writing a conforming fixture and calling the contract exercised.
+`contracts/finding.schema.json` specifies a Finding and requires `frozen_at`. No Finding
+instance is checked in anywhere: `finding_schema` appears in the schema and in
+`conformance/fixtures/commissioning/evidence-contract-cases.json`, and in
+`.claude/workflows/sov-loop.js`, which shapes one at runtime and gates on
+`finding.finding_schema === 'soveraeign-finding/v1'`. So the contract is exercised by a
+harness workflow and no Finding reaches the Record, where `P15-X2` needs it.
 
+`contracts/receipt.schema.json` requires fifteen fields. Two artifacts carry all fifteen:
+`contracts/fixtures/receipt.fixtures.json`, which is a positive and defeating pair, and
+`bindings/mcp/observations/journey-02-receipt.json`, which
+`bindings/mcp/observe_journey_02.py` really emits - it runs an operation under an issued
+grant, digests the body and writes it. That is an emitted receipt, not a hand-authored
+sample. What no service operation does is emit one into the operational Record as part of
+its own settlement, which is what `AGENTS.md` requires of a consequential transition.
+
+`conformance/commissioning.py` grades `P15-Q2.4` by reading `projections_frozen_before_sharing`
+as a boolean out of an `observed` mapping, so the freeze is asserted to the oracle and
+performed by nothing.
+
+Distinct from S29, which is a contradiction between a schema and a gate; here the contracts
+are coherent and the writing happens at a binding and a workflow rather than at a
+settlement. Measured 2026-09-08. Corrected 2026-09-09: the first wording claimed no
+operation had ever emitted a receipt, that exactly one object satisfied the schema, and
+that `finding_schema` appeared in exactly two files. An independent reading disproved all
+three and they are struck. No implementation may resolve this by writing a conforming
+fixture and calling the contract exercised.

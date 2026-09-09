@@ -150,6 +150,19 @@ class Ownership(Sandbox):
         self.assertEqual("repository style",
                          (styles / "communications.md").read_text(encoding="utf-8"))
 
+    def test_no_file_it_replaces_is_replaced_without_a_copy_kept(self):
+        """The broad sentence, over both kinds of file this tool writes."""
+        styles = self.user / "output-styles"
+        styles.mkdir()
+        (styles / "communications.md").write_text("operator style", encoding="utf-8")
+        self.seed(json.dumps({"model": "operator settings"}))
+        self.run_bootstrap()
+        for directory, needle in ((self.user, "operator settings"),
+                                  (styles, "operator style")):
+            kept = [q for q in directory.glob("*.sov-bootstrap-backup*")
+                    if needle in q.read_text(encoding="utf-8")]
+            self.assertEqual(1, len(kept), needle)
+
     def test_bytes_this_tool_wrote_are_not_kept_again(self):
         self.run_bootstrap()
         self.assertTrue(store.is_own_output(self.user, "settings.json", self.settings))
@@ -326,6 +339,12 @@ class TheStateFile(Sandbox):
         self.assertTrue(seen, "no mode was set at all")
         self.assertTrue(all(mode == 0o600 for mode in seen), [oct(m) for m in seen])
         self.assertEqual(0o600, store.state_path(self.user).stat().st_mode & 0o777)
+
+    def test_the_state_file_is_not_backed_up(self):
+        """It is this tool's own record, so it is the one file with no copy kept."""
+        self.run_bootstrap()
+        store.save_state(self.user, {"settings.json": "sha256:changed"})
+        self.assertEqual([], sorted(self.user.glob(".sov-bootstrap-state.json.*")))
 
     def test_keys_this_tool_did_not_write_are_carried_forward(self):
         store.state_path(self.user).write_text(
@@ -537,6 +556,81 @@ class EntryShapes(Sandbox):
         result = self.run_bootstrap()
         self.assertTrue(result["hooks"]["SessionStart"])
         self.assertEqual("keep", result["hooks"]["Stop"])
+
+
+# Each sentence in .claude/README.md that promises behaviour, and the case that
+# demonstrates it. Reword or delete the sentence and the first case below fails;
+# delete or rename the case and the second one does.
+CLAIMS = {
+    "It writes nothing unless `CLAUDE_CODE_REMOTE` is `true`":
+        "TheGuardsEffect.test_a_run_that_is_not_remote_writes_nothing",
+    "It carries forward every key and every hook entry in an existing":
+        "ForeignSettings.test_foreign_keys_and_events_survive",
+    "No file it replaces is replaced without a copy kept beside it":
+        "Ownership.test_no_file_it_replaces_is_replaced_without_a_copy_kept",
+    "never reusing a name already taken":
+        "Ownership.test_a_name_already_taken_is_never_reused",
+    "never keeping bytes already held beside the file":
+        "HostileUserDirectory.test_bytes_already_held_under_an_indexed_name_are_not_held_again",
+    "Files are compared as bytes":
+        "BytesNotText.test_a_crlf_file_is_not_mistaken_for_its_lf_twin",
+    "a file it cannot decode still deduplicates":
+        "BytesNotText.test_a_file_that_is_not_utf8_is_held_aside_only_once",
+    "its bytes are kept under `settings.json.unparsed`":
+        "TheUnparsedPath.test_a_run_against_an_unparseable_file_keeps_its_bytes",
+    "A copy carries the mode of what it copied":
+        "AsideCopyPermissions.test_the_aside_copy_does_not_widen_the_mode_of_what_it_copies",
+    "A path that is not a regular file is refused rather than replaced":
+        "HostileUserDirectory.test_a_target_that_is_not_a_regular_file_is_refused_rather_"
+        "than_replaced",
+    "and never read":
+        "HostileUserDirectory.test_a_fifo_settings_file_does_not_block_the_run",
+    "Keys in it that this tool did not write are carried forward":
+        "TheStateFile.test_keys_this_tool_did_not_write_are_carried_forward",
+    "and it is not backed up":
+        "TheStateFile.test_the_state_file_is_not_backed_up",
+    "It knows what it wrote by recording each write's digest in that state file":
+        "Ownership.test_bytes_this_tool_wrote_are_not_kept_again",
+    "A file that is a symlink is written through rather than replaced":
+        "Replacement.test_a_symlinked_settings_file_is_written_through",
+    "It leaves out the `PreToolUse` and `PostToolUse` path-claim hooks":
+        "DeclaredRoster.test_no_path_claim_hook_is_registered",
+    "It decides what belongs to this repository by path component, not by substring":
+        "SiblingRepositories.test_a_sibling_whose_name_extends_this_one_keeps_its_hooks",
+}
+
+
+class ThePromisedBehaviour(unittest.TestCase):
+    """Every guarantee the README makes names the case that demonstrates it.
+
+    Three of the five refusals this module exists because of were a sentence
+    here that the code did not support, and nothing graded the sentence. A
+    clarity review does not and never claimed to: it keeps a claim intact
+    through a rewrite, it does not test the claim. This is what tests it.
+
+    What it reaches: a sentence that is reworded or deleted while the behaviour
+    stays, and a case that is deleted or renamed while the sentence stays. What
+    it does not reach: a sentence whose named case is weak. Only mutating the
+    implementation grades that, and the record of which mutations were run and
+    caught lives in the commit messages, not here.
+    """
+
+    def readme(self) -> str:
+        text = (ROOT / ".claude" / "README.md").read_text(encoding="utf-8")
+        return " ".join(text.split())
+
+    def test_every_claim_is_stated_in_the_readme(self):
+        text = self.readme()
+        for fragment in CLAIMS:
+            self.assertIn(" ".join(fragment.split()), text, fragment)
+
+    def test_every_claim_names_a_case_that_exists(self):
+        for fragment, case in CLAIMS.items():
+            owner_name, method = case.rsplit(".", 1)
+            owner = globals().get(owner_name)
+            self.assertIsNotNone(owner, f"{fragment!r} names missing class {owner_name}")
+            self.assertTrue(callable(getattr(owner, method, None)),
+                            f"{fragment!r} names missing case {case}")
 
 
 class RepositoryResolution(unittest.TestCase):

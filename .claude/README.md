@@ -454,8 +454,17 @@ lacks here.
   `/repos/Soveraeign-fork` is not inside `/repos/Soveraeign`; a substring test
   says it is, and the first version deleted all four of a sibling clone's hook
   entries while reporting success. That is trap T3 arriving through a path rather
-  than a standing token. `scripts/tests/test_remote_session_setup.py` holds that
-  case and the ones for an unparseable settings file and the guard.
+  than a standing token.
+
+Every guarantee above names the case that demonstrates it, in the `CLAIMS` table
+in `scripts/tests/test_remote_session_setup.py`. Reword or delete one of these
+sentences and a case fails; delete or rename a case and another one does. Three
+of the five refusals this section exists because of were a sentence here that the
+code did not support, and nothing graded the sentence. A `clarity` review does
+not grade it and never claimed to: it carries a claim intact through a rewrite,
+which is a different job. What the table does not reach is a sentence whose named
+case is weak; only mutating the implementation grades that, and which mutations
+were run lives in the commit messages.
 
 ### Known gaps
 

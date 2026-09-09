@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "soveraeign-acceptance-review/v1",
+  "description": "The exact packet and single local subject presented for a fresh owner decision. It records identity, not authority or standing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["review_schema", "packet_id", "packet_digest", "subject", "review_digest"],
+  "properties": {
+    "review_schema": {"const": "soveraeign-acceptance-review/v1"},
+    "packet_id": {"type": "string", "pattern": "^A[0-9]+$"},
+    "packet_digest": {"$ref": "#/$defs/digest"},
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact", "digest"],
+      "properties": {
+        "artifact": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "review_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

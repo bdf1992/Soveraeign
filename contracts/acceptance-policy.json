@@ -5,7 +5,8 @@
     "SDLC.md",
     "STATUS.yaml",
     "decisions/0045-acceptance-not-approval.md",
-    "decisions/0020-owner-seat-topology.md"
+    "decisions/0020-owner-seat-topology.md",
+    "decisions/0105-acceptance-binds-reviewed-state.md"
   ],
   "note": "The owner gate is acceptance of a finished, evidenced result. It is not permission to begin. Owner is a seat, not a person: owner(X) is the seat one edge up, the seat that issued X's grant and settles X's receipts (decisions/0020). Acceptance therefore happens at whatever height the work actually reached, not at the root by default. This file states machine-checkably which work needs no owner act at all, which transitions may still wait and for exactly which reason, and what a presented result must contain. It grants no authority: an owner action is still taken by the seat that holds it.",
   "owner_gate": "acceptance",
@@ -63,15 +64,28 @@
     "ACCEPTANCE_SEAT_CANNOT_SETTLE": "The accepting seat's settles list does not contain the claim's type.",
     "SELF_DIRECTION_PRESENTED": "A seat presented its own bounded execution choice for acceptance. It decides that itself.",
     "UNOCCUPIED_SEAT": "The accepting seat has no recorded occupant, so no actor can take the action.",
-    "ALREADY_ACTED": "The packet has already been acted on. A second action would overwrite a recorded owner act; a changed mind is a new packet, not a rewritten one."
+    "ALREADY_ACTED": "The packet has already been acted on. A second action would overwrite a recorded owner act; a changed mind is a new packet, not a rewritten one.",
+    "REVIEW_REQUIRED": "A fresh action needs the review token printed by present.",
+    "STALE_REVIEW": "The packet or subject does not match the reviewed state.",
+    "REVIEW_SUBJECT_UNAVAILABLE": "The subject is not one readable file inside the repository.",
+    "ACCEPTANCE_BUSY": "Another process is recording a decision; retry.",
+    "ACCEPTANCE_LEDGER_INVALID": "The existing ledger cannot be read completely; recording is refused."
   },
   "ledger": ".local/acceptance/ledger.ndjson",
-  "ledger_note": "Owner actions append to a local ledger. The ledger is a record of what the owner did; the standing change it authorises still lands in the owning governing document by an ordinary edit.",
+  "ledger_note": "Owner actions preserve the exact existing ledger bytes and append one complete decision using an OS lock and atomic replacement. Each new decision retains its packet and review identity. An exact retry returns the original receipt without another write. Standing and external consequences remain separate transitions.",
   "acceptance_resolves_through": "contracts/seat-registry.json",
   "acceptance_rule": "A result presented by seat X is accepted by owner_seat(X) and by no other seat. Ownership is one edge up and does not chain: the root seat accepts what the control seat presents, and never reaches past it to accept a worker's report. A work seat settles nothing above its own execution and presents nothing to itself.",
   "settles_required": {
     "JUDGEMENT": "A claim about product intent, naming, a boundary, or a phase gate. Only a seat whose settles list contains JUDGEMENT may accept it.",
     "VERIFICATION": "A claim that a declared check held. Any owning seat whose settles list contains VERIFICATION may accept it."
   },
-  "self_direction": "A seat decides its own work: what to inspect, which legal operation to attempt, how to sequence reversible changes, when to abandon a failed line. That decision needs no packet and no owner act, and a seat that presents one for acceptance is refused by SELF_DIRECTION_PRESENTED. Only a claim that binds a seat other than the presenter travels upward."
+  "self_direction": "A seat decides its own work: what to inspect, which legal operation to attempt, how to sequence reversible changes, when to abandon a failed line. That decision needs no packet and no owner act, and a seat that presents one for acceptance is refused by SELF_DIRECTION_PRESENTED. Only a claim that binds a seat other than the presenter travels upward.",
+  "review": {
+    "schema": "contracts/acceptance-review.schema.json",
+    "token": "SHA-256 over canonical review identity before adding review_digest; identity binds the whole canonical packet and exact subject file bytes.",
+    "required_for": "Every fresh owner action; archived packets remain readable without a token.",
+    "retry": "Same packet id, review token, action, seat, actor and note returns the original receipt. Timestamp is not request identity.",
+    "legacy": "Existing unpinned ledger entries and archived packets block reuse of their ids; no historical pin is invented.",
+    "subject": "One existing repository-local file. Descriptive or multi-document historical subjects remain readable but require a concrete presentation for a fresh action."
+  }
 }

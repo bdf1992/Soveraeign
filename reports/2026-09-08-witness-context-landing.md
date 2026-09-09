@@ -270,8 +270,44 @@ Each preserved unedited on `claude/witness-context-discovery-runas1`:
 
 ## Terminal
 
-Not landed. **Held at an `ACCEPTANCE_SEAM`**, one independent observation short: the
-eighth reading is commissioned against `3c9b298` and has not returned. `acceptance/A25.json`
-and `decisions/0105` are presented to `seat:root` for the two things this session cannot
-settle — the shape of the skill tree, and a grant whose scope cannot express the change it
-admits.
+**Not landed. Held at the grant's own evidence precondition**, and the refusal was run
+rather than assumed:
+
+```
+$ python scripts/sov_land.py land-candidate --candidate .local/candidates/<frozen>.json \
+    --observation reports/observations/...-observation-21.json --actor sov --target main
+REFUSED: OBSERVATION_MISSING: the observation reads 'DISSENTED', not CONFIRMED
+```
+
+`grant:standing-landing-loop` requires `verify` PASS, `lint` PASS, and an independent
+observation from a participant that did not build the change. The first two are measured at
+the frozen commit in a clean worktree and both pass. The third does not exist: twenty-one
+independent readings were commissioned and every one dissented. The gate is not waivable by
+the participant it refuses, and no observation here was written by anyone but the reader
+that produced it.
+
+What the record holds instead of a landing:
+
+- `7de6e86` on this branch, frozen, base `64fe985`, forty-two paths, every one inside the
+  grant's admitted prefixes. `verify` PASS and `lint` PASS measured at that commit.
+- A hundred and one constructions in `scripts/tests/fixtures/witness-context-defeats.json`,
+  each declaring the refusal it must produce, each fired, run in both directions.
+- Twenty-one observation records under `reports/observations/`, none of them this
+  session's own reading of its own work.
+
+**On why the readings did not converge.** Each one was commissioned to attack the artifact
+and it found real defects every time — the last six all instances of one failure, a boundary
+question this package answered in two places. The repairs were real and each is pinned by a
+case. But a reading commissioned to find a defeat, against a guard whose subject is prose
+assembled by a language it does not execute, will keep finding one; the surface is not
+finite in the way a corpus is. Nothing in the loop said when a reading's dissent should
+narrow the claim instead of extending the work, and nothing bounded how many readings a
+concern may spend. That is a gap in the loop, not in any of the readings, and it belongs in
+`SDLC.md` rather than here.
+
+**What is presented rather than landed.** `acceptance/A25.json` and `decisions/0105` go to
+`seat:root` for the two things this session cannot settle: the shape of the skill tree, and
+a grant whose scope cannot express the change it admits. To those this terminal adds a
+third, which the record now evidences twenty-one times over: a landing gate that requires a
+confirming observation, and a loop with no rule for when a dissent is answered by narrowing
+the claim rather than by another round.

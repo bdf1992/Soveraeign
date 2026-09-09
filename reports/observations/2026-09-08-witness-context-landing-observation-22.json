@@ -1,0 +1,83 @@
+{
+  "observation_schema": "soveraeign-participant-observation/v1",
+  "observation_id": "obs:witness-context-landing:22",
+  "observer_id": "claude-opus-5/sov-witness@2026-09-09T12:40Z#22",
+  "contributed_to_build": false,
+  "verdict": "CONFIRMED",
+  "candidate_commit": "54d0209ff1d6e0cf88de54d8e530b0e148cd7aab",
+  "candidate_tree": "d149c953d569cf4fa067046a680708869f4aae83",
+  "base_commit": "64fe9856dabf679a79ebbc36a07a68b56e1f4a46",
+  "concern": "concern:harness/witness-context",
+  "method": {
+    "independence": "Three detached worktrees pinned by SHA, each removed afterwards; nothing written to the repository. The shared checkout moved during the reading and the verdict is attested to the commit, not to that checkout (trap T6).",
+    "own_method": [
+      "Verified the SHA correction rather than accepting it: the amended commit's tree equals the previous one, its parent is the declared base, and the diff between them is zero bytes.",
+      "Re-ran both gates and every driver against a fresh worktree at the corrected commit rather than relying on the readings carrying.",
+      "Wrote an own driver against sovprompts.audit.violations rather than trusting the test suite's verdict.",
+      "Re-demonstrated the cost the repaired docstring predicts, to check the docstring against the behaviour."
+    ]
+  },
+  "observed": {
+    "checks": [
+      {
+        "command": "python scripts/verify.py",
+        "exit_code": 0,
+        "note": "PASS, 64 checks"
+      },
+      {
+        "command": "python scripts/lint.py",
+        "exit_code": 0
+      }
+    ],
+    "scope": "42 paths against the base, all under scripts/ and .claude/, none outside the ten admitted prefixes and none excluded. The delta from the previously graded commit is exactly three paths."
+  },
+  "statements": [
+    {
+      "id": 1,
+      "holds": true,
+      "measured": "101 cases, ids exactly 1..101, no no-op mutation, 0 failing to fire a violation containing their own expects, and every anchor matching exactly one place in its pristine file."
+    },
+    {
+      "id": 2,
+      "holds": true,
+      "measured": "violations() over all 23 workflow files returns []."
+    },
+    {
+      "id": 3,
+      "holds": true,
+      "measured": "verify and lint both exit 0 at the corrected commit."
+    },
+    {
+      "id": 4,
+      "holds": true,
+      "measured": "61 refusal fragments, 0 uncovered, 8 register entries, 0 stale, 0 exempt-but-fired. Register entry 8 now records the mechanism measured rather than a gate that does not fire; the five delimiter-opening slices were rebuilt at this tree and each reads cleanly, and masked() was confirmed never to introduce a plus."
+    },
+    {
+      "id": 5,
+      "holds": true,
+      "measured": "Block-by-block equality exact: 9 blocks, 9 keys, counts 0,2,0,0,0,3,2,0,4 on both sides. The frame is rendered through the same resolution as its dispatch, and its rendering is a literal prefix of both dispatches' delivered text with zero splices after it. The docstring names the quantity accurately, disclaims the one it is not, and states the coupling cost, which was re-demonstrated at this tree.",
+      "note": "This is the clause the previous reading dissented on. The claim was repaired, not the code."
+    },
+    {
+      "id": 6,
+      "holds": true,
+      "measured": "Carried unchanged: the diff over bindings.py, the workflows, and the landing modules between the previously graded commit and this one is zero paths. 853 caps and schema tokens plus 1849 arbitrary string literals, 0 convictions."
+    },
+    {
+      "id": 7,
+      "holds": true,
+      "measured": "Carried unchanged on identical bytes. All three new landing refusals fire on their defeating construction and stay silent on their near-miss positives; observation_basis returns only SUPPLIED_AND_RESOLVED or DECLARED_ONLY."
+    }
+  ],
+  "residuals": [
+    "The refusal message a reader meets still uses the wording the docstring now disavows: it says a block 'hands the evaluator' N values where the accurate account, given in the comment, is that it renders N marked values after resolution. Not a falsification, since the statement speaks only about the docstring, but it is the surface a reader meets first.",
+    "D02's mutation is order-dependent: its also_replace creates a second copy of its replace anchor. Fully determined by the fixture's fixed order and the case fires its expects in both orders.",
+    "The earlier commit objects on this concern carry an author and committer identity of attacker <a@b.c>, left in the shared config by an earlier attack run. The landed commit is clean and is the only one in the range.",
+    "Verification budget debt unchanged and attributed, not a refusal."
+  ],
+  "judgement_items": [
+    "Whether a resolved-count tripwire coupled to bindings outside the frame is the quantity the release gate intends. Now documented rather than resolved: the docstring states the cost and names retuning as the intended response, which is a defensible engineering settlement inside the builder's authority and the owner seat's to accept or not.",
+    "Later branch commits add files under reports/observations/, which is outside the grant's admitted paths. The landing targets the candidate commit alone; those paths are presented rather than landed."
+  ],
+  "standing_supported": "BUILT -> WITNESSED"
+}

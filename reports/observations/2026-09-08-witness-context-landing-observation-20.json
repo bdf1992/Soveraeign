@@ -1,0 +1,72 @@
+{
+  "observation_schema": "soveraeign-participant-observation/v1",
+  "observation_id": "obs:witness-context-landing:20",
+  "observer_id": "claude-opus-5/sov-witness@2026-09-09T07:00Z#20",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "candidate_commit": "f7cd21e001eb29b969a7b47a100b82587eb65ead",
+  "candidate_tree": "7b5fad57d859062fcaf839c1fc0595bdc4ea838f",
+  "base_commit": "64fe9856dabf679a79ebbc36a07a68b56e1f4a46",
+  "concern": "concern:harness/witness-context",
+  "method": {
+    "independence": "Own detached worktree at the pinned commit; tree hash re-read after both verify runs and after lint, unchanged. Every defeat run through the full gate on a committed clean worktree. Nothing in the repository edited.",
+    "own_method": [
+      "Re-derived the corpus result rather than reading the test's verdict.",
+      "Enumerated the places the package answers one question twice and compared each pair on every workflow.",
+      "Measured FRAME_SPLICES as values handed over, not only as markers.",
+      "Constructed the mutation each UNREACHABLE entry claims a gate pre-empts."
+    ]
+  },
+  "observed": {
+    "checks": [
+      {
+        "command": "python scripts/verify.py (run 1)",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/verify.py (run 2, T6)",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts/lint.py",
+        "exit_code": 0
+      },
+      {
+        "command": "each of the four test modules",
+        "exit_code": 0
+      }
+    ],
+    "scope": "42 files. No undeclared path, no declared-but-unchanged path, all under scripts/ and .claude/, none touching excluded_paths. sov-federation.js is unchanged and correctly not declared."
+  },
+  "root_cause": "render._literals balanced a parenthesised group on masked source while dispatch.expression_spans balanced the same group on raw prompt text; _literals also had a regex case and refused backticks where expression_spans had neither. The fifth instance of the pattern, inside the pair the commit made 'the same walk'.",
+  "defeats": [
+    {
+      "id": "N1",
+      "shows": "The two splice-counting walks do not agree.",
+      "mutation": "In sov-conformance.js, a witness prompt opening `('PRIOR REPORT, authoritative :) ' + JSON.stringify(buildResults) + ' ') + 'Zqx. ' +` - an unmatched close-paren inside a string literal, invisible to the mask and counted by the raw scan.",
+      "result": "node --check 0; verify 0; lint 0; violations over the whole tree []. The account reaches the evaluator at character 31 and the demotion at 225; markers 2, spans 4, so the inspected slice does not contain the account at all."
+    },
+    {
+      "id": "N2",
+      "shows": "A prompt built by a class method is neither followed nor refused.",
+      "mutation": "`class Brief { static t(){ return 'PRIOR REPORT, authoritative: ' + JSON.stringify(buildResults) + ' ' } }` with the witness prompt opening `Brief.t() +`.",
+      "result": "dispatch._member_source asks written_into for 'Brief', finds nothing for a class declaration, returns None, and the call stays an opaque expression. verify 0; lint 0; violations []."
+    }
+  ],
+  "reproduced": [
+    "All 89 corpus cases fire, each on the refusal it declares; seven fire on the readability branch and all seven declare it.",
+    "FRAME_SPLICES matches the frame block by block, counted as values and as markers.",
+    "The two walks agree on all 30 live witness prompts in the pristine tree.",
+    "Reflect.apply, array index, computed member, default parameter, Proxy, computed agentType, options-via-spread, .map and .concat frame blocks, a spread array element, an object getter, and a two-hop helper chain are all refused - the two-hop chain better than the account claims."
+  ],
+  "residuals": [
+    "derives_from_agent_result is not free of false positives: the bare word `witness` convicts in sov-conformance.js, as does `plan`. Nothing ships on the pristine tree, but it means the position rule's verdict over desynced text was coincidence rather than measurement.",
+    "frames.rendered hardcodes the block separator while _parse_join reads the real one - another pair answering one question differently. FRAME_SPLICES never counts the separator, which the frame hands an evaluator eight times.",
+    "Position-rule reach unreproduced: measured 8 of 120 splices inspected, where the account states three of eighty-nine. Neither figure reproduces.",
+    "Six constructions built to reach three UNREACHABLE entries returned no violation at all, which is the first defeat rather than register evidence.",
+    "Prose countermanding through a join separator with no spliced value produced no violation."
+  ],
+  "judgement_items": [],
+  "standing_supported": "OPEN -> BUILT",
+  "standing_reason": "The artifact exists, is coherent, and its declared checks run green under my own hand. BUILT -> WITNESSED is refused: two constructions falsify claims the account states positively, both at exit 0 on committed clean worktrees."
+}

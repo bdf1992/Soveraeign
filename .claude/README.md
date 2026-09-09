@@ -400,26 +400,33 @@ A session on the web or a phone attaches every repository under one parent
 directory and starts there, one level above all of them. Project settings are
 discovered from the working directory downward, so `.claude/settings.json` is
 never read on those hosts: the Communications output style is not applied and
-not one hook above is registered. Nothing is wrong with the file; it is simply
-out of scope, and the upward walk cannot help because there is nothing below the
+not one hook above is registered. Nothing is wrong with the file. It is out of
+scope, and the upward walk cannot reach it, because there is nothing below the
 starting directory to walk up from.
 
-`.claude/bootstrap/remote-session-setup.sh` closes that gap from the other side.
-An environment setup script runs it before the session starts; it copies the
-output styles to `~/.claude/output-styles/` and registers the read-only hooks in
-`~/.claude/settings.json` with absolute paths. User settings apply whatever the
-working directory is, which is the property the project file lacks here.
+`.claude/bootstrap/remote-session-setup.sh` installs the same configuration into
+the container's `~/.claude` instead. An environment setup script runs it before
+the session starts. It copies the output styles to `~/.claude/output-styles/`,
+selects Communications, and registers hooks by absolute path. User settings
+apply whatever the working directory is, which is the property the project file
+lacks here.
 
 - It writes nothing unless `CLAUDE_CODE_REMOTE` is `true`, so it cannot reach a
   workstation, where the project file already works.
-- It backs up an existing `~/.claude/settings.json` once and preserves every key
-  and every hook entry that does not point into this repository.
-- It registers the three reporting hooks and the per-turn prose reminder, and
-  deliberately omits the `PreToolUse` path-claim hooks. Those exist to stop two
-  live sessions clobbering one shared tree; a remote container holds its own
-  clone, so registering them buys no protection and can refuse a legitimate
-  write. That is the same wedge the paragraph above describes, arriving by a
-  different road.
+- It backs up an existing `~/.claude/settings.json` once, and preserves every
+  key and every hook entry that does not point into this repository.
+- It registers six entries: itself and the three `SessionStart` readings, the
+  two `SessionEnd` closers, and the per-turn prose reminder. It registers itself
+  because a setup script may run before the repository is cloned and the
+  published documentation does not say which way round. A run that finds no
+  clone still writes the registration, whose paths resolve when the hooks fire;
+  the `SessionStart` entry then re-runs it with the clone present. An output
+  style is read when a session starts, so on that path it applies from the next
+  session rather than the first.
+- It leaves out the `PreToolUse` path-claim hooks. Those stop two live sessions
+  clobbering one shared tree. A remote container holds its own clone, so
+  registering them protects against nothing here and can refuse a legitimate
+  write, which is the failure the section above records.
 
 ### Known gaps
 

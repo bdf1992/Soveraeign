@@ -134,17 +134,31 @@ def merge_hooks(existing: dict, repo: Path) -> dict:
     return merged
 
 
+def resolve_repo(argument: str | None) -> Path | None:
+    """Resolve the repository root, ignoring an argument that is not one.
+
+    Registered as a hook, this script is called as `python <script> <mode>`, so
+    argv[1] is a mode word and not a path. Its own location is the reliable
+    answer; an argument is honoured only when it names a directory that holds a
+    `.claude`.
+    """
+    if argument:
+        candidate = Path(argument).resolve()
+        if (candidate / ".claude").is_dir():
+            return candidate
+    here = Path(__file__).resolve().parents[2]
+    return here if (here / ".claude").is_dir() else None
+
+
 def main() -> int:
     """Install styles and hooks, or explain why nothing was installed."""
     if not is_remote():
         print("sov-bootstrap: not a remote session, nothing written.")
         return 0
 
-    repo = Path(sys.argv[1] if len(sys.argv) > 1 else __file__).resolve()
-    if repo.is_file():
-        repo = repo.parents[2]
-    if not (repo / ".claude").is_dir():
-        print(f"sov-bootstrap: no .claude under {repo}, nothing written.")
+    repo = resolve_repo(sys.argv[1] if len(sys.argv) > 1 else None)
+    if repo is None:
+        print("sov-bootstrap: could not resolve the repository root, nothing written.")
         return 0
 
     user = Path.home() / ".claude"

@@ -1,0 +1,86 @@
+{
+  "observation_schema": "soveraeign-participant-observation/v1",
+  "observation_id": "obs:witness-context-landing:14",
+  "observer_id": "claude-opus-5/sov-witness@2026-09-08T23:55Z#14",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "candidate_commit": "293a4cc2c39990786184a705911d311f5d92aa8f",
+  "candidate_tree": "9aa3717d99e8ebbdfbcf9d0aecb0ec00354a2d02",
+  "base_commit": "64fe9856dabf679a79ebbc36a07a68b56e1f4a46",
+  "concern": "concern:harness/witness-context",
+  "schema_conformance": {
+    "state": "NOT_SCHEMA_VALID",
+    "note": "The seam every observation in this series records: contracts/participant-observation.schema.json sets additionalProperties false and admits none of the six top-level fields the landing gate reads."
+  },
+  "method": {
+    "independence": "Own read-only worktree detached at the pinned commit, git status --porcelain empty at start and finish. Did not grade the shared working tree, which carried 21 paths ahead of the subject. No helper recruited.",
+    "own_method": [
+      "Pinned commit, parent and tree hash before reading anything, and confirmed a single parent.",
+      "Ran verify.py twice against trap T6, and lint.py, recording each command's own exit code.",
+      "Ran all 60 corpus cases through audit.violations directly rather than reading the test's verdict.",
+      "Measured derives_from_agent_result over 104 schema-shaped constants and ten inert expressions, to test the resolver in the direction that convicts correct code.",
+      "Compared the frame's rendering against the delivered bytes of both loop dispatches.",
+      "Used node to confirm which binding JavaScript actually resolves for each constructed defeat."
+    ]
+  },
+  "observed": {
+    "checks": [
+      {
+        "command": "python3 scripts/verify.py",
+        "exit_code": 0,
+        "note": "PASS: 64 checks in 28.561s"
+      },
+      {
+        "command": "python3 scripts/verify.py (re-run, trap T6)",
+        "exit_code": 0
+      },
+      {
+        "command": "python3 scripts/lint.py",
+        "exit_code": 0
+      },
+      {
+        "command": "python3 -m unittest scripts.tests.test_witness_context_defeats scripts.tests.test_witness_context_provenance",
+        "exit_code": 0,
+        "note": "17 tests"
+      }
+    ],
+    "scope": "40 files. No undeclared path, no declared-but-unchanged path, no path outside the ten grant prefixes and no excluded_paths entry touched.",
+    "accounting_nit": "The account says eight modules under scripts/sovprompts/; nine files were added, eight modules plus __init__.py."
+  },
+  "reproduced": [
+    "All 60 corpus cases fire, and all 60 fire on the refusal they declare; none passes only on an unrelated violation. Ids run D1..D60 contiguous.",
+    "derives_from_agent_result is free of false positives on the pristine tree: 104 schema-shaped constants across 23 workflows, zero flagged; ten inert expressions all False. The BUILD_SCHEMA collision is genuinely closed.",
+    "Identity holds as a fact about the committed artifact: both sov-loop.js dispatches deliver text beginning with the 3385-character frame rendering.",
+    "The landing-gate tightening is real and doubly cased: four new OBSERVER_NOT_INDEPENDENT refusals, each with a positive and a defeating case."
+  ],
+  "defeats": [
+    {
+      "id": "H1",
+      "shows": "The identity claim is not enforced: the frame reader binds the first textual declaration and never asks which binding executes.",
+      "mechanism": "render._body searches for the first `function witnessFrame(`. The package refuses a twice-written binding everywhere else - calls._declared_type refuses a name written twice and a duplicate agentType key - and that rule was never applied to the frame.",
+      "mutation": "`witnessFrame = function (...)` reassigned at top level after the declaration, returning a prompt with no subject pin that names the build report the evaluator's oracle.",
+      "result": "violations(live()) returned none; both test modules exit 0; python3 scripts/verify.py exit 0 with PASS: 64 checks. node confirms the reassignment is what a call resolves to."
+    },
+    {
+      "id": "H2",
+      "shows": "The same asymmetry through hoisting.",
+      "mechanism": "A second `function witnessFrame(...)` after the first; ECMA-262 hoisting takes the last, and every rule grades the first.",
+      "mutation": "A duplicate frame declaration returning a prompt that takes the builder's subject and scope as given.",
+      "result": "violations(live()) returned none; both test modules exit 0. node confirms the duplicate declaration is what resolves."
+    }
+  ],
+  "residuals": [
+    "Eleven refusal messages in scripts/sovprompts/ have no case in the corpus and none in the provenance module that fires them. The package's own docstrings invoke SDLC.md gate 3 against undemonstrated refusals.",
+    "The weaker rule is narrower than the claim: the demotion requirement fires only when a prompt splices at least one expression, so three of thirty delivered prompts carry no demotion sentence and pass - sov-backlog.js, sov-compression.js and sov-epic.js, each splice-free.",
+    "The disclaimed limit reproduces as stated: a prompt opening on the demotion and countermanding it in later prose is not refused. Recorded, not counted against the claim.",
+    "authority.observation_basis reads a caller-supplied boolean as a declaration. Disclosed in the docstring, structurally justified because the kernel reads no files, and it gates nothing - it labels a ledger row. A seam, not a defect.",
+    "Advisory: DEBT no wall-clock grade at 28.561s, 13 checks over their ceiling. Attributed debt, does not refuse (decisions/0081)."
+  ],
+  "judgement_items": [
+    "The frame reader binds by first textual declaration while the package refuses a twice-written binding everywhere else. Is closing that asymmetry required inside this concern before WITNESSED, or accepted as named debt under SDLC.md gate 4?",
+    "Eleven refusal messages ship with no defeating case. Does SDLC.md gate 3 bind a refusal the package wrote pre-emptively, or only ones a reading actually defeated?",
+    "Should a splice-free witness prompt be exempt from carrying the demotion sentence, given three shipped dispatches rely on that exemption?"
+  ],
+  "standing_supported": "OPEN -> BUILT",
+  "standing_reason": "The work is built, self-tested and green, and most of what it claims reproduces under independent measurement. BUILT -> WITNESSED is withheld: the claim's load-bearing element, that sov-loop.js is held to identity, is falsified by two constructions that keep verify.py at exit 0 while the evaluator receives no subject pin and the build report as its oracle."
+}

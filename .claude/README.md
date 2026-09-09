@@ -394,6 +394,33 @@ hook.
   everything rather than holding a path forever.
 - Every refusal names its escape.
 
+### The remote hosts do not read this file
+
+A session on the web or a phone attaches every repository under one parent
+directory and starts there, one level above all of them. Project settings are
+discovered from the working directory downward, so `.claude/settings.json` is
+never read on those hosts: the Communications output style is not applied and
+not one hook above is registered. Nothing is wrong with the file; it is simply
+out of scope, and the upward walk cannot help because there is nothing below the
+starting directory to walk up from.
+
+`.claude/bootstrap/remote-session-setup.sh` closes that gap from the other side.
+An environment setup script runs it before the session starts; it copies the
+output styles to `~/.claude/output-styles/` and registers the read-only hooks in
+`~/.claude/settings.json` with absolute paths. User settings apply whatever the
+working directory is, which is the property the project file lacks here.
+
+- It writes nothing unless `CLAUDE_CODE_REMOTE` is `true`, so it cannot reach a
+  workstation, where the project file already works.
+- It backs up an existing `~/.claude/settings.json` once and preserves every key
+  and every hook entry that does not point into this repository.
+- It registers the three reporting hooks and the per-turn prose reminder, and
+  deliberately omits the `PreToolUse` path-claim hooks. Those exist to stop two
+  live sessions clobbering one shared tree; a remote container holds its own
+  clone, so registering them buys no protection and can refuse a legitimate
+  write. That is the same wedge the paragraph above describes, arriving by a
+  different road.
+
 ### Known gaps
 
 - A clobber by a session that is no longer live is not caught. A post-write

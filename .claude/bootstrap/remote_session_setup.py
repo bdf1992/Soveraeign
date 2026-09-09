@@ -19,24 +19,25 @@ depending on the working directory. User settings apply whatever the working
 directory is, which is the property the project file lacks here.
 
 What it refuses. It writes nothing unless `CLAUDE_CODE_REMOTE` is `true`, so it
-cannot reach a workstation. It backs up an existing `~/.claude/settings.json`
-once before its first write, and it preserves every key and every foreign hook
-entry it does not own.
+cannot reach a workstation. It preserves every key and every hook entry that does
+not run a script inside this repository, and it decides that by path component
+rather than by substring: `/repos/Soveraeign-fork` is not inside
+`/repos/Soveraeign`, and a substring test says it is. That is trap T3 in
+`CLAUDE.md`, and reaching for `in` here deleted a sibling repository's hooks in
+test.
 
-Which hooks. The three that only read and report: the console continuity
-briefing, the live-session registry's own registration, and the stranded-work
-reading, plus the per-turn prose reminder. The `PreToolUse` path-claim hooks are
-deliberately left out. They exist to stop two live sessions clobbering one shared
-working tree; a remote container holds its own clone, so registering them here
-would buy no protection and could refuse a legitimate write.
+Which hooks. The three `SessionStart` readings, the two `SessionEnd` closers, the
+per-turn prose reminder, and itself: seven entries. It leaves out the
+`PreToolUse` and `PostToolUse` path-claim hooks. Those exist to stop two live
+sessions clobbering one shared working tree and to record what each one holds; a
+remote container has its own clone, so registering them protects against nothing
+here and the `PreToolUse` pair can refuse a legitimate write.
 
-It also registers itself, first. A setup script may run before the repository is
-cloned and the published documentation does not say which way round. If it runs
-first, this script finds no styles to copy and writes only the hook registration,
-whose paths resolve when the hooks fire rather than when they are written. The
-`SessionStart` entry then re-runs it with the clone present, which installs the
-styles. An output style is read when a session starts, so on that path it applies
-from the next session rather than the first.
+Why it registers itself. Not to survive a missing clone: the entry point lives
+inside the clone, so a setup script that runs before cloning never reaches this
+file at all. It registers itself so that `~/.claude` follows the repository
+across the environment cache, which is reused for about seven days without
+re-running the setup script.
 
 It must never break a session. Any failure prints a short note and exits 0.
 """
@@ -48,11 +49,12 @@ import json
 import os
 import shutil
 import sys
+import time
 
 STYLE_NAME = "Communications"
 BACKUP_SUFFIX = ".sov-bootstrap-backup"
 
-# event -> (hook script name, mode, timeout seconds, status message)
+# event -> (hook script path under .claude/, mode, timeout seconds, status message)
 HOOKS: dict[str, list[tuple[str, str, int, str]]] = {
     "SessionStart": [
         ("bootstrap/remote_session_setup.py", "start", 15, "Refreshing the remote setup"),
@@ -75,13 +77,45 @@ def is_remote() -> bool:
     return os.environ.get("CLAUDE_CODE_REMOTE", "").strip().lower() == "true"
 
 
-def load_json(path: Path) -> dict:
-    """Read a JSON object, returning an empty one for a missing or unreadable file."""
+def read_settings(path: Path) -> tuple[dict, bool]:
+    """Read a settings object.
+
+    Returns the object and whether the file on disk was intact. A missing file is
+    intact and empty. A file that does not parse, or parses to something other
+    than an object, is not: its keys cannot be preserved, so the caller keeps the
+    bytes aside rather than discarding them silently.
+    """
+    if not path.exists():
+        return {}, True
     try:
         loaded = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError):
-        return {}
-    return loaded if isinstance(loaded, dict) else {}
+        return {}, False
+    return (loaded, True) if isinstance(loaded, dict) else ({}, False)
+
+
+def inside(value: object, repo: Path) -> bool:
+    """True when a string names a path inside this repository, by path component."""
+    if not isinstance(value, str) or not value:
+        return False
+    try:
+        return Path(value).resolve().is_relative_to(repo)
+    except (OSError, RuntimeError, TypeError, ValueError):
+        return False
+
+
+def ours(entry: object, repo: Path) -> bool:
+    """True when a registered hook entry runs a script inside this repository."""
+    if not isinstance(entry, dict):
+        return False
+    for hook in entry.get("hooks") or []:
+        if not isinstance(hook, dict):
+            continue
+        if inside(hook.get("command"), repo):
+            return True
+        if any(inside(arg, repo) for arg in hook.get("args") or []):
+            return True
+    return False
 
 
 def install_styles(repo: Path, target: Path) -> int:
@@ -120,18 +154,58 @@ def hook_entries(repo: Path, event: str) -> list[dict]:
     return entries
 
 
-def foreign(entry: object, repo: Path) -> bool:
-    """True when a registered hook entry belongs to someone other than this repository."""
-    return str(repo) not in json.dumps(entry)
-
-
 def merge_hooks(existing: dict, repo: Path) -> dict:
-    """Replace only this repository's hook entries, preserving anyone else's."""
+    """Replace only this repository's hook entries, preserving everyone else's."""
     merged = {key: value for key, value in existing.items() if key not in HOOKS}
     for event in HOOKS:
-        kept = [e for e in existing.get(event, []) if foreign(e, repo)]
+        kept = [e for e in existing.get(event) or [] if not ours(e, repo)]
         merged[event] = kept + hook_entries(repo, event)
     return merged
+
+
+def is_own_output(settings: dict, repo: Path) -> bool:
+    """True when a settings object looks like one this script wrote and nobody edited."""
+    if settings.get("outputStyle") != STYLE_NAME:
+        return False
+    hooks = settings.get("hooks")
+    if not isinstance(hooks, dict) or not hooks:
+        return False
+    if set(hooks) - set(HOOKS):
+        return False
+    entries = [e for event in hooks.values() for e in event or []]
+    return bool(entries) and all(ours(e, repo) for e in entries)
+
+
+def preserve(settings_path: Path, existing: dict, intact: bool, repo: Path) -> str | None:
+    """Keep the current file aside before it is replaced, and say where it went.
+
+    A file that did not parse is always kept, under a stamped name, because its
+    keys cannot be merged forward. An intact file is backed up once, and never
+    when it is this script's own previous output: a backup of that would look
+    like the state before the tool ran and would not be it.
+    """
+    if not settings_path.is_file():
+        return None
+    if not intact:
+        stamp = time.strftime("%Y%m%dT%H%M%S")
+        kept = settings_path.with_name(f"{settings_path.name}.unparsed-{stamp}")
+        shutil.copyfile(settings_path, kept)
+        return kept.name
+    backup = settings_path.with_name(settings_path.name + BACKUP_SUFFIX)
+    if backup.exists() or is_own_output(existing, repo):
+        return None
+    shutil.copyfile(settings_path, backup)
+    return backup.name
+
+
+def write_atomic(path: Path, text: str) -> None:
+    """Write a file through a temporary sibling so an interrupted run cannot truncate it."""
+    tmp = path.with_name(f"{path.name}.tmp-{os.getpid()}")
+    try:
+        tmp.write_text(text, encoding="utf-8", newline="\n")
+        os.replace(tmp, path)
+    finally:
+        tmp.unlink(missing_ok=True)
 
 
 def resolve_repo(argument: str | None) -> Path | None:
@@ -163,22 +237,23 @@ def main() -> int:
 
     user = Path.home() / ".claude"
     settings = user / "settings.json"
-    backup = settings.with_name(settings.name + BACKUP_SUFFIX)
-    if settings.is_file() and not backup.exists():
-        shutil.copyfile(settings, backup)
+    current, intact = read_settings(settings)
+    kept = preserve(settings, current, intact, repo)
+    if not intact:
+        print(f"sov-bootstrap: {settings.name} did not parse; its bytes are kept at {kept}.")
 
     styles = install_styles(repo, user / "output-styles")
 
-    current = load_json(settings)
     current["outputStyle"] = STYLE_NAME
-    current["hooks"] = merge_hooks(current.get("hooks", {}), repo)
+    current["hooks"] = merge_hooks(current.get("hooks") or {}, repo)
 
     user.mkdir(parents=True, exist_ok=True)
-    settings.write_text(json.dumps(current, indent=2) + "\n", encoding="utf-8", newline="\n")
+    write_atomic(settings, json.dumps(current, indent=2) + "\n")
 
+    total = sum(len(hook_entries(repo, event)) for event in HOOKS)
     events = ", ".join(f"{k} x{len(hook_entries(repo, k))}" for k in HOOKS)
     print(f"sov-bootstrap: style {STYLE_NAME} selected, {styles} style file(s) copied.")
-    print(f"sov-bootstrap: hooks registered from {repo} ({events}).")
+    print(f"sov-bootstrap: {total} hook entries registered from {repo} ({events}).")
     return 0
 
 

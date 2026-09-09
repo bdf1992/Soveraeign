@@ -415,18 +415,24 @@ lacks here.
   workstation, where the project file already works.
 - It backs up an existing `~/.claude/settings.json` once, and preserves every
   key and every hook entry that does not point into this repository.
-- It registers six entries: itself and the three `SessionStart` readings, the
-  two `SessionEnd` closers, and the per-turn prose reminder. It registers itself
-  because a setup script may run before the repository is cloned and the
-  published documentation does not say which way round. A run that finds no
-  clone still writes the registration, whose paths resolve when the hooks fire;
-  the `SessionStart` entry then re-runs it with the clone present. An output
-  style is read when a session starts, so on that path it applies from the next
-  session rather than the first.
-- It leaves out the `PreToolUse` path-claim hooks. Those stop two live sessions
-  clobbering one shared tree. A remote container holds its own clone, so
-  registering them protects against nothing here and can refuse a legitimate
-  write, which is the failure the section above records.
+- It registers seven entries: itself, the three `SessionStart` readings, the two
+  `SessionEnd` closers, and the per-turn prose reminder.
+- It leaves out the `PreToolUse` and `PostToolUse` path-claim hooks. Those stop
+  two live sessions clobbering one shared tree and record what each one holds. A
+  remote container has its own clone, so they protect against nothing here, and
+  the `PreToolUse` pair can refuse a legitimate write, which is the failure the
+  section above records.
+- It registers itself so that `~/.claude` follows the repository across the
+  environment cache, which is reused for about seven days without re-running the
+  setup script. It does not rescue a setup script that runs before the clone: the
+  entry point lives inside the clone, so nothing runs at all in that case, and an
+  earlier draft of this section claimed otherwise.
+- It decides what belongs to this repository by path component, not by substring.
+  `/repos/Soveraeign-fork` is not inside `/repos/Soveraeign`; a substring test
+  says it is, and the first version deleted all four of a sibling clone's hook
+  entries while reporting success. That is trap T3 arriving through a path rather
+  than a standing token. `scripts/tests/test_remote_session_setup.py` holds that
+  case and the ones for an unparseable settings file and the guard.
 
 ### Known gaps
 

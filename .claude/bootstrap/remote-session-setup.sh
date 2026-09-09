@@ -4,10 +4,13 @@
 # Host plumbing. `.claude/` holds no standing and grants no authority
 # (`AGENTS.md`, Local orchestration harness).
 #
-# Paste this into the environment's setup-script field, which finds the
-# repository wherever the host cloned it and does nothing when it is absent:
+# Paste this into the environment's setup-script field. It looks where the host
+# actually puts clones and does nothing when it finds none. On the Anthropic
+# hosted container the session user's home is /root while the repositories are
+# under /home/user, so a glob rooted at $HOME alone matches nothing there:
 #
-#   for s in "$HOME"/*/.claude/bootstrap/remote-session-setup.sh; do
+#   for s in /home/*/*/.claude/bootstrap/remote-session-setup.sh \
+#            "$HOME"/*/.claude/bootstrap/remote-session-setup.sh; do
 #     [ -f "$s" ] && bash "$s"
 #   done; true
 #

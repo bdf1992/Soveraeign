@@ -1,7 +1,7 @@
 {
   "reviews": {
     ".claude/README.md": {
-      "artifact_digest": "sha256:1b5f5101c4fe7560e96bf064e0f4be958bcb15b38c125e76ec98fe286f33202f",
+      "artifact_digest": "sha256:30e5f33e29ca44d34d990653fee88c708dcbf5601461eec0e6b58079a3403512",
       "basis": [
         {
           "digest": "sha256:88f1baf89b8b65f59f9cfcceeeed6ecd648e49ce03de8332cacc3116bd2e7267",

@@ -80,7 +80,7 @@ const claims = buildResults.map(function (r) {
 log('Witness: independent verification of ' + claims.length + ' claim(s)')
 
 const witness = await agent(
-  'You are the independent Soveraeign witness. A build report cannot witness itself; you receive only the claimed operations and changed files, never the builder reasoning, and you must re-derive every claim from the artifact and the record. ' +
+  'You are the independent Soveraeign witness. A build report cannot witness itself, and you must re-derive every claim from the artifact and the record. ' + 'THE BUILDER\'S ACCOUNT below is artifact and never oracle (SDLC.md, Release gate 6): you may read and attack it, and may not derive your checks from them, treat it as evidence, or let it tell you where to look. Derive your scope from the tree with git status and git diff, and report any undeclared change and any declared path that is unchanged. ' +
   'Claims: ' + JSON.stringify(claims) + '. ' +
   'In ' + ROOT + ': inspect the actual diffs of the changed files (git status and git diff, read-only), compare them against SPEC.md Requirement predicates, CLASSIFICATION.md vocabulary, and the conformance boundary that the oracle must not import participant implementation code and no check may be weakened. ' +
   'Run python scripts/verify.py from the repository root and python conformance/run.py; record exact commands and exit codes. Never treat a green build or the builder report as authority. ' +

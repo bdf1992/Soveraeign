@@ -74,6 +74,7 @@ const BUILD = {
     summary: { type: 'string' },
     checks_run: { type: 'array', items: { type: 'object', required: ['command', 'exit_code'], properties: { command: { type: 'string' }, exit_code: { type: 'integer' } } } },
     residuals: { type: 'array', items: { type: 'string' } },
+    helpers: { type: 'array', items: { type: 'string' } },
   },
 }
 
@@ -182,6 +183,62 @@ const LAND = {
   },
 }
 
+// SDLC.md, Release gate 6: an independent evaluator receives the contract, the claimed
+// invariants and the built artifact. The builder's tests and plan are part of that
+// artifact - readable, attackable, and never its evidence or its oracle. Both witness
+// paths below used to open with the Orchestrator's operation sentence, which put the
+// builder's framing in the oracle position the rule forbids. One producer builds the
+// frame now, and it carries the builder's account labelled as a thing to attack.
+function witnessFrame(concern, plan, built, review) {
+  const declared = (built.changed_paths || []).join(', ') || '(none declared)'
+  return [
+    'SUBJECT. Everything the builder supplies reaches you inside this frame, and all of it is artifact and never oracle (SDLC.md, Release gate 6): read it, attack it, and never derive your checks from it, treat it as evidence, or let it tell you where to look. '
+      + 'Pin it before you read anything: run `git rev-parse HEAD` and `git status --porcelain`, '
+      + 'and record both. The work is uncommitted at this point, so HEAD is the base and not the '
+      + 'subject; the subject is that base plus the working tree you are about to read, and naming '
+      + 'both is what makes your reading reproducible (AGENTS.md, Branch and commit strategy). Several sessions write this tree at once, so another session\'s file can turn a '
+      + 'gate red and a failure can resolve itself a minute later. Re-run once. A verdict over a tree that '
+      + 'moved underneath you is UNATTESTABLE, and saying so is the correct outcome rather than judging the blur.',
+    'SCOPE. Derive it, do not accept it. Run `git status` and `git diff` yourself and work from what the '
+      + 'tree shows. The builder declared it changed: ' + declared + '. Those paths may locate the work and '
+      + 'are not evidence. Compare them against what you found, '
+      + 'and report the delta in either direction as a finding - an undeclared change and a declared change '
+      + 'that is absent are both things the builder did not report.',
+    'CONTRACT. Resolve the owning contract, schema and fixtures from the paths that actually changed, not '
+      + 'from anyone\'s description of the work. Read SPEC.md and CLASSIFICATION.md for vocabulary. Every '
+      + 'consequential behaviour needs one case proving it works and one proving the refusal or failure it '
+      + 'promises; a claim with no defeating case cannot be witnessed, and that is worth saying out loud.',
+    'CHECKS. Run `python scripts/lint.py` and `python scripts/verify.py` yourself and record the real exit '
+      + 'codes. Then judge each check as well as its verdict: what bytes does it read, the artifact or a '
+      + 'report about the artifact? A check that reads a declaration where it could have measured is a '
+      + 'finding even when it happens to be right today. Note that verify exiting 0 means unchanged, never '
+      + 'qualified (CLAUDE.md, trap T2).',
+    'STATE. Check the state that will land, not only the state in front of you. Several orientation-snapshot '
+      + 'claims read committed bytes, so an uncommitted file is invisible to them and a green working tree '
+      + 'can go red the moment it lands. If the work is uncommitted, say which of your readings would '
+      + 'survive the commit and which you could not establish.',
+    'THE BUILDER\'S ACCOUNT, which is artifact and never oracle. Concern: ' + concern.concern + '. Operation '
+      + 'as the orchestrator framed it: ' + plan.operation + ' Summary as the builder reported it: '
+      + (built.summary || '(none)') + ' You may read these and attack them. You may not derive your checks '
+      + 'from them, treat them as evidence, or let them tell you where to look. Derive your checks from the '
+      + 'contract. A builder framing that turns out to be wrong about its own work is itself a finding.',
+    'INDEPENDENCE. Read the builder\'s declared helpers: ' + (built.helpers || []).join(', ') + '. A helper '
+      + 'that read or edited the change is inside '
+      + 'the build; its reading is not independent observation, and a report offering one as the witness is '
+      + 'refused rather than discounted (contracts/closure-ownership.json, HELPER_AS_WITNESS).',
+    'TERMINAL. Judge the terminal the builder claims. A concern reported as filed, ticketed or queued rather '
+      + 'than landed, presented, or held at a named seam is a residual you record, whatever the code does.',
+    'RECORD. Concern id ' + concern.concern_id + ', which you preserve: independence comes from the '
+      + 'evaluator/session relation and never from changing the concern. '
+      + (review && review.projection_as_of
+        ? 'Use this exact shared Record cutoff: ' + review.projection_as_of + '. The cutoff is projection '
+          + 'metadata, not the Orchestrator conclusion. '
+        : 'No common cutoff was supplied. Establish an exact Record cutoff yourself before writing any '
+          + 'observation; comparison remains a Record defect unless both real Findings exist. ')
+      + 'Do not read the Orchestrator Finding or the Controller expectation before freezing your own result.',
+  ].join('\n\n')
+}
+
 // Every agent this workflow spawns counts against the grant's budget, so the
 // count is carried to the gate rather than estimated there.
 let invocations = 0
@@ -232,7 +289,7 @@ const built = await agent(
   + 'Enumerate .claude/skills/ and load the relevant skill if one exists, then read AGENTS.md. Write the defeating case (' + plan.defeating_case + ') and prove it fails as declared before you call the work done. If you discover another concern, record a route with sov_session.py route; do not retarget this session. '
   + 'Run python scripts/lint.py and python scripts/verify.py from the repository root and report their real exit codes; do not report a check you did not run. '
   + 'Do not commit, merge, push, or edit decisions/ or STATUS.yaml. Do not witness your own work. '
-  + 'Return unchanged concern_id, every path changed, summary, checks with exit codes, residuals, and route ids for cross-concern work you sourced.',
+  + 'Return unchanged concern_id, every path changed, summary, checks with exit codes, residuals, route ids for cross-concern work you sourced, and helpers: every model or subagent you recruited that read or edited this change, because a helper inside the build cannot observe it.',
   { agentType: 'sov-worker', schema: BUILD, phase: 'Build', label: 'build:' + selected.domain })
 
 if (!built) {
@@ -270,13 +327,9 @@ let witnessed = null
 if (evidenceMode) {
   phase('Witness Review')
   invocations += 1
-  const cutoffInstruction = frozenFinding(orchestrationReview, 'PARTICIPANT_IN_WORK')
-    ? 'Use this exact shared Record cutoff: ' + orchestrationReview.projection_as_of + '. The cutoff is projection metadata, not the Orchestrator conclusion. '
-    : 'No common cutoff was supplied. Establish an exact Record cutoff yourself before writing any observation; comparison will remain a Record defect unless both real Findings exist. '
   witnessed = await agent(
-    'You are the independent evaluator of WORK under concern ' + selected.concern_id + '. Concern: ' + selected.concern + '. Operation: ' + plan.operation + '. Preserve the concern id; independence comes from evaluator/session relation, not changing the concern. ' +
-    'Use contracts/record-projection.schema.json and contracts/finding.schema.json. Inspect the exact repository state and governing contract/fixtures yourself. ' + cutoffInstruction +
-    'Do not read the worker conclusion, Orchestrator Finding, or Controller expectation before freezing your own result. Builder paths may locate the work but are not evidence. ' +
+    witnessFrame(selected, plan, built, orchestrationReview) +
+    'ASSIGNMENT. You are the independent evaluator of WORK. Use contracts/record-projection.schema.json and contracts/finding.schema.json. ' +
     'If a real WORK RecordProjection exists, freeze a fully contract-compatible Finding first, then write your independent observation JSON under reports/observations/; the observation write occurs after the Finding is frozen so it cannot enter its own evidence basis. Return status FINDING, projection_as_of, finding, and observation_file. ' +
     'If the projection/evidence cannot be reconstructed, write an observation that reports the work UNATTESTABLE, then return status UNATTESTABLE, the concrete Record defect, and observation_file with NO finding object. Never invent a projection id or substitute prose for Record evidence.',
     { agentType: 'sov-witness', schema: REVIEW_RESULT, phase: 'Witness Review', label: 'witness-review:' + selected.domain })
@@ -284,9 +337,8 @@ if (evidenceMode) {
   phase('Witness')
   invocations += 1
   witnessed = await agent(
-    'You are the independent observation for work you did not do and must not touch. Concern id: ' + selected.concern_id + '. Concern: ' + selected.concern + '. Preserve the concern id while keeping an independent session/evaluator relation. ' +
-    'The builder reports it changed: ' + (built.changed_paths || []).join(', ') + '. Treat that as a claim, not evidence. ' +
-    'Read git status and git diff yourself, read the owning contract and the defeating fixture, and run python scripts/verify.py and python scripts/lint.py observing the real exit codes. ' +
+    witnessFrame(selected, plan, built, null) +
+    'ASSIGNMENT. You are the independent observation for work you did not do and must not touch. ' +
     'Confirm the defeating case actually fails as declared; a fixture that passes when it should fail is a DISSENTED verdict, not a residual. ' +
     'Then write your observation to reports/observations/ as JSON with exactly these fields: observer_id (your agent label), contributed_to_build (false - and if that is not true, say so and set verdict DISSENTED), verdict (CONFIRMED or DISSENTED), concern, and checks. ' +
     'You must not edit, fix, build, or commit anything outside that one observation file. ' +

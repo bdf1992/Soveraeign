@@ -422,6 +422,12 @@ lacks here.
   is not mistaken for its LF twin and a file it cannot decode still deduplicates.
   A settings file that does not parse cannot have its keys carried forward, so
   its bytes are kept under `settings.json.unparsed` and the loss is reported.
+  A copy carries the mode of what it copied: `shutil.copyfile` creates at
+  `0666 & ~umask`, which left a world-readable copy of a `0600` settings file
+  beside it, permanently, and that file is where an API key helper lives.
+- A path that is not a regular file is refused rather than replaced, and never
+  read. A FIFO at `settings.json` blocked the run until the host killed the
+  hook; a device node there was replaced by a regular file with nothing kept.
 - The one file exempt is `.sov-bootstrap-state.json`, this tool's own record of
   what it wrote. Keys in it that this tool did not write are carried forward, and
   it is not backed up.

@@ -4,7 +4,7 @@ Host plumbing for `remote_session_setup.py`. `.claude/` holds no standing and
 grants no authority (`AGENTS.md`, Local orchestration harness).
 
 This module owns one hazard: every file this tool writes into `~/.claude` may
-already belong to somebody else. Four rules follow, and each was a defect a
+already belong to somebody else. Five rules follow, and each was a defect a
 witness found before it was a rule.
 
 Ownership is proven, never inferred. Each write records the digest of what it
@@ -27,9 +27,11 @@ Modes are carried and never widened. The temporary file is created private and
 raised to the target's mode only just before the rename, so the window exposes
 nothing the target did not. `Path.write_text` creates at `0666 & ~umask`, which
 left the full settings content readable at `0644` while the target was `0600`.
-Every write in this module goes through `write_private`, including this module's
-own state file: the first draft named that call as the bug and then made it,
-forty lines below the sentence naming it.
+Every write in this module creates its file private and raises it to the mode it
+should have, the aside copies and this module's own state file included. Two
+drafts got this wrong in the same way: one named `Path.write_text` as the bug and
+then called it, and one left `shutil.copyfile` making a permanently world-readable
+copy of a `0600` settings file, which is where an API key helper lives.
 
 Files are compared as bytes. Reading them as text folds CRLF into LF, so a file
 this tool had never seen matched one it had and was replaced with nothing kept,
@@ -47,7 +49,6 @@ from pathlib import Path
 import hashlib
 import json
 import os
-import shutil
 
 STATE_NAME = ".sov-bootstrap-state.json"
 BACKUP_SUFFIX = ".sov-bootstrap-backup"
@@ -66,6 +67,9 @@ def digest_of(path: Path) -> str | None:
     should not have and was replaced with nothing kept, the other had no digest and
     was copied aside again at every session start.
     """
+    if not path.is_file():
+        # A FIFO or a device node blocks a read for as long as the host allows.
+        return None
     try:
         return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
     except OSError:
@@ -81,6 +85,9 @@ def read_settings(path: Path) -> tuple[dict, bool]:
     """
     if not path.exists():
         return {}, True
+    if not path.is_file():
+        # Reading a FIFO here hung the tool until the host killed the hook.
+        return {}, False
     try:
         loaded = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError):
@@ -163,8 +170,22 @@ def keep_aside(user: Path, key: str, path: Path, intact: bool = True) -> str | N
     if held is not None and already_held(path, stem, held):
         return None
     kept = free_name(path, stem)
-    shutil.copyfile(path, kept)
+    copy_private(path, kept)
     return kept.name
+
+
+def copy_private(source: Path, target: Path) -> None:
+    """Copy a file's bytes, carrying its mode across.
+
+    `shutil.copyfile` does not copy permission bits: it creates at
+    `0666 & ~umask`. That left a world-readable copy of a `0600` settings file
+    beside it, permanently, where nothing narrows it again.
+    """
+    mode = source.stat().st_mode & 0o777
+    handle = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(handle, "wb") as stream:
+        stream.write(source.read_bytes())
+    os.chmod(target, mode)
 
 
 def write_private(path: Path, text: str, default_mode: int = 0o600) -> None:
@@ -175,6 +196,9 @@ def write_private(path: Path, text: str, default_mode: int = 0o600) -> None:
     """
     if path.is_symlink():
         path = path.resolve()
+    if path.exists() and not path.is_file():
+        # A device node or FIFO here was replaced by a regular file, nothing kept.
+        raise OSError(f"{path} is not a regular file")
     mode = path.stat().st_mode & 0o777 if path.is_file() else default_mode
     tmp = free_name(path, f"{path.name}.tmp-{os.getpid()}")
     handle = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)

@@ -28,8 +28,9 @@ rather than by substring: `/repos/Soveraeign-fork` is not inside
 `CLAUDE.md`, and reaching for `in` here deleted a sibling repository's hooks in
 test.
 
-Which hooks. The three `SessionStart` readings, the two `SessionEnd` closers, the
-per-turn prose reminder, and itself: seven entries. It leaves out the
+Which hooks. The `SessionStart` readings, the `SessionEnd` closers, the per-turn
+prose reminder, and itself; `HOOKS` below is the roster and `.claude/README.md`
+states the count, where a case grades it against this file. It leaves out the
 `PreToolUse` and `PostToolUse` path-claim hooks. Those exist to stop two live
 sessions clobbering one shared working tree and to record what each one holds; a
 remote container has its own clone, so registering them protects against nothing
@@ -49,7 +50,6 @@ from __future__ import annotations
 from pathlib import Path
 import json
 import os
-import shutil
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -121,6 +121,9 @@ def install_styles(repo: Path, user: Path) -> tuple[int, list[str]]:
     target = user / "output-styles"
     if not source.is_dir():
         return 0, []
+    # A regular file sitting where this directory belongs raises here. main()
+    # catches it and still writes the settings; a second handler here would be
+    # unreachable, and an unreachable branch is worse than none.
     target.mkdir(parents=True, exist_ok=True)
     copied, kept = 0, []
     for style in sorted(source.glob("*.md")):
@@ -208,20 +211,30 @@ def main() -> int:
     user = Path.home() / ".claude"
     user.mkdir(parents=True, exist_ok=True)
     settings = user / "settings.json"
-    current, intact = read_settings(settings)
-    styles, kept_styles = install_styles(repo, user)
-    current["outputStyle"] = STYLE_NAME
-    current["hooks"] = merge_hooks(current.get("hooks") or {}, repo)
-    kept = replace_file(user, "settings.json", settings, json.dumps(current, indent=2) + "\n",
-                        intact)
+    styles, kept = 0, []
+    try:
+        styles, kept = install_styles(repo, user)
+    except OSError as exc:
+        print(f"sov-bootstrap: output styles not installed ({type(exc).__name__}).")
 
-    aside = list(kept_styles)
+    try:
+        current, intact = read_settings(settings)
+        current["outputStyle"] = STYLE_NAME
+        current["hooks"] = merge_hooks(current.get("hooks"), repo)
+        aside = replace_file(
+            user, "settings.json", settings, json.dumps(current, indent=2) + "\n", intact)
+    except OSError as exc:
+        print(f"sov-bootstrap: settings not written ({type(exc).__name__}).")
+        for name in kept:
+            print(f"sov-bootstrap: what was there is kept at {name}.")
+        return 0
+
     if not intact:
-        where = f"its bytes are kept at {kept}" if kept else "nothing could be kept"
+        where = f"its bytes are kept at {aside}" if aside else "nothing could be kept"
         print(f"sov-bootstrap: {settings.name} did not parse; {where}.")
-    elif kept:
-        aside.append(kept)
-    for name in aside:
+    elif aside:
+        kept.append(aside)
+    for name in kept:
         print(f"sov-bootstrap: what was there is kept at {name}.")
 
     total = sum(len(hook_entries(repo, event)) for event in HOOKS)

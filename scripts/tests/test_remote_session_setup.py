@@ -20,6 +20,7 @@ import os
 import shutil
 import sys
 import tempfile
+import threading
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -418,6 +419,124 @@ class Guard(unittest.TestCase):
             self.assertEqual(expected, boot.is_remote(), value)
         os.environ.pop("CLAUDE_CODE_REMOTE", None)
         self.assertFalse(boot.is_remote())
+
+
+class AsideCopyPermissions(Sandbox):
+    """A backup of a secrets file is a secrets file."""
+
+    def test_the_aside_copy_does_not_widen_the_mode_of_what_it_copies(self):
+        """shutil.copyfile creates at 0666 & ~umask and never narrows again.
+
+        ~/.claude/settings.json holds apiKeyHelper and env. A 0600 original left
+        a world-readable copy of itself beside it, permanently.
+        """
+        old = os.umask(0)
+        self.addCleanup(os.umask, old)
+        for mode in (0o600, 0o640, 0o604):
+            self.seed(json.dumps({"env": {"KEY": f"secret-{mode}"}}))
+            os.chmod(self.settings, mode)
+            kept = store.keep_aside(self.user, "settings.json", self.settings)
+            self.assertEqual(mode, (self.user / kept).stat().st_mode & 0o777, oct(mode))
+
+
+class HostileUserDirectory(Sandbox):
+    """Whatever is already in ~/.claude, the session still gets configured or told."""
+
+    def test_a_file_where_the_styles_directory_belongs_does_not_stop_the_run(self):
+        (self.user / "output-styles").write_text("not a directory", encoding="utf-8")
+        result = self.run_bootstrap()
+        self.assertIn("SessionStart", result["hooks"])
+
+    def promptly(self, call):
+        """Run a call that must not block, failing rather than hanging the suite."""
+        done = []
+        worker = threading.Thread(target=lambda: done.append(call()), daemon=True)
+        worker.start()
+        worker.join(5)
+        self.assertFalse(worker.is_alive(), "the call blocked instead of returning")
+        return done[0]
+
+    def test_a_fifo_settings_file_does_not_block_the_run(self):
+        """Reading a FIFO hung the tool until the host killed the hook."""
+        os.mkfifo(self.settings)
+        self.assertEqual(({}, False), self.promptly(lambda: store.read_settings(self.settings)))
+        self.assertIsNone(self.promptly(lambda: store.digest_of(self.settings)))
+
+    def test_a_target_that_is_not_a_regular_file_is_refused_rather_than_replaced(self):
+        """A device node was silently replaced by a regular file, nothing kept."""
+        os.mkfifo(self.settings)
+        with self.assertRaises(OSError):
+            store.write_private(self.settings, "{}\n")
+        self.assertFalse(self.settings.is_file())
+
+    def test_a_third_distinct_file_gets_its_own_aside_name(self):
+        for content in ('{"a": 1}', '{"b": 2}', '{"c": 3}'):
+            self.seed(content)
+            store.keep_aside(self.user, "settings.json", self.settings)
+        kept = sorted(self.user.glob("settings.json.sov-bootstrap-backup*"))
+        self.assertEqual(3, len(kept))
+        self.assertEqual(3, len({p.read_text(encoding="utf-8") for p in kept}))
+
+    def test_bytes_already_held_under_an_indexed_name_are_not_held_again(self):
+        """Alternating contents grew without bound when the glob missed indexes."""
+        for content in ('{"a": 1}', '{"b": 2}', '{"a": 1}', '{"b": 2}'):
+            self.seed(content)
+            store.keep_aside(self.user, "settings.json", self.settings)
+        self.assertEqual(2, len(list(self.user.glob("settings.json.sov-bootstrap-backup*"))))
+
+    def test_the_same_unparsed_bytes_are_kept_once(self):
+        """The stable stem exists so this check can see its own siblings."""
+        for _ in range(4):
+            self.seed("not json at all")
+            store.keep_aside(self.user, "settings.json", self.settings, False)
+        self.assertEqual(1, len(list(self.user.glob("settings.json.unparsed*"))))
+
+
+class TheGuardsEffect(Sandbox):
+    """The predicate was graded; what it prevents was not."""
+
+    def test_a_run_that_is_not_remote_writes_nothing(self):
+        env = {"HOME": str(self.user.parent)}
+        old_home = os.environ.get("HOME")
+        old_remote = os.environ.pop("CLAUDE_CODE_REMOTE", None)
+        old_argv = sys.argv
+        os.environ.update(env)
+        sys.argv = ["remote_session_setup.py", str(self.repo)]
+        try:
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(0, boot.main())
+        finally:
+            sys.argv = old_argv
+            if old_home is None:
+                os.environ.pop("HOME", None)
+            else:
+                os.environ["HOME"] = old_home
+            if old_remote is not None:
+                os.environ["CLAUDE_CODE_REMOTE"] = old_remote
+        self.assertFalse(self.settings.exists())
+        self.assertFalse((self.user / "output-styles").exists())
+
+
+class EntryShapes(Sandbox):
+    """Hook entries arrive in shapes nobody promised."""
+
+    def test_an_entry_naming_a_repository_script_as_command_is_ours(self):
+        script = str(self.repo / ".claude" / "hooks" / "console_session.py")
+        self.assertTrue(boot.ours({"hooks": [{"type": "command", "command": script}]}, self.repo))
+
+    def test_an_entry_path_is_resolved_before_it_is_compared(self):
+        """A link from outside the repository still names a script inside it."""
+        link = self.base / "linked-hooks"
+        link.symlink_to(self.repo / ".claude" / "hooks")
+        script = str(link / "console_session.py")
+        self.assertFalse(Path(script).is_relative_to(self.repo), "the case proves nothing")
+        self.assertTrue(boot.ours({"hooks": [{"command": script}]}, self.repo))
+
+    def test_a_per_event_value_that_is_not_a_list_does_not_stop_the_run(self):
+        self.seed(json.dumps({"hooks": {"SessionStart": "nope", "Stop": "keep"}}))
+        result = self.run_bootstrap()
+        self.assertTrue(result["hooks"]["SessionStart"])
+        self.assertEqual("keep", result["hooks"]["Stop"])
 
 
 class RepositoryResolution(unittest.TestCase):

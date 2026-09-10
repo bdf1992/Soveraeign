@@ -141,13 +141,20 @@ class Store:
     def store_blob(self, data: bytes) -> tuple[str, Path]:
         """Put bytes in the content-addressed store; refuse if that address holds other bytes."""
         digest = sha256(data).hexdigest()
-        path = self.blobs / digest[:2] / digest
+        path = self.payload_path(digest)
         path.parent.mkdir(parents=True, exist_ok=True)
         if not path.exists():
             path.write_bytes(data)
         elif path.read_bytes() != data:
             raise PayloadIntegrityError("digest collision or corrupt blob")
         return digest, path
+
+    def payload_path(self, digest: str) -> Path:
+        """Resolve a SHA-256 digest within this store, never a historical locator."""
+        if (not isinstance(digest, str) or len(digest) != 64
+                or any(character not in "0123456789abcdef" for character in digest)):
+            raise PayloadIntegrityError("invalid payload digest")
+        return self.blobs / digest[:2] / digest
 
     def store_addressed_blob(self, data: bytes) -> tuple[str, str]:
         """Store bytes and return a portable CAS address plus digest."""
@@ -165,7 +172,7 @@ class Store:
             or address != f"cas:{digest}"
         ):
             raise PayloadIntegrityError("payload address and digest disagree")
-        path = self.blobs / hex_digest[:2] / hex_digest
+        path = self.payload_path(hex_digest)
         if not path.is_file():
             raise PayloadIntegrityError(f"missing addressed payload {address}")
         data = path.read_bytes()
@@ -180,8 +187,8 @@ class Store:
         ).fetchone()
         if version is None:
             raise KeyError(version_id)
-        expected_path = self.blobs / version["digest"][:2] / version["digest"]
-        if Path(version["blob_path"]) != expected_path or not expected_path.is_file():
+        expected_path = self.payload_path(version["digest"])
+        if not expected_path.is_file():
             raise PayloadIntegrityError(f"missing or displaced payload for {version_id}")
         data = expected_path.read_bytes()
         if sha256(data).hexdigest() != version["digest"] or len(data) != version["size"]:

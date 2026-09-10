@@ -42,7 +42,7 @@ Can the system tell generated output apart from accepted enterprise state?
 
 - `NONE`: generated output and accepted state are indistinguishable.
 - `PARTIAL`: proposals are marked and require an explicit acceptance step.
-- `FULL`: recording, admission, typed ratification, attestation, and current effectiveness
+- `FULL`: recording, admission, typed acceptance, attestation, and current effectiveness
   remain distinct.
 
 ### Provenance
@@ -116,7 +116,7 @@ and passes every check below.
 1. **Same-world parity.** Human and model interfaces resolve to the same authoritative
    transitions, constraints, standing, and receipts.
 2. **Typed authority.** Grants are scoped, revocable, attributable, and checked at the
-   operation. Verification authority cannot ratify judgement.
+   operation. Verification authority cannot accept judgement.
 3. **Independent observation.** The executor's report is not the success oracle.
 4. **Receipt completeness.** Admission, refusal, operation, failure, observation, and
    counteraction leave their required durable records.
@@ -194,5 +194,5 @@ substitutability are the stricter Soveraeign qualification.
 
 Exact score meanings, explicit assessment states, the all-`FULL` target bar, two-binding
 proof, and integration-loss sovereignty remain freeze-candidate policy until separately
-ratified. Do not present them as older settled policy merely because the checker implements
+accepted. Do not present them as older settled policy merely because the checker implements
 them.

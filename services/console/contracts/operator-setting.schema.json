@@ -16,6 +16,6 @@
     "set_by": {"type": "string", "minLength": 1},
     "set_at": {"type": "string", "format": "date-time"},
     "receipt_id": {"type": "string", "minLength": 1, "description": "Receipt of the setting change; a change is a new record, never an in-place rewrite."},
-    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+    "standing": {"enum": ["RECORDED", "ADMITTED", "ACCEPTED", "EFFECTIVE"]}
   }
 }

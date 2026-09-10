@@ -139,7 +139,7 @@ def _check_independent_observer(
 
 
 def _check_authority(request: dict[str, Any], entry: dict[str, Any]) -> Decision | None:
-    """Verification authority cannot ratify a judgement claim."""
+    """Verification authority cannot accept a judgement claim."""
     required = entry.get("requires_authority_type")
     if not required:
         return None

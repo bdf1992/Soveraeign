@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS retractions(
 
 
 class AssetService:
-    """The asset lifecycle: capture, propose, ratify, derive, observe, retract."""
+    """The asset lifecycle: capture, propose, accept, derive, observe, retract."""
 
     def __init__(self, root: str | Path, clock: Callable[[], float] = time.time,
                  operational_record: Any = None):
@@ -178,8 +178,8 @@ class AssetService:
                 "digest": digest, "receipt_id": receipt}
 
     def propose(self, asset_id: str, actor: str, payload: dict[str, Any],
-                required_authority: str = "ratify:judgement") -> str:
-        """Record a proposal. Recording claims nothing; ratification is separate."""
+                required_authority: str = "accept:judgement") -> str:
+        """Record a proposal. Recording claims nothing; acceptance is separate."""
         proposal = _id("proposal")
         self.db.execute("INSERT INTO proposals VALUES(?,?,?,?,?,?,?)",
                         (proposal, asset_id, actor, json.dumps(payload, sort_keys=True),
@@ -189,22 +189,22 @@ class AssetService:
         self.db.commit()
         return proposal
 
-    def ratify(self, proposal_id: str, actor: str) -> str:
-        """Ratify a recorded proposal under the authority it declared it needs."""
+    def accept(self, proposal_id: str, actor: str) -> str:
+        """Accept a recorded proposal under the authority it declared it needs."""
         proposal = self.db.execute("SELECT * FROM proposals WHERE id=?", (proposal_id,)).fetchone()
         if proposal is None:
             raise KeyError(proposal_id)
         self._require(actor, proposal["required_authority"], proposal["asset_id"],
                       "proposal", proposal_id)
         payload = json.loads(proposal["payload_json"])
-        self.db.execute("UPDATE proposals SET standing='RATIFIED' WHERE id=?", (proposal_id,))
+        self.db.execute("UPDATE proposals SET standing='ACCEPTED' WHERE id=?", (proposal_id,))
         relation = payload.get("relationship")
         if relation:
             relationship = _id("rel")
             self.db.execute("INSERT INTO relationships VALUES(?,?,?,?,?,?,?)",
                             (relationship, proposal["asset_id"], relation["predicate"],
                              relation["dst_asset"], proposal_id, "EFFECTIVE", _now()))
-        receipt = self._receipt("COMMITTED", "asset.ratify-proposal", "proposal",
+        receipt = self._receipt("COMMITTED", "asset.accept-proposal", "proposal",
                                 proposal_id, actor, {"asset_id": proposal["asset_id"]})
         self.db.commit()
         return receipt
@@ -258,7 +258,7 @@ class AssetService:
     # -- projections and reads --------------------------------------------
 
     def rebuild_projections(self, actor: str = "projector") -> dict[str, int]:
-        """Derive both views again from ratified records."""
+        """Derive both views again from accepted records."""
         return self.projections.rebuild(actor)
 
     def history(self, asset_id: str) -> list[dict[str, Any]]:

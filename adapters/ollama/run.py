@@ -6,7 +6,7 @@ Commands:
   ``parity BINDING_A BINDING_B``  the same operation under two materially different models
 
 Exit codes: 0 accepted, 2 refused with a reason code, 1 the input could not be read.
-An accepted result is not a grant, a witness, or a ratification. It says the run happened,
+An accepted result is not a grant, a witness, or a acceptance. It says the run happened,
 the record accounts for it, and the adapter's own checks admit that record.
 
 This command consumes resources on owner-owned hardware (effect class

@@ -101,7 +101,7 @@
     "standing": {
       "description": "Record standing per CLASSIFICATION.md, not the artifact lifecycle.",
       "type": "string",
-      "enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]
+      "enum": ["RECORDED", "ADMITTED", "ACCEPTED", "EFFECTIVE"]
     }
   },
   "allOf": [

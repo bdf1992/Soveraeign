@@ -2,7 +2,7 @@
 
 These are the participant's own tests. They establish `BUILT` evidence about local
 mechanics and are explicitly not independent of the code they exercise; `AGENTS.md`
-reserves `WITNESSED` for an independent path and `RATIFIED` for Bdo.
+reserves `WITNESSED` for an independent path and `ACCEPTED` for Bdo.
 
 Each declared behaviour has a positive case and a case proving the refusal. The
 defeating cases are the ones named in `services/console/conformance/` seeds:

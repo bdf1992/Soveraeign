@@ -7,7 +7,7 @@
     "subject": "the repair of the four in-concern findings from HARNESS-CLAIMS-WITNESS-1: contracts/harness-claims.json is now itself graded by scripts/sovharness/contract.py as a seventh kind SELFCLAIM, the observes tuples are widened, and the cold-start coverage claim is withdrawn",
     "verdict": "REPRODUCED_WITH_RESIDUALS",
     "standing_supported": "BUILT -> WITNESSED",
-    "standing_note": "An observation, not a settlement and not a ratification.",
+    "standing_note": "An observation, not a settlement and not a acceptance.",
     "supersedes": "reports/observations/2026-09-08-harness-claims-witness-observation.json, which attests 99b7942 and is not withdrawn. 99b7942 is an ancestor of this subject and everything attested there still holds; this record adds the delta and does not re-derive what did not change.",
     "candidate_commit": "73734561ee04f2c942abe84c29ef334b7b4f7433",
     "candidate_tree": "483386ed764e962b36d2f38aeeb80545cc7de2f1",

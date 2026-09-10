@@ -158,7 +158,7 @@ def _corpus_defects(path: Path) -> list[str]:
         if question.get("tier") not in GATES:
             out.append(f"{qid}: tier {question.get('tier')!r} is not one of {sorted(GATES)}")
         # The question text is the only field a participant is handed, and nothing checked
-        # whether the answer was sitting in it. "Is that grant RATIFIED?" expects RATIFIED.
+        # whether the answer was sitting in it. "Is that grant ACCEPTED?" expects ACCEPTED.
         asked, want = question.get("q"), question.get("expected")
         if (isinstance(asked, str) and isinstance(want, str) and len(want) > 3
                 and want.lower() in asked.lower()):

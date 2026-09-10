@@ -13,7 +13,7 @@
       "exit_code": 0
     },
     {
-      "command": "python scratchpad/attack2.py  # 26 paths graded end to end against contracts/standing-grants.json, status forced RATIFIED in memory only; all five previously-escaping paths now REFUSED, five legitimate in-scope paths still PERMITTED",
+      "command": "python scratchpad/attack2.py  # 26 paths graded end to end against contracts/standing-grants.json, status forced ACCEPTED in memory only; all five previously-escaping paths now REFUSED, five legitimate in-scope paths still PERMITTED",
       "exit_code": 0
     },
     {

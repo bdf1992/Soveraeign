@@ -1,7 +1,7 @@
 {
   "case_id": "WITNESS-2026-09-08-DEFINITION-RECURRENCE-P15-X4-PASS-4",
   "record_kind": "OBSERVATION",
-  "record_note": "An observation, not a settlement and not a ratification. Two things are recorded together and must not be conflated. Sections that read e898d06 are an independent witness: this participant did not build that revision and shares no session, container, host, model or working tree with the three passes that did. Sections that read f43ee9a are this participant's own build and are a build claim, not a witness. The repair is what a fresh reading found, so the reading and the repair could not be separated into two participants without discarding the reading.",
+  "record_note": "An observation, not a settlement and not a acceptance. Two things are recorded together and must not be conflated. Sections that read e898d06 are an independent witness: this participant did not build that revision and shares no session, container, host, model or working tree with the three passes that did. Sections that read f43ee9a are this participant's own build and are a build claim, not a witness. The repair is what a fresh reading found, so the reading and the repair could not be separated into two participants without discarding the reading.",
   "participant_id": "claude-opus-5/delegated-fresh-participant@2026-09-08/pass-4",
   "independence": {
     "contributed_to_build_of_subject": false,

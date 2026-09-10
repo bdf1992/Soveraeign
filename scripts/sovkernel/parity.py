@@ -80,10 +80,10 @@ KERNEL_FACTS = {
         },
         {"state_digest": DIGEST, "reporter_id": "model/worker-a"},
     ),
-    "an actor without judgement authority may not ratify": (
+    "an actor without judgement authority may not accept": (
         {
             "request_schema": "soveraeign-kernel-transition/v1",
-            "transition": "ratify",
+            "transition": "accept",
             "actor_id": "model/verifier",
             "actor_kind": "MODEL",
             "effect_class": "RECORD_LOCAL",

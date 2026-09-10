@@ -40,7 +40,7 @@ class CatalogueTests(unittest.TestCase):
     def test_the_real_catalogue_parses_into_governed_and_retired(self) -> None:
         governed, retired = catalogue.read_catalogue(ROOT)
         self.assertGreater(len(governed), 20)
-        self.assertIn("standing: ratified", governed)
+        self.assertIn("standing: accepted", governed)
         self.assertIn("witness: witnessed", retired)
         self.assertEqual(set(governed) & set(retired), set())
 

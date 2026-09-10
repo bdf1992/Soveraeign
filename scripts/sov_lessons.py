@@ -122,7 +122,7 @@ def grade(page: str, contract: dict, reached: set[str] | None = None) -> list[di
                 "code": "FALSE_EFFECTIVE",
                 "detail": f"{name} stands EFFECTIVE and names no path verify or lint reaches",
             })
-        if (record["standing"] in {"ADMITTED", "RATIFIED", "EFFECTIVE"}
+        if (record["standing"] in {"ADMITTED", "ACCEPTED", "EFFECTIVE"}
                 and record["landing"] in {"fixture", "lint"}):
             present = [path for path in record["paths"] if (ROOT / path).exists()]
             if not present:

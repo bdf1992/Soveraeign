@@ -90,8 +90,8 @@ def _budget_exceeded(grant: dict, request: dict) -> str | None:
 
 def _grant_unavailable(grant: dict, request: dict, now: datetime) -> str | None:
     """Every reason this one grant cannot cover this one request, or None."""
-    if grant.get("status") != "RATIFIED":
-        return f"grant is at {grant.get('status')} standing and has not been ratified"
+    if grant.get("status") != "ACCEPTED":
+        return f"grant is at {grant.get('status')} standing and has not been accepted"
     if grant.get("actor_id") != request.get("actor_id"):
         return f"grant names actor {grant.get('actor_id')!r}"
     if request.get("capability") not in grant.get("capabilities", ()):

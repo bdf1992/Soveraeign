@@ -16,6 +16,6 @@
     "acknowledged_at": {"type": ["string", "null"], "format": "date-time"},
     "delivery": {"enum": ["LOCAL"], "description": "Phase I admits local delivery only; external delivery refuses UNCONFIGURED."},
     "receipt_id": {"type": "string", "minLength": 1, "description": "Receipt of the SYSTEM actor emission that issued this notification."},
-    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+    "standing": {"enum": ["RECORDED", "ADMITTED", "ACCEPTED", "EFFECTIVE"]}
   }
 }

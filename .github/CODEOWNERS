@@ -6,8 +6,8 @@
 # accountability is projected separately through contracts/domain-owners.json.
 #
 # STATUS.yaml standing, decisions/, and the governing document set carry judgement-
-# typed claims. No check, label, bot, or green build reaches RATIFIED; owner review on
-# these paths is how ratification can be presented to the owner when branch protection
+# typed claims. No check, label, bot, or green build reaches ACCEPTED; owner review on
+# these paths is how acceptance can be presented to the owner when branch protection
 # requires it. See decisions/0016-github-coordination-registrar.md.
 
 # Standing, authority, and open decisions

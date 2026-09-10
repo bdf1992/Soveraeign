@@ -84,7 +84,7 @@
   "not_examined": [
     "whether decisions/0071 should be adopted; that is Bdo's ruling and this observation does not bear on it"
   ],
-  "standing_supported": "Supports BUILT -> WITNESSED for 3db7d3f. Ratifies nothing and settles nothing.",
+  "standing_supported": "Supports BUILT -> WITNESSED for 3db7d3f. Accepts nothing and settles nothing.",
   "judgement_items": [
     "decisions/0071 is PROPOSED and argues for its own rejection. Bdo rules.",
     "CLK-4 is direct evidence for the decisions/0050 ceiling question: the same command on the same bytes returned exit 1 and exit 0 minutes apart on main itself."

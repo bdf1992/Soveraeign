@@ -42,14 +42,14 @@ identifiers (O3, O7, O9/O10, O10, O11, O14) that `decisions/0033` retired and
   obligations the typology says every crossing owes. That is the gap
   `services/gateway/CHARTER.md` was chartered to close.
 - `standing-transition.md` stated that `CLASSIFICATION.md` and `SPEC.md` await
-  owner ratification, citing retired identifiers. `STATUS.yaml` records both
+  owner acceptance, citing retired identifiers. `STATUS.yaml` records both
   accepted while both headers still read `PROPOSED`. The view now reports that
   without ruling on it. **Corrected after first writing:** this report initially
   called the `PROPOSED` headers a defect. That is wrong for `SPEC.md`. An
   acceptance field names the version Bdo accepted, and `STATUS.yaml` states
   directly that SPEC.md moved after that acceptance under `decisions/0034`,
   which sits in `unruled_proposals`. The header and the field describe different
-  versions of the document, and flipping the header would claim a ratification
+  versions of the document, and flipping the header would claim a acceptance
   nobody gave. `CLASSIFICATION.md` carries no equivalent note, so its header may
   or may not be stale; that is open.
 - `requirement-lifecycle.md` cited a `STATUS.yaml` field that no longer exists

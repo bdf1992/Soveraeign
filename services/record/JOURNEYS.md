@@ -1,7 +1,7 @@
 # Record Service Journeys
 
 Status: `BUILT` (self-report, drafting session, 2026-08-27 — not `WITNESSED`,
-not `RATIFIED`)
+not `ACCEPTED`)
 
 Per `decisions/0067`, this document has no root-level analog. It enumerates
 the abstract journeys a caller takes through the Record Service and states
@@ -79,9 +79,9 @@ and that only a head digest "held *outside* the document" catches it. See
 open question Q1 below: nothing read in this pass names who or what holds
 that external head digest.
 
-## J-RECORD-5 · A ratified claim receives a runtime attestation, journaled as such
+## J-RECORD-5 · A accepted claim receives a runtime attestation, journaled as such
 
-Invoke the kernel's `attest` transition against an already-ratified claim →
+Invoke the kernel's `attest` transition against an already-accepted claim →
 the outcome (`REPRODUCED`, `DISSENTED`, or `UNATTESTABLE`) is appended to
 this journal as its own kind of record, distinct from an ordinary event.
 

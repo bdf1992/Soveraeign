@@ -3,7 +3,7 @@
 Status: `OWNER-DIRECTED · CONTRACT WORDING PROPOSED`
 
 Bdo directed this policy on 2026-08-31 while defining the Phase 1.5 substrate.
-It is built here for acceptance; this record does not ratify itself and does
+It is built here for acceptance; this record does not accept itself and does
 not open a successor phase.
 
 ## Decision
@@ -89,7 +89,7 @@ There is no automatic edge from observation to changed policy. Repeated
 success, model consensus, or a useful outcome may create pressure for a rule
 change; none of them performs that change. New authority or policy,
 irreversible external effects, and phase opening or closure remain root-only.
-Seat-bound acceptance and ratification remain governed by their typed grants.
+Seat-bound acceptance and acceptance remain governed by their typed grants.
 
 The operating laws are:
 

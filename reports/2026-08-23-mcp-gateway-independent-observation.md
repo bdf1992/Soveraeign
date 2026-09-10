@@ -1,6 +1,6 @@
 # MCP gateway, observed over the wire it serves, 2026-08-23
 
-Status: `OBSERVED INDEPENDENTLY · NOT WITNESSED · NOTHING RATIFIED`
+Status: `OBSERVED INDEPENDENTLY · NOT WITNESSED · NOTHING ACCEPTED`
 
 Subject: `bindings/mcp/` at `c296c25`, built in `d850c6d`.
 
@@ -112,7 +112,7 @@ lost in the word "fix".
 That this is a class rather than a one-off is not inference. An independent run
 against the console CLI the same evening found `granted_by` defaulting to the
 literal string `"Bdo"`, so any caller could write an authority grant into the
-journal attributed to the one actor holding ratification authority; it was fixed
+journal attributed to the one actor holding acceptance authority; it was fixed
 on `fix/console-grant-attribution` at `3fadaab`. Same shape, different surface: a
 record naming an actor that nothing checked, where the caller picks the name.
 Two independent findings of one shape in one evening is a pattern, and the

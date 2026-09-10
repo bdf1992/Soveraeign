@@ -172,7 +172,7 @@ class ScopeAfterConversion(unittest.TestCase):
     """The conversion is only useful if the evaluator then reaches the right verdict."""
 
     GRANT = {
-        "status": "RATIFIED",
+        "status": "ACCEPTED",
         "grant_id": "grant:test",
         "issuer_id": "bdo",
         "actor_id": "sov",

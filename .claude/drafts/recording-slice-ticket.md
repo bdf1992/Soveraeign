@@ -1,10 +1,10 @@
 # Slice draft · `read_source` and `Recording`
 
-Status: `PROPOSED · WORKER DRAFT · NOT REGISTERED · NOT OWNER-RATIFIED`
+Status: `PROPOSED · WORKER DRAFT · NOT REGISTERED · NOT OWNER-ACCEPTED`
 
 A scope proposal for one vertical slice, drafted for Bdo. It is not an issue: no GitHub
 issue is created, no number is claimed, and nothing here changes `STATUS.yaml` or the epic
-tree. `AGENTS.md` Authority — a worker drafts, it does not register or ratify.
+tree. `AGENTS.md` Authority — a worker drafts, it does not register or accept.
 
 ## Owned scope
 

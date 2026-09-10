@@ -374,7 +374,7 @@ class Hierarchy(unittest.TestCase):
                 with self.subTest(address=member["address"]):
                     self.assertIn(member["stage"], circuitmod.stage_names())
                     self.assertIn(member["standing"],
-                                  ["OPEN", "BUILT", "WITNESSED", "RATIFIED"])
+                                  ["OPEN", "BUILT", "WITNESSED", "ACCEPTED"])
                     self.assertIn(member["work_state"],
                                   ["CANDIDATE", "READY", "CLAIMED", "IN_PROGRESS",
                                    "PRESENTED", "LANDED", "RETIRED"])

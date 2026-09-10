@@ -58,7 +58,7 @@
       }
     },
     "evidential_status": {
-      "description": "How well supported this fact is. Not called `standing`: that word already means the artifact lifecycle (OPEN/BUILT/WITNESSED/RATIFIED) and the record lifecycle (RECORDED/ADMITTED/RATIFIED/EFFECTIVE), and a third meaning must not borrow it. DECLARED means state says so and nobody has looked. OBSERVED means something reached the world and found it. REFUTED means something looked and found it false. STALE means the state inputs this rested on have moved.",
+      "description": "How well supported this fact is. Not called `standing`: that word already means the artifact lifecycle (OPEN/BUILT/WITNESSED/ACCEPTED) and the record lifecycle (RECORDED/ADMITTED/ACCEPTED/EFFECTIVE), and a third meaning must not borrow it. DECLARED means state says so and nobody has looked. OBSERVED means something reached the world and found it. REFUTED means something looked and found it false. STALE means the state inputs this rested on have moved.",
       "enum": [
         "DECLARED",
         "OBSERVED",

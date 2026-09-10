@@ -63,7 +63,7 @@ nothing — kept side by side rather than merged, so taste can pick.
 The judgement-request record does not exist in the Console Service, so the
 `waiting-on-you` channel is threads standing in for it. An answer recorded there
 is a real attributed post with a real receipt at `RECORDED` standing. It is not
-a ratification, and the surface says so where the answer is recorded.
+a acceptance, and the surface says so where the answer is recorded.
 
 An authority refusal used to be the one refusal the Console Service did not write
 down. Every other refusal went through `append.refuse`, which appends a `REFUSED`

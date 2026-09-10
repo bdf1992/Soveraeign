@@ -64,7 +64,7 @@ mean hiding defects or replacing evidence with polish.
 - If multiple choices remain materially product-defining and cannot be defeated by existing
   requirements, the agent may pick a reversible candidate, build enough evidence to compare it,
   and present the comparison at acceptance instead of escalating before learning.
-- Evidence gates remain real. Blue cannot call itself witnessed; Red cannot ratify; a green build
+- Evidence gates remain real. Blue cannot call itself witnessed; Red cannot accept; a green build
   cannot claim owner acceptance.
 - Public release, owner identity/naming changes, secrets, destructive repository administration,
   and unbounded or irreversible external-world effects remain explicit owner boundaries.
@@ -88,7 +88,7 @@ owner boundary.
 
 Demote this policy if agents begin treating the absence of pre-approval as permission for external
 world effects, owner impersonation, evidence inflation, destructive changes, secret exposure, or
-self-ratification; or if acceptance packets become polished narratives that hide defeating evidence.
+self-acceptance; or if acceptance packets become polished narratives that hide defeating evidence.
 
 ## Source
 

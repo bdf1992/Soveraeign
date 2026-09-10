@@ -9,7 +9,7 @@ The verification domain owns the canonical repository verifier and keeps its
 engineering evidence fast, dependency-free, attributable, and honest. It
 enforces the engineering baseline other domains build against without ever
 holding semantic authority itself: a green gate is evidence, never
-ratification.
+acceptance.
 
 Verification follows one compression invariant:
 
@@ -59,7 +59,7 @@ immutable lineage/evidence.
   repository-validity fact. Compatibility dimensions remain useful evidence
   when they test a genuinely different environment.
 - ENGINEERING.md - proposed reference baseline (owned document; this domain
-  stewards its coherence, Bdo ratifies its content).
+  stewards its coherence, Bdo accepts its content).
 - CONTRIBUTING.md, AGENTS.md, .cursorrules - carry markers verified by
   scripts/verify_bootstrap.py; keep them consistent, never delete a marker to
   make a broken document pass.
@@ -181,9 +181,9 @@ that analysis.
 
 ## Vocabulary
 
-- OPEN -> BUILT -> WITNESSED -> RATIFIED - artifact standing lifecycle; a
-  passing self-test may establish BUILT, never WITNESSED or RATIFIED.
-- RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE - record standing in the
+- OPEN -> BUILT -> WITNESSED -> ACCEPTED - artifact standing lifecycle; a
+  passing self-test may establish BUILT, never WITNESSED or ACCEPTED.
+- RECORDED -> ADMITTED -> ACCEPTED -> EFFECTIVE - record standing in the
   operational System of Record; do not conflate with the artifact lifecycle.
 - ATTEMPTED | COMMITTED | FAILED | REFUSED | COUNTERED | UNRESOLVED - event
   outcomes, recorded separately from standing.
@@ -196,7 +196,7 @@ that analysis.
 - Observation - independent evidence of what occurred; executor output alone
   cannot establish success.
 - Receipt - the record returned by an attempted crossing or operation.
-- Proposal - an attributed claim without ratified standing.
+- Proposal - an attributed claim without accepted standing.
 - Projection - a rebuildable derived view that never becomes authoritative by
   convenience.
 
@@ -207,6 +207,6 @@ that analysis.
   where failures repeat.
 - gate_cards: only for gates touched/audited in the operation.
 - standing_proposals: at most OPEN -> BUILT from self-tested work; never claim
-  WITNESSED or RATIFIED.
+  WITNESSED or ACCEPTED.
 - judgement_items: questions queued for Bdo, stated as questions.
 - next_operation: the next bounded operation, or none.

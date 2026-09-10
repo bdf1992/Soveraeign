@@ -9,7 +9,7 @@
   ],
   "not_in_scope": [
     "Whether a decision is right. Standing is about who has settled it, never about whether it is so.",
-    "Artifact standing. OPEN -> BUILT -> WITNESSED -> RATIFIED grades an artifact; this grades a record's settlement."
+    "Artifact standing. OPEN -> BUILT -> WITNESSED -> ACCEPTED grades an artifact; this grades a record's settlement."
   ],
   "standings": {
     "PROPOSED": {
@@ -52,13 +52,13 @@
   },
   "crosswalk_note": "Every status string observed across decisions/ on 2026-08-23, mapped to a standing, plus the six strings records 0052-0059 minted afterwards and which were added on 2026-08-24 while main and feat/federation-harness-and-hardening were reconciled. Twenty-two distinct strings for forty records is the condition this contract exists to end; the crosswalk is the bridge, not the destination. A status string absent from here is a defect the checker reports rather than guessing at. Two strings added 2026-08-27 while draining the backlog: the bare \"PROPOSED\", which is the canonical spelling of the standing itself and the one addition that argues for fewer spellings rather than more, and \"PROPOSED · EVIDENCE TALLY, NOT A RULING\", which decisions/0094 carries because a tally of open questions settles nothing.",
   "crosswalk": {
-    "PROPOSED FOR BDO RATIFICATION": "PROPOSED",
-    "PROPOSED · OWNER RATIFICATION PENDING": "PROPOSED",
+    "PROPOSED FOR BDO ACCEPTANCE": "PROPOSED",
+    "PROPOSED · OWNER ACCEPTANCE PENDING": "PROPOSED",
     "PROPOSED · OWNER FREEZE PENDING": "PROPOSED",
     "PROPOSED · OWNER ACCEPTANCE OVER EVIDENCE": "PROPOSED",
     "PROPOSED · BDO HAS NOT RULED": "PROPOSED",
-    "PROPOSED · BUILT AND SELF-TESTED · RATIFICATION PENDING": "PROPOSED",
-    "PROPOSED · DRAFTED AT OWNER DIRECTION · RATIFICATION PENDING": "PROPOSED",
+    "PROPOSED · BUILT AND SELF-TESTED · ACCEPTANCE PENDING": "PROPOSED",
+    "PROPOSED · DRAFTED AT OWNER DIRECTION · OWNER ACCEPTANCE PENDING": "PROPOSED",
     "SOURCE-GROUNDED PROPOSAL": "PROPOSED",
     "RULED AT CONTROL RESOLUTION · OWNER ACCEPTANCE OVER EVIDENCE": "RULED_BELOW",
     "OWNER-DIRECTED · RULED AT CONTROL RESOLUTION": "RULED_BELOW",
@@ -84,16 +84,16 @@
     "PROPOSED · SLICES 1-4 BUILT, SELF-TESTED, NOT WITNESSED": "PROPOSED",
     "PROPOSED · DRAFTED AT OWNER DIRECTION · ACCEPTANCE PENDING": "OWNER_DIRECTED",
     "PROPOSED · CONTRACT, FIXTURES, AND CHALLENGE RUNTIME BUILT": "PROPOSED",
-    "PROPOSED · OWNER-DIRECTED EDIT · O2 STILL GATES RATIFICATION": "OWNER_DIRECTED",
+    "PROPOSED · OWNER-DIRECTED EDIT · O2 STILL GATES ACCEPTANCE": "OWNER_DIRECTED",
     "PROPOSED": "PROPOSED",
     "PROPOSED · EVIDENCE TALLY, NOT A RULING": "PROPOSED",
-    "OWNER-DIRECTED · ROOT ACT PERFORMED · NOT SELF-RATIFYING": "OWNER_DIRECTED"
+    "OWNER-DIRECTED · ROOT ACT PERFORMED · NOT SELF-ACCEPTING": "OWNER_DIRECTED"
   },
   "owner_questions_section": {
     "heading": "What still waits on Bdo",
     "required_from_record": "0043",
     "plain_english": "A decision record states its own owner questions as a list under this heading, one bullet per question. Routing then reads a list instead of inferring from prose, which is the interpretive step that produced both defects an independent witness found in the first version of contracts/acceptance-routing.json.",
     "grandfathered": "Records 0001 through 0042 are exempt and stay exempt. Exactly one of them - 0036 - carries the section, and only because its author happened to write it; nothing asked for it. Retrofitting the other seventeen would mean one reader inventing questions on behalf of records other people wrote, which is the failure this rule exists to end. Named as existing debt rather than silently grandfathered, the way scripts/lint.py handles module size.",
-    "bare_ratification_excluded": "A bullet saying only that the record awaits ratification is not a question. Every PROPOSED record awaits it, so counting it would mark every record and say nothing."
+    "bare_acceptance_excluded": "A bullet saying only that the record awaits acceptance is not a question. Every PROPOSED record awaits it, so counting it would mark every record and say nothing."
   }
 }

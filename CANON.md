@@ -263,7 +263,7 @@ queue. Derives from `GROUND-016`.
 Minted in `CANON-2`, replacing the retired `PROMISE-13`. Derives from `GROUND-005`,
 `GROUND-009` and `GROUND-011`.
 
-`PROMISE-13` said proofing: open a review session, annotate a version, ratify a decision.
+`PROMISE-13` said proofing: open a review session, annotate a version, accept a decision.
 Bdo's test on 2026-08-24 was whether Soveraeign would still be Soveraeign if it stopped
 shipping proofing as a first-class domain while keeping its foundational promises. It
 would. So the proofing wording was domain altitude wearing canon clothes, and this is the
@@ -397,6 +397,6 @@ mean; it is not a claim that the node keeps any of them.
 Previously: Drafted by Claude at Bdo's
 direction (2026-08-24, Q1 `ACCEPT` with a narrow boundary) and corrected the same day at
 his direction on the three points listed at the top. Nothing here is `WITNESSED` or
-`RATIFIED`. `PRD.md` was not modified to accommodate it, as directed. `STATUS.yaml` is
+`ACCEPTED`. `PRD.md` was not modified to accommodate it, as directed. `STATUS.yaml` is
 not changed by this document; recording the canon's standing there is part of accepting
 it.

@@ -33,7 +33,7 @@ one number that defines the phase.**
    materially different model bindings;
 3. independent observation can reconstruct the receipts;
 4. open judgement calls are visible;
-5. the owner ratifies Phase-I operational acceptance.
+5. the owner accepts Phase-I operational acceptance.
 
 Clause 4 is served. Five acceptance packets sit in the queue with runnable
 evidence, five have been accepted, and `sov_accept.py audit` fails the build if
@@ -63,7 +63,7 @@ Everything in this table comes from a command.
 | Branches unmerged | 39, holding 207 commits | `scripts/sov_strand.py` |
 | Commits on this disk only | 20, across 4 branches | `scripts/sov_strand.py` |
 | Console operations declaring an authority and checking none | 9 | `STATUS.yaml` |
-| Things ratified | 1 — `grant:standing-landing-loop` | `decisions/0065` |
+| Things accepted | 1 — `grant:standing-landing-loop` | `decisions/0065` |
 
 Commits by day: 15 on the 22nd, 125 on the 23rd, 145 on the 24th, 73 on the
 25th, 25 on the 26th, 18 on the 27th. By type over the whole window: 100 `feat`,

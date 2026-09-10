@@ -1,14 +1,14 @@
 # Asset Service Reference Gaps
 
-Status: `OBSERVED AGAINST PROPOSED SPEC · NOT OWNER-RATIFIED`
+Status: `OBSERVED AGAINST PROPOSED SPEC · NOT OWNER-ACCEPTED`
 
 The reference participant proves a useful local walk, but it does not yet pass
 the full Phase-I logical contract.
 
 | Gap | Observed behavior | Required behavior | Contract |
 | --- | --- | --- | --- |
-| Admission standing | Proposal ratification updates `RECORDED` directly to `RATIFIED` | Admission must be a visible separate transition | C4; SPEC `admit`/`ratify` |
-| Effectiveness | A ratified relationship becomes effective immediately | Current effectiveness must follow the applicable attestation and policy gate | C4-C5; PROD-I-8 |
+| Admission standing | Proposal acceptance updates `RECORDED` directly to `ACCEPTED` | Admission must be a visible separate transition | C4; SPEC `admit`/`accept` |
+| Effectiveness | A accepted relationship becomes effective immediately | Current effectiveness must follow the applicable attestation and policy gate | C4-C5; PROD-I-8 |
 | Authority envelope | Grants carry actor, capability, and scope only | Type, issuer authority, budget, validity, and revocation must be enforced | C3; PROD-I-5 |
 | Observer independence | Any named actor can call `observe`, including the worker | Observer relation must prevent executor-only settlement | C7; SPEC `Observation` |
 | Receipt completeness | Receipts omit exact input state, authority grants, preconditions, effect class, and digest | Required receipt fields must be present for every terminal outcome | C6-C8 |

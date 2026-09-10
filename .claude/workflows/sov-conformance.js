@@ -84,7 +84,7 @@ const witness = await agent(
   'Claims: ' + JSON.stringify(claims) + '. ' +
   'In ' + ROOT + ': inspect the actual diffs of the changed files (git status and git diff, read-only), compare them against SPEC.md Requirement predicates, CLASSIFICATION.md vocabulary, and the conformance boundary that the oracle must not import participant implementation code and no check may be weakened. ' +
   'Run python scripts/verify.py from the repository root and python conformance/run.py; record exact commands and exit codes. Never treat a green build or the builder report as authority. ' +
-  'Return verdicts (one of reproduced, dissented, unattestable per operation_id), residuals, and standing_supported as one of: OPEN->BUILT, BUILT->WITNESSED, or none. You may never support RATIFIED.',
+  'Return verdicts (one of reproduced, dissented, unattestable per operation_id), residuals, and standing_supported as one of: OPEN->BUILT, BUILT->WITNESSED, or none. You may never support ACCEPTED.',
   { agentType: 'sov-witness', schema: WITNESS_SCHEMA, phase: 'Witness', label: 'witness' }
 )
 if (witness && typeof witness.standing_supported === 'string') { witness.standing_supported = witness.standing_supported.split(' ').join('') }

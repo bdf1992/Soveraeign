@@ -40,7 +40,7 @@ admitted in Phase I.
 
 - Scheduling changes nothing about authority: a fired run proposes at most
   `BUILT -> WITNESSED`, builders never witness themselves, and Bdo alone
-  ratifies. The ledger is a record of attempts and reports, not evidence that
+  accepts. The ledger is a record of attempts and reports, not evidence that
   anything committed.
 - Shipped declarations are disabled. Enabling one, and registering the tick
   with the host scheduler, are owner actions with recurring resource
@@ -54,7 +54,7 @@ admitted in Phase I.
 
 ## Open questions for Bdo
 
-1. Ratify this pattern together with `0013` (the reserved O13 harness
+1. Accept this pattern together with `0013` (the reserved O13 harness
    question), or keep scheduling a separate decision?
 2. Are completion reports written by scheduled runs committed, or does
    `reports/` stay local (baseline report item 7)?

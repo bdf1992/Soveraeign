@@ -174,7 +174,7 @@ node changes.
 | **Custody and closure** | Who owns the current work, what closure means, and what happens when a transition cannot occur. | — | contracts built, mechanism open |
 | **Gateway and discovery** | How an operator finds and reaches available capabilities without being told by a person who already knows. | 03 | chartered boundary, not implemented |
 | **Identity** | Who is acting, and how identity stays attributable across a crossing. | — | contract built, registry read only |
-| **Authority and policy** | What an actor may do, scoped independently of which model or intelligence it is running. | — | typed grants built, one ratified |
+| **Authority and policy** | What an actor may do, scoped independently of which model or intelligence it is running. | — | typed grants built, one accepted |
 | **Record** | The durable account of consequential actions, receipts, observations and counter-records. | 07, 08 | built, self-tested, not the kernel's |
 | **Evidence** | What supports a claim, and how independent witnessing works. | 11 | witness tooling exists; observation service thin slice built and witnessed, no run observed |
 | **Grounding** | Whether an asset, file, service or claim can explain its place in the system. | — | **new; no contract, no implementation** |
@@ -330,7 +330,7 @@ competence measurement exist.
 
 ### PROD-I-8 · Joint sign
 
-A ratified claim is checked again at runtime, naming validator, version, inputs
+A accepted claim is checked again at runtime, naming validator, version, inputs
 and run, returning reproduced, dissented or unattestable.
 Evidences `PROMISE-11` · predicate `SPEC.md` PROD-I-8 · fixture `CONF-I8` ·
 today `FAIL`: general runtime attestation is not implemented.
@@ -423,7 +423,7 @@ This profile exists **for Phase II**. Phase 1.5 commissions the ability to
 self-organize and learn under governed evidence; Phase II decides what citizens
 actually accomplish with it. A future Phase III requirement may therefore be a
 product of Phase II's recorded experience without Phase II acquiring the power
-to open or ratify that future phase itself.
+to open or accept that future phase itself.
 
 ### Later profiles
 

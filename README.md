@@ -86,7 +86,7 @@ source
 -> reading
 -> recording or proposal
 -> admission
--> ratification
+-> acceptance
 -> runtime attestation
 -> effective state
 -> operation

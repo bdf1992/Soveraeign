@@ -1,6 +1,6 @@
 # Console continuity and seat etiquette, observed from outside, 2026-08-23
 
-Status: `OBSERVED INDEPENDENTLY · NOT WITNESSED · NOTHING RATIFIED`
+Status: `OBSERVED INDEPENDENTLY · NOT WITNESSED · NOTHING ACCEPTED`
 
 Two builds landed in this working tree without an independent pass: the Console
 Service continuity record path (`decisions/0036`) and the seat etiquette checker
@@ -9,7 +9,7 @@ Service continuity record path (`decisions/0036`) and the seat etiquette checker
 wrote neither — took the other path and looked.
 
 This report records what was observed. It proposes at most `BUILT -> WITNESSED`
-and settles nothing. Only Bdo ratifies.
+and settles nothing. Only Bdo accepts.
 
 ## What independence meant here
 

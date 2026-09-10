@@ -52,7 +52,7 @@ decide (`decisions/0067`, What this is not). It routes to a decision record the 
 
 This journey completes with self-tested, not independently witnessed, evidence
 (`KNOWN-GAPS.md`: "Passing participant tests establishes `BUILT` evidence for `read-health`
-only. It does not witness the result, ratify the service, or advance any deferred
+only. It does not witness the result, accept the service, or advance any deferred
 operation.").
 
 ## Journey: request an OS restart — `sov://host/restart`

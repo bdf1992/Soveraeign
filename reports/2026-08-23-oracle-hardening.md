@@ -1,6 +1,6 @@
 # Oracle self-test hardening, 2026-08-23
 
-Status: `BUILT · SELF-TESTED · NOT WITNESSED · NOTHING RATIFIED`
+Status: `BUILT · SELF-TESTED · NOT WITNESSED · NOTHING ACCEPTED`
 
 Conformance-domain operation CONF-TEST-HARDEN, named as the domain's clean first move in
 `reports/2026-08-22-baseline.md`. One session held the controller role and did the work

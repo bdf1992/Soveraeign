@@ -2,7 +2,7 @@
 
 `CLASSIFICATION.md` defines a Projection as a derived view that never becomes
 authoritative by convenience. Both tables here are dropped and rebuilt from
-ratified records on every rebuild, so a row written straight into one survives
+accepted records on every rebuild, so a row written straight into one survives
 only until the next rebuild and carries no receipt behind it.
 """
 
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS graph_projection(
   source_receipt TEXT NOT NULL);
 """
 
-UNRATIFIED = "UNRATIFIED_LABEL"
+UNACCEPTED = "UNACCEPTED_LABEL"
 
 
 class Projections:
@@ -34,15 +34,15 @@ class Projections:
         self.store = store
         self.db = store.db
 
-    def _ratify_receipt(self, proposal_id: str) -> str | None:
-        """The newest ratification receipt for a proposal, which sources its projected row."""
+    def _accept_receipt(self, proposal_id: str) -> str | None:
+        """The newest acceptance receipt for a proposal, which sources its projected row."""
         row = self.db.execute(
-            "SELECT id FROM receipts WHERE event='asset.ratify-proposal' AND subject_id=? "
+            "SELECT id FROM receipts WHERE event='asset.accept-proposal' AND subject_id=? "
             "ORDER BY created_at DESC LIMIT 1", (proposal_id,)).fetchone()
         return row["id"] if row else None
 
     def rebuild(self, actor: str = "projector") -> dict[str, int]:
-        """Drop both views and derive them again from ratified records only."""
+        """Drop both views and derive them again from accepted records only."""
         self.db.execute("DELETE FROM search_projection")
         self.db.execute("DELETE FROM graph_projection")
         for asset in self.db.execute("SELECT * FROM assets").fetchall():
@@ -52,7 +52,7 @@ class Projections:
             self.db.execute(
                 "INSERT INTO graph_projection VALUES(?,?,?,?,?)",
                 (relation["id"], relation["src_asset"], relation["predicate"],
-                 relation["dst_asset"], self._ratify_receipt(relation["proposal_id"])))
+                 relation["dst_asset"], self._accept_receipt(relation["proposal_id"])))
         counts = {
             "search": self.db.execute("SELECT COUNT(*) FROM search_projection").fetchone()[0],
             "edges": self.db.execute("SELECT COUNT(*) FROM graph_projection").fetchone()[0],
@@ -62,18 +62,18 @@ class Projections:
         return counts
 
     def _project_asset(self, asset: sqlite3.Row) -> None:
-        """One search row: the label plus every ratified description, and its source receipt."""
+        """One search row: the label plus every accepted description, and its source receipt."""
         text = [asset["label"]]
         source_receipt = ""
-        ratified = self.db.execute(
-            "SELECT id,payload_json FROM proposals WHERE asset_id=? AND standing='RATIFIED'",
+        accepted = self.db.execute(
+            "SELECT id,payload_json FROM proposals WHERE asset_id=? AND standing='ACCEPTED'",
             (asset["id"],)).fetchall()
-        for proposal in ratified:
+        for proposal in accepted:
             payload = json.loads(proposal["payload_json"])
             text.extend(str(value) for key, value in payload.items() if key != "relationship")
-            source_receipt = self._ratify_receipt(proposal["id"]) or source_receipt
+            source_receipt = self._accept_receipt(proposal["id"]) or source_receipt
         self.db.execute("INSERT INTO search_projection VALUES(?,?,?)",
-                        (asset["id"], " ".join(text), source_receipt or UNRATIFIED))
+                        (asset["id"], " ".join(text), source_receipt or UNACCEPTED))
 
     def search(self, query: str) -> list[str]:
         """Assets whose projected text contains the query, case-insensitively."""

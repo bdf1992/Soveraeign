@@ -47,7 +47,7 @@ This is a joint operation.
 - You may inspect, compare, initialize, structure, validate, and make mechanical
   repairs required to establish this bootstrap.
 - The owner-selected product and repository name is `Soveraeign`. You may not
-  alter or normalize its spelling, ratify a product
+  alter or normalize its spelling, accept a product
   judgement, resolve an open seam by preference, import predecessor code,
   choose the production stack, publish a remote, or begin runtime implementation.
 
@@ -91,7 +91,7 @@ After the pre-check passes:
    remain present in `STATUS.yaml`.
 4. Inspect the canonical layer for broken relative links, malformed YAML-like
    scenario structure, accidental references to absent runtime code, and files
-   that incorrectly claim owner ratification.
+   that incorrectly claim owner acceptance.
 5. Make only mechanical bootstrap repairs. For any semantic contradiction, add
    or refine an entry in `OPEN-SEAMS.md`; do not choose the answer.
 6. Do not add `src/`, a package manifest, framework scaffold, database schema,

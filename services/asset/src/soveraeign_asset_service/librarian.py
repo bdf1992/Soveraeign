@@ -2,14 +2,14 @@
 
 This module reads and judges; it writes no authoritative record. A finding says
 what the library looks like right now, so it is derived on every call and never
-stored - a stored verdict would go stale the moment someone ratified a
+stored - a stored verdict would go stale the moment someone accepted a
 description, and would then be a projection nobody rebuilt.
 
 The verdicts distinguish three states an operator otherwise conflates:
 
-- ``CONFORMING`` - a ratified description carries the required field with a
+- ``CONFORMING`` - a accepted description carries the required field with a
   permitted value.
-- ``CLAIMED_UNRATIFIED`` - somebody recorded the field and nobody ratified it.
+- ``CLAIMED_UNACCEPTED`` - somebody recorded the field and nobody accepted it.
   The metadata exists as a claim. `AGENTS.md` (Evidence and standing) forbids
   counting that as a fact, and a report that silently did would be the defect
   this service exists to make impossible.
@@ -31,7 +31,7 @@ from soveraeign_asset_service.store import Store
 
 
 CONFORMING = "CONFORMING"
-CLAIMED_UNRATIFIED = "CLAIMED_UNRATIFIED"
+CLAIMED_UNACCEPTED = "CLAIMED_UNACCEPTED"
 MISSING_FIELD = "MISSING_FIELD"
 VOCABULARY_REFUSED = "VOCABULARY_REFUSED"
 MEMBER_KIND_REFUSED = "MEMBER_KIND_REFUSED"
@@ -53,28 +53,28 @@ class Librarian:
         self.db = store.db
 
     def describe(self, asset_id: str) -> dict[str, dict[str, Any]]:
-        """Field values an asset carries, split by whether anyone ratified them.
+        """Field values an asset carries, split by whether anyone accepted them.
 
         Newest proposal wins within each standing, so a later description
         supersedes an earlier one without erasing it from the record.
         """
-        ratified: dict[str, Any] = {}
+        accepted: dict[str, Any] = {}
         claimed: dict[str, Any] = {}
         rows = self.db.execute(
             "SELECT standing, payload_json FROM proposals WHERE asset_id=? "
             "ORDER BY created_at, id", (asset_id,)).fetchall()
         for row in rows:
-            target = ratified if row["standing"] == "RATIFIED" else claimed
+            target = accepted if row["standing"] == "ACCEPTED" else claimed
             for field, value in json.loads(row["payload_json"]).items():
                 if field != RELATIONSHIP:
                     target[field] = value
-        return {"ratified": ratified, "claimed": claimed}
+        return {"accepted": accepted, "claimed": claimed}
 
     def _field_finding(self, field: str, required: bool, spec: dict[str, Any],
                        described: dict[str, dict[str, Any]]) -> tuple[str, Any] | None:
         """One verdict for one field, or None when an absent optional field is fine."""
         vocabulary = spec["vocabularies"].get(field)
-        for standing, verdict in (("ratified", CONFORMING), ("claimed", CLAIMED_UNRATIFIED)):
+        for standing, verdict in (("accepted", CONFORMING), ("claimed", CLAIMED_UNACCEPTED)):
             if field not in described[standing]:
                 continue
             value = described[standing][field]

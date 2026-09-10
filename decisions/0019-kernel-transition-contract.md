@@ -1,6 +1,6 @@
 # 0019 · Kernel transition contract
 
-Status: `PROPOSED · OWNER RATIFICATION PENDING`
+Status: `PROPOSED · OWNER ACCEPTANCE PENDING`
 
 ## Decision
 
@@ -79,7 +79,7 @@ happen.
   what `SPEC.md` means by admitting reference implementations as participants
   tested against the contract, and it is how the fifth acceptance criterion on
   issue #6 is met without a rewrite standing in as its own evidence.
-- `ratify` names `pre_state_digest` both as a declared precondition, because
+- `accept` names `pre_state_digest` both as a declared precondition, because
   `SPEC.md` lists it, and as a typed request field, because the kernel checks it
   structurally. The duplication is deliberate but ungainly.
 - Vocabulary drift, queued rather than renamed: `CLASSIFICATION.md` admits actor
@@ -90,9 +90,9 @@ happen.
 ## Open review
 
 The table, the request shape, and the relocation of the validator are proposed,
-not ratified. `SPEC.md` is not frozen (O10) and the vocabulary is not ratified
+not accepted. `SPEC.md` is not frozen (O10) and the vocabulary is not accepted
 (O9), so a mismatch found against this table queues as a judgement item rather
-than a rename. `contracts/` is owner-reviewed; this reaches `RATIFIED` only
+than a rename. `contracts/` is owner-reviewed; this reaches `ACCEPTED` only
 through owner judgement, never through a green check.
 
 ## Source and authority

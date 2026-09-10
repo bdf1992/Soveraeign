@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Refuse a standing claim that no witness record supports.
 
-`AGENTS.md` fixes the lifecycle `OPEN -> BUILT -> WITNESSED -> RATIFIED` and
+`AGENTS.md` fixes the lifecycle `OPEN -> BUILT -> WITNESSED -> ACCEPTED` and
 states that a build report cannot witness itself. That rule has been in the
 repository the whole time, and on 2026-08-23 a session read it and then spent a
-day asking the owner to ratify work that had never been witnessed. The rule was
+day asking the owner to accept work that had never been witnessed. The rule was
 never the problem. Nothing made it fire.
 
 This makes it fire. A `*_status` field in `STATUS.yaml` may not claim
-`WITNESSED` or `RATIFIED` standing unless a witness record exists naming that
+`WITNESSED` or `ACCEPTED` standing unless a witness record exists naming that
 subject. Claiming the standing and writing the record are then the same act.
 
 Scope, stated so it is not mistaken for more: this checks standing FIELDS in
@@ -17,7 +17,7 @@ good witness record from a bad one - it reads the one machine-readable field a
 record must carry, `Standing supported:`, and grades that. Whether the record
 attacked the subject honestly is a reader's judgement, and whether the record is
 about the subject at all rests on its filename, which is a convention and not a
-proof. Only Bdo ratifies; this refuses a claim no record supports.
+proof. Only Bdo accepts; this refuses a claim no record supports.
 """
 
 from __future__ import annotations
@@ -46,7 +46,7 @@ declared_field = records.declared_field
 supported_standing = records.supported_standing
 witness_records = records.witness_records
 
-CLAIMS = ("WITNESSED", "RATIFIED")
+CLAIMS = ("WITNESSED", "ACCEPTED")
 FIELD = re.compile(r"^\s*([a-z0-9_]+_status):\s*(.+?)\s*$")
 
 # A trailing YAML comment and a quoted value are what an ordinary edit to
@@ -81,6 +81,11 @@ def claimed_standing(value: str) -> str | None:
         if token not in CLAIMS:
             continue
         if index > 0 and tokens[index - 1] == "NOT":
+            continue
+        if index > 0 and tokens[index - 1] == "OWNER":
+            # `OWNER_ACCEPTED_...` records the owner's acceptance of a charter or document, the
+            # gate `scripts/sov_accept.py` audits. It is the same act as the standing, taken
+            # over a document rather than a built claim, so no witness record is owed here.
             continue
         return token
     return None
@@ -120,10 +125,10 @@ def read_claims(status_path: Path = STATUS) -> list[Claim]:
 def refusal(claim: Claim, witness_dir: Path = WITNESS_DIR) -> str | None:
     """Why this claim is refused, in the record's own terms, or None if supported.
 
-    Both `WITNESSED` and `RATIFIED` claims need the same thing here, because
-    nothing is ratified that was not first witnessed. What this gate cannot see
-    is the owner half of a ratification, and it says so rather than implying a
-    passing RATIFIED claim was checked end to end.
+    Both `WITNESSED` and `ACCEPTED` claims need the same thing here, because
+    nothing is accepted that was not first witnessed. What this gate cannot see
+    is the owner half of a acceptance, and it says so rather than implying a
+    passing ACCEPTED claim was checked end to end.
     """
     subject = claim.subject.lower()
     path = witness_dir / f"{subject}.md"
@@ -157,13 +162,13 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{'REFUSED' if refused else 'SUPPORTED':<10} {claim.field} claims {claim.standing}")
         if refused:
             print(f"           {refused}", file=sys.stderr)
-        elif claim.standing == "RATIFIED":
+        elif claim.standing == "ACCEPTED":
             print("           witnessed half only; this gate does not see the owner's act")
 
     if gaps:
         print(
             f"\nFAIL: {len(gaps)} standing claim(s) no witness record supports.\n"
-            "AGENTS.md fixes OPEN -> BUILT -> WITNESSED -> RATIFIED, and a build report\n"
+            "AGENTS.md fixes OPEN -> BUILT -> WITNESSED -> ACCEPTED, and a build report\n"
             "cannot witness itself. Deposit an independent observation under witness/\n"
             "naming the subject, or lower the claim back to what the evidence carries.",
             file=sys.stderr,
@@ -171,7 +176,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     if not claims:
-        print(f"PASS: no status field claims WITNESSED or RATIFIED ({len(records)} record(s) on file)")
+        print(f"PASS: no status field claims WITNESSED or ACCEPTED ({len(records)} record(s) on file)")
         print("Standing note: nothing here has been witnessed, and the check says so rather than staying silent.")
         return 0
 

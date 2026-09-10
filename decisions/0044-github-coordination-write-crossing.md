@@ -64,7 +64,7 @@ why deletion is the one verb gated on an explicit declaration.
 
 The crossing settles nothing. It writes labels, containment edges, and a
 rendered block. It cannot open, close, comment on, assign, or milestone an
-issue, and it writes no standing, ratification, or settlement in any form.
+issue, and it writes no standing, acceptance, or settlement in any form.
 
 **What would defeat this ruling:** an `apply.py` run whose effect is not
 derivable from the local declarations at the export's digest; a body rewrite
@@ -87,9 +87,9 @@ same green for "we tested it ourselves" and "someone else verified it," which is
 the exact distinction `AGENTS.md` exists to hold. That is now amber and green.
 
 `standing_to_label` covers all eight declared values and each projects to at
-most one label. `RATIFIED` gains a label for the first time; a ratified ticket
+most one label. `ACCEPTED` gains a label for the first time; a accepted ticket
 previously looked identical to one opened a minute ago, so the terminal rung of
-`OPEN -> BUILT -> WITNESSED -> RATIFIED` was invisible on the board.
+`OPEN -> BUILT -> WITNESSED -> ACCEPTED` was invisible on the board.
 
 The ramp is monotone in how much evidence stands behind the claim, so the board
 reads as a lifecycle rather than a palette:
@@ -102,7 +102,7 @@ reads as a lifecycle rather than a palette:
 | `standing: chartered` | `#54AEFF` | a contract or charter, implementation incomplete |
 | `standing: self-tested` | `#D29922` | built and self-tested; witness outstanding |
 | `standing: witnessed` | `#2DA44E` | an independent witness receipt, current and resolvable |
-| `standing: ratified` | `#116329` | Bdo accepted the evidenced result |
+| `standing: accepted` | `#116329` | Bdo accepted the evidenced result |
 | `standing: demoted` | `#CF222E` | a fall off the ramp, not a rung on it |
 
 `witness:` stays listed in `unprojected_label_prefixes` and is named in the new
@@ -142,7 +142,7 @@ its bit because the rendering made GitHub do it.
 ## What changed
 
 - `.github/labels.yml`: the duplicated eleven-label block removed; `standing:
-  witnessed`, `standing: ratified`, and `standing: demoted` added; `standing:
+  witnessed`, `standing: accepted`, and `standing: demoted` added; `standing:
   self-tested` recoloured amber; a `retire:` section added naming the three
   `witness:` labels and ten GitHub stock labels.
 - `contracts/ticket-label-projection.json`: `standing_to_label` covers all eight

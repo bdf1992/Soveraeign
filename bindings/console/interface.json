@@ -8,7 +8,7 @@
   "fixture_alias": "HB-CLI",
   "fixture_alias_sources": [
     "services/console/conformance/008-judgement-request-reaches-owner.yaml",
-    "services/console/conformance/009-owner-resolution-lands-ratified.yaml"
+    "services/console/conformance/009-owner-resolution-lands-accepted.yaml"
   ],
   "realizes": {
     "service_id": "console",
@@ -66,9 +66,9 @@
     {
       "operation": "resolve-judgement",
       "manifest_operation": "resolve-judgement",
-      "spec_transition": "ratify",
-      "spec_transition_source": "SPEC.md, Transition contract, row 'ratify'",
-      "spec_transition_projection": "contracts/kernel-transitions.json, transitions.ratify",
+      "spec_transition": "accept",
+      "spec_transition_source": "SPEC.md, Transition contract, row 'accept'",
+      "spec_transition_projection": "contracts/kernel-transitions.json, transitions.accept",
       "kind": "WRITE",
       "record": "judgement-resolution",
       "record_contract": "services/console/contracts/judgement-resolution.schema.json",
@@ -81,10 +81,10 @@
         "scope": "the request's request_id (judgement-request.scope)",
         "proposal": "judgement-request.proposal_id"
       },
-      "commit": "preserve history; add RATIFIED event. The judgement-resolution record is written with resolver_kind HUMAN, resolver_grant_id naming the grant checked, interface_id equal to this interface_id, and receipt_id; the judgement-request reaches lifecycle RESOLVED with resolution_id by an appended event; the conditioned operation receives a successor receipt whose prior_receipt_id names its UNRESOLVED receipt, the same id the judgement-resolution records as unresolved_receipt_id",
+      "commit": "preserve history; add ACCEPTED event. The judgement-resolution record is written with resolver_kind HUMAN, resolver_grant_id naming the grant checked, interface_id equal to this interface_id, and receipt_id; the judgement-request reaches lifecycle RESOLVED with resolution_id by an appended event; the conditioned operation receives a successor receipt whose prior_receipt_id names its UNRESOLVED receipt, the same id the judgement-resolution records as unresolved_receipt_id",
       "refusals": ["AUTHORITY_REFUSED", "STALE_STATE"],
       "model_actor": "REFUSED",
-      "note": "CONS-009 and CONS-002. The binding presents the decision and rationale; the kernel performs the ratify transition and the authority check. The binding holds, infers, and widens no grant. Whether the refusal reason_code for a MODEL attempt is AUTHORITY_REFUSED or a console-specific name is undecided (CONS-002)."
+      "note": "CONS-009 and CONS-002. The binding presents the decision and rationale; the kernel performs the accept transition and the authority check. The binding holds, infers, and widens no grant. Whether the refusal reason_code for a MODEL attempt is AUTHORITY_REFUSED or a console-specific name is undecided (CONS-002)."
     },
     {
       "operation": "acknowledge-notification",
@@ -180,7 +180,7 @@
     "services/console/contracts/operator-session.schema.json",
     "services/console/conformance/002-model-cannot-resolve-judgement.yaml",
     "services/console/conformance/008-judgement-request-reaches-owner.yaml",
-    "services/console/conformance/009-owner-resolution-lands-ratified.yaml",
+    "services/console/conformance/009-owner-resolution-lands-accepted.yaml",
     "bindings/README.md",
     "ENGINEERING.md",
     "SPEC.md",

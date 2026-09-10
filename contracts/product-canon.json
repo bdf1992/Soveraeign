@@ -626,7 +626,7 @@
         "OPEN-SEAMS.md",
         "PRD.md"
       ],
-      "note": "OPEN-SEAMS.md S12 records Bdo saying a code-owner review click cannot be the ratification surface. This journey is the replacement and none of it runs."
+      "note": "OPEN-SEAMS.md S12 records Bdo saying a code-owner review click cannot be the acceptance surface. This journey is the replacement and none of it runs."
     },
     {
       "journey_id": "JOURNEY-09",
@@ -693,7 +693,7 @@
         "proofing.request-comparison",
         "proofing.request-revision",
         "proofing.propose-decision",
-        "proofing.ratify-decision",
+        "proofing.accept-decision",
         "proofing.close-session",
         "asset.read-version"
       ],
@@ -791,7 +791,7 @@
     {
       "id": "PROMISE-13",
       "retired_in": "CANON-2",
-      "because": "Named proofing specifically - open a session, annotate, ratify - which is one domain workflow rather than a product-level undertaking. Superseded by PROMISE-16, which states the durable meaning: consequential work over governed versioned state. Retired rather than reworded so that nothing attributed to PROMISE-13 silently comes to mean something wider."
+      "because": "Named proofing specifically - open a session, annotate, accept - which is one domain workflow rather than a product-level undertaking. Superseded by PROMISE-16, which states the durable meaning: consequential work over governed versioned state. Retired rather than reworded so that nothing attributed to PROMISE-13 silently comes to mean something wider."
     },
     {
       "id": "PROMISE-14",

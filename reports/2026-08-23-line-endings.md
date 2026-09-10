@@ -1,6 +1,6 @@
 # Line-ending enforcement, 2026-08-23
 
-Status: `BUILT · SELF-TESTED · NOT WITNESSED · NOTHING RATIFIED`
+Status: `BUILT · SELF-TESTED · NOT WITNESSED · NOTHING ACCEPTED`
 
 Verification-domain operation closing judgement-queue item 8 of
 `reports/2026-08-22-console.md` (residual 4 there; christening item 6). One session
@@ -91,5 +91,5 @@ the old reader exists nowhere in the tree.
 2. [verification] Should `.js` join `TEXT_SUFFIXES` so `.claude/` workflow scripts get
    hygiene checks (residual 2)? They are harness, not product, and lint's population
    currently draws the line at product text.
-3. [verification] Item 8 of the console queue is answered as built, not as ratified.
+3. [verification] Item 8 of the console queue is answered as built, not as accepted.
    Confirm it can be struck once a witness runs.

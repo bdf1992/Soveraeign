@@ -45,7 +45,7 @@ a named boundary and decision record; import participant code into the oracle.
 
 `STATUS.yaml`: `asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED`. The
 next standing transition is independent witnessing (`BUILT -> WITNESSED`) by a
-non-builder; ratification is Bdo-only.
+non-builder; acceptance is Bdo-only.
 
 - The `ENGINEERING.md` baseline, `SPEC.md`, `CLASSIFICATION.md`, and the BYOM
   contract are all accepted (`decisions/0024-open-decision-drain.md`). Build on
@@ -90,8 +90,8 @@ non-builder; ratification is Bdo-only.
 
 Asset; Asset version; Payload; Source; Recording; Proposal; Receipt;
 Observation; Retraction; Projection; Worker (report is not observation);
-Witness. Record standing: `RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE`.
-Artifact standing lifecycle: `OPEN -> BUILT -> WITNESSED -> RATIFIED`. Event
+Witness. Record standing: `RECORDED -> ADMITTED -> ACCEPTED -> EFFECTIVE`.
+Artifact standing lifecycle: `OPEN -> BUILT -> WITNESSED -> ACCEPTED`. Event
 outcomes: `ATTEMPTED | COMMITTED | FAILED | REFUSED | COUNTERED | UNRESOLVED`.
 Attestation outcomes: `REPRODUCED`, `DISSENTED`, `UNATTESTABLE`. Effect
 classes: `RECORD_LOCAL`, `RESOURCE_CONSUMPTION`, `EXTERNAL_WORLD` (no external
@@ -101,5 +101,5 @@ effects in Phase I). Do not invent synonyms for any of these.
 
 Files changed (repo-relative paths); checks observed (exact commands and exit
 codes); standing proposals (at most `OPEN -> BUILT`; witnessing belongs to an
-independent witness, ratification to Bdo); judgement items queued for Bdo; next
+independent witness, acceptance to Bdo); judgement items queued for Bdo; next
 bounded operation.

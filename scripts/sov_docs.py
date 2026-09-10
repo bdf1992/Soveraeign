@@ -12,7 +12,7 @@ generator that happens to live here: the page states, per document, the version
 the Asset Service holds and whether the bytes on disk have moved since.
 
 Full-text search is built here, not fetched. The Asset Service's search
-projection indexes an asset's label and its ratified descriptions, not the bytes
+projection indexes an asset's label and its accepted descriptions, not the bytes
 of the payload, so searching it finds documents by title and never by content.
 Indexing payload text is the Projection Service's declared job (`configure-text`,
 `search-text`), and that service stands PROPOSED and unbuilt. This page carries
@@ -114,7 +114,7 @@ def _attach_citations(built: list[dict[str, Any]]) -> None:
 
     A citation is an observation about the corpus, not an assertion anyone made,
     so it is read off the rendered text rather than recorded. Nothing here writes
-    an asset relationship: that is an assertion and would need ratifying.
+    an asset relationship: that is an assertion and would need accepting.
     """
     by_id = {document["id"]: document for document in built}
     for document in built:

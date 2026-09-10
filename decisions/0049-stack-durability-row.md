@@ -1,6 +1,6 @@
 # 0049 · The stack is missing a durability concern
 
-Status: `PROPOSED · OWNER-DIRECTED EDIT · O2 STILL GATES RATIFICATION`
+Status: `PROPOSED · OWNER-DIRECTED EDIT · O2 STILL GATES ACCEPTANCE`
 
 Bdo, 2026-08-23, on learning that no channel the stack offers can recover a
 lost node: *"Then it's not an AI-native tech stack and needs editing."* This
@@ -101,7 +101,7 @@ Applied to `ENGINEERING.md`:
   it does put node bytes somewhere the node does not govern. Queued.
 - **It does not answer ID-11c.** Succession is judgement, not durability.
 - **It does not close O2.** The baseline remains proposed. This edit changes
-  what O2 would ratify, which is the point of making it before ratification
+  what O2 would accept, which is the point of making it before acceptance
   rather than after.
 - **It does not amend `AI-NATIVE.md`.** Check 8's wording is a freeze
   candidate and its scope is Bdo's naming judgement. The proposed widening is
@@ -133,4 +133,4 @@ of widening a bar and is stated here rather than discovered later.
 2. Accept or strike the `AI-NATIVE.md` check 8 widening — and if accepted,
    whether prior assessments re-score as `UNATTESTABLE`.
 3. Is an off-node copy an `EXTERNAL_WORLD` effect under O7?
-4. O2 remains open; this edit changes what ratifying it would mean.
+4. O2 remains open; this edit changes what accepting it would mean.

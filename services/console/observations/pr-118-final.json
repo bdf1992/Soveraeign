@@ -252,10 +252,10 @@
       "Unchanged by this delta and reported rather than closed by the builder: no check in the repository compares a declared precondition against the check implementing it, and none compares a declared refusal against the implementation's ability to produce it.",
       "Named debt scripts/witness_infrastructure.py at 301 lines is still open; CLAUDE.md's snapshot says KNOWN_MODULE_DEBT is empty, which is stale for this branch."
     ],
-    "standing_note": "An observation by a participant that did not build the change and wrote no repository file except this one. It proposes at most BUILT -> WITNESSED for the parts named above and settles nothing. Only Bdo ratifies judgement.",
+    "standing_note": "An observation by a participant that did not build the change and wrote no repository file except this one. It proposes at most BUILT -> WITNESSED for the parts named above and settles nothing. Only Bdo accepts judgement.",
     "standing_supported": {
       "for": "The behaviour this delta declares and the check it rewrote: that archive-thread, open-channel, open-thread and post each enforce the authority capability-offices.json names for them and now declare live_matching_grant; that all 15 BUILT operations refuse an ungranted caller and admit a granted one; that the rewritten test_declared_refusals.py drives rather than declares which side each of today's fifteen belongs on, and turns red for every mis-filing of the eight that name a record by id, including the exact defeat the third observation demonstrated. This observation supports the standing proposal BUILT -> WITNESSED for those.",
-      "note": "This is an observation. It settles nothing and ratifies nothing, and no part of it is a claim of WITNESSED or RATIFIED standing.",
+      "note": "This is an observation. It settles nothing and accepts nothing, and no part of it is a claim of WITNESSED or ACCEPTED standing.",
       "withheld_from": "The manifest note, on NOTE-COUNT-SESSION-LIVE, NOTE-STATES-NO-COUNTS and NOTE-BUILT-OPERATIONS-LIST; and the completeness of the rewritten case, on GRANT-LIST-IS-THE-NEW-DECLARATION."
     },
     "working_tree_state": {

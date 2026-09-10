@@ -190,7 +190,7 @@
   "forbids": [
     "observing-what-it-executed",
     "settling-a-run",
-    "ratifying-judgement",
+    "accepting-judgement",
     "accepting-an-executor-report-as-an-observation",
     "accepting-a-declared-relation-in-place-of-an-inferred-one",
     "reading-an-incomplete-record-as-independence",

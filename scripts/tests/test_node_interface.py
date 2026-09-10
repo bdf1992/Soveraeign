@@ -174,7 +174,7 @@ class ProjectionFacts(unittest.TestCase):
 
     def test_projection_cannot_promote_its_own_status(self) -> None:
         promoted = deepcopy(self.document)
-        promoted["status"] = "RATIFIED"
+        promoted["status"] = "ACCEPTED"
         self.assertTrue(any("status" in defect for defect in validate(promoted, self.schema)))
 
     def test_changed_raw_source_digest_changes_input_identity(self) -> None:

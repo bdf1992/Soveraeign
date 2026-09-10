@@ -46,7 +46,7 @@ host_service_status: BUILT_READ_HEALTH_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNES
 # the observation it emits is the one the kernel's settle_run accepts. Three
 # independent witness passes (witness/observation-service.md) observed the thin
 # slice through its declared surface at commit 3087714 and support WITNESSED for
-# it; nothing is ratified, no binding routes any operation, and AI-NATIVE.md
+# it; nothing is accepted, no binding routes any operation, and AI-NATIVE.md
 # check 3 still reads UNATTESTABLE because no service's runs are observed yet.
 observation_service_status: BUILT_THIN_SLICE_WITNESSED_REMAINDER_DECLARED
 # Every service operation now declares its subject, CRUD verb, logical endpoint,
@@ -169,7 +169,7 @@ settled_source_claims:
   - same_world_human_and_model_operators
   - sources_survive_reading
   - evidence_does_not_grant_authority
-  - recorded_admitted_ratified_effective_are_distinct
+  - recorded_admitted_accepted_effective_are_distinct
   - typed_scoped_revocable_authority
   - receipts_for_crossings
   - record_retraction_preserves_history
@@ -326,7 +326,7 @@ owner_dispositions:
     action: REDIRECT
     by_seat: seat:root
     at: 2026-08-30T00:00:00Z
-    claim: Preserve self-bounding authority and independent-observation invariants; re-derive the exact successor implementation rather than ratifying stale decision-0075 bytes.
+    claim: Preserve self-bounding authority and independent-observation invariants; re-derive the exact successor implementation rather than accepting stale decision-0075 bytes.
   - id: A20
     packet: acceptance/accepted/A20.json
     action: REDIRECT
@@ -384,13 +384,13 @@ rulings:
     ruling: Bootstrap trust is explicit, local, and finite. A founding BootstrapGrant pins one attestor identity, validator version, capability, scope, validity window, and artifact revision, and may attest verification-typed claims only. Every later attestor resolves through ordinary authority lineage.
     counter: A fixture in which a bootstrap grant attests a judgement-typed claim, or in which a second attestor is admitted without lineage.
   - id: O4
-    ruling: Historical reproduction and present applicability are separate objects. An Attestation is immutable evidence about an exact claim, input, and run. CurrentEffectiveness is a rebuildable projection over the ratified claim, applicable attestations, supersession, expiry, retraction, and policy. A recorded REPRODUCED result is never rewritten.
+    ruling: Historical reproduction and present applicability are separate objects. An Attestation is immutable evidence about an exact claim, input, and run. CurrentEffectiveness is a rebuildable projection over the accepted claim, applicable attestations, supersession, expiry, retraction, and policy. A recorded REPRODUCED result is never rewritten.
     counter: A case in which changed applicability rewrites a historical attestation, or in which effectiveness cannot be rebuilt from the record.
   - id: O5
     ruling: Gauge measures and projects governance state, authority pressure, unresolved rights, coverage, and evidence strength, and owns none of them. A Gauge score grants no authority, standing, or admission.
     counter: A case in which a Gauge score is read as a right to act, or in which evidence strength alone advances standing.
   - id: O6
-    ruling: When a claim effectiveness policy requires runtime attestation, UNATTESTABLE keeps that claim out of EFFECTIVE while preserving its historical RATIFIED standing. A claim whose policy does not require attestation may stay effective, and the absence stays visible. No silent degrade from required to optional.
+    ruling: When a claim effectiveness policy requires runtime attestation, UNATTESTABLE keeps that claim out of EFFECTIVE while preserving its historical ACCEPTED standing. A claim whose policy does not require attestation may stay effective, and the absence stays visible. No silent degrade from required to optional.
     counter: A case in which a required attestation quietly becomes optional, or in which UNATTESTABLE erases prior standing.
   - id: O8
     ruling: Semantic cold-start is observed as a named domain task performed by a fresh participant against exact held data, producing attributable outputs and receipts. Schema validity alone does not complete it. The FOUND-010 execution is admissible evidence.

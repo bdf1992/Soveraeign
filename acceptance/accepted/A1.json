@@ -5,7 +5,7 @@
   "subject": {
     "artifact": "ENGINEERING.md",
     "from_standing": "BUILT_SELF_TESTED_NOT_WITNESSED",
-    "to_standing": "RATIFIED",
+    "to_standing": "ACCEPTED",
     "supersedes_open_decision": "O2"
   },
   "presented_by_seat": "seat:session-control",
@@ -48,6 +48,6 @@
     "services/asset/src/soveraeign_asset_service/core.py is 341 lines against the 300-line limit, recorded as named debt in scripts/lint.py rather than silently allowed.",
     "The baseline is self-tested. No independent witness has run it, so ACCEPT here is acceptance of a build claim, not of a witnessed one."
   ],
-  "on_accept": "STATUS.yaml engineering_framework_status becomes RATIFIED and ENGINEERING.md drops its proposal framing; the O2 ruling in STATUS.yaml rulings is deleted as spent.",
+  "on_accept": "STATUS.yaml engineering_framework_status becomes ACCEPTED and ENGINEERING.md drops its proposal framing; the O2 ruling in STATUS.yaml rulings is deleted as spent.",
   "on_reject": "ENGINEERING.md stays proposed, the O2 ruling stands as the working default, and the rejection reason names which of the three defeaters landed."
 }

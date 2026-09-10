@@ -16,7 +16,7 @@ own it. It creates no side ledger and has no authority of its own.
 ## Duties
 
 1. Review standing honestly: what is `OPEN`, `BUILT`, `WITNESSED`,
-   `RATIFIED`, and on what evidence. Never advance standing by summary.
+   `ACCEPTED`, and on what evidence. Never advance standing by summary.
 2. Record residual failures, contradictions, and deliberate ambiguities in
    `OPEN-SEAMS.md`; an implementation must not choose a side silently.
 3. Route policy-shaped learnings into `decisions/` as proposals and standing

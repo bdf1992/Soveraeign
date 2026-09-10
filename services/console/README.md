@@ -54,17 +54,17 @@ not yet ruled on, are in
 
 The slice this README originally declared first is the owner's judgement
 surface: the path through which the owner receives a judgement request, answers it, and has the answer land as a
-judgement-resolution record that can carry `RATIFIED` standing (`CHARTER.md`,
+judgement-resolution record that can carry `ACCEPTED` standing (`CHARTER.md`,
 "First slice: the owner's judgement surface"). Its target is a local CLI over
 the Python API, the Local surface row of `ENGINEERING.md`: no HTTP, no UI
 framework, and not a GUI claim. In the manifest,
 `list-pending-judgement-requests` is the pending-list read the human and model
 bindings invoke to list `QUEUED` judgement requests from judgement-request
-records, receipted; `resolve-judgement` is realized as the `SPEC.md` `ratify`
-transition with the request's question as the Proposal being ratified. The
+records, receipted; `resolve-judgement` is realized as the `SPEC.md` `accept`
+transition with the request's question as the Proposal being accepted. The
 Human Binding it runs through is declared under `bindings/console/` as an
 interface only. `conformance/008-judgement-request-reaches-owner.yaml`
-(CONS-008, reach) and `conformance/009-owner-resolution-lands-ratified.yaml`
+(CONS-008, reach) and `conformance/009-owner-resolution-lands-accepted.yaml`
 (CONS-009, land) are its seed fixtures. Nothing in the slice is implemented;
 every entry in it is a proposal until the gates below hold.
 
@@ -76,7 +76,7 @@ The judgement surface begins only after:
 3. the Asset Service and Proofing Service event and receipt read paths are
    stable enough to project without direct database access;
 4. Bdo authorizes a provisional Human Binding target (`decisions/0014`).
-   Ratifying the boundary itself gates only the standing word.
+   Accepting the boundary itself gates only the standing word.
 
 No placeholder implementation is treated as progress toward those gates. The
 continuity slice above does not close any of them: it built a service, not a

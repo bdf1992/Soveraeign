@@ -12,7 +12,7 @@ Proposed standing: `decisions/0029-lessons-loop.md`.
 ## How an entry moves
 
 `RECORDED` when written here. `ADMITTED` when a fixture or check passes for it.
-`RATIFIED` only by Bdo, through a decision record. `EFFECTIVE` when it actually
+`ACCEPTED` only by Bdo, through a decision record. `EFFECTIVE` when it actually
 runs in `scripts/verify.py` or `scripts/lint.py`. The four do not collapse
 (`SPEC.md`, Historical standing and current effectiveness).
 
@@ -65,7 +65,7 @@ carry the interactive session's context.
 - Standing: `EFFECTIVE` — the check runs inside `scripts/verify.py`, which is
   what this file defines `EFFECTIVE` to mean. It was recorded `ADMITTED` until
   a witness pointed out that the four standings do not collapse and this one
-  was under-claiming. `RATIFIED` remains Bdo's and nothing here asks for it.
+  was under-claiming. `ACCEPTED` remains Bdo's and nothing here asks for it.
 
 ### L-0002 · Six of twenty-five sessions are locked but never recorded
 

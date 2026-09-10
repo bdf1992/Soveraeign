@@ -20,8 +20,8 @@ Implementation begins once:
    has a stable owner (`ENGINEERING.md`, Context and module budget);
 2. projection-specific positive and defeating fixtures are executable.
 
-Ratification of the boundary (`decisions/0021`, O21) gates only
-`projection.ratify_boundary`: the standing word, not the build. The dense and
+Acceptance of the boundary (`decisions/0021`, O21) gates only
+`projection.accept_boundary`: the standing word, not the build. The dense and
 sparse lanes wait on O12 for embeddings; every row in `PARITY.md` names its
 own gate. No placeholder implementation is treated as progress toward those
 gates.

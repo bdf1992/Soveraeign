@@ -69,7 +69,7 @@ seven that did get the treatment.
 | Gateway | `G-GW-1..6` | a caller acts by crossing a declared address, not by having access · refusal is legible and distinct from failure · every crossing leaves a record · what comes back is the owning service's receipt, unchanged · neither human nor model gets a private door · a network transport does not open itself |
 | Record | *(unlabeled, 6 claims)* | a journal row, once committed, is never mutated or deleted · retraction preserves the countered entry · every entry binds to the exact digest of the entry before it · a projection cannot become the record · this journal is verifiable without trusting this service's own code · every crossing into this journal leaves a durable attributable record |
 
-50 service-level claims total, none claiming `WITNESSED` or `RATIFIED`
+50 service-level claims total, none claiming `WITNESSED` or `ACCEPTED`
 standing — all `BUILT` at most, self-reported by the drafting session, per
 `decisions/0067`.
 

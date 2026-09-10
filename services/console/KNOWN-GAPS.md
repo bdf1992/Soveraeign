@@ -1,6 +1,6 @@
 # Console Service Reference Gaps
 
-Status: `OBSERVED AGAINST THE CHARTER · NOT OWNER-RATIFIED`
+Status: `OBSERVED AGAINST THE CHARTER · NOT OWNER-ACCEPTED`
 
 The continuity record path is built and self-tested
 (`decisions/0036-operator-continuity-before-the-screen.md`). Five of the
@@ -11,7 +11,7 @@ says which, so the built part is not read as the whole.
 | --- | --- | --- | --- |
 | Notifications | A `mentions_you` flag is derived when reading continuity | A notification is an addressed input record naming its source address, digest, kind, and acknowledgement | `notification.schema.json`; CONS-004 |
 | Judgement requests | Not implemented | Queued requests that never block operation, with loop mode, requested authority type, and a resolution back-reference | `judgement-request.schema.json`; PROD-I-6; CONS-001, CONS-008 |
-| Judgement resolutions | Not implemented | The only console record expected to reach `RATIFIED`, and only by an appended event | `judgement-resolution.schema.json`; CONS-002, CONS-009 |
+| Judgement resolutions | Not implemented | The only console record expected to reach `ACCEPTED`, and only by an appended event | `judgement-resolution.schema.json`; CONS-002, CONS-009 |
 | Operator settings | Not implemented | Typed, scoped preferences whose change requires named authority and never widens it | `operator-setting.schema.json`; CONS-003 |
 | Dashboards and activity views | Not implemented | Declared projections over sibling-service events and receipts, naming their omissions and their rebuild operation | `projection-view.schema.json`; CONS-005, CONS-007 |
 | Channel and thread reads | Only whole-journal folds exist; there is no channel listing operation | Bounded reads over channels and threads without replaying the journal per lookup | `CHARTER.md` owned records |

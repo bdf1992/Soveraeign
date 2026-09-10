@@ -47,8 +47,8 @@
     {
       "id": "W5-2",
       "claim": "a value that is not exactly a standing does not promote",
-      "method": "eleven values including trailing period, footnote marker, asterisk, SELF_ and PRE- compounds, negations, parenthetical retraction, doubled token, qualified verdict, continuation line, and RATIFIED",
-      "finding": "the whole-value whitelist held under everything. The value is taken as the entire line remainder, so any trailing token or punctuation defeats the lookup. RATIFIED is named as over-reach with its own message rather than silently ignored. This half is genuinely structural and matches the fourth reading."
+      "method": "eleven values including trailing period, footnote marker, asterisk, SELF_ and PRE- compounds, negations, parenthetical retraction, doubled token, qualified verdict, continuation line, and ACCEPTED",
+      "finding": "the whole-value whitelist held under everything. The value is taken as the entire line remainder, so any trailing token or punctuation defeats the lookup. ACCEPTED is named as over-reach with its own message rather than silently ignored. This half is genuinely structural and matches the fourth reading."
     },
     {
       "id": "W5-3",
@@ -107,7 +107,7 @@
       "id": "W5-D5",
       "severity": "MATERIAL",
       "claim_defeated": "the asymmetry argument survives its own test",
-      "finding": "The argument is coherent as a principle: the two sides fail in opposite directions, and under-reading a status value is the dangerous direction because a claim then passes unasked for evidence. But the reader under-reads on 15 valid-YAML spellings that resolve to a witnessed or ratified value. Two are what an ordinary edit produces: any quoting of the value, and a trailing YAML comment naming the supporting record.",
+      "finding": "The argument is coherent as a principle: the two sides fail in opposite directions, and under-reading a status value is the dangerous direction because a claim then passes unasked for evidence. But the reader under-reads on 15 valid-YAML spellings that resolve to a witnessed or accepted value. Two are what an ordinary edit produces: any quoting of the value, and a trailing YAML comment naming the supporting record.",
       "consequence": "The live STATUS.yaml already uses comment lines and 22 nested mappings, so these sit in the file's own idiom rather than being exotic. The suite has one case for the liberal direction and none anywhere for the under-read the argument itself names as unsafe. The principle is right; the implementation does not meet it.",
       "what_would_have_defeated_this_finding": "a case in the under-reading direction"
     },

@@ -1,6 +1,6 @@
 # Gateway Service Ground
 
-Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT RATIFIED`
+Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT ACCEPTED`
 
 A service-scoped projection of `GROUND.md` under `decisions/0093-service-srd-spec-ground.md`.
 Each claim below is one this service commits to always being true for whoever depends on it,

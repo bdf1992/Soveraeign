@@ -1,6 +1,6 @@
 # 0057 · Board management role and the GitHub write crossing
 
-Status: `PROPOSED · OWNER RATIFICATION PENDING`
+Status: `PROPOSED · OWNER ACCEPTANCE PENDING`
 
 Numbering note: drafted as 0027 on `main`, where `feat/federation-harness-and-hardening` had already
 taken 0027 for `0027-local-model-adapter.md`. That record is ruled and anchors the

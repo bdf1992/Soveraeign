@@ -395,7 +395,7 @@
       "subject": "judgement-resolution",
       "crud": "CREATE",
       "requirement": "PROD-I-6",
-      "kernel_transition": "ratify",
+      "kernel_transition": "accept",
       "preconditions": [
         "judgement_request_recorded",
         "human_actor",
@@ -555,7 +555,7 @@
     "record:append-preserving-journal"
   ],
   "forbids": [
-    "ratifying-on-behalf-of-the-owner",
+    "accepting-on-behalf-of-the-owner",
     "presenting-a-projection-as-authoritative",
     "granting-authority-it-was-not-issued",
     "silent-notification-drop",

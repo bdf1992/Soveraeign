@@ -6,7 +6,7 @@
   "captured_at": "2026-08-26",
   "method": "Answers were frozen before the participant read a single repository file. The only inputs were the material a fresh session receives automatically: CLAUDE.md, AGENTS.md, the memory index, the console continuity briefing, the session registry, and the stranded-work notice. Questions with no corresponding belief are absent rather than guessed, so MISSING means the orientation layer never raised the subject at all.",
   "answers": [
-    {"id": "A01", "value": "OPEN,BUILT,WITNESSED,RATIFIED", "conf": "high"},
+    {"id": "A01", "value": "OPEN,BUILT,WITNESSED,ACCEPTED", "conf": "high"},
     {"id": "A02", "value": "FOUNDING", "conf": "high"},
     {"id": "A03", "value": "EVIDENCE_PRODUCING_EXECUTION", "conf": "high"},
     {"id": "A04", "value": "RECORD_LOCAL,RESOURCE_CONSUMPTION,EXTERNAL_WORLD", "conf": "high"},
@@ -15,7 +15,7 @@
     {"id": "A09", "value": "PREAPPROVAL_REQUESTED", "conf": "high"},
     {"id": "A12", "value": 1, "conf": "high"},
     {"id": "A13", "value": "grant:standing-landing-loop", "conf": "high"},
-    {"id": "A14", "value": "RATIFIED", "conf": "high"},
+    {"id": "A14", "value": "ACCEPTED", "conf": "high"},
     {"id": "A15", "value": "repository.commit,repository.land", "conf": "high"},
     {"id": "A18", "value": "open_decisions: []", "conf": "high"},
     {"id": "A19", "value": 1, "conf": "med"},

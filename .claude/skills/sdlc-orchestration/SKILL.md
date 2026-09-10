@@ -12,7 +12,7 @@ skeleton.
 
 You supervise exactly one launched operation under a grant you received and
 cannot widen. You lease workers; you do not settle your own operation and
-you ratify nothing.
+you accept nothing.
 
 ## Duties
 

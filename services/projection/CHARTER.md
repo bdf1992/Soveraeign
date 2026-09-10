@@ -72,8 +72,8 @@ what Polygres offers. This charter carries that intent at proposal standing.
   against its exact lane over the same build;
 - projection receipt and history.
 
-Proposed lifecycle (service policy awaiting owner ratification; it does not
-replace the shared `RECORDED`, `ADMITTED`, `RATIFIED`, and `EFFECTIVE`
+Proposed lifecycle (service policy awaiting owner acceptance; it does not
+replace the shared `RECORDED`, `ADMITTED`, `ACCEPTED`, and `EFFECTIVE`
 standings):
 
 ```text
@@ -137,7 +137,7 @@ Humans and models query the same service through different bindings:
 - a model's retrieval is recorded with its binding identity; a human's with
   their operator identity; neither changes a score or a source;
 - machine verification authority may settle checkable predicates (rebuild
-  equality, hit resolution, fidelity comparison) but cannot ratify a Proposal
+  equality, hit resolution, fidelity comparison) but cannot accept a Proposal
   that a projection edit raised.
 
 ## Current implementation boundary

@@ -16,7 +16,7 @@ authoritative by repeating another one.
 The operational System of Record is the append-preserving journal of addressed
 inputs, decisions, standing transitions, operations, observations, receipts,
 and counter-records. It records what happened and under what authority. It does
-not collapse recorded, admitted, ratified, effective, disputed, failed, or
+not collapse recorded, admitted, accepted, effective, disputed, failed, or
 countered claims into one undifferentiated “truth.”
 
 SQLite is the retained reference storage mechanism for that record. Search tables, graph
@@ -167,9 +167,9 @@ content-addressed payload path, which is filesystem.
 | `read_source` | none; derivative plans carry `ReaderDeclaration` materials | `derivative_plans`, `recordings`, CAS `blobs/sha256/` | — | `CONF-I2` | **absent** — recording reconstruction exists, but no component executes the declared reader |
 | `submit_proposal` | `AssetService.propose` | `proposals` | — | `CONF-I1` | partial |
 | `admit` | none | — | — | `CONF-I1` | **absent** — declared gap |
-| `ratify` | `AssetService.ratify` | `proposals`, `receipts` | — | `CONF-I5`, `CONF-I5-GRANT` | partial |
+| `accept` | `AssetService.accept` | `proposals`, `receipts` | — | `CONF-I5`, `CONF-I5-GRANT` | partial |
 | `attest` | none | — | — | `CONF-I8` | **absent** — declared gap |
-| `make_effective` | none; `ratify` writes `EFFECTIVE` directly | `relationships` | — | — | **collapsed** — declared gap |
+| `make_effective` | none; `accept` writes `EFFECTIVE` directly | `relationships` | — | — | **collapsed** — declared gap |
 | `begin_run` | `request_derivative`, `claim` | `runs` | `operation-plan` | — | partial |
 | `report_run` | `report_derivative` | `runs` | — | — | partial |
 | `observe_run` | `observe` | `observations` | `participant-observation` | — | partial — observer independence gap |

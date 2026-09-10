@@ -1,7 +1,7 @@
 {
   "case_id": "WITNESS-2026-09-08-DEFINITION-RECURRENCE-P15-X4",
   "record_kind": "OBSERVATION",
-  "record_note": "An observation, not a settlement and not a ratification. Written under .local/ at the launching agent's direction because witness/ and reports/ sit outside grant:standing-landing-loop.",
+  "record_note": "An observation, not a settlement and not a acceptance. Written under .local/ at the launching agent's direction because witness/ and reports/ sit outside grant:standing-landing-loop.",
   "participant_id": "claude-opus-5/sov-witness@2026-09-08",
   "independence": {
     "contributed_to_build": false,
@@ -63,12 +63,12 @@
     {"id": "F9", "severity": "MINOR", "address": "scripts/sovverify/commissioning.py:25-32", "observed": "True that nothing ran the CLI subcommand `sov_reuse.py selfcheck`. Overstated as the Phase-I lesson: scripts/tests/test_sov_reuse.py::DefeatingVariants exercised the same fixture variants in-process on main and is in the tooling suite. What was missing was the entry point, not the grading."},
     {"id": "F10", "severity": "MINOR", "address": "scripts/sovverify/commissioning.py `observes` tuples", "observed": "sov_recurrence.py selfcheck reads zero bytes under the repository root while declaring four repository addresses as observed, including contracts/custodies/phase-1-5.json. Same for the sov_reuse and pre-existing sov_fresh checks. scripts/sovland/isolation.py:43 already records that nothing grades the tuple. Pattern inherited, extended twice without flagging."},
     {"id": "F11", "severity": "MINOR", "address": "contracts/verification-budget.json 'discovery and reuse slice': 3.0", "observed": "Measured 4.750s wall on this host, entering the suite already in budget debt. Host-dependent; recorded as evidence, not a refusal."},
-    {"id": "F12", "severity": "LATENT", "address": "scripts/sovrecurrence/experience.py:WITNESSED", "observed": "Admission is equality on WITNESSED, not `at least witnessed`. A member at RATIFIED would be silently dropped from settled experience. No RATIFIED member exists today."}
+    {"id": "F12", "severity": "LATENT", "address": "scripts/sovrecurrence/experience.py:WITNESSED", "observed": "Admission is equality on WITNESSED, not `at least witnessed`. A member at ACCEPTED would be silently dropped from settled experience. No ACCEPTED member exists today."}
   ],
   "reproduced": [
     "decisions/0102-open-phase-1-5.md Decision item 3 gives every clause a live EXIT custody from the first day; its Judgement queue for Bdo reads None",
     "contracts/acceptance-policy.json hold_reasons is exhaustive and admits no reason to escalate a RECORD_LOCAL revertible member admission; escalation would be refused by PREAPPROVAL_REQUESTED",
-    "experience.gather refuses BUILT, PRESENTED, RATIFIED, lowercase, whitespace-suffixed, NOT_WITNESSED, PRE_WITNESSED and WITNESSED_PARTIAL; trap T3 avoided by whole-token equality",
+    "experience.gather refuses BUILT, PRESENTED, ACCEPTED, lowercase, whitespace-suffixed, NOT_WITNESSED, PRE_WITNESSED and WITNESSED_PARTIAL; trap T3 avoided by whole-token equality",
     "the live reading cites 8 sources across P15-X1/X2/X3 and does not cite scripts/sov_recurrence.py itself",
     "the directory tree-digest detects a byte change inside services/observation",
     "run and selfcheck perform zero writes; the whole tree is byte-identical across both; git status stays clean",

@@ -7,9 +7,9 @@ when:
   - it is admitted
 then:
   - recorded and admitted are visible
-  - it remains unratified
+  - it remains unaccepted
   - it does not condition effective operation
 defeating:
-  - treat admission as ratification
+  - treat admission as acceptance
   - treat recording as effective state
 

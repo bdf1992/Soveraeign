@@ -16,7 +16,7 @@ Binding` to a locally hosted Ollama-compatible runtime, with two declared bindin
 positive invocation records, fourteen defeating fixtures, and a check suite in
 `scripts/verify.py`.
 
-The adapter exists to make open decision O12 answerable. O12 asks Bdo to ratify "the
+The adapter exists to make open decision O12 answerable. O12 asks Bdo to accept "the
 exact BYOM binding fields, data-boundary modes, and two-model Phase-I fixture". Until
 now `bindings/` and `adapters/` held README files and a profile skeleton, so the question
 had to be answered from prose. Two working bindings over materially different local
@@ -59,10 +59,10 @@ is queued rather than merged into `contracts/kernel-transitions.json`.
 
 - `byom_status` moves from `OWNER_DIRECTED_CONTRACT_AND_FIXTURE_PROPOSED` to
   `OWNER_DIRECTED_CONTRACT_BUILT_WITNESSED_DISSENTED`. The contract is unchanged and
-  unratified; what changed is that an implementation exercises it and an independent
+  unaccepted; what changed is that an implementation exercises it and an independent
   observer has refused it (see Standing).
-- O12 is unaffected as a gate. It gates `model_binding.ratify_contract`, and nothing here
-  ratifies a binding. The adapter narrows what Bdo must decide from an open question to a
+- O12 is unaffected as a gate. It gates `model_binding.accept_contract`, and nothing here
+  accepts a binding. The adapter narrows what Bdo must decide from an open question to a
   reviewable object with five named judgement items in `adapters/ollama/README.md`.
 - `invoke_model` still has no implementation (PROD-I-9). This adapter checks declarations
   and records; it sends no request to any model. The invocation records under `fixtures/`
@@ -113,4 +113,4 @@ check. The observer's six judgement items are added to the five in
 
 The witnessable subset today is the two-binding parity fixture, the `validate.py` command
 line, and the declaration-consistency checks. Custody enforcement is not witnessable and
-stays `OPEN`. Only Bdo ratifies.
+stays `OPEN`. Only Bdo accepts.

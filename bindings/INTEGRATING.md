@@ -99,7 +99,7 @@ tree.
   counter-record. `RESOURCE_CONSUMPTION` and `EXTERNAL_WORLD` effects are not
   undone by it.
 - **Your tests establish `BUILT` and nothing more.** They cannot claim
-  `WITNESSED` or `RATIFIED`, and the participant that wrote the adapter cannot
+  `WITNESSED` or `ACCEPTED`, and the participant that wrote the adapter cannot
   observe it.
 
 ## Three worked examples, smallest first

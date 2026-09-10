@@ -1,6 +1,6 @@
 # Asset Service Ground
 
-Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT RATIFIED`
+Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT ACCEPTED`
 
 A short, service-scoped list of claims the Asset Service commits to always
 being true for its callers, under `decisions/0093-service-srd-spec-ground.md`.
@@ -42,17 +42,17 @@ independent Red engagement must still attempt against this claim).
 
 ### AG-3 — Nothing here is authoritative merely by being claimed
 
-> A description recorded by a human or a model actor is `CLAIMED_UNRATIFIED`
-> until a live, typed, human-held grant ratifies it, and the conformance read
+> A description recorded by a human or a model actor is `CLAIMED_UNACCEPTED`
+> until a live, typed, human-held grant accepts it, and the conformance read
 > never reports the claim as the fact.
 
 Specializes `GROUND-003` (authority is granted, never acquired) and
 `GROUND-011` (standing does not collapse).
 
 What would defeat it: `read-library-conformance` reports `CONFORMING` for a
-field nobody ratified (`librarian.py` keeps `CONFORMING`, `CLAIMED_UNRATIFIED`,
+field nobody accepted (`librarian.py` keeps `CONFORMING`, `CLAIMED_UNACCEPTED`,
 and `MISSING_FIELD` as three distinct verdicts for exactly this reason), or
-`ratify-proposal` accepts a `VERIFICATION`-typed grant for a judgement-typed
+`accept-proposal` accepts a `VERIFICATION`-typed grant for a judgement-typed
 claim.
 
 ### AG-4 — Every attempted operation leaves a receipt, refusal included
@@ -91,7 +91,7 @@ survive, but the counter receipt does not link the prior receipt").
 ### AG-6 — Search and graph results here are never a second authoritative store
 
 > The SQLite FTS and edge tables `rebuild-projection` produces are dropped and
-> rebuilt from ratified records on every rebuild. A row written straight into
+> rebuilt from accepted records on every rebuild. A row written straight into
 > one of them without a receipt behind it does not survive the next rebuild
 > and never conditions another operation's authoritative state.
 

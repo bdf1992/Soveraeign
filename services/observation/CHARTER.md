@@ -1,6 +1,6 @@
 # Observation Service Charter
 
-Standing is read from `STATUS.yaml`. Five of the eight declared operations are built and self-tested under `src/soveraeign_observation_service`: `request-observation`, `declare-predicates`, `infer-relation`, `observe-run`, and `read-observation`. `list-pending-observations`, `counter-observation`, and `attest-observation` are declared only. Three independent witness passes observed the built five through this surface (`witness/observation-service.md`); nothing is ratified.
+Standing is read from `STATUS.yaml`. Five of the eight declared operations are built and self-tested under `src/soveraeign_observation_service`: `request-observation`, `declare-predicates`, `infer-relation`, `observe-run`, and `read-observation`. `list-pending-observations`, `counter-observation`, and `attest-observation` are declared only. Three independent witness passes observed the built five through this surface (`witness/observation-service.md`); nothing is accepted.
 
 ## Role in Soveraeign
 
@@ -99,7 +99,7 @@ It reads the Record Service journal. It never writes it.
 - It does not read an incomplete record as independence.
 - It does not settle. A satisfactory observation lets the kernel settle; it is not the
   settlement.
-- It does not ratify. Judgement is Bdo's.
+- It does not accept. Judgement is Bdo's.
 - It does not accept an executor's report as an observation.
 
 ## Proving operation

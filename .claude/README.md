@@ -151,7 +151,7 @@ them.
   the only one he should have to read.
 - `agents/sov-worker.md` — stable builder role: executes exactly one bounded
   operation in whichever domain the prompt names (edit + run rights, no
-  commit/push, no self-witnessing, no ratification).
+  commit/push, no self-witnessing, no acceptance).
 - `agents/sov-orchestrator.md` — stable orchestration role: PLAN turns an
   objective into a bounded operation; REVIEW forms a frozen Finding about
   `PARTICIPANT_IN_WORK`; it edits nothing and never witnesses the work.
@@ -162,7 +162,7 @@ them.
   no placeholder Finding.
 - `agents/sov-controller.md` — control role for headless or scheduled runs:
   dispatches and aggregates; when given independently frozen Findings it may
-  classify their evidence-backed relationship without ratifying either.
+  classify their evidence-backed relationship without accepting either.
 - `hooks/console_session.py` — session hooks, wired in `settings.json`. On
   `SessionStart` it opens (or resumes) a Console Service operator session and
   prints what landed while this operator was away, which becomes the starting
@@ -199,8 +199,8 @@ them.
   `contracts/standing-grants.json` and refuses with the kernel's own refusal
   code when the grant does not cover it. Every other workflow here stops at an
   uncommitted tree. Standing: `decisions/0064-standing-authorization-and-the-landing-loop.md`
-  and `decisions/0065-standing-grant-ratified.md`. `grant:standing-landing-loop`
-  is `RATIFIED` for actor `sov`; a landing is refused for missing evidence — a
+  and `decisions/0065-standing-grant-accepted.md`. `grant:standing-landing-loop`
+  is `ACCEPTED` for actor `sov`; a landing is refused for missing evidence — a
   failing check, or no independent observation — not for missing permission.
 - `workflows/sov-qa.js` — cross-domain QA sweep: sov-witness observes the
   current working tree per domain and aggregates residuals; builds nothing.
@@ -269,8 +269,8 @@ them.
 
 ## Standing rules both families encode
 
-- Lifecycle `OPEN -> BUILT -> WITNESSED -> RATIFIED`; a harness run may propose
-  at most `WITNESSED`. Only Bdo ratifies.
+- Lifecycle `OPEN -> BUILT -> WITNESSED -> ACCEPTED`; a harness run may propose
+  at most `WITNESSED`. Only Bdo accepts.
 - Judgement-typed questions queue in reports; they never block and are never
   decided by an agent.
 - Runs leave changes uncommitted in the working tree for review; branch and

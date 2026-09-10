@@ -163,7 +163,7 @@
         "hold": {
           "id": "H-FIXTURE-2",
           "reason": "AWAITING_OWNER_INPUT",
-          "blocks": "spec.ratify",
+          "blocks": "spec.accept",
           "reachable_alternative": "none stated"
         }
       }
@@ -248,7 +248,7 @@
       "input": {
         "open_decision": {
           "id": "O-FIXTURE-1",
-          "question": "Does Bdo ratify this?",
+          "question": "Does Bdo accept this?",
           "blocks": "some_area"
         }
       }

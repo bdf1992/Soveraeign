@@ -7,7 +7,7 @@ model: `freeze` commits reconciled construction first, qualification observes
 that immutable commit, and `land-candidate` merges the exact frozen SHA without
 rewriting it.
 
-Nothing here ratifies anything. Repository effects still require the ratified
+Nothing here accepts anything. Repository effects still require the accepted
 standing grant and the evidence preconditions declared for the capability used.
 """
 

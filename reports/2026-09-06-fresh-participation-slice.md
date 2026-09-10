@@ -10,7 +10,7 @@ throughout. No phase state, standing field, or floor moved.
 Presented on the branch for acceptance, in nine commits: the slice, the repairs each
 witness pass asked for, the standing the fourth pass supports, the office opened at Bdo's
 direction, and the node's journal separated from the report. Not landed on `main`: the change touches `CLAUDE.md`, which
-the ratified standing grant excludes, so `scripts/sov_land.py` is not the path and Bdo's
+the accepted standing grant excludes, so `scripts/sov_land.py` is not the path and Bdo's
 review of the branch is.
 
 ## What was built, and the command that proves it
@@ -100,7 +100,7 @@ seeded under the registry's root name, or wants a persisted node whose office th
 opened; `--issuer` shows the mechanism and is not evidence the seat acted.
 
 Pass 3 observed commit `8fd7716`, scoped to the pass 2 repairs. Verdict
-`RATIFIABLE-WITH-CONDITIONS`; standing supported `BUILT`, with `BUILT -> WITNESSED` supported
+`ACCEPTABLE-WITH-CONDITIONS`; standing supported `BUILT`, with `BUILT -> WITNESSED` supported
 for the instrument claim once two low defects are discharged. Both repaired in the fourth
 commit:
 

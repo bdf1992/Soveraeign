@@ -19,7 +19,7 @@ something the system can check rather than something a model must remember.
    the intended landing, and its standing.
 2. **Standing climbs the four values that do not collapse** (`SPEC.md`,
    Historical standing and current effectiveness): `RECORDED` when written,
-   `ADMITTED` when a fixture or check passes for it, `RATIFIED` only by Bdo
+   `ADMITTED` when a fixture or check passes for it, `ACCEPTED` only by Bdo
    through a decision record, `EFFECTIVE` when it runs in `scripts/verify.py` or
    `scripts/lint.py`. A lesson awaiting Bdo is a PROD-I-6 pending-right record
    and blocks nothing.
@@ -110,7 +110,7 @@ violated; Bdo may counter any of them in review.
 
 ## Gate names
 
-`lessons.ratify_loop` — ratification of the capture trigger, threshold, and
+`lessons.accept_loop` — acceptance of the capture trigger, threshold, and
 landing rule as policy. Writing lessons, draining them into fixtures, and citing
 them are all reachable without that ruling; only their standing as a governing
 loop waits on it.

@@ -26,7 +26,7 @@ the locked source corpus.
 
 The exact `NONE`/`PARTIAL`/`FULL` meanings, `INVALID`/`OPEN` assessment states,
 all-`FULL` qualification bar, two-binding proof, and integration-loss
-sovereignty remain freeze-candidate policy until Bdo ratifies or strikes them.
+sovereignty remain freeze-candidate policy until Bdo accepts or strikes them.
 
 ## Consequence for the Asset Service
 

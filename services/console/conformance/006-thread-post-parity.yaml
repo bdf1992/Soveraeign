@@ -27,7 +27,7 @@ then:
 defeating:
   - P-H and P-M are recorded through different operation_type values or different authority checks
   - the two receipts differ in event_type, or carry reason codes that cannot be reconciled to the same transition
-  - P-M is recorded with standing ADMITTED, RATIFIED, or EFFECTIVE, or without a proposal_id
+  - P-M is recorded with standing ADMITTED, ACCEPTED, or EFFECTIVE, or without a proposal_id
   - either binding writes a post record that has no console receipt, or a receipt whose interface_id is null
   - T-1 read through one binding omits a post visible through the other without declaring the omission
   - one binding discovers an operation or required input for T-1 that the other cannot discover

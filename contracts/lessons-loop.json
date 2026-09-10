@@ -9,7 +9,7 @@
   "standings": {
     "RECORDED": "written on the page; claims no authority",
     "ADMITTED": "a fixture or check passes for it",
-    "RATIFIED": "Bdo settled it through a decision record",
+    "ACCEPTED": "Bdo settled it through a decision record",
     "EFFECTIVE": "it runs inside scripts/verify.py or scripts/lint.py"
   },
   "landings": ["fixture", "decision", "lint", "known-gap", "seam", "drop"],

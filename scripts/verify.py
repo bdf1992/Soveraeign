@@ -7,7 +7,7 @@ Emitting records rather than prose is the point: a claim about what verification
 found can then be checked against a record instead of trusted as a paragraph.
 
 An observation settles nothing. `AGENTS.md`: a test may establish `BUILT`; it
-may never claim `WITNESSED` or `RATIFIED`.
+may never claim `WITNESSED` or `ACCEPTED`.
 
 Checks are independent and run concurrently. Output is buffered and printed in
 declared order so a parallel run reads exactly like a serial one.

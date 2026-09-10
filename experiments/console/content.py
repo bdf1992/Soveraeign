@@ -52,7 +52,7 @@ THREADS = (
          "Console Service holds them: authority.py records a grant in the journal and "
          "checks it at the operation boundary.\n\n"
          "A reversible default is already in place (Console owns them), so this gates "
-         "ratification of that choice, not the build. G1 through G3 proceed either way.\n\n"
+         "acceptance of that choice, not the build. G1 through G3 proceed either way.\n\n"
          "The alternative is a separate permits service, which would mean the Console "
          "stops owning authority and becomes a reader of it."),
         (WORKER, False,
@@ -98,9 +98,9 @@ THREADS = (
     ("governance", "Nineteen seams are open, one is closed", "OPEN-SEAMS.md", (
         (WITNESS, False,
          "S1 through S19. S11 closed on 2026-08-23. The rest stand.\n\n"
-         "Three of them concern this surface directly: S12, the ratification mechanism "
+         "Three of them concern this surface directly: S12, the acceptance mechanism "
          "- you said you will rarely touch GitHub, so a review click cannot be your "
-         "ratification; S15, judgement request versus unblock request; and S19, who "
+         "acceptance; S15, judgement request versus unblock request; and S19, who "
          "publishes, an operator or a seat."),
     )),
     ("console", "The continuity path is built and self-tested",
@@ -128,7 +128,7 @@ THREADS = (
          "threads standing in for judgement requests, because the judgement request "
          "record does not exist yet. An answer posted there lands as an attributed post "
          "at RECORDED standing - a real record with a real receipt, but not a "
-         "ratification."),
+         "acceptance."),
     )),
     ("gateway", "Nine operations declared, none executable",
      "services/gateway/contracts/ai-native-gateway-service.yaml", (

@@ -46,7 +46,7 @@
         "AGENTS.md Authority",
         "SPEC.md"
       ],
-      "if_false": "Soveraeign would be an automation environment in which capability implies permission. Refusal, delegation, and the whole notion of a participant that can build what it cannot ratify would lose their basis."
+      "if_false": "Soveraeign would be an automation environment in which capability implies permission. Refusal, delegation, and the whole notion of a participant that can build what it cannot accept would lose their basis."
     },
     {
       "ground_id": "GROUND-004",
@@ -123,7 +123,7 @@
     },
     {
       "ground_id": "GROUND-011",
-      "statement": "Standing does not collapse. Proposed, recorded, admitted, ratified and effective are distinct, and nothing enters as authoritative merely by being written, being confident, or being agreed with.",
+      "statement": "Standing does not collapse. Proposed, recorded, admitted, accepted and effective are distinct, and nothing enters as authoritative merely by being written, being confident, or being agreed with.",
       "grounded_in": [
         "CONTRACT.md C4",
         "CONTRACT.md C11",

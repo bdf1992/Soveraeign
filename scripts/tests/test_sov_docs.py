@@ -227,7 +227,7 @@ class Staleness(unittest.TestCase):
 
 class Slugs(unittest.TestCase):
     def test_punctuation_does_not_leak_into_an_anchor(self):
-        self.assertEqual(slug("O12 - Does Bdo ratify?"), "o12---does-bdo-ratify")
+        self.assertEqual(slug("O12 - Does Bdo accept?"), "o12---does-bdo-accept")
 
     def test_an_empty_heading_still_gets_an_anchor(self):
         self.assertEqual(slug("***"), "section")

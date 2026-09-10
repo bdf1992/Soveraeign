@@ -1,5 +1,5 @@
 surface: asset-service.walking-skeleton
-operation: ingest-derive-relate-ratify-observe-retract-rebuild
+operation: ingest-derive-relate-accept-observe-retract-rebuild
 artifact_revision: WORKTREE
 scores:
   reachability: PARTIAL
@@ -27,7 +27,7 @@ evidence:
   - KNOWN-GAPS.md
 defeating_cases:
   - stale-worker-cannot-settle
-  - model-cannot-ratify-judgement
+  - model-cannot-accept-judgement
   - executor-report-does-not-commit
   - retraction-preserves-history
   - federation-refuses-when-unconfigured

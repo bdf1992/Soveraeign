@@ -129,7 +129,7 @@ the repository's full check set stays green while the check checks nothing.
 A narrower artifact is supportable today: the two-binding parity fixture, the `validate.py`
 command line, and the declaration-consistency checks. Custody enforcement is not.
 
-Only Bdo ratifies; this observation settles nothing.
+Only Bdo accepts; this observation settles nothing.
 
 ## Residuals
 

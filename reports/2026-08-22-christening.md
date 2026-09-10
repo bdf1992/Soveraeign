@@ -1,6 +1,6 @@
 # Christening run completion report, 2026-08-22
 
-Status: `REPORTED · BUILT, PARTLY WITNESSED, NOTHING RATIFIED · OWNER JUDGEMENT PENDING`
+Status: `REPORTED · BUILT, PARTLY WITNESSED, NOTHING ACCEPTED · OWNER JUDGEMENT PENDING`
 
 Controller aggregate of four harness runs: `sov-federation` (seven domain workflows, 23 agents),
 `sov-qa` (seven `sov-witness` agents), `sov-scribe` (O2 packet), and a standalone `sov-witness`
@@ -11,13 +11,13 @@ The working tree is left uncommitted for review; no commit, push, or external ef
 
 Shake down the harness: each domain executes the smallest legitimately available named operation
 (fixture or documentation coherence preferred; a correct refusal counts), the resulting tree is
-witnessed independently, and the O2 ratification packet is drafted.
+witnessed independently, and the O2 acceptance packet is drafted.
 
 ## What was dispatched and why
 
 - `sov-federation`, all seven domains in parallel: one Scope -> Build -> Witness pass each.
 - `sov-qa` over the resulting tree: independent re-observation, builds nothing.
-- `sov-scribe` for `.claude/drafts/o2-ratification-packet.md`: O2 gates production implementation.
+- `sov-scribe` for `.claude/drafts/o2-acceptance-packet.md`: O2 gates production implementation.
 - Standalone `sov-witness` for ASSET-CHRISTEN-1 after the in-workflow witness failed (defect a).
 
 Tree after the runs: modified `AGENTS.md`, `BYOM.md`, `STATUS.yaml`,
@@ -58,7 +58,7 @@ Tree after the runs: modified `AGENTS.md`, `BYOM.md`, `STATUS.yaml`,
   decisions 0004-0006). Builder: scratchpad defeating run exit 1, positive 111 checks. Witness:
   reproduced, defeating case re-run independently. `OPEN->BUILT`. Residual: `lint.py` CRLF check
   inert on Windows; no `.gitattributes`; literal 18 in `verify_conformance_controls` (seam).
-- scribe, `.claude/drafts/o2-ratification-packet.md` (119 lines). Critique dissented, one revision,
+- scribe, `.claude/drafts/o2-acceptance-packet.md` (119 lines). Critique dissented, one revision,
   second critique: 21 of 22 reproduced; one dissent remains (evidence attributes `cases=20` to HEAD
   b5819da, whose controls yield 18). Standing: none (packet claims at most `OPEN -> BUILT`).
 - qa: seven witnesses, 75 residuals, 51 judgement items; `verify.py` exit 0 on HEAD and tree.
@@ -126,7 +126,7 @@ witnesses support only `OPEN -> BUILT` for the asset test and fixtures. No `*_st
 
 ## Judgement queue for Bdo (deduplicated, attributed; nothing decided)
 
-1. [all domains, qa] Does Bdo ratify `decisions/0013` and the AGENTS.md harness section (naming
+1. [all domains, qa] Does Bdo accept `decisions/0013` and the AGENTS.md harness section (naming
    `.claude/README.md` as an owner outside the Design System of Record), register it as O13, and
    then add 0013 and `.claude/README.md` to bootstrap REQUIRED, or withdraw the reference?
 2. [governance, qa] Which domain owns AGENTS.md, and may an agent-run harness edit it?
@@ -134,7 +134,7 @@ witnesses support only `OPEN -> BUILT` for the asset test and fixtures. No `*_st
    AGENTS.md, STATUS.yaml, and oracle-controls be witnessed as separate operations first?
 4. [byom, witnesses] Is parallel shared-tree dispatch acceptable when per-file attribution is lost?
 5. [governance] Is `decisions/0012` the authorizing record for C15, or is a dedicated record needed?
-   Does Bdo ratify CONTRACT.md C1-C15 (no open-decision entry exists)? Should `verify.py` check
+   Does Bdo accept CONTRACT.md C1-C15 (no open-decision entry exists)? Should `verify.py` check
    STATUS.yaml claim labels against CONTRACT.md headings?
 6. [verification, contracts] Bring `.claude/**/*.js` under `lint.py`? Add `.gitattributes` for LF?
 7. [contracts, byom, asset, proofing] Where do schema-instance fixtures live and who owns them
@@ -167,19 +167,19 @@ witnesses support only `OPEN -> BUILT` for the asset test and fixtures. No `*_st
     (`services/README.md` lists no `conformance/`)? Is `version_digest` an Asset contract field,
     or does PROOF-001 overreach?
 20. [proofing, verification] Who names the implicit-latest `reason_code` (SPEC.md under O10 or the
-    proofing contract under O11)? Is non-null `reason_code` on REFUSED accepted? Ratify lifecycle
+    proofing contract under O11)? Is non-null `reason_code` on REFUSED accepted? Accept lifecycle
     OPEN -> IN_REVIEW -> DECISION_PENDING -> CLOSED? Proofing objects into SPEC.md before O10? Is
     omitting `requested-change` and `comparison-request` from `owns` intentional?
 21. [byom, contracts, O12] `authority_source`: add to SPEC.md, drop from schema, or OPEN-SEAMS
     entry? Which per-invocation list is exact (BYOM.md 13, PRD 11, FOUND-008 9)? Mode set complete;
-    provider_kind x data_boundary rule? Typed meters and `fallback_binding_id`? Ratify FOUND-008
+    provider_kind x data_boundary rule? Typed meters and `fallback_binding_id`? Accept FOUND-008
     plus CONF-I9-POS/DEF as the two-model fixture?
 22. [byom, qa dissent] May BYOM.md call PROD-I-9 a "freeze candidate"? Add Model Binding / Model
     Adapter to CLASSIFICATION.md or stop citing it? Accept the pointer wording and placement?
-23. [verification, scribe, O2] Ratify the ENGINEERING.md baseline? Does O2 cover the five named
+23. [verification, scribe, O2] Accept the ENGINEERING.md baseline? Does O2 cover the five named
     choices or the whole stack table plus composition rules; if declined, defer, replace, or
     strike? Does the evidence-archive SKIP change the weight of self-test evidence? Must `core.py`
-    split before ratification or only before new behavior?
+    split before acceptance or only before new behavior?
 24. [governance] O1 (collision screen), O9, O10 remain open; nothing in this run moves them.
 
 ## Next bounded operation per domain

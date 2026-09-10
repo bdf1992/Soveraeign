@@ -121,7 +121,7 @@ disposition: ONE_OFF | RULE_CHANGE_CANDIDATE | REVERTED | FAILED
 - `python scripts/lint.py`
 
 Passing establishes built evidence only. It does not accept this policy,
-ratify an outcome, change a rule, or open Phase II.
+accept an outcome, change a rule, or open Phase II.
 
 ## Report
 

@@ -5,7 +5,7 @@ resolves the stable Kernel contract names those manifests already use to governi
 source addresses. The closure is disposable and rebuilt from both plus the Kernel
 transition table.
 
-Passing establishes evidence for the binding compiler only. It does not ratify the
+Passing establishes evidence for the binding compiler only. It does not accept the
 Root/Kernel/paradigm vocabulary, grant authority, or make the Kernel a runtime service.
 """
 
@@ -188,7 +188,7 @@ class DefeatingBindings(unittest.TestCase):
         closure = build(
             self.manifests, TRANSITIONS, self.paradigms, source_digests=SOURCE_DIGESTS
         )
-        closure["status"] = "RATIFIED"
+        closure["status"] = "ACCEPTED"
         defects = closure_defects(
             closure, self.manifests, TRANSITIONS, self.paradigms,
             source_digests=SOURCE_DIGESTS,

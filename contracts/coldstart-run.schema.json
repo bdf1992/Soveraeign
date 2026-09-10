@@ -194,7 +194,7 @@
     },
     "standing": {
       "const": "BUILT",
-      "description": "AGENTS.md: a test may establish BUILT; it may never claim WITNESSED or RATIFIED. A run record that names a higher standing is refused by STANDING_OVERCLAIMED."
+      "description": "AGENTS.md: a test may establish BUILT; it may never claim WITNESSED or ACCEPTED. A run record that names a higher standing is refused by STANDING_OVERCLAIMED."
     },
     "graded_by": {
       "type": "object",

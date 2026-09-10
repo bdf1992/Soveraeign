@@ -6,7 +6,7 @@
     "polarity": "positive",
     "expected_validity": "VALID",
     "expected_crossing": true,
-    "note": "A peer offers a thread it holds at RATIFIED. The local root seat admits it, and the record it creates here enters at RECORDED. Standing did not cross; only the address and digest did.",
+    "note": "A peer offers a thread it holds at ACCEPTED. The local root seat admits it, and the record it creates here enters at RECORDED. Standing did not cross; only the address and digest did.",
     "record": {
       "crossing_schema": "soveraeign-federation-crossing/v1",
       "crossing_id": "crossing:1",
@@ -17,7 +17,7 @@
         "record_kind": "thread",
         "record_address": "thread/T-14",
         "record_digest": "sha256:9f2c",
-        "standing_at_origin": "RATIFIED"
+        "standing_at_origin": "ACCEPTED"
       },
       "offered_at": "2026-08-23T12:00:00Z",
       "admission": {
@@ -94,7 +94,7 @@
     "status": "PROPOSED",
     "polarity": "defeating",
     "expected_validity": "INVALID",
-    "note": "The central refusal. A crossing that could deliver a record already RATIFIED would carry another node's settlement into this one, which is the merge decisions/0039 says federation avoids. The contract admits exactly one non-null local standing so the shape cannot be written.",
+    "note": "The central refusal. A crossing that could deliver a record already ACCEPTED would carry another node's settlement into this one, which is the merge decisions/0039 says federation avoids. The contract admits exactly one non-null local standing so the shape cannot be written.",
     "record": {
       "crossing_schema": "soveraeign-federation-crossing/v1",
       "crossing_id": "crossing:4",
@@ -105,7 +105,7 @@
         "record_kind": "thread",
         "record_address": "thread/T-20",
         "record_digest": "sha256:77aa",
-        "standing_at_origin": "RATIFIED"
+        "standing_at_origin": "ACCEPTED"
       },
       "offered_at": "2026-08-23T12:30:00Z",
       "admission": {
@@ -114,7 +114,7 @@
         "outcome": "COMMITTED",
         "reason_code": null,
         "local_record_address": "thread/local-9",
-        "local_standing": "RATIFIED"
+        "local_standing": "ACCEPTED"
       },
       "standing": "RECORDED"
     }

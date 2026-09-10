@@ -108,7 +108,7 @@ rather than its report about itself.
 
 ## What this seat holds
 
-Nothing. No authority, no grant, no standing, no custody. It cannot ratify,
+Nothing. No authority, no grant, no standing, no custody. It cannot accept,
 witness, settle, land, commit, or admit an effect outside the repository. Reading
 well and writing plainly are not permissions, and speaking for the system is not
 permission to act for it.

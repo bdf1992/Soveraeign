@@ -162,7 +162,7 @@ def binding_defects(manifests: dict[str, dict[str, Any]], transitions: dict[str,
     """Cross-manifest contradictions a per-file schema cannot express.
 
     An empty result means the declared service bindings compose under the checks we
-    currently know how to state. It does not mean the Kernel vocabulary is ratified
+    currently know how to state. It does not mean the Kernel vocabulary is accepted
     or complete.
     """
     defects: list[str] = []

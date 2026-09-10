@@ -1,7 +1,7 @@
 # Host Service Requirements — Founding and Phase I
 
 Status: `BUILT` (drafted under `decisions/0093-service-srd-spec-ground.md`; self-report by
-the drafting session, not independently witnessed or ratified)
+the drafting session, not independently witnessed or accepted)
 
 This is a service-scope projection of `PRD.md`'s shape, with the node — not a human — named
 as the caller. It grants Host no authority over its own account of itself; it is `BUILT`
@@ -35,10 +35,10 @@ depends on Host in the other direction.
 
 ## Requirement lifecycle
 
-Same as `PRD.md`: `OPEN → BUILT → WITNESSED → RATIFIED`, a distinct artifact-standing
+Same as `PRD.md`: `OPEN → BUILT → WITNESSED → ACCEPTED`, a distinct artifact-standing
 lifecycle from the operational record standing `SPEC.md` defines. No requirement below claims
 past `BUILT`. `KNOWN-GAPS.md`: "Passing participant tests establishes `BUILT` evidence for
-`read-health` only. It does not witness the result, ratify the service, or advance any
+`read-health` only. It does not witness the result, accept the service, or advance any
 deferred operation."
 
 ## Phase-I requirements

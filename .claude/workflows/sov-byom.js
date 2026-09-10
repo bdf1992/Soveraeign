@@ -95,7 +95,7 @@ const buildOne = function (op) {
     'Read ' + ROOT + '/AGENTS.md and ' + ROOT + '/STATUS.yaml first. Follow the AGENTS.md change protocol: record requested outcome and current authoritative state, affected contracts and fixtures, preconditions and expected observable result, effect class, and rollback or refusal boundary. ' +
     'Contract and fixtures before code; smallest change that satisfies the visible case; a passing self-test establishes BUILT and never WITNESSED. ' +
     'Run python scripts/verify.py from the repository root and record the exact command and exit code. ' +
-    'You must NOT run git commit or git push. You must not witness or ratify your own work. Settle what evidence can settle at your tier and name the observation that would defeat each ruling. Put only an owner-held boundary in judgement_items. An owner-held boundary is public naming, external commitment, irreversible external-world effect, secrets, or destructive repository administration.'
+    'You must NOT run git commit or git push. You must not witness or accept your own work. Settle what evidence can settle at your tier and name the observation that would defeat each ruling. Put only an owner-held boundary in judgement_items. An owner-held boundary is public naming, external commitment, irreversible external-world effect, secrets, or destructive repository administration.'
   return agent(prompt, { agentType: 'sov-worker', schema: BUILD_SCHEMA, phase: 'Build', label: 'build-' + op.id })
 }
 
@@ -131,7 +131,7 @@ if (claimed.length > 0) {
     'Inspect the actual diffs of the listed files under ' + ROOT + ' against AGENTS.md, BYOM.md, the SPEC.md ModelBinding object, CLASSIFICATION.md vocabulary, and contracts/model-binding.schema.json. ' +
     'Run python scripts/verify.py from the repository root and record the exact command and exit code. ' +
     'Never treat a green build or a builder self-report as authority. Return one verdict per operation_id: reproduced, dissented, or unattestable. ' +
-    'standing_supported may be OPEN->BUILT or BUILT->WITNESSED only, or an empty string; never RATIFIED - only Bdo ratifies.'
+    'standing_supported may be OPEN->BUILT or BUILT->WITNESSED only, or an empty string; never ACCEPTED - only Bdo accepts.'
   witness = await agent(witnessPrompt, { agentType: 'sov-witness', phase: 'Witness', schema: WITNESS_SCHEMA, label: 'witness' })
   if (witness && typeof witness.standing_supported === 'string') { witness.standing_supported = witness.standing_supported.split(' ').join('') }
 }

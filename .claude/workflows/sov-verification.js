@@ -83,7 +83,7 @@ const buildThunks = plan.operations.map(function (op) {
       'First read ' + ROOT + '/AGENTS.md and ' + ROOT + '/STATUS.yaml. Follow the AGENTS.md change protocol: record requested outcome and current authoritative state, affected contracts and fixtures, preconditions and expected observable result, effect class, and rollback or refusal boundary. ' +
       'Contract and defeating fixture before code; make the smallest change; then run python scripts/verify.py from ' + ROOT + ' and record the exact exit code and timing against the three-second budget. ' +
       'Never weaken a gate to pass, never add runtime dependencies, never put product business logic in scripts/. ' +
-      'You must NOT run git commit or git push; leave changes in the working tree. You emit a build report only - you cannot witness or ratify your own work. Settle what evidence can settle at your tier and name what would defeat each ruling; put only an owner-held boundary in the queue. ' +
+      'You must NOT run git commit or git push; leave changes in the working tree. You emit a build report only - you cannot witness or accept your own work. Settle what evidence can settle at your tier and name what would defeat each ruling; put only an owner-held boundary in the queue. ' +
       'Return {operation_id, files_changed, checks_observed, judgement_items}.',
       { agentType: 'sov-worker', phase: 'Build', label: 'build-' + op.id }
     )
@@ -102,7 +102,7 @@ const witness = await agent(
   'Claims: ' + JSON.stringify(claims) + '. ' +
   'Independently inspect the working-tree diffs of those files at ' + ROOT + ' (git diff plus direct reads), compare against AGENTS.md, ENGINEERING.md, and CLASSIFICATION.md/SPEC.md vocabulary, then run python scripts/verify.py from ' + ROOT + ' and record the exact command, exit code, and timing against the three-second budget. ' +
   'Never treat a green build, confidence, or any report as authority; re-derive every claim from the artifact and the record. Dissent is a valid outcome. ' +
-  'Return {verdicts: [{operation_id, verdict}], residuals, standing_supported} where verdict is reproduced, dissented, or unattestable, and standing_supported is none, OPEN->BUILT, or BUILT->WITNESSED. You can never support RATIFIED - only Bdo ratifies.',
+  'Return {verdicts: [{operation_id, verdict}], residuals, standing_supported} where verdict is reproduced, dissented, or unattestable, and standing_supported is none, OPEN->BUILT, or BUILT->WITNESSED. You can never support ACCEPTED - only Bdo accepts.',
   { agentType: 'sov-witness', phase: 'Witness', schema: WITNESS_SCHEMA, label: 'witness' }
 )
 if (witness && typeof witness.standing_supported === 'string') { witness.standing_supported = witness.standing_supported.split(' ').join('') }

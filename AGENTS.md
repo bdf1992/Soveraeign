@@ -107,7 +107,7 @@ another participant's authority, or make a provisional choice binding on
 others. Preserve externally held decisions as unresolved; do not preserve your
 own next action as unresolved merely because several admissible choices exist.
 
-A participant can construct what it cannot ratify, test what it cannot adopt,
+A participant can construct what it cannot accept, test what it cannot adopt,
 propose what it cannot settle, and explore what it cannot make policy.
 
 ### Principled deviation
@@ -134,7 +134,7 @@ unauthorized action.
 ### Blocked edge is not blocked frontier
 
 An unresolved owner decision gates only the transitions that require that
-judgement: usually ratification, activation, release, or an irreversible
+judgement: usually acceptance, activation, release, or an irreversible
 effect. It does not implicitly block the task, service, queue, session, or
 neighbouring reachable work. `STATUS.yaml` records each open decision's
 `gates` as exact transitions.
@@ -151,7 +151,7 @@ hold.
 transition, the missing precondition, the governing rule, the required
 authority, the unblock condition, and `reachable_alternative: NONE`. If a
 reachable alternative exists, the transition is gated; the work is not
-blocked. `PENDING`, `UNRESOLVED`, `PROPOSED`, `UNRATIFIED`, `UNCONFIGURED`,
+blocked. `PENDING`, `UNRESOLVED`, `PROPOSED`, `UNACCEPTED`, `UNCONFIGURED`,
 `DEFERRED`, and `CONFLICTED` are distinct states; only `BLOCKED` means there is
 presently no admissible route forward. A proven `BLOCKED` is filed as an
 `unblock` ticket naming the held ticket, the provision, and the tier asked
@@ -284,7 +284,7 @@ thin named-agent binding; both defer to `SOV.md` and the portable profile.
 Loading Sov grants no authority. Sov may direct its attention, select relevant
 context and legal operations, propose, build and finish reversible work without
 asking, present results for acceptance, refuse, escalate, and hand off. It may
-not widen a grant, infer authority from context, ratify judgement, self-witness,
+not widen a grant, infer authority from context, accept judgement, self-witness,
 self-settle, keep private standing, bypass a governed transition, or silently
 change models. Stopping to ask permission for reversible record-local work is
 itself a refusal Sov is subject to (`contracts/acceptance-policy.json`).
@@ -300,9 +300,9 @@ every seat occupancy remains scoped by the current task and grant.
 - Mark new claims as proposals and preserve open contradictions.
 - Never treat recency, repetition, eloquence, confidence, model consensus, a
   green build, or executor self-report as authority.
-- Preserve the standing lifecycle: `OPEN -> BUILT -> WITNESSED -> RATIFIED`.
+- Preserve the standing lifecycle: `OPEN -> BUILT -> WITNESSED -> ACCEPTED`.
 - A build report cannot witness itself, and no seat settles its own output.
-- Only a seat that settles `JUDGEMENT` can ratify a judgement claim, and it does so
+- Only a seat that settles `JUDGEMENT` can accept a judgement claim, and it does so
   by accepting a presented result rather than by answering a question.
 
 ## Change protocol
@@ -405,7 +405,7 @@ dependency or a substitute for repository verification.
   proving the required refusal, counteraction, or failure.
 - Tests use temporary directories, fixed inputs, bounded waits, and no network.
 - Tests distinguish attempted, reported, observed, and settled outcomes.
-- A test may establish `BUILT`; it may not claim `WITNESSED` or `RATIFIED`.
+- A test may establish `BUILT`; it may not claim `WITNESSED` or `ACCEPTED`.
 - The required local and CI command is `python scripts/verify.py`. Its wall
   time after Python starts is graded, not pass/fail: `PLATINUM` at three
   seconds or less, `GOLD` at six, `SILVER` at fifteen. Past fifteen seconds
@@ -467,7 +467,7 @@ itself: `decisions/0026-federation-harness.md` (proposed).
 | `/conformance` | Independent scenarios, oracle controls, witness inputs | Participant implementation or direct participant imports |
 | `/services/<domain>` | One bounded lifecycle, contract, implementation, and tests | Another service's state or provider-specific authority |
 | `/bindings` | Human/model realizations of declared interfaces | Authoritative writes or semantic forks |
-| `/adapters` | Translation to a named external system | Standing, ratification, settlement, or hidden fallback |
+| `/adapters` | Translation to a named external system | Standing, acceptance, settlement, or hidden fallback |
 | `/workers` | Scoped leased execution and reports | Self-settlement or self-witnessing |
 | `/scripts` | Verification and bounded repository maintenance | Product business logic |
 | `/acceptance` | Finished results presented to an owner seat, one packet per claim | Standing changes, which land in the owning document |

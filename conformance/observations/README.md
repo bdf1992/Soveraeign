@@ -1,7 +1,7 @@
 # Witness observations
 
 Recorded observations from independent runs. An observation is evidence of what
-a witness saw. It is not a claim of standing, and it never ratifies.
+a witness saw. It is not a claim of standing, and it never accepts.
 
 ## FOUND-007 · fresh witness cold start
 
@@ -10,7 +10,7 @@ a witness saw. It is not a claim of standing, and it never ratifies.
 
 **The first execution of this scenario.** It had been declared `SEED` since the
 founding and had never been run, which is why `SPEC.md` had never reached
-`WITNESSED` and why the owner kept being asked to ratify a document standing at
+`WITNESSED` and why the owner kept being asked to accept a document standing at
 `PROPOSED` — a move the transition contract refuses everywhere else as
 `SKIPPED_STANDING`.
 
@@ -83,8 +83,8 @@ PASS  WIT-007-2026-08-23-B  PROD-I-7  defects=0
 
 `PROD-I-7`, independent qualification, is satisfied. `SPEC.md` is therefore
 proposed at `WITNESSED`, which is a proposal supported by this observation and
-not a ratification: a witness can support a standing proposal and can never
-ratify one.
+not a acceptance: a witness can support a standing proposal and can never
+accept one.
 
 Read the suite line on that run carefully. `SUITE FAIL cases=1 coverage_gaps=8`
 is not a failure of this case. Submitting one participant observation leaves the
@@ -92,5 +92,5 @@ other eight requirements without one, and the runner reports that absence as
 missing coverage. The case itself passed with zero defects.
 
 **O10 is now legitimately askable.** It was not before, and that was the whole
-problem: the owner was being asked to ratify a document that had skipped two
+problem: the owner was being asked to accept a document that had skipped two
 standings, which this repository refuses everywhere else as `SKIPPED_STANDING`.

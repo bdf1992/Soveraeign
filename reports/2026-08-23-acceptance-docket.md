@@ -1,11 +1,11 @@
-# Ratification docket — 2026-08-23
+# Acceptance docket — 2026-08-23
 
-Requested by Bdo, 2026-08-23: "Ratify everything that agrees with the PRD and
+Requested by Bdo, 2026-08-23: "Accept everything that agrees with the PRD and
 Spec as long as it meets the AI Native and Product/Anchoring parts, otherwise a
 specific leading question with recommendations."
 
 This is a report, not policy (`CLAUDE.md`, Where to look first). It records a
-screen; it ratifies nothing. Ratification is Bdo's (`AGENTS.md`, Authority), and
+screen; it accepts nothing. Acceptance is Bdo's (`AGENTS.md`, Authority), and
 `OPEN-SEAMS.md` S12 says the surface it arrives through is itself unsettled.
 
 Screened by the interactive Claude Code session against the working tree at
@@ -62,15 +62,15 @@ no operation. `L3` = anchoring citations verifiable from this checkout.
 ### A · Clean on every computable leg — waiting only on Bdo's word
 
 No implementation to witness, no anchoring citation, no conflict found. These
-are ratifiable as soon as the Q1 mechanism question is answered.
+are acceptable as soon as the Q1 mechanism question is answered.
 
 | Record | Gate | L1 | L2 | L3 | Recommendation |
 | --- | --- | --- | --- | --- | --- |
-| `0023` transition-local gates | none, owner-directed | PASS | n/a | n/a | Ratify. Wording matches `AGENTS.md` Authority; you already directed it. |
-| `0024` unblock ticket kind | none, owner-directed | PASS | n/a | n/a | Ratify. Supplies the `BLOCKED`-must-be-proven path `AGENTS.md` requires and nothing else claims. |
-| `0026` federation harness | unregistered | PASS | n/a | n/a | Ratify the pattern — roles stable, domains in skills. Hold the "are executable workflows admissible before their defeating fixtures exist" question; that one is Leg 2 in disguise. |
-| `0018` verification-engagement kind | O19 | PASS | n/a | n/a | Ratify. Refusing construction identity on a verification ticket is `SDLC.md`'s no-both-hands-of-a-dyad rule made checkable. |
-| `0021` Asset Projection Service boundary | O21 | PASS | n/a | n/a | Ratify the boundary and the name, and rule S14 in the same stroke — who keeps `rebuild-projection` for the Asset Service's own two tables. Otherwise it reopens immediately. |
+| `0023` transition-local gates | none, owner-directed | PASS | n/a | n/a | Accept. Wording matches `AGENTS.md` Authority; you already directed it. |
+| `0024` unblock ticket kind | none, owner-directed | PASS | n/a | n/a | Accept. Supplies the `BLOCKED`-must-be-proven path `AGENTS.md` requires and nothing else claims. |
+| `0026` federation harness | unregistered | PASS | n/a | n/a | Accept the pattern — roles stable, domains in skills. Hold the "are executable workflows admissible before their defeating fixtures exist" question; that one is Leg 2 in disguise. |
+| `0018` verification-engagement kind | O19 | PASS | n/a | n/a | Accept. Refusing construction identity on a verification ticket is `SDLC.md`'s no-both-hands-of-a-dyad rule made checkable. |
+| `0021` Asset Projection Service boundary | O21 | PASS | n/a | n/a | Accept the boundary and the name, and rule S14 in the same stroke — who keeps `rebuild-projection` for the Asset Service's own two tables. Otherwise it reopens immediately. |
 
 ### B · Fails Leg 2 only — needs a witness, not a ruling
 
@@ -83,10 +83,10 @@ cannot supply it either.
 | --- | --- | --- | --- |
 | Asset Service | none | PASS | witness pass; Bdo's `earn_it` |
 | Local model adapter `adapters/ollama/` (`0027`) | O12 | PASS | witness pass; Bdo's `earn_it` |
-| Lineage corpus (`0028`) | `lineage.ratify_corpus` | PASS | witness pass — W1–W4 in 0028 declare themselves non-independent |
+| Lineage corpus (`0028`) | `lineage.accept_corpus` | PASS | witness pass — W1–W4 in 0028 declare themselves non-independent |
 | Conformance oracle | none | PASS | witness pass |
 | Coordination registrar (`0016`) | O16 | PASS | witness pass; authorisation of the outward-facing steps |
-| Lessons loop (`0029`) | `lessons.ratify_loop` | PASS | 0028 witnessed first — its evidence addresses resolve there |
+| Lessons loop (`0029`) | `lessons.accept_loop` | PASS | 0028 witnessed first — its evidence addresses resolve there |
 
 `0027` is the strongest object in this group: two materially different local
 bindings (`qwen3:4b` and `gpt-oss:20b`), fourteen defeating fixtures, and a
@@ -98,7 +98,7 @@ performed.
 
 ### C · Fails Leg 3 — the founding spine
 
-These are the records whose ratification would close F0 and F1. They are also
+These are the records whose acceptance would close F0 and F1. They are also
 the records that cite evidence this checkout cannot verify.
 
 | Record | Gate | Cites |
@@ -111,7 +111,7 @@ the records that cite evidence this checkout cannot verify.
 | `0010` proofing service boundary | O11 | `ANCHOR.md` |
 | `0011` local personal BYOM | O12 | `ANCHOR.md` A3, A4, A8, A10 |
 
-Ratifying these today ratifies claims whose ground the artifact cannot resolve.
+Accepting these today accepts claims whose ground the artifact cannot resolve.
 That is exactly what `decisions/0003` calls unattestable and what `AI-NATIVE.md`
 scores as a provenance failure.
 
@@ -121,13 +121,13 @@ scores as a provenance failure.
 | --- | --- |
 | `0025` verification channels (O20) | `SDLC.md` `GREEN` (a derived go-state) and the `green` channel (contact with the world) are two meanings of one word. O20 already names this; screening cannot resolve it. |
 | `AI-NATIVE.md` Soveraeign bar (S13) | The document requires `FULL` on reachability, commitment, provenance and the effect envelope, omits retraction from that list, then calls it "the all-`FULL` Soveraeign bar". Leg 2 of this instruction *is* that bar, so the ambiguity is load-bearing. |
-| `0022` story ticket kind (O22) | Sound on its own. Its second gate is `classification.ratify`, which is O9, which sits in group C. |
-| `0016` coordination registrar (O16) | Ratifying it authorises branch protection, label synchronisation and project field writes — `EXTERNAL_WORLD` effects, against `protected_boundaries: no_external_effects_in_phase_i`. |
+| `0022` story ticket kind (O22) | Sound on its own. Its second gate is `classification.accept`, which is O9, which sits in group C. |
+| `0016` coordination registrar (O16) | Accepting it authorises branch protection, label synchronisation and project field writes — `EXTERNAL_WORLD` effects, against `protected_boundaries: no_external_effects_in_phase_i`. |
 
 ## AI-Native assessment records
 
 Filled in the `AI-NATIVE.md` required shape for the two surfaces most likely to
-be ratified next. Both are `assessment_state: OPEN` because `earn_it` has no
+be accepted next. Both are `assessment_state: OPEN` because `earn_it` has no
 attributed reviewer. Producing these is verification-typed work; the judgement
 inside them is not supplied.
 
@@ -138,7 +138,7 @@ artifact_revision: feat/federation-harness-and-hardening (uncommitted tree)
 model_and_host: Claude Opus 5, Claude Code CLI, Windows 11
 scores:
   reachability: FULL        # CLI and contracts/service.json declare every operation
-  commitment: PARTIAL       # standing recorded; typed ratification path not exercised
+  commitment: PARTIAL       # standing recorded; typed acceptance path not exercised
   provenance: PARTIAL       # source, digest, derivation resolve; reader configuration partial
   retraction: PARTIAL       # record-local counteraction exists; effect-class handling declared, not proven
 earn_it:
@@ -193,9 +193,9 @@ defeating_cases: [14 fixtures under adapters/ollama/fixtures/]
 
 ## Leading questions, with recommendations
 
-**Q1 · Through which surface does a ratification become real?**
+**Q1 · Through which surface does a acceptance become real?**
 `OPEN-SEAMS.md` S12 records your own 2026-08-23 input: a code-owner review click
-cannot be the ratification surface, and the Console Service is the chartered
+cannot be the acceptance surface, and the Console Service is the chartered
 home for one — but Console is `CHARTERED_NOT_IMPLEMENTED` behind O18. A chat
 instruction is a third surface, and no record can cite it.
 *Recommendation:* rule an interim mechanism — a ruling is real when it appears
@@ -216,13 +216,13 @@ rather than file path, and mark the anchoring ground unavailable by design.
 already prescribes, and (b) permanently weakens the founding spine's evidence to
 "trust the summary".
 
-**Q3 · Does a judgement-only record need witnessing before ratification?**
-`PRD.md` gives one lifecycle, `OPEN -> BUILT -> WITNESSED -> RATIFIED`, and
+**Q3 · Does a judgement-only record need witnessing before acceptance?**
+`PRD.md` gives one lifecycle, `OPEN -> BUILT -> WITNESSED -> ACCEPTED`, and
 `SPEC.md`'s Conformance boundary describes it in terms of tests and independent
 runs. A boundary or vocabulary record has no implementation to witness, so the
 `WITNESSED` step has no content for it.
 *Recommendation:* rule that the lifecycle has two paths — executable claims pass
-through `WITNESSED`, judgement claims run `OPEN -> PROPOSED -> RATIFIED` — and
+through `WITNESSED`, judgement claims run `OPEN -> PROPOSED -> ACCEPTED` — and
 write it into `PRD.md`'s Requirement lifecycle. Without it, group A is held at a
 step that cannot be performed, which is a rule doing no work.
 
@@ -235,22 +235,22 @@ settle it.
 Service. Removing the model path would remove the capability rather than a
 convenience, which is the test the document states.
 
-**Q5 · Ratify group A as a batch now, or hold everything for one pass?**
+**Q5 · Accept group A as a batch now, or hold everything for one pass?**
 *Recommendation:* batch now. Those five carry no anchoring dependency and no
-built surface, so waiting cannot improve them, and ratifying them shrinks the
+built surface, so waiting cannot improve them, and accepting them shrinks the
 remaining spine from twelve records to seven.
 
 **Q6 · Does retraction have to be `FULL` for the Soveraeign bar (S13)?**
 Leg 2 of your instruction is that bar, so its internal ambiguity propagates into
-every ratification made under it.
+every acceptance made under it.
 *Recommendation:* rule `FULL` within the phase's admitted effect envelope, and
 edit the `AI-NATIVE.md` list so "all-`FULL`" is literally true. As written the
 document contradicts its own summary of itself.
 
 ## What this screen did not do
 
-It ratified nothing, changed no `Status:` line, and altered no `STATUS.yaml`
-field. `AGENTS.md` reserves ratification to Bdo and forbids an agent presenting
+It accepted nothing, changed no `Status:` line, and altered no `STATUS.yaml`
+field. `AGENTS.md` reserves acceptance to Bdo and forbids an agent presenting
 its synthesis as Bdo's judgement. `SPEC.md`'s Conformance boundary requires an
 independent run before `WITNESSED`, and this session dispatched the work in
 groups B and C, so it cannot witness that work either.

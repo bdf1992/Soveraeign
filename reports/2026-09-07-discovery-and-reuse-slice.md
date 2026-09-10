@@ -17,7 +17,7 @@ Two parts, two terminals.
 - The instrument and the custody edits: **landed** on `main`. Five frozen candidates
   through `python scripts/sov_land.py freeze`, each superseding the last on a witness
   finding or a gate refusal; the fifth, `60d5615`, merged by `land-candidate` under the
-  ratified grant on pass 5's `CONFIRMED` observation and then onto `origin/main` by
+  accepted grant on pass 5's `CONFIRMED` observation and then onto `origin/main` by
   PR #219 as `aeecc60`.
 - The witness records, this report, and the acceptance packet: **presented** for Bdo's
   review in a second pull request, because `witness/`, `reports/`, `acceptance/` and the
@@ -165,17 +165,17 @@ landing-gate observation for each pass under `.local/observations/`, runtime sta
   builder; the selfcheck asserted reason inclusion rather than the exact defect set. F5
   (nothing executes a custody's closure command) and F7 (the reader's own branch is
   excluded) recorded as residuals. Each repair carries its own defeating variant or test.
-- Pass 2 at `b0c013c`: `RATIFIABLE-WITH-CONDITIONS`; `BUILT -> WITNESSED` supported for
+- Pass 2 at `b0c013c`: `ACCEPTABLE-WITH-CONDITIONS`; `BUILT -> WITNESSED` supported for
   the instrument claim. One high finding, F9: the committed `docs/documentation.html` had
   been rendered over the shared working tree and indexed witness records the commit did
   not carry, so a clean clone failed verify while the shared tree passed. Trap T6, on the
   builder's side of it.
-- Pass 3 at `ea01dcc`: `RATIFIABLE`, landing verdict `CONFIRMED`. The page rebuilt from the
+- Pass 3 at `ea01dcc`: `ACCEPTABLE`, landing verdict `CONFIRMED`. The page rebuilt from the
   committed documents alone; a clean clone passes verify, lint and the documentation
   check; the instrument bytes are identical to `b0c013c`.
 - The landing of `ea01dcc` was then refused by the gate itself: the candidate's recorded
   paths did not describe its base-to-commit range. Composition finding 7 below.
-- Pass 4 at `57271f7`: `RATIFIABLE`, landing verdict `CONFIRMED`; the record's paths equal
+- Pass 4 at `57271f7`: `ACCEPTABLE`, landing verdict `CONFIRMED`; the record's paths equal
   the range, the gate accepts the record and refuses a copy widened by the page, the
   instrument bytes are identical to `ea01dcc`. F10: the live reading on the shared tree
   now describes other sessions' uncommitted edits, so the attestable reading was taken on
@@ -183,7 +183,7 @@ landing-gate observation for each pass under `.local/observations/`, runtime sta
 - Two hosted CI jobs at `ea01dcc` then failed on verify's catastrophic ceiling: the
   tooling-tests check took 31 and 37 seconds alone against a 30-second ceiling.
   Composition finding 9 below. The repair is the fifth candidate.
-- Pass 5 at `60d5615`: `RATIFIABLE`, landing verdict `CONFIRMED`. Measured on a clean clone:
+- Pass 5 at `60d5615`: `ACCEPTABLE`, landing verdict `CONFIRMED`. Measured on a clean clone:
   verify 16.1 seconds wall, the tooling-tests check 15.1 seconds against 22.8 at pass 1,
   the new suite 2.9 seconds against 4.4; the five heaviest modules in the table's order;
   the partition property holds and fails when the heaviest entry is dropped. F11: whether

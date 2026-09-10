@@ -31,12 +31,12 @@
     },
     "commitment": {
       "score": "PARTIAL",
-      "note": "Proposal, build and acceptance are distinguishable and the landing gate cannot ratify. Attestation is declared and unexercised, so the full ladder is not yet observable end to end.",
+      "note": "Proposal, build and acceptance are distinguishable and the landing gate cannot accept. Attestation is declared and unexercised, so the full ladder is not yet observable end to end.",
       "evidence": [
         {
           "kind": "file",
           "reference": "contracts/standing-grants.json",
-          "observed": "the standing grant is typed VERIFICATION and cannot ratify a JUDGEMENT claim"
+          "observed": "the standing grant is typed VERIFICATION and cannot accept a JUDGEMENT claim"
         },
         {
           "kind": "file",

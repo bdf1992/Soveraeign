@@ -44,7 +44,7 @@
       },
       "LANDING": {
         "owned_by": "scripts/sov_land.py",
-        "means": "Governed integration of the exact witnessed change into the intended base. Landing is not satisfaction or ratification."
+        "means": "Governed integration of the exact witnessed change into the intended base. Landing is not satisfaction or acceptance."
       },
       "SETTLEMENT": {
         "owned_by": "contracts/ticket-settlement.json",

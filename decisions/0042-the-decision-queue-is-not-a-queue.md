@@ -13,8 +13,8 @@ is worth a record.
 ## What was observed
 
 Forty decision records carry **twenty-two distinct status strings**. Six different
-phrasings mean "drafted, nobody has ruled": `PROPOSED FOR BDO RATIFICATION`,
-`PROPOSED · OWNER RATIFICATION PENDING`, `PROPOSED · OWNER FREEZE PENDING`,
+phrasings mean "drafted, nobody has ruled": `PROPOSED FOR BDO ACCEPTANCE`,
+`PROPOSED · OWNER ACCEPTANCE PENDING`, `PROPOSED · OWNER FREEZE PENDING`,
 `PROPOSED · OWNER ACCEPTANCE OVER EVIDENCE`, `PROPOSED · BDO HAS NOT RULED`, and
 `SOURCE-GROUNDED PROPOSAL`. Nothing parses any of them. The status line is free
 prose in a file nobody counts.
@@ -80,10 +80,10 @@ the repository. A per-record boolean answered the first and silently dropped the
 second. A record with mixed questions loses the ones that disagree with its
 headline.
 
-Bare ratification is not routed. Every `PROPOSED` record needs it by definition,
+Bare acceptance is not routed. Every `PROPOSED` record needs it by definition,
 so counting it would mark all eighteen and say nothing. The file answers the
 narrower question: does this need a judgement from Bdo *other* than the
-ratification every proposal already needs.
+acceptance every proposal already needs.
 
 `enumerated_from` records where each question came from — the record's own
 declared list, or its headline where the record does not enumerate. Exactly one
@@ -99,7 +99,7 @@ file.
 ### 3. The docket is rebuilt, never written out
 
 `scripts/sov_docket.py queue` builds the queue from `decisions/` and the two
-contracts at the moment it runs. `reports/2026-08-23-ratification-docket.md` is
+contracts at the moment it runs. `reports/2026-08-23-acceptance-docket.md` is
 the same artifact written by hand at 16:06 and stale by 19:00, because a docket
 assembled by hand rots the moment a record is minted. A projection does not.
 
@@ -117,7 +117,7 @@ run: `0036` claimed `console_service_boundary` and the real key is
 
 `contracts/decision-standing.json` declares the heading `What still waits on Bdo`
 and requires it from record `0043` onward. One bullet per question; a bullet
-saying only that the record awaits ratification is not a question.
+saying only that the record awaits acceptance is not a question.
 
 This is the durable half of the enumeration finding. Today routing is one reader
 inferring questions from someone else's prose, and that interpretive step
@@ -225,7 +225,7 @@ for the practice, not an embarrassment to it.
   wrong and the file changes. That is the intended failure mode.
 - **The crosswalk hides drift.** Mapping six phrasings to one standing loses
   whatever distinction the author of `PROPOSED · OWNER FREEZE PENDING` intended
-  against `PROPOSED · OWNER RATIFICATION PENDING`. `0009` is exactly that case:
+  against `PROPOSED · OWNER ACCEPTANCE PENDING`. `0009` is exactly that case:
   accepted is recorded, frozen is not, and the crosswalk flattens them. The
   routing entry carries the distinction the crosswalk drops, which works only as
   long as someone writes it down.
@@ -238,7 +238,7 @@ for the practice, not an embarrassment to it.
 
 ## What this does not do
 
-It ratifies nothing, accepts nothing, and closes no record. It does not update a
+It accepts nothing, accepts nothing, and closes no record. It does not update a
 single status line — every one of the nine lagging records still says what it
 said, because editing a record to say Bdo accepted it is exactly the move
 `AGENTS.md` forbids without him. It produces the queue and names what each item

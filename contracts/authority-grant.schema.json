@@ -22,7 +22,7 @@
   ],
   "properties": {
     "grant_schema": {"const": "soveraeign-authority-grant/v1"},
-    "status": {"enum": ["PROPOSED", "RATIFIED"]},
+    "status": {"enum": ["PROPOSED", "ACCEPTED"]},
     "grant_id": {"type": "string", "pattern": "^grant:[a-z0-9][a-z0-9-]*$"},
     "issuer_id": {
       "description": "Who issued it. JUDGEMENT authority may be issued by the owner and by nobody else; the evaluator enforces that, not this schema.",

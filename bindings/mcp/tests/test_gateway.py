@@ -6,7 +6,7 @@ claim by defeating it - an ungranted call, a sessionless call, a call after the
 session closes, and a manifest naming an operation nothing implements.
 
 BUILT evidence only (`AGENTS.md`, Testing and verification: a test may establish
-`BUILT`; it may not claim `WITNESSED` or `RATIFIED`).
+`BUILT`; it may not claim `WITNESSED` or `ACCEPTED`).
 """
 
 from __future__ import annotations

@@ -153,7 +153,7 @@ def command_transition(args: argparse.Namespace) -> int:
     print(f"{request['ticket']} {request['from']} -> {request['to']}")
     print(decision.render())
     if decision.allowed:
-        print("Note: an allowed transition is a permitted proposal, not a settlement or ratification.")
+        print("Note: an allowed transition is a permitted proposal, not a settlement or acceptance.")
     return 0 if decision.allowed else 1
 
 

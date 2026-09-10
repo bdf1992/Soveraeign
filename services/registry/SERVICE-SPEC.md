@@ -77,7 +77,7 @@ through any route today (`contracts/service.json`, per-operation `standing`).
 itself requires `JUDGEMENT` authority (`contracts/kernel-transitions.json`,
 `retract`, `requires_authority_type`) — matching
 `contracts/capability-offices.json` assigning `registry.retire-owner` the
-`ratify:judgement` authority and `HUMAN`-only actor kinds.
+`accept:judgement` authority and `HUMAN`-only actor kinds.
 
 ## Refusal reason codes
 
@@ -125,7 +125,7 @@ introduces no authority primitive `SPEC.md` does not already define. Every
 operation requires `read:registry` except `register-entry` and
 `supersede-entry` (`register:entry`), `relate-entries` (`register:relation`),
 `declare-owner` and `supersede-owner` (`declare:owner`), `retire-owner`
-(`ratify:judgement`), and `rebuild-index` (`rebuild:projection`)
+(`accept:judgement`), and `rebuild-index` (`rebuild:projection`)
 (`contracts/capability-offices.json`). `declare-owner`, `supersede-owner`, and
 `retire-owner` further restrict `actor_kinds` to `HUMAN` alone; every other
 operation admits both `HUMAN` and `MODEL`. `contracts/service.json`,
@@ -138,6 +138,6 @@ grants issued through Console's authority path rather than minting its own.
 | --- | --- | --- |
 | Fresh-index resolution | SVC-REGISTRY-1, SVC-REGISTRY-4 | `SPEC.md` PROD-I-2 predicates |
 | Entry admission and collision | SVC-REGISTRY-2, SVC-REGISTRY-3 | `SPEC.md` `capture_source`, `submit_proposal` |
-| Owner declaration and independence | SVC-REGISTRY-5 | `SPEC.md` PROD-I-5 predicates, `ratify` |
+| Owner declaration and independence | SVC-REGISTRY-5 | `SPEC.md` PROD-I-5 predicates, `accept` |
 | Owner retirement | SVC-REGISTRY-6 | `SPEC.md` `retract` |
 | No standing by registration | SVC-REGISTRY-7 | `SPEC.md` Historical standing and current effectiveness |

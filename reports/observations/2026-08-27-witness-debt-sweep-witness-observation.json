@@ -36,7 +36,7 @@
     },
     {
       "command": "python scripts/sov_standing.py",
-      "result": "no status field claims WITNESSED or RATIFIED (3 records on file)",
+      "result": "no status field claims WITNESSED or ACCEPTED (3 records on file)",
       "exit_code": 0
     }
   ],
@@ -63,7 +63,7 @@
       "id": "WDS-4",
       "claim": "trap T3 is not tripped",
       "method": "read scripts/sov_standing.py and its tests; grepped the probes and both modified scripts for substring matching on WITNESSED",
-      "finding": "this branch adds no standing check, and sov_standing.py still splits on '_' and denies a token preceded by NOT. Adjacent, pre-existing and untouched: scripts/sovdocs/facets.py settled() does use substring matching against a RATIFIED token, so NOT_RATIFIED would grade as ratified there. Unreachable in this change because the three new records carry no Status line."
+      "finding": "this branch adds no standing check, and sov_standing.py still splits on '_' and denies a token preceded by NOT. Adjacent, pre-existing and untouched: scripts/sovdocs/facets.py settled() does use substring matching against a ACCEPTED token, so NOT_ACCEPTED would grade as accepted there. Unreachable in this change because the three new records carry no Status line."
     }
   ],
   "dissented": [

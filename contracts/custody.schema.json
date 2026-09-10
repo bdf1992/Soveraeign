@@ -21,7 +21,7 @@
   ],
   "properties": {
     "custody_schema": {"const": "soveraeign-custody/v1"},
-    "status": {"enum": ["PROPOSED", "RATIFIED"]},
+    "status": {"enum": ["PROPOSED", "ACCEPTED"]},
     "custody_id": {"type": "string", "pattern": "^custody:[a-z0-9][a-z0-9/-]*$"},
     "custody_kind": {
       "description": "EXIT holds one clause of a phase exit and has no parent. DELIVERY is bounded service or cross-cutting work and serves an exit custody, or is explicitly outside the phase exit. These are the current v1 shapes, not a claim that every future custody must belong to a phase.",
@@ -119,7 +119,7 @@
     },
     "standing": {
       "description": "How well a claim about the object is evidenced and authorized. The existing artifact lifecycle, unchanged. A CAPABLE_NODE at OPEN standing is an ordinary reading and not a contradiction.",
-      "enum": ["OPEN", "BUILT", "WITNESSED", "RATIFIED"]
+      "enum": ["OPEN", "BUILT", "WITNESSED", "ACCEPTED"]
     },
     "work_state": {
       "description": "Where the concern is in the operating queue. The default columns of a board, because a queue answers what to pick up next and the other two axes answer how far along and how well proven. CANDIDATE is visible inventory that has not passed the definition of ready.",

@@ -15,7 +15,7 @@
     "Authority. Naming a claim kind grants nothing and settles nothing.",
     "Repairing STATUS.yaml. The file is unchanged by this contract and remains the hand-written record until a projection can regenerate it."
   ],
-  "naming_screen": "`standing` already carries two senses here - artifact standing (OPEN -> BUILT -> WITNESSED -> RATIFIED) and decision standing. A third would be the collision OPEN-SEAMS.md S20 was closed to prevent, so this contract is named for the field it types (`status`) and now carries no standing of its own at all. No new name is minted; Bdo owns naming (NAMING.md).",
+  "naming_screen": "`standing` already carries two senses here - artifact standing (OPEN -> BUILT -> WITNESSED -> ACCEPTED) and decision standing. A third would be the collision OPEN-SEAMS.md S20 was closed to prevent, so this contract is named for the field it types (`status`) and now carries no standing of its own at all. No new name is minted; Bdo owns naming (NAMING.md).",
   "claim_kinds": {
     "STATUS": {
       "plain_english": "The general state of the subject, as the document's main body records it.",
@@ -161,7 +161,7 @@
       "value": "BUILT_THIN_SLICE_WITNESSED_REMAINDER_DECLARED",
       "subject": "observation-service",
       "claim_kind": "STATUS",
-      "detail": "five operations built, self-tested, and independently observed through the declared surface at 3087714 (witness/observation-service.md); three remain declared only; nothing is ratified and no binding routes any operation",
+      "detail": "five operations built, self-tested, and independently observed through the declared surface at 3087714 (witness/observation-service.md); three remain declared only; nothing is accepted and no binding routes any operation",
       "reference": "witness/observation-service.md"
     },
     {

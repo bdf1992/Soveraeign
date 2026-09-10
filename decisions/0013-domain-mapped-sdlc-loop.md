@@ -17,14 +17,14 @@ Name two paired stances as typed dyads rather than named people or models,
 resolving the direction of seam S7 for this surface:
 
 - `LEFT`/`RIGHT` — the authority dyad: synthesis proposes, judgement
-  ratifies;
+  accepts;
 - `RED`/`BLUE` — the verification dyad: construction builds and proves the
   declared cases, adversarial witnessing seeks the undeclared defeats.
 
 Neither hand of either dyad settles anything alone; results exist only in
 combination. Name the combinations as outcomes, not stances: `PURPLE` is the
 settled verification engagement (`RED` + `BLUE`), `JOINED` is the
-ratification receipt over a synthesis proposal (`LEFT` + `RIGHT`), and
+acceptance receipt over a synthesis proposal (`LEFT` + `RIGHT`), and
 `GREEN` is the derived go-state of a concern whose current gate holds both.
 No operator holds a combination outcome, and `GREEN` is never selected
 directly.
@@ -54,7 +54,7 @@ substitutability applies to the loop itself.
 - Executable orchestration scripts remain inadmissible until their logical
   specification and defeating fixtures exist.
 - Exact tiers, dyads, registry derivation, and the Red-gated release
-  requirement remain proposed until Bdo ratifies open decision O13.
+  requirement remain proposed until Bdo accepts open decision O13.
 
 ## Source and authority
 

@@ -7,7 +7,7 @@
     "subject": "the reduced grader: VOLATILE and RETIRED withdrawn as phrase lists, five kinds remaining (CAPABILITY, STANDING, REFERENCE, PROVENANCE, SELFCLAIM), the kind bound at definition by @emits, the coverage block read by shape, three generalization fixtures added, and the branch rebased onto a new base 48a0f57",
     "verdict": "REPRODUCED_WITH_RESIDUALS",
     "standing_supported": "BUILT -> WITNESSED",
-    "standing_note": "An observation, not a settlement and not a ratification. It does not authorise a landing; it is one of the three preconditions the standing grant names.",
+    "standing_note": "An observation, not a settlement and not a acceptance. It does not authorise a landing; it is one of the three preconditions the standing grant names.",
     "supersedes": "reports/observations/2026-09-08-harness-claims-witness-observation-3.json (3b1b578), -2 (7373456) and the first (99b7942). None withdrawn; 3b1b578 is no longer reachable after the rebase onto 48a0f57, and what it attested was re-measured here rather than carried by assertion.",
     "candidate_commit": "5faaf5b17fa4cd7eb46c77ef94a8237fe5153ce3",
     "candidate_tree": "88ae6fcedac4754297385b06e5d24779db89dd14",

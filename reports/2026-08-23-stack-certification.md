@@ -1,6 +1,6 @@
 # Phase-I stack certification, 2026-08-23
 
-Status: `OBSERVED · NOT WITNESSED · NOTHING RATIFIED`
+Status: `OBSERVED · NOT WITNESSED · NOTHING ACCEPTED`
 
 Bdo asked for a Tech Spec derived from `PRD.md` and `SPEC.md`, a certified stack, and the
 crossings diagrammed. This report holds the stack evidence. The Tech Spec landed as the
@@ -9,7 +9,7 @@ crossings diagrammed. This report holds the stack evidence. The Tech Spec landed
 
 One session did the reading, the running, and the writing. That is enough for `BUILT`
 evidence about code it did not author, and it is not a witness. `AGENTS.md` Authority: a
-build report never witnesses itself, and only Bdo ratifies. Nothing here answers O2.
+build report never witnesses itself, and only Bdo accepts. Nothing here answers O2.
 
 ## Goal
 
@@ -100,7 +100,7 @@ renders Console as `chartered, not built — O14`, and the merge renumbered Cons
 ## Judgement queue for Bdo (nothing decided)
 
 1. **O2 stands, better evidenced.** Two of ten rows are unexercised, and both are load-bearing
-   for PROD-I-8 and PROD-I-9. Ratifying the baseline now ratifies two intentions along with
+   for PROD-I-8 and PROD-I-9. Accepting the baseline now accepts two intentions along with
    eight observations. Deferring O2 until an adapter executes is also a position. This report
    takes neither.
 2. **Does the module budget apply to `conformance/`?** Either the lint production rule widens

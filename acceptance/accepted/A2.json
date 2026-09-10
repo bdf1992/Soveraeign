@@ -5,7 +5,7 @@
   "subject": {
     "artifact": "SPEC.md",
     "from_standing": "WITNESSED",
-    "to_standing": "RATIFIED",
+    "to_standing": "ACCEPTED",
     "supersedes_open_decision": "O10"
   },
   "presented_by_seat": "seat:session-control",
@@ -22,7 +22,7 @@
   "visible_result": {
     "demo": ["python", "scripts/sov_spec.py", "trace"],
     "shows": "each standing the specification has actually reached, and the exact evidence that earned it, read out of the record rather than asserted",
-    "expect": "WITNESSED reported as EARNED against WIT-007-2026-08-23-B with zero defects, and RATIFIED reported as NOT REACHABLE because it is this seat's call and not a machine's"
+    "expect": "WITNESSED reported as EARNED against WIT-007-2026-08-23-B with zero defects, and ACCEPTED reported as NOT REACHABLE because it is this seat's call and not a machine's"
   },
   "evidence": [
     {
@@ -56,6 +56,6 @@
     "The witness is a model run, not a second human. It is independent of the builder, which is what WITNESSED requires, but it is not adversarial.",
     "Four of six diagrams under diagrams/ are stale against their recorded source digests, so the drawn views of this specification lag the text."
   ],
-  "on_accept": "STATUS.yaml specification_status becomes RATIFIED, roadmap.close_f1 becomes reachable, and the O10 entry is deleted from the acceptance queue.",
+  "on_accept": "STATUS.yaml specification_status becomes ACCEPTED, roadmap.close_f1 becomes reachable, and the O10 entry is deleted from the acceptance queue.",
   "on_reject": "SPEC.md stays WITNESSED, F1 stays open, and the rejection reason names which clause is wrong so the repair is a bounded edit rather than a rewrite."
 }

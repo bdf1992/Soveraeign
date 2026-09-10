@@ -139,7 +139,7 @@ omissions, usage, and cost visible through the Model Binding contract.
 Switching models creates a new attributed invocation. Fallback is never silent.
 
 Dynamic Chart compilation is not claimed here. Until the boundary tracked by issues #40
-and #42 is ratified and implemented, Sov loads explicit governed sources and states what
+and #42 is accepted and implemented, Sov loads explicit governed sources and states what
 it omitted.
 
 ## Standing

@@ -1,7 +1,7 @@
 # Record Service Requirements Document
 
 Status: `BUILT` (self-report, drafting session, 2026-08-27 — not `WITNESSED`,
-not `RATIFIED`)
+not `ACCEPTED`)
 
 This is a service-scoped projection of `PRD.md`, per `decisions/0067`. It
 states what the Record Service owes the node that depends on it — the node

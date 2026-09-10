@@ -332,7 +332,7 @@
     "predicates": [
       "PRED-I-5.1",
       "PRED-I-5.2",
-      "TRANS-ratify"
+      "TRANS-accept"
     ],
     "requirement": "PROD-I-5",
     "polarity": "positive",
@@ -367,7 +367,7 @@
     "predicates": [
       "PRED-I-5.1",
       "PRED-I-5.2",
-      "TRANS-ratify"
+      "TRANS-accept"
     ],
     "requirement": "PROD-I-5",
     "polarity": "defeating",
@@ -393,7 +393,7 @@
       "PRED-I-5.1",
       "PRED-I-5.2",
       "PRED-I-5.3",
-      "TRANS-ratify"
+      "TRANS-accept"
     ],
     "requirement": "PROD-I-5",
     "polarity": "positive",
@@ -459,7 +459,7 @@
       "PRED-I-5.1",
       "PRED-I-5.2",
       "PRED-I-5.3",
-      "TRANS-ratify"
+      "TRANS-accept"
     ],
     "requirement": "PROD-I-5",
     "polarity": "defeating",
@@ -609,8 +609,8 @@
     "polarity": "positive",
     "expected_oracle": "PASS",
     "observed": {
-      "ratification_before": "RATIFIED",
-      "ratification_after": "RATIFIED",
+      "acceptance_before": "ACCEPTED",
+      "acceptance_after": "ACCEPTED",
       "validator_changed_authority": false,
       "attestations": [
         {
@@ -648,8 +648,8 @@
     "polarity": "defeating",
     "expected_oracle": "FAIL",
     "observed": {
-      "ratification_before": "RATIFIED",
-      "ratification_after": "REVOKED_BY_VALIDATOR",
+      "acceptance_before": "ACCEPTED",
+      "acceptance_after": "REVOKED_BY_VALIDATOR",
       "validator_changed_authority": true,
       "attestations": [
         {
@@ -861,8 +861,8 @@
     "observed": {
       "claim": {
         "claim_id": "c1",
-        "standing": "RATIFIED",
-        "ratification_receipt_id": "rcpt-r1"
+        "standing": "ACCEPTED",
+        "acceptance_receipt_id": "rcpt-r1"
       },
       "attestation_policy": {
         "requires_attestation": true
@@ -895,8 +895,8 @@
     "observed": {
       "claim": {
         "claim_id": "c1",
-        "standing": "RATIFIED",
-        "ratification_receipt_id": "rcpt-r1"
+        "standing": "ACCEPTED",
+        "acceptance_receipt_id": "rcpt-r1"
       },
       "attestation_policy": {
         "requires_attestation": true

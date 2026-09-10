@@ -13,7 +13,7 @@ duplicate their rules into competing authorities.
 - Bdo owns product intent, naming, judgement, and phase gates.
 - Apply `.claude/skills/unslop/SKILL.md` to human-facing prose by default; persisted covered prose also requires a `clarity` review.
 - Model output, tool success, credentials, and green tests confer no authority.
-- Preserve `OPEN -> BUILT -> WITNESSED -> RATIFIED`; never self-witness.
+- Preserve `OPEN -> BUILT -> WITNESSED -> ACCEPTED`; never self-witness.
 - Write the contract plus positive and defeating fixture before business logic.
 - Separate state from execution. Every consequential decision emits an
   attributable event and terminal receipt; projections are rebuildable.

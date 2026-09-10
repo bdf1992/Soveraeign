@@ -11,7 +11,7 @@
     "tree_stability": "Two full verify runs produced identical observed_state_digests for all 52 subjects, so the tree did not move underneath this witnessing (trap T6 checked, not assumed).",
     "note": "The task named base as `main (2069976)`. 2069976 is the candidate's parent, but the ref `main` now resolves to b1448ee and `git merge-base main 714337a` is b1448ee. The label moved; the SHAs witnessed are the frozen ones."
   },
-  "no_finding_envelope": "No contract-typed Finding (contracts/finding.schema.json) is emitted. That schema requires `record_projection_id`, no RecordProjection was supplied with this task, and none can be reconstructed from the repository at the declared cutoff. A projection id will not be invented to satisfy the schema. This record is an Observation in the established reports/observations/ shape and interprets evidence; it settles nothing and ratifies nothing.",
+  "no_finding_envelope": "No contract-typed Finding (contracts/finding.schema.json) is emitted. That schema requires `record_projection_id`, no RecordProjection was supplied with this task, and none can be reconstructed from the repository at the declared cutoff. A projection id will not be invented to satisfy the schema. This record is an Observation in the established reports/observations/ shape and interprets evidence; it settles nothing and accepts nothing.",
   "claim_under_witness": "Every scripts/verify.py invocation in .github/workflows now writes its per-check Observation records with --observe and retains them as a build artifact unconditionally, and a new test class refuses any future verify step that does not.",
   "claims": [
     {
@@ -106,7 +106,7 @@
     "contracts/repository-ci-evidence.json": "sha256:e3f5694534f46d615e42a8688ae3a92d3b6bbddd1cb979a53583262f89beb543",
     "contracts/observation.schema.json": "sha256:a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
   },
-  "standing_supported": "NONE at this reading. The retention half of the claim is reproduced and would support OPEN -> BUILT for that half; the refusal half is dissented, so BUILT -> WITNESSED is not supported for the claim as stated. This observation is not a settlement and not a ratification.",
+  "standing_supported": "NONE at this reading. The retention half of the claim is reproduced and would support OPEN -> BUILT for that half; the refusal half is dissented, so BUILT -> WITNESSED is not supported for the claim as stated. This observation is not a settlement and not a acceptance.",
   "judgement_items": [
     "None. Every item above is an engineering repair inside the concern that owns it and belongs to the builder, not to Bdo. Nothing here reaches product intent, naming, an external effect, a secret, a resource commitment, or destructive administration."
   ],

@@ -13,7 +13,7 @@ from sovkernel import authority  # noqa: E402
 class CapabilitySpecificPreconditions(unittest.TestCase):
     def grant(self):
         return {
-            "status": "RATIFIED",
+            "status": "ACCEPTED",
             "grant_id": "grant:test",
             "issuer_id": "bdo",
             "actor_id": "sov",

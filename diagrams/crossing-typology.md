@@ -2,7 +2,7 @@
 
 ```text
 source          SPEC.md · CLASSIFICATION.md · PRD.md · CONTRACT.md
-source_digest   585b3d14f594b604 · caf2384160b00eed · 7e636591342c367c · f95acd076c4977d7
+source_digest   011496c9c301996a · 79826ef371e34160 · e94bc710bd9e9263 · 76900029e000e83d
 reader          hand-authored · v1
 fidelity        LOSSY
 omissions       the receipt and event-envelope field lists, held by SPEC.md and
@@ -78,7 +78,7 @@ Four obligations, and they are the same four in every class:
 | --- | --- | --- |
 | Name the authoritative source and version | `SPEC.md` `cross` preconditions | the crossing cannot name its source |
 | Declare the reader or projection, and its omissions | `SPEC.md` Projection rule | a projected value resolves to nothing |
-| Check a live typed, scoped, budgeted grant | `PRD.md` PROD-I-5 | a machine right ratifies judgement |
+| Check a live typed, scoped, budgeted grant | `PRD.md` PROD-I-5 | a machine right accepts judgement |
 | Return one terminal receipt | `PRD.md` PROD-I-4 | an unmarked entry is admitted |
 
 The receipt is owed **even when the crossing refuses**. `SPEC.md` is explicit

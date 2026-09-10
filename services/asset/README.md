@@ -19,12 +19,12 @@ python -m soveraeign_asset_service.cli --root ../../../.soveraeign-asset conform
 ```
 
 A conformance verdict is derived on every call and never stored. It separates a
-ratified description (`CONFORMING`) from one nobody ratified
-(`CLAIMED_UNRATIFIED`) from one nothing carries (`MISSING_FIELD`); the middle
+accepted description (`CONFORMING`) from one nobody accepted
+(`CLAIMED_UNACCEPTED`) from one nothing carries (`MISSING_FIELD`); the middle
 one is a claim and never counts as conformance.
 
 It is intentionally dependency-free. Its tests are implementation self-reports:
-they establish `BUILT`, not `WITNESSED`, `RATIFIED`, or Phase-I qualification.
+they establish `BUILT`, not `WITNESSED`, `ACCEPTED`, or Phase-I qualification.
 
 ```bash
 cd services/asset
@@ -44,7 +44,7 @@ reader, configuration, source, and output in its local CAS. The recording can
 be reconstructed by recording or output-version ID without exposing local
 filesystem paths. Legacy derivative runs remain versions, not recordings; they
 cannot be passed off as reconstructable. This is the substrate for later local
-model enrichment; no model output is admitted or ratified by this mechanism.
+model enrichment; no model output is admitted or accepted by this mechanism.
 Configurations use opaque credential references rather than usable secrets.
 
 This layer verifies what reader material a worker declared; it does not yet

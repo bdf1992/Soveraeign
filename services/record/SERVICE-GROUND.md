@@ -1,7 +1,7 @@
 # Record Service Ground
 
 Status: `BUILT` (self-report, drafting session, 2026-08-27 — not
-`WITNESSED`, not `RATIFIED`)
+`WITNESSED`, not `ACCEPTED`)
 
 Service-scoped projection of `GROUND.md`, per `decisions/0067`. Named
 `SERVICE-GROUND.md`, not `GROUND.md` — the root document owns that name and

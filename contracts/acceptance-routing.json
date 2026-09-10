@@ -23,7 +23,7 @@
   "contested_note": "An entry someone has pushed back on, naming the evidence. A routing table that quietly rewrites itself when challenged is worth less than one that shows where it was pushed, so the doubt is recorded beside the claim rather than replacing it. The entry still reads as its author left it until whoever holds the tier rules.",
   "unit": "question",
   "unit_note": "v1 routed records and lost questions. A record can carry several questions with different answers - decisions/0036 names three, one for Control and one for Bdo - and a per-record reaches_owner boolean cannot represent that. Routing questions is what lets this file and a commit-range sweep reconcile without either being wrong. Found by an independent witness of 06be56c, not by this file's author.",
-  "ratification_note": "Bare ratification is not routed. Every PROPOSED record needs it by definition, so counting it as a question that reaches Bdo would mark all eighteen and say nothing. This file answers the narrower question: does this need a judgement from him OTHER than the ratification every proposal already needs.",
+  "acceptance_note": "Bare acceptance is not routed. Every PROPOSED record needs it by definition, so counting it as a question that reaches Bdo would mark all eighteen and say nothing. This file answers the narrower question: does this need a judgement from him OTHER than the acceptance every proposal already needs.",
   "enumeration_note": "enumerated_from records where a question came from. `record-section` means the record declares its own owner questions under a heading and each bullet became a question. `headline` means the record does not enumerate, so its single stated question is routed and any further question it carries implicitly is not yet visible here. Today exactly one record of eighteen enumerates its own questions, which is why this field is honest rather than decorative.",
   "questions": {
     "0001-A": {
@@ -400,7 +400,7 @@
         "acceptance_standing"
       ],
       "already_recorded_as": null,
-      "reason": "A manifest may declare its own standing as WITNESSED or RATIFIED and the checker accepts it. A build cannot witness itself, so a self-declared standing is a claim no participant may make. All six are honest today.",
+      "reason": "A manifest may declare its own standing as WITNESSED or ACCEPTED and the checker accepts it. A build cannot witness itself, so a self-declared standing is a claim no participant may make. All six are honest today.",
       "action_if_confirmed": "Constrain the field to PROPOSED|BUILT, or remove it."
     },
     "SWEEP-10": {

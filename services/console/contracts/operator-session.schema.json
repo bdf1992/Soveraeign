@@ -86,7 +86,7 @@
       "enum": [
         "RECORDED",
         "ADMITTED",
-        "RATIFIED",
+        "ACCEPTED",
         "EFFECTIVE"
       ]
     }

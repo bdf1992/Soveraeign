@@ -1,12 +1,12 @@
 # MCP Gateway
 
 Standing: `BUILT_SELF_TESTED_NOT_WITNESSED`. Declared as `PROPOSED` in
-`manifest.json`; nothing here is witnessed or ratified.
+`manifest.json`; nothing here is witnessed or accepted.
 
 A Model Context Protocol server over stdio that exposes this node's built
 services to any MCP-capable model client. It is a Model Binding
 (`AGENTS.md`, Directory boundaries): it executes within grants and never
-ratifies, settles, or witnesses.
+accepts, settles, or witnesses.
 
 ## Why a gateway and not a set of wrappers
 
@@ -86,4 +86,4 @@ under it.
 binding is a stdio transport that currently enforces its own gates rather than
 being admitted through that operation. Whether a transport binding must be
 admitted by the Gateway Service before it serves is Bdo's to rule; it blocks
-nothing today because both are local and neither is ratified.
+nothing today because both are local and neither is accepted.

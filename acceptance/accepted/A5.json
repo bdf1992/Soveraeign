@@ -4,8 +4,8 @@
  "claim": "The orientation snapshot in CLAUDE.md is now checked against the record by an executable gate inside verify.py. What needs your judgement is not the gate but its consequence: nine of its ten claims have zero tolerance and count working-tree files, so every concern that adds a skill, workflow, decision, report, service or check must also edit CLAUDE.md, which grant:standing-landing-loop excludes from the landing loop.",
  "subject": {
   "artifact": "CLAUDE.md",
-  "from_standing": "RATIFIED",
-  "to_standing": "RATIFIED"
+  "from_standing": "ACCEPTED",
+  "to_standing": "ACCEPTED"
  },
  "presented_by_seat": "seat:session-control",
  "accepted_by_seat": "seat:root",

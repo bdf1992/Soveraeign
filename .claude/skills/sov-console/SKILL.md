@@ -10,7 +10,7 @@ description: Domain know-how for the Soveraeign console domain - the services/co
 Advance the Console Service boundary of the Soveraeign repository - charter,
 record contracts, seed fixtures, and a declared (not implemented) Human Binding
 interface - without crossing the protected boundary that forbids runtime code
-before a ratified logical spec and executable defeating fixtures. The domain
+before a accepted logical spec and executable defeating fixtures. The domain
 governs the operator-facing session inside a local Node: what needs an
 operator's attention, what an operator prefers, what is waiting on a human
 right, and what has happened across the node's services. It surfaces pending
@@ -126,15 +126,15 @@ renderer's report count as observation; modify `lineage/evidence/`; create
 
 ## Vocabulary (exact; no synonyms)
 
-- Repository artifact standing: `OPEN -> BUILT -> WITNESSED -> RATIFIED`.
-- Record standing: `RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE`.
+- Repository artifact standing: `OPEN -> BUILT -> WITNESSED -> ACCEPTED`.
+- Record standing: `RECORDED -> ADMITTED -> ACCEPTED -> EFFECTIVE`.
 - Event outcome: `ATTEMPTED | COMMITTED | FAILED | REFUSED | COUNTERED |
   UNRESOLVED`.
 - Attestation outcome: `REPRODUCED | DISSENTED | UNATTESTABLE`.
 - Effect class: `RECORD_LOCAL`, `RESOURCE_CONSUMPTION`, `EXTERNAL_WORLD`.
 - Service manifest standing: `PROPOSED`.
 - Proposed lifecycles (CHARTER.md; service policy awaiting owner
-  ratification; they do not replace the shared record standings):
+  acceptance; they do not replace the shared record standings):
   operator session `OPEN -> CLOSED`; thread `OPEN -> ARCHIVED`;
   judgement request `QUEUED -> RESOLVED | WITHDRAWN | EXPIRED`;
   notification `ISSUED -> ACKNOWLEDGED`.

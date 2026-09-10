@@ -1950,13 +1950,13 @@
     "note": ""
   },
   {
-    "id": "SEATMSG-DEF-NON-ROOT-RATIFIES",
+    "id": "SEATMSG-DEF-NON-ROOT-ACCEPTS",
     "contract": "seat-message.schema.json",
     "status": "PROPOSED",
     "polarity": "defeating",
     "expected_validity": "VALID",
     "expected_etiquette": false,
-    "defeats": "only the root seat ratifies; machine authority may carry verification-typed claims, judgement-typed truth is the root's alone (AGENTS.md)",
+    "defeats": "only the root seat accepts; machine authority may carry verification-typed claims, judgement-typed truth is the root's alone (AGENTS.md)",
     "record": {
       "message_schema": "soveraeign-seat-message/v1",
       "message_id": "msg:4r",
@@ -1969,7 +1969,7 @@
         "relation_to_subject": "INDEPENDENT"
       },
       "to_seat": "seat:orchestrator-1",
-      "act": "RATIFY",
+      "act": "ACCEPT",
       "subject": {
         "operation_id": "OP-DEMO-1"
       },
@@ -1981,7 +1981,7 @@
       },
       "standing_proposed": {
         "from": "WITNESSED",
-        "to": "RATIFIED"
+        "to": "ACCEPTED"
       },
       "carries": {
         "judgement_items": [

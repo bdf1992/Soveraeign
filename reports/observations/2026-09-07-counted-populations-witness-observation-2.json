@@ -9,7 +9,7 @@
     "standing_supported": "BUILT -> WITNESSED",
     "supersedes": "reports/observations/2026-09-07-counted-populations-witness-observation.json, which attests b93a721 and is left unedited because reports/ is append-preserving. That record stands as a dated observation of the revision it names; this one attests the head.",
     "standing_binds": "contracts/counted-populations.json, scripts/sov_counts.py, scripts/sovcounts/, scripts/sovverify/staleness.py, scripts/tests/test_sov_counts.py, and the two staleness entries plus the capability-map entry in scripts/sovverify/checks.py, at d12d01f only.",
-    "standing_note": "An observation, not a settlement and not a ratification. It supports the standing proposal BUILT -> WITNESSED for the mechanism as built at this revision, and settles nothing about the numbers this check does not reach, nothing about phase, requirement, or service standing.",
+    "standing_note": "An observation, not a settlement and not a acceptance. It supports the standing proposal BUILT -> WITNESSED for the mechanism as built at this revision, and settles nothing about the numbers this check does not reach, nothing about phase, requirement, or service standing.",
     "candidate_commit": "d12d01fd1dc03d334698934973785b757a3b3594",
     "candidate_tree": "1a8c9111b6ca72fb77f9ada7203c874ec191a306",
     "base_commit": "b1448eeb458afa4a8c60b57c1cb46906246af7f7",

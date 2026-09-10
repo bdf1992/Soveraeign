@@ -107,10 +107,10 @@ class CurrentTransportBoundaries(unittest.TestCase):
                     with self.subTest(capability=row["capability_id"]):
                         self.assertNotEqual(endpoint["activation"], "ACTIVE")
 
-    def test_only_a_human_may_be_asked_to_ratify_judgement(self) -> None:
-        """AGENTS.md: only Bdo ratifies judgement, so no model door opens onto it."""
+    def test_only_a_human_may_be_asked_to_accept_judgement(self) -> None:
+        """AGENTS.md: only Bdo accepts judgement, so no model door opens onto it."""
         for row in REFERENCE["capabilities"]:
-            if row["required_authority"] == "ratify:judgement":
+            if row["required_authority"] == "accept:judgement":
                 with self.subTest(capability=row["capability_id"]):
                     self.assertEqual(row["actor_kinds"], ["HUMAN"])
 

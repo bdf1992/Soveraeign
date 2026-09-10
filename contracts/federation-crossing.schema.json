@@ -52,7 +52,7 @@
         "record_address": {"type": "string", "minLength": 1},
         "record_digest": {"type": "string", "minLength": 1},
         "standing_at_origin": {
-          "enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"],
+          "enum": ["RECORDED", "ADMITTED", "ACCEPTED", "EFFECTIVE"],
           "description": "What the record stands at in the node that offered it. Reported, never inherited. A receiving node reads this as a claim about somewhere else."
         }
       }
@@ -108,7 +108,7 @@
       ]
     },
     "standing": {
-      "enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]
+      "enum": ["RECORDED", "ADMITTED", "ACCEPTED", "EFFECTIVE"]
     }
   }
 }

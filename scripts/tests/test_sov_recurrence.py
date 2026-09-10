@@ -67,11 +67,11 @@ class SettledExperience(unittest.TestCase):
         self.assertEqual(len(after["sources"]), before)
         self.assertEqual(after["defects"], [])
 
-    def test_a_member_settled_at_ratified_is_admitted(self) -> None:
-        """RATIFIED is above WITNESSED; admitting only the exact token would drop it."""
+    def test_a_member_settled_at_accepted_is_admitted(self) -> None:
+        """ACCEPTED is above WITNESSED; admitting only the exact token would drop it."""
         path = self.root / fixture.COLLECTION
         collection = json.loads(path.read_text(encoding="utf-8"))
-        collection["custodies"][0]["members"][0]["standing"] = "RATIFIED"
+        collection["custodies"][0]["members"][0]["standing"] = "ACCEPTED"
         path.write_text(json.dumps(collection, indent=2), encoding="utf-8", newline="\n")
         gathered = experience.gather(self.root, fixture.COLLECTION)
         self.assertIn("scripts/fixture_member_1.py",

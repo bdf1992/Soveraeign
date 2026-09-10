@@ -14,7 +14,7 @@ before reading anything else as a promise.
 The first console slice in `services/console/CHARTER.md` ("First slice: the
 owner's judgement surface"): the surface through which the owner receives a
 judgement request, answers it, and has the answer land as a record that can
-carry `RATIFIED` standing. The binding realizes the console's `human-binding`
+carry `ACCEPTED` standing. The binding realizes the console's `human-binding`
 port (`services/console/contracts/service.json`) over the shared transition
 contract (`SPEC.md`, Transition contract).
 
@@ -34,7 +34,7 @@ receipted like writes.
 | `open-session` | `open-session` | none (console proposal) | operator-session `OPEN` | reasoned refusal |
 | `list-pending-judgement-requests` | `list-pending-judgement-requests` | none (console proposal) | judgement-request, lifecycle `QUEUED`, addressed to the operator | reasoned refusal |
 | `show-judgement-request` | `show-judgement-request` | none (console proposal) | one judgement-request with question, evidence, and `decision_ref` resolved | reasoned refusal |
-| `resolve-judgement` | `resolve-judgement` | `ratify` | judgement-resolution; request `QUEUED -> RESOLVED`; successor receipt | `AUTHORITY_REFUSED`, `STALE_STATE`; `REFUSED` for a `MODEL` actor |
+| `resolve-judgement` | `resolve-judgement` | `accept` | judgement-resolution; request `QUEUED -> RESOLVED`; successor receipt | `AUTHORITY_REFUSED`, `STALE_STATE`; `REFUSED` for a `MODEL` actor |
 | `acknowledge-notification` | `acknowledge-notification` | none (console proposal) | notification `ISSUED -> ACKNOWLEDGED` | reasoned refusal |
 | `show-receipt` | `show-receipt` | none (console proposal) | one Receipt in the `SPEC.md` Receipt shape | reasoned refusal |
 | `close-session` | `close-session` | none (console proposal) | operator-session `OPEN -> CLOSED` | reasoned refusal |
@@ -45,12 +45,12 @@ Notes on the table:
   path, never from notification records or a projection-view (CONS-008). A
   setting, session state, unread cursor, or dashboard role never changes its
   membership.
-- `resolve-judgement` is the `SPEC.md` Transition contract row `ratify`:
+- `resolve-judgement` is the `SPEC.md` Transition contract row `accept`:
   preconditions "proposal admitted; live matching authority grant"; commit
-  "preserve history; add `RATIFIED` event"; refusal `AUTHORITY_REFUSED` or
+  "preserve history; add `ACCEPTED` event"; refusal `AUTHORITY_REFUSED` or
   `STALE_STATE`. `contracts/kernel-transitions.json` carries the same row as
-  a rebuildable projection under `transitions.ratify`; `SPEC.md` is the
-  authority. The request's question is the Proposal being ratified, and the
+  a rebuildable projection under `transitions.accept`; `SPEC.md` is the
+  authority. The request's question is the Proposal being accepted, and the
   answer lands as a judgement-resolution record with `resolver_kind` `HUMAN`,
   the grant checked, its receipt, and `unresolved_receipt_id` naming the
   conditioned operation's `UNRESOLVED` receipt (CONS-009). A `MODEL` actor's

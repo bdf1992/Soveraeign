@@ -40,7 +40,7 @@ shapes are checked locally without transmitting content.
 - Runtime dependencies and infrastructure additions require observed need, a
   named boundary, and a decision record.
 - The logical specification remains stack-neutral.
-- Exact technical choices remain proposed until Bdo ratifies the baseline.
+- Exact technical choices remain proposed until Bdo accepts the baseline.
 
 ## Source and authority
 

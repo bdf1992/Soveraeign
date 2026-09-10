@@ -1,6 +1,6 @@
 # Gateway Service Journeys
 
-Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT RATIFIED`
+Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT ACCEPTED`
 
 `decisions/0093-service-srd-spec-ground.md` names this document as the one with no analog in the
 root pattern. `CHARTER.md` calls this service "the node's door." Today exactly one journey through

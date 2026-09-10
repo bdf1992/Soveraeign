@@ -83,57 +83,57 @@
       }
     },
     {
-      "case_id": "TC-004-owner-ratifies",
+      "case_id": "TC-004-owner-accepts",
       "expect": "ALLOWED",
-      "proves": "An owner seat ratifies a witnessed claim by accepting a presented result, and only an owner seat may.",
+      "proves": "An owner seat accepts a witnessed claim by accepting a presented result, and only an owner seat may.",
       "request": {
         "request_schema": "soveraeign-ticket-transition/v1",
         "ticket": "#27",
         "from": "WITNESSED",
-        "to": "RATIFIED",
+        "to": "ACCEPTED",
         "actor_id": "Bdo",
         "actor_kind": "HUMAN",
         "reason": "owner accepts the witnessed claim",
         "effect_class": "RECORD_LOCAL",
         "evidence": {
-          "owner_ratification": "decisions/0007-asset-service-boundary.md",
+          "owner_acceptance": "decisions/0007-asset-service-boundary.md",
           "acceptance_packet": "acceptance/A1.json"
         }
       }
     },
     {
-      "case_id": "TC-005-model-may-not-ratify",
+      "case_id": "TC-005-model-may-not-accept",
       "expect": "ACTOR_KIND_REFUSED",
-      "proves": "No accumulation of machine evidence reaches ratification.",
+      "proves": "No accumulation of machine evidence reaches acceptance.",
       "request": {
         "request_schema": "soveraeign-ticket-transition/v1",
         "ticket": "#27",
         "from": "WITNESSED",
-        "to": "RATIFIED",
+        "to": "ACCEPTED",
         "actor_id": "model/controller",
         "actor_kind": "MODEL",
         "reason": "every check is green",
         "effect_class": "RECORD_LOCAL",
         "evidence": {
-          "owner_ratification": "reports/green.md"
+          "owner_acceptance": "reports/green.md"
         }
       }
     },
     {
-      "case_id": "TC-006-non-owner-human-may-not-ratify",
-      "expect": "OWNER_RATIFICATION_REQUIRED",
-      "proves": "Ratification is owner judgement, not merely human action.",
+      "case_id": "TC-006-non-owner-human-may-not-accept",
+      "expect": "OWNER_ACCEPTANCE_REQUIRED",
+      "proves": "Acceptance is owner judgement, not merely human action.",
       "request": {
         "request_schema": "soveraeign-ticket-transition/v1",
         "ticket": "#27",
         "from": "WITNESSED",
-        "to": "RATIFIED",
+        "to": "ACCEPTED",
         "actor_id": "human/contributor",
         "actor_kind": "HUMAN",
         "reason": "reviewed and approved on the pull request",
         "effect_class": "RECORD_LOCAL",
         "evidence": {
-          "owner_ratification": "pull/38#review"
+          "owner_acceptance": "pull/38#review"
         }
       }
     },
@@ -338,11 +338,11 @@
       "request": {
         "request_schema": "soveraeign-ticket-transition/v1",
         "ticket": "#27",
-        "from": "RATIFIED",
+        "from": "ACCEPTED",
         "to": "WITNESSED",
         "actor_id": "Bdo",
         "actor_kind": "HUMAN",
-        "reason": "walking a ratified claim backwards",
+        "reason": "walking a accepted claim backwards",
         "effect_class": "RECORD_LOCAL",
         "evidence": {}
       }
@@ -368,13 +368,13 @@
       }
     },
     {
-      "case_id": "TC-016-only-the-owner-demotes-a-ratified-claim",
+      "case_id": "TC-016-only-the-owner-demotes-a-accepted-claim",
       "expect": "OWNER_JUDGEMENT_REQUIRED",
       "proves": "Demoting owner judgement is itself owner judgement.",
       "request": {
         "request_schema": "soveraeign-ticket-transition/v1",
         "ticket": "#27",
-        "from": "RATIFIED",
+        "from": "ACCEPTED",
         "to": "DEMOTED",
         "actor_id": "human/contributor",
         "actor_kind": "HUMAN",
@@ -441,20 +441,20 @@
       }
     },
     {
-      "case_id": "TC-017-ratification-without-a-presented-result",
+      "case_id": "TC-017-acceptance-without-a-presented-result",
       "expect": "MISSING_EVIDENCE",
-      "proves": "An owner cannot ratify a bare question. Under the acceptance gate the ask arrives as a packet carrying the claim, the demo, the evidence, and what would defeat it, or it does not arrive.",
+      "proves": "An owner cannot accept a bare question. Under the acceptance gate the ask arrives as a packet carrying the claim, the demo, the evidence, and what would defeat it, or it does not arrive.",
       "request": {
         "request_schema": "soveraeign-ticket-transition/v1",
         "ticket": "#27",
         "from": "WITNESSED",
-        "to": "RATIFIED",
+        "to": "ACCEPTED",
         "actor_id": "Bdo",
         "actor_kind": "HUMAN",
         "reason": "asked in conversation rather than presented",
         "effect_class": "RECORD_LOCAL",
         "evidence": {
-          "owner_ratification": "decisions/0007-asset-service-boundary.md"
+          "owner_acceptance": "decisions/0007-asset-service-boundary.md"
         }
       }
     },

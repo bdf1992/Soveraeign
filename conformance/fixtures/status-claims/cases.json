@@ -2,7 +2,7 @@
   "corpus_id": "soveraeign-status-claims-cases/v4",
   "grades": "contracts/status-claims.json",
   "note": "One controlled case per declared refusal, plus positive cases that must earn none. Each defeating case must earn EXACTLY the code it names: a case that fires for a second reason has not proved the one it is for, and two refusals that cannot be separated are one rule wearing two names. No case reads STATUS.yaml, so a repair to the live file cannot quietly stop a refusal from being proved, and a positive case must type a real entry - an empty document against an empty crosswalk satisfies every rule and proves nothing.",
-  "revision_note": "v4 answers a third independent observation against 7860b45. v3's standing rule asked what a value led with; the witness passed WITNESSED_RETRACTED, RATIFIED_NOT and -WITNESSED, the last because splitting on non-alphanumerics deletes a negator rather than seeing it, and showed the rule then refused the correct entry on five live fields. Its judgement was that a fourth patch would produce a fourth spelling. It is answered by removing the standing extraction rather than respelling it: scripts/sov_standing.py owns standing claims and checks what decides one. The second positive case is the value that defeated all three drafts, now earning nothing because there is no rule over prose left to fool.",
+  "revision_note": "v4 answers a third independent observation against 7860b45. v3's standing rule asked what a value led with; the witness passed WITNESSED_RETRACTED, ACCEPTED_NOT and -WITNESSED, the last because splitting on non-alphanumerics deletes a negator rather than seeing it, and showed the rule then refused the correct entry on five live fields. Its judgement was that a fourth patch would produce a fourth spelling. It is answered by removing the standing extraction rather than respelling it: scripts/sov_standing.py owns standing claims and checks what decides one. The second positive case is the value that defeated all three drafts, now earning nothing because there is no rule over prose left to fool.",
   "cases": [
     {
       "id": "positive-typed-status-claim",
@@ -73,7 +73,7 @@
           "claim_kind": "STATUS",
           "detail": "d",
           "reference": null,
-          "asserted_standing": "RATIFIED",
+          "asserted_standing": "ACCEPTED",
           "settled_by": "seat:root"
         }
       ]

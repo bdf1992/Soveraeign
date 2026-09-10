@@ -108,7 +108,7 @@ UNSTATED = "unstated"
 # filter value, so a new phrasing shows itself rather than disappearing.
 GRADES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("superseded", ("SUPERSEDED", "WITHDRAWN", "RETIRED")),
-    ("ratified", ("RATIFIED",)),
+    ("accepted", ("ACCEPTED",)),
     ("accepted", ("ACCEPT", "RULED")),
     ("built", ("BUILT", "EXECUTABLE", "EXPERIMENTAL")),
     ("proposed", ("PROPOS", "CHARTERED", "CANDIDATE", "PROVISIONAL", "DRAFT")),

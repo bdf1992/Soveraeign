@@ -354,7 +354,7 @@
       "status": "PROPOSED",
       "custody_id": "custody:phase-i/operational-acceptance",
       "custody_kind": "EXIT",
-      "initiative": "Bdo ratifies Phase-I operational acceptance over evidence the preceding four clauses produced.",
+      "initiative": "Bdo accepts Phase-I operational acceptance over evidence the preceding four clauses produced.",
       "held_by": "seat:session-control",
       "roots": [
         {

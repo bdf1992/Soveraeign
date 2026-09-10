@@ -10,13 +10,13 @@ defects are open; the text below has not been rewritten around them, so where th
 and that report disagree, the report is what was observed.
 
 Every artifact here is a proposal into open decision O12 (`STATUS.yaml`), which gates
-`model_binding.ratify_contract`. Nothing in this directory ratifies a binding, grants
+`model_binding.accept_contract`. Nothing in this directory accepts a binding, grants
 authority, settles a run, or writes authoritative state.
 
 This adapter translates a Soveraeign `Model Binding` to a locally hosted
 Ollama-compatible runtime. `adapters/README.md` already named the Model provider row;
 this is the first implementation of that row, and it exists because O12 asks Bdo to
-ratify "the exact binding fields, data-boundary modes, and two-model Phase-I fixture" —
+accept "the exact binding fields, data-boundary modes, and two-model Phase-I fixture" —
 a question that is easier to answer against two working bindings than against prose.
 
 ## What is here
@@ -58,7 +58,7 @@ Declared by `SPEC.md` for `invoke_model`:
   `LOCAL_ONLY` boundary, or an invocation whose input crossed under `LOCAL_ONLY`.
 
 Proposed here as reasoned refusals, and queued for Bdo (`invoke_model` admits a reasoned
-refusal, but this code set is not ratified):
+refusal, but this code set is not accepted):
 
 - `SILENT_FALLBACK_REFUSED` — a model other than the bound one ran. An `EXPLICIT`
   fallback policy does not lift this: it permits a new attributed invocation naming the

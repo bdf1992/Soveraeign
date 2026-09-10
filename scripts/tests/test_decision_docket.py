@@ -249,7 +249,7 @@ class Routing(unittest.TestCase):
         """
         allowed = set(ROUTING["entry_keys"])
         forbidden = {"settled", "settled_by", "accepted", "accepted_by", "accepted_at",
-                     "ratified", "ratified_by", "standing", "outcome", "owner_action"}
+                     "accepted", "accepted_by", "standing", "outcome", "owner_action"}
         self.assertEqual(allowed & forbidden, set())
         for qid, entry in ROUTING["questions"].items():
             self.assertEqual(set(entry) - allowed, set(), qid)

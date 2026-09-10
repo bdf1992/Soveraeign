@@ -131,7 +131,7 @@ Only the built ones have states worth designing against.
 
 | Object | States | Verbs that exist |
 | --- | --- | --- |
-| asset | version history; retracted by counter-record | ingest, read, request-derivative, propose-description, ratify-proposal, retract |
+| asset | version history; retracted by counter-record | ingest, read, request-derivative, propose-description, accept-proposal, retract |
 | asset-version | supersedes the previous; never rewritten | read, read-history |
 | channel | open (no close operation exists) | open |
 | thread | OPEN, ARCHIVED; published or not | open, archive, publish, withdraw |
@@ -142,7 +142,7 @@ Only the built ones have states worth designing against.
 
 Everything a console record can be is `RECORDED`. Nothing on this surface
 climbs above it, which means no surface here can show approval, admission or
-ratification as a state — only as a post that says so.
+acceptance as a state — only as a post that says so.
 
 ## What is yours, not mine
 

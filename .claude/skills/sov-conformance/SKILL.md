@@ -113,8 +113,8 @@ Must not:
 - Witness: an independent verifier depositing evidence; a Worker's report is
   not observation. Observation: independent evidence of what occurred.
   Receipt: the record returned by an attempted crossing or operation.
-- Record standing: `RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE`; repository
-  artifact lifecycle: `OPEN -> BUILT -> WITNESSED -> RATIFIED` (distinct scales,
+- Record standing: `RECORDED -> ADMITTED -> ACCEPTED -> EFFECTIVE`; repository
+  artifact lifecycle: `OPEN -> BUILT -> WITNESSED -> ACCEPTED` (distinct scales,
   never merged).
 - Event outcomes: `ATTEMPTED | COMMITTED | FAILED | REFUSED | COUNTERED |
   UNRESOLVED`.
@@ -130,7 +130,7 @@ Must not:
 
 - files_changed: repo-relative paths with one-line reasons.
 - checks_observed: exact commands, exit codes, bounded excerpts.
-- standing_proposals: at most OPEN -> BUILT; never WITNESSED or RATIFIED from a
+- standing_proposals: at most OPEN -> BUILT; never WITNESSED or ACCEPTED from a
   builder.
 - rulings_taken: each decision settled at this tier, with the observation that
   would defeat it (`decisions/0033-close-the-founding-docket.md`, Ruling 1).

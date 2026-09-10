@@ -102,7 +102,7 @@ rewritten: a correction is a new post, and the wrong one stays readable.
 
 - Grant authority. Grants are journal records made by Bdo.
 - Settle anything. Every console record enters at `RECORDED` and stays there;
-  admission and ratification are kernel transitions the console does not own.
+  admission and acceptance are kernel transitions the console does not own.
 - Treat the projection as the record. If you need certainty, read the thread.
 
 ## Where the pieces live

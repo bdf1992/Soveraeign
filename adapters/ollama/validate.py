@@ -3,7 +3,7 @@
 
 Commands: ``binding PATH``, ``invocation PATH``, ``parity PATH PATH``, ``bindings``.
 Exit codes: 0 accepted, 2 refused with a reason code, 1 the input could not be read.
-An accepted result is not a grant, a witness, or a ratification; it says only that the
+An accepted result is not a grant, a witness, or a acceptance; it says only that the
 declaration and the recorded runtime do not contradict each other.
 """
 

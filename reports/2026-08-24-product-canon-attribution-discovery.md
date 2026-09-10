@@ -4,7 +4,7 @@ Observed: `2026-08-24` on `feat/federation-harness-and-hardening` (80 commits ah
 `main`, working tree dirty, seven live sessions sharing it).
 
 Standing: a report. `AGENTS.md` — a file under `reports/` is not policy. Nothing here
-rules, ratifies, renames, or changes a governing document. No governing file was edited
+rules, accepts, renames, or changes a governing document. No governing file was edited
 during this pass. **Intent & Effort Attribution Spine** is used below as a working label
 for the thing being researched; it is not proposed as vocabulary.
 
@@ -183,7 +183,7 @@ repository actually assigns.
 | Category | Declared owner | Standing | Overlap / contention |
 | --- | --- | --- | --- |
 | PRODUCT IDENTITY | **none declared** | — | Said three ways: `README.md` (no status line), `SYSTEM.md` Scope (`PROVISIONAL SYNTHESIS`), `PRD.md` Product outcome (`FREEZE CANDIDATE`). `STATUS.yaml` owns only `product_name` and `category`. |
-| PRODUCT INVARIANT | `CONTRACT.md` C1–C15 | `PROPOSED FOR OWNER RATIFICATION` | Clean. Single owner, no competitor. |
+| PRODUCT INVARIANT | `CONTRACT.md` C1–C15 | `PROPOSED FOR OWNER ACCEPTANCE` | Clean. Single owner, no competitor. |
 | USER / ACTOR | **four registries** | mixed | `PRD.md` Users (6 prose classes); `CLASSIFICATION.md` Participation and boundary roles (10 terms); `SPEC.md` `actor_kind` enum (4 values); `.claude/epic/offices.json` `cast` (7 tellers). The last three agree by construction; `PRD.md` is the odd one and names *maintainers* and *federated nodes* that appear nowhere else. |
 | USER NEED | **none** | — | Zero occurrences repository-wide. Nearest: `conformance/scenarios.json` `given`/`desired`; story `#67` `expected`/`found`. |
 | PRODUCT PROMISE | **none** | — | Zero occurrences. Nearest: `README.md` prose and `PRD.md` Product outcome. |
@@ -195,8 +195,8 @@ repository actually assigns.
 | INTERFACE | split | mixed | `logical_endpoint` in each manifest (transport-neutral); transports in `capability-offices.json`; concrete bindings in `bindings/{mcp,console,sov}`; `services/gateway/` charters the resolver. `OPEN-SEAMS.md` S18: two layers named gateway. |
 | SERVICE | `services/<domain>/CHARTER.md` + `contracts/service.json` | 3 built, 5 chartered | Clean; `CLASSIFICATION.md` owns the term. |
 | ROLE | `CLASSIFICATION.md` | `OWNER_ACCEPTED_CANONICAL_VOCABULARY` per `STATUS.yaml` | Clean. `decisions/0020` adds that Owner is a context, not a role. |
-| AUTHORITY | `SPEC.md` `AuthorityGrant` + `STATUS.yaml` `authority` | accepted | Contended in two live seams: S12 (what surface carries Bdo's ratification) and Console-vs-permits (who owns `authority-grant`; `services/gateway/CHARTER.md` Open section). |
-| REQUIREMENT | `PRD.md` | `FREEZE CANDIDATE · NOT OWNER-RATIFIED` | Clean owner, coarse instrument (9 for 102). |
+| AUTHORITY | `SPEC.md` `AuthorityGrant` + `STATUS.yaml` `authority` | accepted | Contended in two live seams: S12 (what surface carries Bdo's acceptance) and Console-vs-permits (who owns `authority-grant`; `services/gateway/CHARTER.md` Open section). |
+| REQUIREMENT | `PRD.md` | `FREEZE CANDIDATE · NOT OWNER-ACCEPTED` | Clean owner, coarse instrument (9 for 102). |
 | SPECIFICATION | `SPEC.md` + `contracts/kernel-transitions.json` | `PROPOSED · OWNER FREEZE PENDING`; `STATUS.yaml` notes SPEC moved after acceptance under 0034 | S17: a declared refusal code (`INCOMPLETE_PROPOSAL`) nothing can emit. |
 | IMPLEMENTATION | `services/*/src/` | 2 507 lines across 3 services | Clean. |
 | QUALIFICATION | `AI-NATIVE.md` + `conformance/` | `FREEZE_CANDIDATE` / executable | Per-surface records exist for **2 of 8** services (`asset`, `gateway`). |
@@ -241,9 +241,9 @@ observed_description: >-
   a HUMAN/operator; Owner is what shapes the desk.
 needs: [DERIVED] see a decision that needs him without hunting; answer it where the answer
   becomes a record; know what was spent and on what; not be asked for pre-approval.
-expected_capabilities: resolve-judgement (HUMAN only); ratify-proposal; declare-owner;
+expected_capabilities: resolve-judgement (HUMAN only); accept-proposal; declare-owner;
   retire-owner; counter-observation; grant / revoke. Twelve of 102 capabilities are
-  actor_kinds:[HUMAN] and every operation requiring ratify:judgement is among them.
+  actor_kinds:[HUMAN] and every operation requiring accept:judgement is among them.
 authority_relationship: source of judgement-typed authority. The gate is ACCEPTANCE over
   evidence, never pre-approval (decisions/0023).
 interfaces_or_stations: FRONT/operator-desk. Intended surface is a Human Binding
@@ -251,7 +251,7 @@ interfaces_or_stations: FRONT/operator-desk. Intended surface is a Human Binding
 evidence: STATUS.yaml authority; AGENTS.md Authority; decisions/0020, 0023;
   contracts/capability-offices.json.
 standing: authority OWNER_ACCEPTED. The surface that would carry it is not built.
-open_questions: OPEN-SEAMS.md S12 — whether a CODEOWNERS review click is the ratification
+open_questions: OPEN-SEAMS.md S12 — whether a CODEOWNERS review click is the acceptance
   grant. Bdo said 2026-08-23 it cannot be; the replacement is chartered and unbuilt.
 ```
 
@@ -277,7 +277,7 @@ observed_description: A model working inside the node through a Model Binding; S
 needs: [DERIVED] discover legal operations from the artifact alone; act inside a live grant;
   refuse coherently; hand off without private state.
 expected_capabilities: every capability whose actor_kinds includes MODEL — 90 of 102.
-  Excluded: the twelve ratify:judgement HUMAN-only rows and the SYSTEM-only rows.
+  Excluded: the twelve accept:judgement HUMAN-only rows and the SYSTEM-only rows.
 authority_relationship: output is always a proposal, recording, report or observation;
   fluency never changes standing (SPEC.md Trust model; CONTRACT.md C11).
 interfaces_or_stations: FRONT/operator-desk and model-counter; the MCP surface
@@ -332,7 +332,7 @@ needs: [DERIVED] Controller — a concern registry it does not privately own. Or
   leases and fences. Worker — one bounded task. Witness — a path the builder did not control.
 expected_capabilities: no capability-map row names a tier. Tiers are harness roles under
   .claude/agents/ with no service operations of their own.
-authority_relationship: every tier is an operator under grant; none may ratify judgement.
+authority_relationship: every tier is an operator under grant; none may accept judgement.
 interfaces_or_stations: FRONT/job-window (one capability, asset.request-derivative);
   BACK/inspectorate (nine, all PROPOSED).
 evidence: SDLC.md; CLASSIFICATION.md; .claude/agents/.
@@ -510,7 +510,7 @@ collapse into one chart.
 
 1. Reports are not observations, and history must survive correction.
 2. Entry, digest chain, counter-record, receipt, subject projection, retraction.
-3. `RECORDED → ADMITTED → RATIFIED → EFFECTIVE`, with `COUNTERED` as an event outcome.
+3. `RECORDED → ADMITTED → ACCEPTED → EFFECTIVE`, with `COUNTERED` as an event outcome.
 4. Ten capabilities at BACK/record — eight built.
 5. Crosses everything; every other chart writes here.
 6. `services/record/`; issues #6, #7, #8, #10, #25, #27.
@@ -531,7 +531,7 @@ collapse into one chart.
 
 1. Version-pinned review, annotation and decision — the one chart aimed at ordinary work.
 2. Session, round, annotation, reviewer assignment, comparison, decision.
-3. `open-session → annotate → propose-decision → ratify-decision → close-session`.
+3. `open-session → annotate → propose-decision → accept-decision → close-session`.
 4. Eleven capabilities at FRONT/review-desk, all `PROPOSED`.
 5. Crosses asset (exact version identifiers), permits, record.
 6. `services/proofing/`; issues #22, #28.
@@ -706,7 +706,7 @@ intended_actor: HUMAN or MODEL reviewer
 job_to_be_done: review a pinned version and land a decision
 what_the_actor_can_do: 11 capabilities, all PROPOSED
 entry_conditions_and_exit: open-session → close-session
-authority_projection: ratify-decision restricted to HUMAN
+authority_projection: accept-decision restricted to HUMAN
 observable_results: none — nothing implemented
 failure_experience: declared in the manifest, unreachable
 related_journeys: adjacent to J8, but a different record
@@ -911,17 +911,17 @@ standing: BUILT (self-tested, not witnessed)
 ```yaml
 operation_id: console.resolve-judgement
 semantic_intent: the owner answers a queued judgement request and the answer becomes a
-  record that can carry RATIFIED
+  record that can carry ACCEPTED
 user_need: MISSING  [OPEN-SEAMS.md S12 records the owner stating this need in conversation
   on 2026-08-23; it is not an addressed artifact]
 product_chart: C-OPERATOR
 station_or_binding: FRONT / operator-desk
 journeys: J8
 owning_service: console
-authority_requirement: ratify:judgement — actor_kinds [HUMAN]
+authority_requirement: accept:judgement — actor_kinds [HUMAN]
 effect_class: RECORD_LOCAL
 prd_requirement: PROD-I-6
-spec_transition_or_predicate: ratify  [charter states this explicitly]
+spec_transition_or_predicate: accept  [charter states this explicitly]
 interfaces: sov://console/resolve-judgement; every transport DECLARED_NOT_ACTIVATED
 implementation_locations: none
 current_reachability: DECLARED_NOT_REACHABLE
@@ -983,7 +983,7 @@ receipts whose `operation_type` is exactly its capability id — `console.post`,
 | `console.post` … (9 events) | `console.post` … | **yes, all nine** |
 | `asset.ingest` | `asset.ingest-asset` | no |
 | `proposal.record` | `asset.propose-description` | no |
-| `proposal.ratify` | `asset.ratify-proposal` | no |
+| `proposal.accept` | `asset.accept-proposal` | no |
 | `record.retract` | `asset.retract-record` | no |
 | `federation.cross` | **no capability exists** | no |
 
@@ -1256,7 +1256,7 @@ missing_parent_links: measured on the checked-in projection — evidence_pointer
 | **WALLCLOCK** — elapsed real time | **Partly** | `verify.py` per check (gitignored, overwritten); the ollama invocation record. The asset `runs` table has no completion time, so the wall clock of a delegated run is not recoverable. |
 | **EFFORT** — participant activity attributable to an objective | **No** | Nothing anywhere attaches any measure to an objective. The only attribution keys that exist below a run are `run_id`, `observer_id`, `invocation_id`, and a prose `subject`. |
 | **RESULT** — what changed | **Yes** | This is the repository's strongest layer: receipts, `emitted_record_addresses`, the digest chain, counter-records, `git diff`. |
-| **VALUE** — whether the result advanced an accepted intention | **No, structurally** | There is no accepted product intention below the nine PRD requirements to advance (Break 1). The nearest proxy is ticket standing on the `OPEN → BUILT → WITNESSED → RATIFIED` lifecycle, and nothing in the repository is `WITNESSED` or `RATIFIED` yet. |
+| **VALUE** — whether the result advanced an accepted intention | **No, structurally** | There is no accepted product intention below the nine PRD requirements to advance (Break 1). The nearest proxy is ticket standing on the `OPEN → BUILT → WITNESSED → ACCEPTED` lifecycle, and nothing in the repository is `WITNESSED` or `ACCEPTED` yet. |
 
 These are not collapsed above and should not be collapsed later: the repository already
 keeps `RESULT` cleanly, and the temptation will be to let a receipt count as effort
@@ -1374,7 +1374,7 @@ only in a private memory file, not in the repository.
 | Capability | — | **MISSING**; the oracle is not a service and has no capability row |
 | Operation | — | **MISSING** |
 | PRD requirement | `PROD-I-5` | present, on the scenario |
-| SPEC predicate | "VERIFICATION authority cannot ratify a JUDGEMENT claim"; over-budget grants refuse visibly | present, in `SPEC.md` Requirement predicates |
+| SPEC predicate | "VERIFICATION authority cannot accept a JUDGEMENT claim"; over-budget grants refuse visibly | present, in `SPEC.md` Requirement predicates |
 | Service | `conformance/` — deliberately not a participant | n/a |
 | Interface | `python conformance/run.py`; run by `scripts/verify.py` | present |
 | Work item | `#26` Conformance harness, `evidence_pointer: conformance/` | present, **not linked to the control id** |
@@ -1406,7 +1406,7 @@ reference.
 | Capability | `console.post`, `console.open-thread` | present, `BUILT` |
 | Operation | `sov://console/post` | present |
 | PRD requirement | `PROD-I-3` (crossing) and `PROD-I-6` (judgement) | present on the manifest rows |
-| SPEC predicate | `cross` for post; `ratify` for the resolution that did not happen | half |
+| SPEC predicate | `cross` for post; `accept` for the resolution that did not happen | half |
 | Service | `console` | present |
 | Interface | `cli.py`; opened by `.claude/hooks/console_session.py` | present |
 | Work item | — | **MISSING**. The thread is pinned to `STATUS.yaml#L18`, an address, not a ticket |
@@ -1793,7 +1793,7 @@ values). Optional means no existing ticket breaks and no backfill is forced.
   `ticket`, `from`, `to`, `actor_id`, `actor_kind`, `reason`, `effect_class` and `evidence`,
   and `contracts/ticket-transitions.json` refuses skipped standings, a builder witnessing
   its own work, an unconverged Red engagement, a confirmed finding with no permanent
-  defeating fixture, and any machine claiming `RATIFIED`. The mechanism is real, checked by
+  defeating fixture, and any machine claiming `ACCEPTED`. The mechanism is real, checked by
   `scripts/sov_ticket.py transition`, and carries no resource field.
 
 Minimum addition: an optional `consumed` array on the receipt contract, and the same on the
@@ -1812,7 +1812,7 @@ ticket transition request.
 - `contracts/ticket-queue-policy.json`: *"The queue is a projection… position in it grants
   nothing."*
 - `CONTRIBUTING.md`: *"A branch or pull request may close an implementation stub; it cannot
-  by itself close its bit, promote a village, satisfy independent witness, or ratify the
+  by itself close its bit, promote a village, satisfy independent witness, or accept the
   epic."*
 - `adapters/github/` is the only directory permitted to call the GitHub API; every other
   check reads an export from disk.
@@ -1839,7 +1839,7 @@ here are the ones this pass touched, plus what it found that is not yet recorded
 | Seam | Bearing on attribution |
 | --- | --- |
 | **S10 · Product boundary** | *"The boundary between a primary enterprise application and a constitutional runtime over existing applications must be tested through the first real subsystem rather than decided by metaphor alone."* This is the product-canon question, already open since founding. Any canon that answers it settles S10; any canon that avoids it is decoration. |
-| **S12 · Ratification mechanism** | Owner input 2026-08-23: a code-owner review click cannot be Bdo's ratification surface. The Console judgement request is the chartered home and is unbuilt. Until it exists, the owner-acceptance edge (E37) has no reachable carrier — which is exactly what Trace 5 shows happening in practice. |
+| **S12 · Acceptance mechanism** | Owner input 2026-08-23: a code-owner review click cannot be Bdo's acceptance surface. The Console judgement request is the chartered home and is unbuilt. Until it exists, the owner-acceptance edge (E37) has no reachable carrier — which is exactly what Trace 5 shows happening in practice. |
 | **S14 · Two owners of the asset projections** | Blocks journey J10 and makes promise P16 `CONTRADICTORY`. |
 | **S15 · Judgement request and unblock request** | *"These are one record seen from two surfaces… One must project from the other; neither may become a second queue of owner rights."* The same problem this spine has generally, in miniature and already named. |
 | **S16 · Decision-number allocation across branches** | Structural warning for any new identifier: the repository already has one identifier family that collides across branches, and `decisions/0043` is absent from this branch's sequence. Anything minted here needs an allocation rule before it needs a schema. |
@@ -2202,7 +2202,7 @@ Why each candidate was rejected:
 
 ## Closing note on standing
 
-This report observes. It settles nothing, ratifies nothing, and renames nothing. No
+This report observes. It settles nothing, accepts nothing, and renames nothing. No
 governing document was edited. Six questions are queued for Bdo in §16; everything else in
 §17 is settleable at Control or Work under `decisions/0033` Ruling 1 and should not wait.
 

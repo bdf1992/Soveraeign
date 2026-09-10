@@ -10,8 +10,8 @@
     "pull_request": 119,
     "decisions": [],
     "claims_under_test": [
-      "supported_standing() requires the value on the label's own line, names exactly one of WITNESSED/RATIFIED, and carries no denial token anywhere",
-      "refusal() distinguishes absent / declares-nothing / over-reaches without trapping a future ratification",
+      "supported_standing() requires the value on the label's own line, names exactly one of WITNESSED/ACCEPTED, and carries no denial token anywhere",
+      "refusal() distinguishes absent / declares-nothing / over-reaches without trapping a future acceptance",
       "KNOWN_MODULE_DEBT is pinned so a new exemption is a deliberate visible act",
       "a test couples the README's documented spelling to the gate so doc and code fail together",
       "exactly three subjects observed, none promoted"
@@ -41,9 +41,9 @@
   "reproduced": [
     {
       "id": "W3-1",
-      "claim": "refusal() distinguishes three states and traps no future ratification",
+      "claim": "refusal() distinguishes three states and traps no future acceptance",
       "method": "drove refusal() through read_claims() over synthetic STATUS.yaml files across the full matrix of two claim kinds by four record states",
-      "finding": "confirmed, and confirmed as three genuinely distinct refusals rather than two with different wording. A record present and wrong is not reported as missing. A RATIFIED field is not trapped: it is satisfied by a record declaring WITNESSED, and the gate then prints that it saw the witnessed half only and does not see the owner's act. A record declaring RATIFIED is refused for both claim kinds, which is the correct direction."
+      "finding": "confirmed, and confirmed as three genuinely distinct refusals rather than two with different wording. A record present and wrong is not reported as missing. A ACCEPTED field is not trapped: it is satisfied by a record declaring WITNESSED, and the gate then prints that it saw the witnessed half only and does not see the owner's act. A record declaring ACCEPTED is refused for both claim kinds, which is the correct direction."
     },
     {
       "id": "W3-2",
@@ -68,7 +68,7 @@
     {
       "id": "W3-D1",
       "severity": "BLOCKING",
-      "claim_defeated": "the value names exactly one of WITNESSED/RATIFIED",
+      "claim_defeated": "the value names exactly one of WITNESSED/ACCEPTED",
       "finding": "`Standing supported: SELF_WITNESSED` returns WITNESSED and the claim is promoted. re.split(r'[^A-Za-z]+') dissolves the compound into SELF and WITNESSED, so the whole-token discipline that closed NOT_WITNESSED does not survive one layer down. `PRE-WITNESSED` promotes identically.",
       "consequence": "This is the single most consequential inversion in the repository being read as support: AGENTS.md says a build report cannot witness itself. Note the asymmetry - the same token-splitting shape is fail-closed on the STATUS.yaml side in claimed_standing() and fail-open on the record side.",
       "what_would_have_defeated_this_finding": "whitelisting the value as a bare standing token rather than scanning it for one"
@@ -86,7 +86,7 @@
       "severity": "MATERIAL",
       "claim_defeated": "no denial token anywhere",
       "finding": "The scan covers only the label's own line, and DENIALS is a closed hand-written word list. A record declaring WITNESSED on line 3 whose body says the subject is NOT witnessed still returns WITNESSED. So do 'WITNESSED (retracted)', 'WITNESSED - withdrawn', 'WITNESSED, dissented', 'WITNESSED subject to conditions' and 'WITNESSED - void'.",
-      "consequence": "'WITNESSED subject to conditions' is reachable from witness/README.md's own defined verdict RATIFIABLE-WITH-CONDITIONS. And a closed hand-written list where nothing is measured is the pattern this very change criticises in PRODUCTION_ROOTS.",
+      "consequence": "'WITNESSED subject to conditions' is reachable from witness/README.md's own defined verdict ACCEPTABLE-WITH-CONDITIONS. And a closed hand-written list where nothing is measured is the pattern this very change criticises in PRODUCTION_ROOTS.",
       "what_would_have_defeated_this_finding": "whitelisting the value instead of blacklisting denials"
     },
     {

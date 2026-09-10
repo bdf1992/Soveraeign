@@ -40,7 +40,7 @@
       "format": "date-time",
       "description": "When publication was withdrawn; null while the thread is still published. Present together with lifecycle WITHDRAWN."
     },
-    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+    "standing": {"enum": ["RECORDED", "ADMITTED", "ACCEPTED", "EFFECTIVE"]}
   },
   "allOf": [
     {

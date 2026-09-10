@@ -7,7 +7,7 @@
     "subject": "enforce the carry ruling that decisions/0103 wrote and nothing performed (branch claude/bdos-digest-sync): scripts/sov_vendor.py added as a two-direction grader over the decision's digest table plus an attended `sync` half, registered as two checks in scripts/sovverify/harness.py, with scripts/README.md, docs/documentation.html and .clarity/coverage.json updated to match",
     "verdict": "REPRODUCED_WITH_RESIDUALS",
     "standing_supported": "BUILT -> WITNESSED",
-    "standing_note": "An observation, not a settlement and not a ratification. Nothing here accepts the change, closes decisions/0103, or authorises a landing.",
+    "standing_note": "An observation, not a settlement and not a acceptance. Nothing here accepts the change, closes decisions/0103, or authorises a landing.",
     "candidate_commit": "25d54bffb7c9759f4f2494dfda7876a6a1462a2d",
     "candidate_tree": "63145f1d423d20fdbab7c23155473efe4b6fa53a",
     "base_commit": "97a2d558753ae66948d214ab63d52104d90f9907",

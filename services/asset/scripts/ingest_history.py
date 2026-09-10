@@ -2,7 +2,7 @@
 """Ingest sanitized history recordings as Asset Service assets (ASSET-HL-4).
 
 Wires the ASSET-HL-2 reader over the ASSET-HL-3 SOURCES.lock using only the
-existing participant API: ingest -> propose -> ratify (relationship custody
+existing participant API: ingest -> propose -> accept (relationship custody
 inside the local runtime ledger, demo.py precedent) -> rebuild_projections,
 plus the leased derivative pipeline for versions on re-read. One asset per
 source; a derived-from edge from each recording asset to its Source identity.
@@ -104,7 +104,7 @@ def _ingest_new(service: Any, entry: dict[str, Any], payload: bytes, actor: str,
         "relationship": {"predicate": "derived-from", "dst_asset": entry["source_id"]},
         "recording_id": recording_id, "description": _excerpt(payload),
     })
-    service.ratify(proposal, actor)
+    service.accept(proposal, actor)
 
 
 def _reread_version(service: Any, asset_id: str, payload: bytes, actor: str,
@@ -123,7 +123,7 @@ def _reread_version(service: Any, asset_id: str, payload: bytes, actor: str,
     service.observe(run_id, actor)
     proposal = service.propose(asset_id, actor, {
         "recording_id": recording_id, "reread_excerpt": _excerpt(payload)})
-    service.ratify(proposal, actor)
+    service.accept(proposal, actor)
     return None
 
 
@@ -142,7 +142,7 @@ def run_ingest(service: Any, reader: Any, entries: list[Any], manifest_dir: Path
     produced_at = now or (lambda: datetime.now(timezone.utc).isoformat(timespec="seconds"))
     manifest_dir.mkdir(parents=True, exist_ok=True)
     index = load_manifest_index(manifest_dir)
-    service.grant(actor, actor, "ratify:judgement")
+    service.grant(actor, actor, "accept:judgement")
     service.grant(actor, actor, "operate:derive")
     service.rebuild_projections(actor)
     log: dict[str, Any] = {"enumerated": len(entries), "ingested": 0, "versioned": 0,

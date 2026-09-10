@@ -62,7 +62,7 @@ Kind is vocabulary, not authority.
 It does not give a story its own standing transitions. A story reuses the
 standing enum, read as: `PROPOSED` told; `DECLARED_NOT_IMPLEMENTED` bound to a
 scenario; `BUILT_SELF_TESTED_NOT_WITNESSED` walked by its builder;
-`WITNESSED` walked under independent observation; `RATIFIED` Bdo. The epic
+`WITNESSED` walked under independent observation; `ACCEPTED` Bdo. The epic
 walk derives **told / walkable / walked** from that plus the standing of the
 supports, the way it derives ready / held / unrouted for bits and stubs. A
 derived reading is evidence about the tree and settles nothing.

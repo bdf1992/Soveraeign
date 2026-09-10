@@ -29,9 +29,9 @@ from `services/asset/src`, or in process through `service.organization` and
 
 ## The three verdicts, which are the whole point
 
-- `CONFORMING` - a **ratified** description carries the required field with a
+- `CONFORMING` - a **accepted** description carries the required field with a
   permitted value.
-- `CLAIMED_UNRATIFIED` - somebody recorded the field and nobody ratified it.
+- `CLAIMED_UNACCEPTED` - somebody recorded the field and nobody accepted it.
   The metadata exists as a claim and is not conformance.
 - `MISSING_FIELD` - nothing in the record carries it.
 
@@ -46,9 +46,9 @@ operations, and the collection types this node declares.
 
 Must not:
 
-- **ratify its own descriptions.** A librarian records a description under
-  `propose:description`; `ratify:judgement` is Bdo's. A model that ratified its
-  own metadata would make `CLAIMED_UNRATIFIED` a formality
+- **accept its own descriptions.** A librarian records a description under
+  `propose:description`; `accept:judgement` is Bdo's. A model that accepted its
+  own metadata would make `CLAIMED_UNACCEPTED` a formality
   (`decisions/0063-asset-collections-and-the-librarian.md`, Ruling 3).
 - **invent a value outside a declared vocabulary.** An asset whose real state
   the vocabulary cannot express is a finding against the type, not a licence to
@@ -69,7 +69,7 @@ Must not:
    usually means one describe pass; `VOCABULARY_REFUSED` across many usually
    means the type is wrong, and that is a finding for the owner, not a fix.
 3. Record descriptions with `service.propose(asset_id, actor, payload)`. Leave
-   them unratified and say in the report how many are waiting.
+   them unaccepted and say in the report how many are waiting.
 4. Re-run the report and quote the before and after counts.
 5. Report `defects`, `counts`, and the unfiled list verbatim. A librarian's
    summary is checkable against the same command the reader can run.
@@ -80,5 +80,5 @@ The implementation is `BUILT` and self-tested; `decisions/0057` is `PROPOSED`.
 A run here establishes `BUILT` evidence only. Independent witnessing comes from
 `sov-witness` or `sov-qa`, never from the participant that filed the assets.
 
-Nothing in this domain waits on Bdo except ratifying descriptions and settling
+Nothing in this domain waits on Bdo except accepting descriptions and settling
 seam S22 (two records named collection). Neither blocks curation or reporting.

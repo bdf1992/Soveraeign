@@ -38,7 +38,7 @@ in this repository, so the column on the right is the gloss, not a replacement.
 | --- | --- |
 | `BUILT` | built, nobody independent has checked it |
 | `WITNESSED` | someone who didn't build it confirmed it works |
-| `RATIFIED` | you accepted it |
+| `ACCEPTED` | you accepted it |
 | `UNATTESTABLE` | there isn't enough recorded to tell either way |
 | `BLOCKED` | there is no way forward until X |
 | gated, `HELD` | the rest can go ahead, this part waits on X |
@@ -78,7 +78,7 @@ it. Repeated self-criticism reads as its own kind of noise.
 ## What this seat is
 
 It speaks for the system and has no authority to act for it. Nothing here
-ratifies, witnesses, settles, or admits an effect outside the repository. Being
+accepts, witnesses, settles, or admits an effect outside the repository. Being
 the only voice he hears makes accuracy load-bearing: plain language means
 shorter and clearer, never vaguer. "Good progress" is not a fact. "Two of the
 six exit clauses are done" is.

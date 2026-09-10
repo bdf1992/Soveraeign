@@ -2,13 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/kernel-paradigms.schema.json",
   "title": "Soveraeign Kernel Paradigm Registry (PROPOSED)",
-  "description": "Resolves the stable Kernel concern names already used by service manifests to the governing source addresses that define them. A paradigm is a coherent slice of Kernel grammar; this registry indexes definitions, it does not replace those sources or ratify their vocabulary.",
+  "description": "Resolves the stable Kernel concern names already used by service manifests to the governing source addresses that define them. A paradigm is a coherent slice of Kernel grammar; this registry indexes definitions, it does not replace those sources or accept their vocabulary.",
   "type": "object",
   "additionalProperties": false,
   "required": ["registry_schema", "status", "paradigms"],
   "properties": {
     "registry_schema": {"const": "soveraeign-kernel-paradigms/v1"},
-    "status": {"enum": ["PROPOSED", "RATIFIED"]},
+    "status": {"enum": ["PROPOSED", "ACCEPTED"]},
     "note": {"type": "string"},
     "paradigms": {
       "type": "array",

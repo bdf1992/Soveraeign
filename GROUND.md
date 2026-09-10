@@ -112,7 +112,7 @@ Grounded in `CONTRACT.md` C3 and C11, `AGENTS.md` Authority, `SPEC.md`.
 
 *What changing it would mean.* Soveraeign would be an automation environment in which
 capability implies permission. Refusal, delegation, and the whole notion of a participant
-that can build what it cannot ratify would lose their basis.
+that can build what it cannot accept would lose their basis.
 
 ### `GROUND-004` — you act by crossing a declared operation
 
@@ -194,7 +194,7 @@ it, would collapse.
 
 ### `GROUND-011` — standing does not collapse
 
-> Proposed, recorded, admitted, ratified and effective are distinct, and nothing enters
+> Proposed, recorded, admitted, accepted and effective are distinct, and nothing enters
 > as authoritative merely by being written, being confident, or being agreed with.
 
 Grounded in `CONTRACT.md` C4, C11 and C14, `CLASSIFICATION.md`.

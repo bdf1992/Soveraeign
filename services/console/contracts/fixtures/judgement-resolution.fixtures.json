@@ -20,7 +20,7 @@
       "receipt_id": "urn:soveraeign:receipt:r-console-0002",
       "unresolved_receipt_id": "urn:soveraeign:receipt:r-console-0001",
       "created_at": "2026-08-23T00:00:00Z",
-      "standing": "RATIFIED"
+      "standing": "ACCEPTED"
     }
   },
   {
@@ -44,16 +44,16 @@
       "receipt_id": "urn:soveraeign:receipt:r-console-0002",
       "unresolved_receipt_id": "urn:soveraeign:receipt:r-console-0001",
       "created_at": "2026-08-23T00:00:00Z",
-      "standing": "RATIFIED"
+      "standing": "ACCEPTED"
     }
   },
   {
-    "id": "CONSOLE-JUDGEMENT-RESOLUTION-DEF-RATIFIED-WITHOUT-GRANT",
+    "id": "CONSOLE-JUDGEMENT-RESOLUTION-DEF-ACCEPTED-WITHOUT-GRANT",
     "contract": "judgement-resolution.schema.json",
     "status": "PROPOSED",
     "polarity": "defeating",
     "expected_validity": "INVALID",
-    "defeats": "allOf conditional: standing RATIFIED with resolver_grant_id null; a resolution reaches RATIFIED without the grant checked at the transition",
+    "defeats": "allOf conditional: standing ACCEPTED with resolver_grant_id null; a resolution reaches ACCEPTED without the grant checked at the transition",
     "record": {
       "resolution_id": "urn:soveraeign:console:judgement-resolution:JR-SAMPLE-001-R1",
       "request_id": "urn:soveraeign:console:judgement-request:JR-SAMPLE-001",
@@ -68,7 +68,7 @@
       "receipt_id": "urn:soveraeign:receipt:r-console-0002",
       "unresolved_receipt_id": "urn:soveraeign:receipt:r-console-0001",
       "created_at": "2026-08-23T00:00:00Z",
-      "standing": "RATIFIED"
+      "standing": "ACCEPTED"
     }
   }
 ]

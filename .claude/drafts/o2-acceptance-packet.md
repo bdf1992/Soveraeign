@@ -1,9 +1,9 @@
-# O2 ratification packet · ENGINEERING.md Phase-I baseline
+# O2 acceptance packet · ENGINEERING.md Phase-I baseline
 
-Status: `PROPOSED · OWNER RATIFICATION PENDING`
+Status: `PROPOSED · OWNER ACCEPTANCE PENDING`
 
 This packet assembles, for Bdo, what the `ENGINEERING.md` baseline proposes, the self-test evidence
-reported today, and the consequences of ratifying or declining open decision O2. It is a Worker
+reported today, and the consequences of accepting or declining open decision O2. It is a Worker
 proposal, not Bdo's judgement, and witnesses nothing it cites (`AGENTS.md` Authority).
 
 ## Owned scope
@@ -12,13 +12,13 @@ Owned: the O2 question verbatim, the proposal it refers to, the current authorit
 `STATUS.yaml`, one dated self-test run, and the implications each answer directly entails from the
 sources listed under Source and authority. Not owned: the answer to O2; any edit to `STATUS.yaml`,
 `ENGINEERING.md`, or `decisions/0012`; any replacement stack for a decline; any judgement on O1 or
-O3 to O12; and any claim of `WITNESSED` or `RATIFIED` standing for itself or for the baseline.
+O3 to O12; and any claim of `WITNESSED` or `ACCEPTED` standing for itself or for the baseline.
 
 ## The question
 
 `STATUS.yaml` line 66, verbatim; it carries `blocks: production_implementation` (line 67):
 
-> Does Bdo ratify ENGINEERING.md's Python, SQLite, filesystem CAS, JSON Schema, and unittest baseline for Phase I?
+> Does Bdo accept ENGINEERING.md's Python, SQLite, filesystem CAS, JSON Schema, and unittest baseline for Phase I?
 
 ## What is proposed
 
@@ -37,14 +37,14 @@ O3 to O12; and any claim of `WITNESSED` or `RATIFIED` standing for itself or for
   provider, cloud, or model SDK (`ENGINEERING.md` Minimal reference stack, closing paragraph).
 - Acceptance: the framework is `BUILT` when the root instruction surfaces agree, the
   dependency-free lint and verification loop enforce their invariants in under three seconds, and
-  existing conformance and participant tests still run; it is `RATIFIED` only when Bdo accepts the
+  existing conformance and participant tests still run; it is `ACCEPTED` only when Bdo accepts the
   exact Phase-I technology choices and composition rules (`ENGINEERING.md` Acceptance).
 - Named debt: the current Asset Service `core.py` exceeds the 300-line module budget; no behavior
   is to be added before it is split (`ENGINEERING.md` Context and module budget).
 
 `decisions/0012-engineering-baseline.md` (Status: `OWNER-DIRECTED · EXACT BASELINE PROPOSED`)
 records the same proposal and states under Consequences: "Exact technical choices remain proposed
-until Bdo ratifies the baseline." `AGENTS.md` Technical baseline restates the choices as operating
+until Bdo accepts the baseline." `AGENTS.md` Technical baseline restates the choices as operating
 rules and defers the primitive set and boundary rationale to `ENGINEERING.md`.
 
 ## Current authoritative state
@@ -56,7 +56,7 @@ rules and defers the primitive set and boundary rationale to `ENGINEERING.md`.
   (`STATUS.yaml` lines 57-59); they are proposed, not settled.
 - `protected_boundaries` include `no_runtime_code_before_logical_spec_and_defeating_fixtures`
   and `no_external_effects_in_phase_i` (`STATUS.yaml` lines 102 and 104).
-- O10, "Does Bdo ratify SPEC.md as the Phase-I logical specification?", is open and blocks
+- O10, "Does Bdo accept SPEC.md as the Phase-I logical specification?", is open and blocks
   `f1_closure` (`STATUS.yaml` lines 89-91).
 - `OPEN-SEAMS.md` S1 to S10: no seam names O2, `ENGINEERING.md`, or the baseline, so no recorded
   seam objects to it. Absence of an objection is not evidence for the baseline.
@@ -76,18 +76,18 @@ five `CHECKS` (`scripts/verify.py` lines 15-23) reported:
 - conformance oracle tests: `Ran 5 tests`, OK. Asset Service reference tests: `Ran 5 tests`, OK.
 
 The harness prints its own limit: "self-tests establish BUILT evidence only; no independent
-witness or owner ratification is implied" (`scripts/verify.py` line 44). A Worker's report is not
+witness or owner acceptance is implied" (`scripts/verify.py` line 44). A Worker's report is not
 Observation (`CLASSIFICATION.md` Participation and boundary roles); a test may establish `BUILT`,
-never `WITNESSED` or `RATIFIED` (`AGENTS.md` Testing and verification).
+never `WITNESSED` or `ACCEPTED` (`AGENTS.md` Testing and verification).
 
-## If Bdo ratifies
+## If Bdo accepts
 
 - O2 closes and its `blocks: production_implementation` lifts (`STATUS.yaml` lines 65-67).
 - `ENGINEERING.md` and `decisions/0012` Status lines, and `engineering_framework_status`, become
   due for update, recorded per `AGENTS.md` Implementation order step 6; this packet performs none.
 - `no_runtime_code_before_logical_spec_and_defeating_fixtures` still stands (`STATUS.yaml` line
-  102) and O10 stays open; ratifying the stack does not ratify `SPEC.md` or close `f1_closure`.
-- The `core.py` debt remains named debt; ratification does not discharge it (`ENGINEERING.md`
+  102) and O10 stays open; accepting the stack does not accept `SPEC.md` or close `f1_closure`.
+- The `core.py` debt remains named debt; acceptance does not discharge it (`ENGINEERING.md`
   Context and module budget). New runtime dependencies still require a named boundary, an observed
   need, failure behavior, and a decision record (`AGENTS.md` Technical baseline).
 
@@ -95,7 +95,7 @@ never `WITNESSED` or `RATIFIED` (`AGENTS.md` Testing and verification).
 
 - O2 stays open and `production_implementation` stays blocked (`STATUS.yaml` lines 65-67).
 - `ENGINEERING.md` and `decisions/0012` remain proposed; "Exact technical choices remain proposed
-  until Bdo ratifies the baseline" continues to govern (`decisions/0012` Consequences).
+  until Bdo accepts the baseline" continues to govern (`decisions/0012` Consequences).
 - `engineering_framework_status` keeps `BASELINE_PROPOSED` (`STATUS.yaml` line 16).
 - A revised baseline would be a policy change recorded in `decisions/` (`AGENTS.md` Repository
   protections); this packet proposes no replacement stack.
@@ -103,9 +103,9 @@ never `WITNESSED` or `RATIFIED` (`AGENTS.md` Testing and verification).
 ## Judgement items for Bdo
 
 1. O2 names five choices; `ENGINEERING.md` Acceptance covers "the exact Phase-I technology choices
-   and composition rules" across ten stack rows. Does ratification cover the whole, or the five?
+   and composition rules" across ten stack rows. Does acceptance cover the whole, or the five?
 2. Does the evidence-archive SKIP change the weight Bdo gives to today's self-test run?
-3. Must the `core.py` debt be split before ratification, or only before new behavior?
+3. Must the `core.py` debt be split before acceptance, or only before new behavior?
 
 ## Standing proposal
 

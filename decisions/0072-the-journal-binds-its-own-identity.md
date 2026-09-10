@@ -1,6 +1,6 @@
 # 0072 · The journal binds its own identity
 
-Status: `PROPOSED · BUILT AND SELF-TESTED · RATIFICATION PENDING`
+Status: `PROPOSED · BUILT AND SELF-TESTED · ACCEPTANCE PENDING`
 
 ## Decision
 
@@ -386,4 +386,4 @@ Both independent verifiers also gained the canonical rule. Without it they grade
 a strictly weaker property than the service — the exact tamper this change exists
 to catch passed both checks whose job is to catch it.
 
-Self-tests establish `BUILT`. Nothing here is witnessed. Only Bdo ratifies.
+Self-tests establish `BUILT`. Nothing here is witnessed. Only Bdo accepts.

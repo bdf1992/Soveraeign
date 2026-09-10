@@ -1,6 +1,6 @@
 # Console Service Logical Specification
 
-Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-RATIFIED`
+Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-ACCEPTED`
 
 Scoped copy of `SPEC.md`'s shape for one service, per
 `decisions/0093-service-srd-spec-ground.md`. This does not re-derive the
@@ -16,7 +16,7 @@ From `contracts/service.json` `owns` (twelve records; `CHARTER.md`'s prose
 list of owned records omits `authority-grant`, `console-receipt`, and
 `publication` even though the manifest declares them — a coherence gap
 recorded here, not repaired by inventing charter text). Each record carries
-the shared `standing` enum `RECORDED → ADMITTED → RATIFIED → EFFECTIVE`
+the shared `standing` enum `RECORDED → ADMITTED → ACCEPTED → EFFECTIVE`
 (`SPEC.md` Historical standing) unless noted.
 
 | Record | Schema | One line |
@@ -27,7 +27,7 @@ the shared `standing` enum `RECORDED → ADMITTED → RATIFIED → EFFECTIVE`
 | `post` | `post.schema.json` | one attributed turn by `actor_kind` `HUMAN` or `MODEL`, content-addressed, carrying a `proposal_id` |
 | `notification` | `notification.schema.json` | addressed input naming `source_address`/`source_digest`, `kind`, `lifecycle` `ISSUED → ACKNOWLEDGED`, `delivery` fixed to `LOCAL` |
 | `judgement-request` | `judgement-request.schema.json` | queued request for a `JUDGEMENT`-typed right; `lifecycle` `QUEUED → RESOLVED \| WITHDRAWN \| EXPIRED`; carries `resolution_id` back-reference |
-| `judgement-resolution` | `judgement-resolution.schema.json` | the answer record; `resolver_kind` fixed to `HUMAN`; the only console record expected to reach `RATIFIED`, and only by an appended event |
+| `judgement-resolution` | `judgement-resolution.schema.json` | the answer record; `resolver_kind` fixed to `HUMAN`; the only console record expected to reach `ACCEPTED`, and only by an appended event |
 | `operator-setting` | `operator-setting.schema.json` | typed, scoped preference for `holder_kind` `OPERATOR` or `NODE`; `change_authority_type` `VERIFICATION` or `JUDGEMENT` |
 | `projection-view` | `projection-view.schema.json` | declared `DASHBOARD` or `ACTIVITY` projection; `authoritative` is always `false`; carries source addresses, omissions, and rebuild time |
 | `publication` | `publication.schema.json` | a thread's `PUBLIC` visibility state, `lifecycle` `PUBLISHED → WITHDRAWN`, scoped to `node_id` |
@@ -37,7 +37,7 @@ the shared `standing` enum `RECORDED → ADMITTED → RATIFIED → EFFECTIVE`
 ## Service-local states
 
 Proposed lifecycles from `CHARTER.md`, service policy awaiting owner
-ratification and not a replacement for the shared record standing above:
+acceptance and not a replacement for the shared record standing above:
 
 ```text
 operator session:  OPEN → CLOSED
@@ -87,24 +87,24 @@ manifest declares it explicitly.
 | `request-judgement` | `PROPOSED` | judgement-request | CREATE | `submit_proposal` | `RECORDED` |
 | `list-pending-judgement-requests` | `PROPOSED` | judgement-request | READ | — | `DERIVED` |
 | `show-judgement-request` | `PROPOSED` | judgement-request | READ | — | `DERIVED` |
-| `resolve-judgement` | `PROPOSED` | judgement-resolution | CREATE | `ratify` | `EFFECTIVE` |
+| `resolve-judgement` | `PROPOSED` | judgement-resolution | CREATE | `accept` | `EFFECTIVE` |
 | `set-setting` | `PROPOSED` | operator-setting | SUPERSEDE | — | `COMMITTED` |
 | `rebuild-projection` | `PROPOSED` | projection-view | REBUILD | — | `REBUILT` |
 | `show-receipt` | `PROPOSED` | console-receipt | READ | — | `DERIVED` |
 
 `request-judgement` realizes `SPEC.md`'s `submit_proposal` row: the request's
 question enters as the kernel `Proposal`, and it must be `ADMITTED` before
-`ratify` runs; whether admission happens inside `request-judgement` or through
+`accept` runs; whether admission happens inside `request-judgement` or through
 a separate `admit` transition is open, tracked by fixture `CONS-009`
 (`judgement-request.schema.json` description). `resolve-judgement` realizes
-`ratify`: preconditions are `judgement_request_recorded`, `human_actor`,
+`accept`: preconditions are `judgement_request_recorded`, `human_actor`,
 `live_matching_grant`; refusals are `AUTHORITY_REFUSED` or `STALE_STATE`,
 matching the kernel row exactly (`SPEC.md` Transition contract).
 
 No operation here bypasses those kernel transitions to change authoritative
 state (`SPEC.md`, "No interface, adapter, worker, projection, or graph store
 may bypass these transitions"); `contracts/service.json` `forbids` repeats the
-same rule at service scope for ratifying on behalf of the owner and presenting
+same rule at service scope for accepting on behalf of the owner and presenting
 a projection as authoritative.
 
 ## Refusal reason codes

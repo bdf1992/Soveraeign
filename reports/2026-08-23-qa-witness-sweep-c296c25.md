@@ -1,6 +1,6 @@
 # QA witness sweep over `710f552..c296c25`, 2026-08-23
 
-Status: `OBSERVED INDEPENDENTLY · NOT WITNESSED · NOTHING RATIFIED`
+Status: `OBSERVED INDEPENDENTLY · NOT WITNESSED · NOTHING ACCEPTED`
 
 Six `sov-witness` agents observed the nine commits `3341df8..c296c25` on
 `feat/federation-harness-and-hardening` under Workflow `sov-qa`, run
@@ -17,7 +17,7 @@ only two of them had ever been looked at from outside
 (`reports/2026-08-23-console-and-seats-independent-observation.md`).
 
 A report under `reports/` is evidence, not policy. This one proposes at most
-`BUILT -> WITNESSED` for four surfaces and settles nothing. Only Bdo ratifies.
+`BUILT -> WITNESSED` for four surfaces and settles nothing. Only Bdo accepts.
 
 ## 1 · The correction this record exists to carry
 
@@ -120,7 +120,7 @@ default `--granted-by` and `--revoked-by` to the literal string `"Bdo"`,
 mirrored at `core.py` lines 82 and 89. A caller with no session, no prior
 authority and no flags runs `console grant`, exits 0, and writes an
 authority-grant into the operational journal reading `"granted_by": "Bdo"` - a
-grant attributed to the one person who holds ratification authority, created by
+grant attributed to the one person who holds acceptance authority, created by
 a caller who holds none. `services/console/KNOWN-GAPS.md` line 18 records the
 weaker general form, that anyone may record a grant naming any granter, and not
 that the default value is the owner's name.
@@ -237,7 +237,7 @@ proves that everything implemented is declared. Concretely:
   `search`, `open_session`, `close_session`, `grant`, `revoke`, `claim`,
   `report_derivative`, `observe`, `neighbors`, `receipts` and `federation_cross`
   are undeclared and absent from the map. Two of them are served over MCP now.
-- A manifest may declare its own `standing` as `WITNESSED` or `RATIFIED` and the
+- A manifest may declare its own `standing` as `WITNESSED` or `ACCEPTED` and the
   checker accepts it. Nothing cross-checks a manifest's standing against
   `STATUS.yaml` or any observation. All six are honest today, so this is a hole
   and not a live misstatement.
@@ -323,8 +323,8 @@ forbids synonyms for existing standing, event, effect, or role terms.
   `FRONT`, `BACK`, `DECLARED_NOT_ACTIVATED`, `REFUSED_UNCONFIGURED`, `PEER`,
   `node_id`.
 - **Pre-existing, unchanged by this range:** `STANDING_ORDER` in `manifests.py`
-  is `("PROPOSED", "BUILT", "WITNESSED", "RATIFIED")` while `AGENTS.md` states
-  the lifecycle as `OPEN -> BUILT -> WITNESSED -> RATIFIED`.
+  is `("PROPOSED", "BUILT", "WITNESSED", "ACCEPTED")` while `AGENTS.md` states
+  the lifecycle as `OPEN -> BUILT -> WITNESSED -> ACCEPTED`.
   `CLASSIFICATION.md` contains zero occurrences of `RESOURCE_CONSUMPTION`
   despite owning the vocabulary.
 
@@ -411,7 +411,7 @@ defect a session may settle.
 ## 8 · What this report cannot claim
 
 - **It is not a witness.** Six agents observed; `AGENTS.md` reserves
-  `WITNESSED` for a judgement this file cannot make and `RATIFIED` for Bdo.
+  `WITNESSED` for a judgement this file cannot make and `ACCEPTED` for Bdo.
 - **The tree moved under the observation.** A concurrent session added
   `services/observation/`, `services/registry/`, `contracts/domain-owners.*`,
   `scripts/sov_surface.py`, `docs/`, and `decisions/0041` between 22:45 and

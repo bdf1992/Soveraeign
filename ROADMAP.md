@@ -628,7 +628,7 @@ sameness is proven behaviourally by the conformance oracle, which is why
 splitting `core.py` is a separate, service-internal row.
 
 A row is added when a job acquires its second name, not when it acquires its
-first. Rows are removed only when the job is `RATIFIED` and the names retire
+first. Rows are removed only when the job is `ACCEPTED` and the names retire
 together.
 
 ## Deferred until earned

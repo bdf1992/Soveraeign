@@ -64,7 +64,7 @@ class Kind(unittest.TestCase):
             self.assertEqual(facets.kind_note(name), facets.kind_note(name))
 
     def test_drafts_are_excluded_rather_than_left_unclassified(self):
-        self.assertTrue(facets.excluded(".claude/drafts/o2-ratification-packet.md"))
+        self.assertTrue(facets.excluded(".claude/drafts/o2-acceptance-packet.md"))
         self.assertFalse(facets.excluded("decisions/0001-founding-boundary.md"))
 
     def test_an_excluded_document_never_reaches_the_corpus(self):
@@ -77,9 +77,9 @@ class Standing(unittest.TestCase):
         self.declared = facets.service_standings(ROOT)
 
     def test_a_documents_own_status_line_wins(self):
-        text = "# Title\n\nStatus: `PROPOSED FOR BDO RATIFICATION`\n\nBody.\n"
+        text = "# Title\n\nStatus: `PROPOSED FOR BDO ACCEPTANCE`\n\nBody.\n"
         self.assertEqual(facets.standing("services/asset/CHARTER.md", text, self.declared),
-                         "PROPOSED FOR BDO RATIFICATION")
+                         "PROPOSED FOR BDO ACCEPTANCE")
 
     def test_a_silent_service_document_falls_back_to_its_manifest(self):
         self.assertEqual(facets.standing("services/asset/README.md", "# R\n", self.declared),

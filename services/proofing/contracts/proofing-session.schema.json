@@ -13,7 +13,7 @@
     "opened_by": {"type": "string", "minLength": 1},
     "opened_at": {"type": "string", "format": "date-time"},
     "lifecycle": {"enum": ["OPEN", "IN_REVIEW", "DECISION_PENDING", "CLOSED"]},
-    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]},
+    "standing": {"enum": ["RECORDED", "ADMITTED", "ACCEPTED", "EFFECTIVE"]},
     "closed_at": {"type": ["string", "null"], "format": "date-time"},
     "decision_id": {"type": ["string", "null"]}
   }

@@ -112,7 +112,7 @@ service never issued; and the gateway settling an operation it routed.
 ### What escalates, and what it holds up
 
 - **Does the Console own authority grants, or a permits service?** G2's authority check needs a
-  real source. Reversible default in place (Console), so this gates ratification, not the
+  real source. Reversible default in place (Console), so this gates acceptance, not the
   build.
 - **S18, the two things named gateway.** Gates G4 only. Renaming a binding is reversible; doing
   it after G5 would rewrite tests.

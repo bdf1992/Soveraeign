@@ -3,7 +3,7 @@
 Status: `PROPOSED · BDO HAS NOT RULED`
 
 Drafted while making the witness layer executable
-(`scripts/sov_witness_layer.py`). The change it proposes narrows a `RATIFIED`
+(`scripts/sov_witness_layer.py`). The change it proposes narrows a `ACCEPTED`
 grant, which the drafting participant may not do, so it is written and left for
 Bdo rather than applied.
 
@@ -115,7 +115,7 @@ is the first part of the rule that is measured rather than declared.
 1. Whether to add `witness/` to `excluded_paths` at all, given the measurement
    above shows nothing is presently reachable. The drafting participant's view
    is yes, on the defence-in-depth argument, but it is a narrowing of a
-   `RATIFIED` grant and so not the participant's to take.
+   `ACCEPTED` grant and so not the participant's to take.
 2. Whether `services/*/observations/` belongs with it. Those directories hold
    participant observation receipts and the same argument reaches them; the
    drafting participant did not verify whether any current loop writes them, so

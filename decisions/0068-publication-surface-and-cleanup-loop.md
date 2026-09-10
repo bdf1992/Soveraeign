@@ -1,6 +1,6 @@
 # 0068 · Every tracked path declares the surface it occupies
 
-Status: `PROPOSED · BUILT AND SELF-TESTED · RATIFICATION PENDING`
+Status: `PROPOSED · BUILT AND SELF-TESTED · ACCEPTANCE PENDING`
 
 ## Decision
 

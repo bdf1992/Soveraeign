@@ -1,6 +1,6 @@
 # 0036 · Build operator continuity before the operator screen
 
-Status: `PROPOSED · BUILT AND SELF-TESTED · RATIFICATION PENDING`
+Status: `PROPOSED · BUILT AND SELF-TESTED · ACCEPTANCE PENDING`
 
 Numbering note: `0035-seat-message-etiquette.md` was minted in this same working
 tree while this record was being drafted. `OPEN-SEAMS.md` S16 carries the
@@ -89,7 +89,7 @@ posted. Neither would repair itself; both would mean the claim boundary is drawn
 in the wrong place.
 
 **3. Standing stops at `RECORDED`.** Every console record enters at `RECORDED` and
-the service has no transition that lifts it. Admission, ratification and
+the service has no transition that lifts it. Admission, acceptance and
 effectiveness are kernel transitions the console does not own, and a payload
 asking for anything higher is refused with `STANDING_NOT_OWNED`.
 
@@ -123,5 +123,5 @@ verification harness registration.
 - Whether this slice stands as the console's first, given the README named another.
 - Whether every Claude Code session in this repository should open and close a
   console session automatically.
-- Ratification. Thirty-one passing self-tests establish `BUILT` and nothing more.
-  No independent witness has run, and `AGENTS.md` reserves `RATIFIED` for Bdo.
+- Acceptance. Thirty-one passing self-tests establish `BUILT` and nothing more.
+  No independent witness has run, and `AGENTS.md` reserves `ACCEPTED` for Bdo.

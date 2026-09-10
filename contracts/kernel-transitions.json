@@ -8,7 +8,7 @@
     "CLASSIFICATION.md",
     "PRD.md"
   ],
-  "note": "The declared kernel transitions, compiled from the SPEC.md Transition contract table. SPEC.md states these transitions in prose; nothing compiled them, so every participant re-stated them privately. This table is the single machine-readable statement all services check against. It is a proposal: SPEC.md is not frozen (O10) and the vocabulary is not ratified (O9), so a mismatch found here queues as a judgement item rather than a rename.",
+  "note": "The declared kernel transitions, compiled from the SPEC.md Transition contract table. SPEC.md states these transitions in prose; nothing compiled them, so every participant re-stated them privately. This table is the single machine-readable statement all services check against. It is a proposal: SPEC.md is not frozen (O10) and the vocabulary is not accepted (O9), so a mismatch found here queues as a judgement item rather than a rename.",
   "settles_only_with_observation": [
     "settle_run"
   ],
@@ -96,12 +96,12 @@
       "effect_class": "RECORD_LOCAL"
     },
     {
-      "transition": "ratify",
+      "transition": "accept",
       "preconditions": [
         "pre_state_digest",
         "authority_grant_id"
       ],
-      "commit": "RATIFIED",
+      "commit": "ACCEPTED",
       "refusals": [
         "AUTHORITY_REFUSED",
         "STALE_STATE"
@@ -113,7 +113,7 @@
     {
       "transition": "attest",
       "preconditions": [
-        "ratified_claim_id",
+        "accepted_claim_id",
         "validator_id",
         "input_digests"
       ],
@@ -126,7 +126,7 @@
     {
       "transition": "make_effective",
       "preconditions": [
-        "ratified_claim_id",
+        "accepted_claim_id",
         "attestation_policy"
       ],
       "commit": "EFFECTIVE",

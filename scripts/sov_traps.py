@@ -107,7 +107,7 @@ TRAPS = (
     ),
     Trap(
         id="T6",
-        summary="several sessions write this tree at once; freeze a commit before witnessing or ratifying",
+        summary="several sessions write this tree at once; freeze a commit before witnessing or accepting",
         check=None,
     ),
 )

@@ -1,6 +1,6 @@
 # Fast-forward merge readiness, tested, 2026-08-23
 
-Status: `TESTED IN AN ISOLATED WORKTREE · NOT APPLIED · NOTHING COMMITTED · NOTHING RATIFIED`
+Status: `TESTED IN AN ISOLATED WORKTREE · NOT APPLIED · NOTHING COMMITTED · NOTHING ACCEPTED`
 
 `reports/2026-08-23-harness-reconciliation.md` ends its fast-forward analysis with:
 "No textual conflict is expected. That expectation has not been tested and should be,
@@ -63,25 +63,25 @@ proposed policy; local appended Console to the service split. Union:
 ```text
 The concrete `Service`/`Component` normalization, the initial
 Asset/Proofing/Console split, and the operating-loop role and stance vocabulary
-are new proposed policy. Bdo's ratification is required before this file becomes
+are new proposed policy. Bdo's acceptance is required before this file becomes
 authoritative vocabulary.
 ```
 
 ### STATUS.yaml
 
-The tail of `open_decisions`. Upstream registered `O13` as the SDLC ratification question;
+The tail of `open_decisions`. Upstream registered `O13` as the SDLC acceptance question;
 local held `O13` reserved by comment for the harness question and registered `O14` for
 Console. Union keeps both registered entries and replaces the now-false reservation
 comment, because `O13` is no longer reserved — it is taken:
 
 ```yaml
   - id: O13
-    question: Does Bdo ratify SDLC.md's tiers, stance dyads, concern-registry derivation, and Red-gated release requirement?
+    question: Does Bdo accept SDLC.md's tiers, stance dyads, concern-registry derivation, and Red-gated release requirement?
     blocks: sdlc_loop_activation
   - id: O14
     question: Is Console Service the accepted third service boundary under that name, and does Bdo authorize a provisional Human Binding target for it ahead of O10?
     blocks: console_implementation
-  # The federation-harness ratification question (decisions/0013-federation-harness.md,
+  # The federation-harness acceptance question (decisions/0013-federation-harness.md,
   # reports/2026-08-22-christening.md item 1) has no id: O13 was taken by the SDLC loop
   # on origin/main while it was reserved locally. It is registered only when Bdo rules.
 ```

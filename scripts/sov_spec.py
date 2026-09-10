@@ -3,16 +3,16 @@
 
 `SPEC.md` states its own standing rule: passing self-authored fixtures
 establishes `BUILT`, an independent run is required for `WITNESSED`, and the
-owner's recorded decision is required for `RATIFIED`. The specification sits at
+owner's recorded decision is required for `ACCEPTED`. The specification sits at
 `PROPOSED`, and nothing in this repository ever checked it against the
-requirements it claims to implement. So the owner has been asked to ratify a
+requirements it claims to implement. So the owner has been asked to accept a
 document that skipped two standings, which the transition contract refuses as
 `SKIPPED_STANDING` when a ticket tries it.
 
 This command is the missing evidence path. It checks the specification against
 `PRD.md` and against the conformance oracle, and reports the standing the
 specification has earned rather than the standing someone would like it to have.
-It ratifies nothing. It cannot: earned standing is evidence, and ratification is
+It accepts nothing. It cannot: earned standing is evidence, and acceptance is
 judgement.
 """
 
@@ -179,7 +179,7 @@ def command_trace(args: argparse.Namespace) -> int:
         print(f"             refused it: {judged[-1]['defects'][0]}")
     else:
         print("  WITNESSED  NOT EARNED - no independent run is recorded at all")
-    print("  RATIFIED   NOT REACHABLE - owner judgement, and asking for it before")
+    print("  ACCEPTED   NOT REACHABLE - owner judgement, and asking for it before")
     print("             WITNESSED skips a standing, which this repository refuses")
     print("             everywhere else as SKIPPED_STANDING")
 

@@ -66,7 +66,7 @@ definition.**
 
 Bdo's test: would Soveraeign still be Soveraeign if it stopped shipping proofing as a
 first-class domain while keeping its foundational promises? It would. `PROMISE-13` said
-proofing — open a session, annotate, ratify — which is domain altitude. It is **retired**
+proofing — open a session, annotate, accept — which is domain altitude. It is **retired**
 and `PROMISE-16` minted for the durable claim underneath: consequential work over governed,
 versioned state, decided against an exact version and inspectable by someone who was not
 you. `JOURNEY-11` still walks proofing and now serves `PROMISE-16`.
@@ -91,8 +91,8 @@ must never imply that Soveraeign entered a new product epoch. `CANON-1`'s single
 
 The promise field `standing` becomes `source`, and the state-fact field is
 `evidential_status`. `standing` already means the artifact lifecycle
-(`OPEN`/`BUILT`/`WITNESSED`/`RATIFIED`) and the record lifecycle
-(`RECORDED`/`ADMITTED`/`RATIFIED`/`EFFECTIVE`). `AGENTS.md` forbids a synonym for an
+(`OPEN`/`BUILT`/`WITNESSED`/`ACCEPTED`) and the record lifecycle
+(`RECORDED`/`ADMITTED`/`ACCEPTED`/`EFFECTIVE`). `AGENTS.md` forbids a synonym for an
 existing standing term, and a third meaning on the same word would have been
 `OPEN-SEAMS.md` S18's defect, self-inflicted.
 

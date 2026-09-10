@@ -58,7 +58,7 @@
     "may_not": [
       "WIDEN_GRANT",
       "INFER_AUTHORITY_FROM_CONTEXT",
-      "RATIFY_JUDGEMENT",
+      "ACCEPT_JUDGEMENT",
       "SELF_WITNESS",
       "SELF_SETTLE",
       "BYPASS_GOVERNED_TRANSITION",

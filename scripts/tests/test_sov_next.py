@@ -90,7 +90,7 @@ class ReachableWork(unittest.TestCase):
         self.assertEqual([row["number"] for row in sov_next.epic_ready(issues)], ["6"])
 
     def test_a_requirement_that_is_settled_no_longer_blocks(self):
-        issues = {"6": _issue("6", "bit", "RATIFIED"),
+        issues = {"6": _issue("6", "bit", "ACCEPTED"),
                   "7": _issue("7", "bit", "OPEN", requires=["#6"])}
         self.assertEqual([row["number"] for row in sov_next.epic_ready(issues)], ["7"])
 
@@ -198,7 +198,7 @@ class ClosedWithoutSettledStanding(unittest.TestCase):
         self.assertIn("#6", " ".join(sov_next.closed_unsettled(issues)))
 
     def test_a_closed_ticket_that_is_settled_is_not_reported(self):
-        issues = {"6": _issue("6", "bit", "RATIFIED", state="CLOSED")}
+        issues = {"6": _issue("6", "bit", "ACCEPTED", state="CLOSED")}
         self.assertEqual(sov_next.closed_unsettled(issues), [])
 
     def test_an_open_ticket_is_never_reported_here(self):

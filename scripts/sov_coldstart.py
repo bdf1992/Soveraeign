@@ -19,7 +19,7 @@ GitHub, so the benchmark never needs a hand-maintained answer key.
 produce a value is ERROR, never PASS: an unanswerable question is not a correct one.
 
 Nothing here settles standing. `AGENTS.md`: a test may establish `BUILT`; it may never
-claim `WITNESSED` or `RATIFIED`.
+claim `WITNESSED` or `ACCEPTED`.
 """
 
 from __future__ import annotations

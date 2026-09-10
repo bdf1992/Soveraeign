@@ -13,7 +13,7 @@ register was wrong.
 ## Holds, cold
 
 He built all of this and he cannot parse its identifiers cold. **Coined is not
-owned.** He invented `O10` and `spec.ratify` in a warm hour deep in the work;
+owned.** He invented `O10` and `spec.accept` in a warm hour deep in the work;
 handed back three weeks — or three hours — later they are encryption, not
 compression.
 
@@ -25,7 +25,7 @@ way?"* and *"This is just 20 dry cards, with nothing owner transalted at all."*
 Longer than what he owns, which is normal and is the point.
 
 - Open-decision identifiers — `O2`, `O9`, `O10`, `O16` — as carriers of meaning.
-- Gate names: `spec.ratify`, `classification.ratify`, `engineering.ratify_baseline`.
+- Gate names: `spec.accept`, `classification.accept`, `engineering.accept_baseline`.
 - Protected-boundary strings: `no_runtime_code_before_logical_spec_and_defeating_fixtures`.
 - Phase labels `F0`–`F4` as *impact*. He knows the ladder; he does not read `F0`
   and feel what is blocked.
@@ -52,8 +52,8 @@ the sentence carrying the meaning.
 
 ## Decides
 
-Everything. Sole ratifier, sole collaborator on the repository, and the only
-principal named in `CODEOWNERS`. Nothing is ratified without him,
+Everything. Sole acceptor, sole collaborator on the repository, and the only
+principal named in `CODEOWNERS`. Nothing is accepted without him,
 which is why the queue is the constraint and why no agent may present its
 synthesis as his judgement.
 

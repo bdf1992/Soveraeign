@@ -61,7 +61,7 @@
       "const": false,
       "description": "A public projection never becomes authoritative by being read. Withdrawing publication removes an entry from the next rebuild; it does not erase the thread, and it does not claim the view was never read."
     },
-    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+    "standing": {"enum": ["RECORDED", "ADMITTED", "ACCEPTED", "EFFECTIVE"]}
   },
   "$defs": {
     "addressedValue": {

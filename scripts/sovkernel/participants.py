@@ -150,13 +150,13 @@ def ticket(root: Path) -> dict[str, str]:
         # A HUMAN who is not the owner, so the request reaches the authority check
         # rather than being refused earlier at the actor-kind gate. The fact under
         # test is about authority, not about what kind of thing the actor is.
-        "an actor without judgement authority may not ratify": decide({
+        "an actor without judgement authority may not accept": decide({
             **base,
             "from": "WITNESSED",
-            "to": "RATIFIED",
+            "to": "ACCEPTED",
             "actor_id": "someone-else",
             "actor_kind": "HUMAN",
-            "evidence": {"owner_ratification": "pull/62#review"},
+            "evidence": {"owner_acceptance": "pull/62#review"},
         }),
         "an external effect outside every declared scope is refused": decide({
             **base,

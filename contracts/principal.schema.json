@@ -8,7 +8,7 @@
   "required": ["registry_schema", "status", "root_principal", "principals"],
   "properties": {
     "registry_schema": {"const": "soveraeign-principal-registry/v1"},
-    "status": {"enum": ["PROPOSED", "RATIFIED"]},
+    "status": {"enum": ["PROPOSED", "ACCEPTED"]},
     "root_principal": {"type": "string", "minLength": 1},
     "principals": {
       "type": "array",

@@ -1,6 +1,6 @@
 # 0016 · GitHub coordination registrar and the typed ticket workflow
 
-Status: `PROPOSED · OWNER RATIFICATION PENDING`
+Status: `PROPOSED · OWNER ACCEPTANCE PENDING`
 
 Numbering note: `0014` and `0015` are reserved for the Console Service boundary and
 the scheduled-runs pattern, which exist as local drafts and are not yet on `main`.
@@ -26,10 +26,10 @@ standing transitions over the `soveraeign-ticket/v1` lifecycle: which pairs exis
 refusal codes are declared, and
 `conformance/fixtures/tickets/transition-cases.json` proves each one fires.
 
-**Owner approval where judgement actually lives.** `WITNESSED -> RATIFIED` admits only
+**Owner approval where judgement actually lives.** `WITNESSED -> ACCEPTED` admits only
 `actor_kind: HUMAN` whose `actor_id` is the declared owner; every other request is
-refused as `OWNER_RATIFICATION_REQUIRED` or `ACTOR_KIND_REFUSED`. That refusal is a
-statement, not an enforcement: ratification enters the repository through `CODEOWNERS`
+refused as `OWNER_ACCEPTANCE_REQUIRED` or `ACTOR_KIND_REFUSED`. That refusal is a
+statement, not an enforcement: acceptance enters the repository through `CODEOWNERS`
 review on `STATUS.yaml`, `decisions/`, and the governing set, and becomes binding only
 when branch protection on `main` requires code owner review.
 

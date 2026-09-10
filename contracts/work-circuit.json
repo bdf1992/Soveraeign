@@ -2,7 +2,7 @@
   "circuit_schema": "soveraeign-work-circuit/v1",
   "status": "PROPOSED",
   "title": "The work circuit: how one ticket matures from a point into an addressable node",
-  "note": "A ticket does not move OPEN -> BUILT -> WITNESSED -> RATIFIED. That is the standing of a claim about the ticket, and it says nothing about what the ticket has become. This circuit is the second axis: how far the thing itself has been drawn. A ticket enters as a named point and leaves as a surface that can be addressed, called, and held to account. Standing and stage are independent - a CAPABLE_NODE stage can sit at OPEN standing, and a ROOT_POINT can be RATIFIED as a point. Confusing the two is what let this repository accumulate ratified vocabulary over undrawn work.",
+  "note": "A ticket does not move OPEN -> BUILT -> WITNESSED -> ACCEPTED. That is the standing of a claim about the ticket, and it says nothing about what the ticket has become. This circuit is the second axis: how far the thing itself has been drawn. A ticket enters as a named point and leaves as a surface that can be addressed, called, and held to account. Standing and stage are independent - a CAPABLE_NODE stage can sit at OPEN standing, and a ROOT_POINT can be ACCEPTED as a point. Confusing the two is what let this repository accumulate accepted vocabulary over undrawn work.",
   "governed_by": [
     "AGENTS.md",
     "PRD.md",

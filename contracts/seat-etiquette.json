@@ -86,22 +86,15 @@
       "standing_ceiling": null,
       "travels_relation": "renders-for"
     },
-    "RATIFY": {
-      "means": "This is settled as judgement.",
-      "plain_english": "Root only. The one act that can reach RATIFIED.",
+    "ACCEPT": {
+      "means": "I accept this finished, evidenced result; it is settled as judgement.",
+      "plain_english": "Root only, and after the fact. The one act that can reach ACCEPTED. Acceptance is never pre-approval (decisions/0023).",
       "direction": "DOWNWARD",
       "requires_relation": "INDEPENDENT",
       "standing_ceiling": {
         "from": "WITNESSED",
-        "to": "RATIFIED"
+        "to": "ACCEPTED"
       }
-    },
-    "ACCEPT": {
-      "means": "I accept this finished, evidenced result.",
-      "plain_english": "Root only, and after the fact. Acceptance is never pre-approval (decisions/0023).",
-      "direction": "DOWNWARD",
-      "requires_relation": "INDEPENDENT",
-      "standing_ceiling": null
     },
     "HOLD": {
       "means": "I am holding this, and here is which of the admissible reasons applies.",
@@ -116,7 +109,6 @@
       "plain_english": "Bdo. Settles judgement. Nothing above it, so it speaks only downward: every question from below terminates here.",
       "may": [
         "DISPATCH",
-        "RATIFY",
         "ACCEPT",
         "HOLD"
       ]

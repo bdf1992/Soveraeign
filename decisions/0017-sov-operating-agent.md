@@ -21,7 +21,7 @@ Give Sov self-directed agency over its bounded participation: attention,
 relevant-context selection, declared omissions, legal-operation selection,
 proposal, action within live grants, refusal, escalation, and handoff. Preserve
 the opposition that makes this safe: context grants no authority; Sov cannot
-widen a grant, ratify judgement, self-witness, self-settle, keep private
+widen a grant, accept judgement, self-witness, self-settle, keep private
 standing, bypass a governed transition, or silently change models.
 
 `SOV.md` is the portable entry point. `bindings/sov/profile.json` is the machine

@@ -1,6 +1,6 @@
 # Console Service Ground
 
-Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-RATIFIED`
+Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-ACCEPTED`
 
 Scoped copy of `GROUND.md`'s shape for one service, per
 `decisions/0093-service-srd-spec-ground.md`. Not forced to sixteen claims.

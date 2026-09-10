@@ -116,7 +116,7 @@ directory or the Asset Service's state; modify `lineage/evidence/`; create an
 
 ## Vocabulary (exact; no synonyms)
 
-- Repository artifact standing: `OPEN -> BUILT -> WITNESSED -> RATIFIED`.
+- Repository artifact standing: `OPEN -> BUILT -> WITNESSED -> ACCEPTED`.
 - Epic-tree state: `READY`, `HELD` (an unsatisfied `requires` edge), `UNROUTED`
   (no repository artifact evidences a domain owner), `OWNER_HELD` (a judgement
   asked of the owner). Only the last waits on Bdo.

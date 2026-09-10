@@ -1,6 +1,6 @@
 # Retroactive principal adoption, 2026-08-23
 
-Status: `RECORDED · RETROACTIVE · NOTHING RATIFIED`
+Status: `RECORDED · RETROACTIVE · NOTHING ACCEPTED`
 
 `decisions/0048-principal-identity.md` (ID-1) requires every `actor_id` to
 resolve to a registered principal. Every actor string written before that

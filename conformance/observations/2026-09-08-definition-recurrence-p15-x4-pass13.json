@@ -1,7 +1,7 @@
 {
   "case_id": "WITNESS-2026-09-08-DEFINITION-RECURRENCE-P15-X4-PASS-13",
   "record_kind": "OBSERVATION",
-  "record_note": "An observation, not a settlement and not a ratification. This participant built nothing in the subject and edited no file but this record. It was asked a narrow records-only confirmation: whether the delta's own account of the note's container-claim history is true when derived from git rather than read off the commit message, whether any sentence of the custody member note or the pass-4 corrections block is false or overstated at this commit, and whether anything blocks landing at BUILT. The refusal of BUILT -> WITNESSED recorded by passes 1 through 12 is not reopened here, is not mine to revisit, and this record supports no standing transition.",
+  "record_note": "An observation, not a settlement and not a acceptance. This participant built nothing in the subject and edited no file but this record. It was asked a narrow records-only confirmation: whether the delta's own account of the note's container-claim history is true when derived from git rather than read off the commit message, whether any sentence of the custody member note or the pass-4 corrections block is false or overstated at this commit, and whether anything blocks landing at BUILT. The refusal of BUILT -> WITNESSED recorded by passes 1 through 12 is not reopened here, is not mine to revisit, and this record supports no standing transition.",
   "participant_id": "claude-opus-5/sov-witness@2026-09-08/pass-13",
   "independence": {
     "contributed_to_build_of_subject": false,

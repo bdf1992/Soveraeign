@@ -69,7 +69,7 @@ function buildPrompt(op) {
   return 'You are the sov-governance builder for Soveraeign at ' + ROOT + '. Read AGENTS.md and STATUS.yaml before changing anything. ' +
     'Execute exactly one bounded operation: ' + op.id + ' - ' + op.description + '. Touch only these files: ' + op.files.join(', ') + '. ' +
     'Follow the AGENTS.md change protocol: record requested outcome and current authoritative state, affected contracts and fixtures, preconditions and expected observable result, effect class (' + op.effect_class + '), and rollback or refusal boundary. ' +
-    'Hard rules: never run git commit or git push; never ratify or witness your own work; settle what evidence can settle at this tier, name what would defeat each ruling, and put only an owner-held boundary in judgement_items; do not duplicate a rule owned by another document - link to it; lineage/evidence/ is immutable; vocabulary must match CLASSIFICATION.md and SPEC.md. ' +
+    'Hard rules: never run git commit or git push; never accept or witness your own work; settle what evidence can settle at this tier, name what would defeat each ruling, and put only an owner-held boundary in judgement_items; do not duplicate a rule owned by another document - link to it; lineage/evidence/ is immutable; vocabulary must match CLASSIFICATION.md and SPEC.md. ' +
     'Make the smallest change, then run python scripts/verify.py from the repository root and report its exit code.'
 }
 
@@ -100,7 +100,7 @@ const witness = await agent(
   'Claims: ' + JSON.stringify(claims) + '. ' +
   'Independently inspect the diffs of the changed files (git status and git diff), compare them against AGENTS.md, CONTRACT.md, CLASSIFICATION.md, and SPEC.md, and run python scripts/verify.py from the repository root, recording the exit code. ' +
   'Never treat a green build or an executor report as authority. Return one verdict per operation_id: reproduced, dissented, or unattestable. ' +
-  'standing_supported must be exactly "OPEN -> BUILT", "BUILT -> WITNESSED", or "none"; never RATIFIED - only Bdo ratifies.',
+  'standing_supported must be exactly "OPEN -> BUILT", "BUILT -> WITNESSED", or "none"; never ACCEPTED - only Bdo accepts.',
   { agentType: 'sov-witness', schema: WITNESS_SCHEMA, phase: 'Witness', label: 'witness' }
 )
 if (witness && typeof witness.standing_supported === 'string') { witness.standing_supported = witness.standing_supported.split(' ').join('') }

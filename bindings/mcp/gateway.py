@@ -7,7 +7,7 @@ append the receipt. A tool call already carries what an operation boundary needs
 crossing is built here once rather than restated at each endpoint.
 
 The gateway is a Model Binding (`AGENTS.md`, Directory boundaries). It executes
-within grants and never ratifies, settles, or witnesses. It holds no standing of
+within grants and never accepts, settles, or witnesses. It holds no standing of
 its own; `manifest.json` stands `PROPOSED`.
 """
 

@@ -1,7 +1,7 @@
 export const meta = {
   name: 'sov-witness',
-  description: 'Run an adversarial witness pass over a named subject and return a witness record for witness/ - never edits, never ratifies',
-  whenToUse: 'Before asking Bdo to advance any standing. AGENTS.md fixes OPEN -> BUILT -> WITNESSED -> RATIFIED and a build report cannot witness itself, so nothing may be put to the owner until something that did not build it has tried to defeat it. Produces the record scripts/sov_standing.py requires.',
+  description: 'Run an adversarial witness pass over a named subject and return a witness record for witness/ - never edits, never accepts',
+  whenToUse: 'Before asking Bdo to advance any standing. AGENTS.md fixes OPEN -> BUILT -> WITNESSED -> ACCEPTED and a build report cannot witness itself, so nothing may be put to the owner until something that did not build it has tried to defeat it. Produces the record scripts/sov_standing.py requires.',
   phases: [
     { title: 'Attack', detail: 'independent witnesses, each told to defeat the artifact' },
     { title: 'Reconcile', detail: 'merge findings, keep every dissent' },
@@ -15,7 +15,7 @@ const LENSES = {
   grounding: 'Is every claim backed by something a stranger could check? Follow each citation to its target and confirm the target exists and says what is claimed. A citation to a file that is absent from the checkout is a blocking finding, not a minor one. Run the commands the artifact claims pass, and report their real exit codes.',
   coverage: 'Does it cover what it says it covers? Count. How many things does it declare, how many carry a positive case, how many carry a defeating case, how many carry neither? Report the numbers you counted, never an estimate, and say what you counted them from.',
   enforcement: 'Is each stated rule actually enforced, or only stated? For every rule the artifact asserts, find the code that would refuse a violation. Feed that code a violating input and report whether it refuses. A rule with no enforcement is a claim, not a rule, and the gap between the two is the highest-value finding available here.',
-  consequence: 'What breaks if this is ratified as written? Trace concretely. Does saying yes to this silently settle a question held separately open? Does switching it on deadlock any legitimate path? Would a reader be misled by a green result that means less than it appears to?',
+  consequence: 'What breaks if this is accepted as written? Trace concretely. Does saying yes to this silently settle a question held separately open? Does switching it on deadlock any legitimate path? Would a reader be misled by a green result that means less than it appears to?',
 }
 
 const FINDING_SCHEMA = {
@@ -23,7 +23,7 @@ const FINDING_SCHEMA = {
   required: ['lens', 'verdict', 'scores', 'findings', 'verified', 'uncovered'],
   properties: {
     lens: { type: 'string' },
-    verdict: { type: 'string', enum: ['RATIFIABLE', 'RATIFIABLE-WITH-CONDITIONS', 'NOT-YET'] },
+    verdict: { type: 'string', enum: ['ACCEPTABLE', 'ACCEPTABLE-WITH-CONDITIONS', 'NOT-YET'] },
     scores: {
       type: 'object',
       required: ['coherence', 'grounding', 'coverage', 'defeat_resistance'],
@@ -85,7 +85,7 @@ function attackPrompt(lens) {
     + 'for the operating contract before you start. Note that a passing verification here does not mean conformance - '
     + 'the recorded baseline registers failing requirements as expected - so do not read exit 0 as evidence of correctness.\n\n'
     + 'CONSTRAINTS: You may not edit, fix, stage, commit, or push anything; an observation authored by a hand that '
-    + 'touched the artifact is void. You may not ratify - only Bdo ratifies, and your report supports at most '
+    + 'touched the artifact is void. You may not accept - only Bdo accepts, and your report supports at most '
     + 'BUILT -> WITNESSED. If you cannot verify a claim, say so plainly rather than assuming it.\n\n'
     + 'Return your verdict, four scores out of 100, findings with severity and exact location and concrete '
     + 'consequence, the commands you actually ran, the conditions that would discharge each blocking finding, what '
@@ -101,7 +101,7 @@ const reports = await parallel(selected.map(function (lens) {
 phase('Reconcile')
 
 const RANK = { blocking: 0, material: 1, minor: 2 }
-const WORST = { 'NOT-YET': 0, 'RATIFIABLE-WITH-CONDITIONS': 1, RATIFIABLE: 2 }
+const WORST = { 'NOT-YET': 0, 'ACCEPTABLE-WITH-CONDITIONS': 1, ACCEPTABLE: 2 }
 
 const returned = reports.filter(Boolean)
 const silent = selected.filter(function (l, i) { return !reports[i] })
@@ -112,7 +112,7 @@ const conditions = []
 const uncovered = []
 const judgement = []
 const axes = { coherence: [], grounding: [], coverage: [], defeat_resistance: [] }
-let verdict = 'RATIFIABLE'
+let verdict = 'ACCEPTABLE'
 
 returned.forEach(function (r) {
   if (WORST[r.verdict] < WORST[verdict]) { verdict = r.verdict }
@@ -138,7 +138,7 @@ findings.sort(function (a, b) { return (RANK[a.severity] || 9) - (RANK[b.severit
 const blocking = findings.filter(function (f) { return f.severity === 'blocking' })
 
 // A lens that returned nothing is not a lens that found nothing.
-if (silent.length > 0 && verdict === 'RATIFIABLE') { verdict = 'RATIFIABLE-WITH-CONDITIONS' }
+if (silent.length > 0 && verdict === 'ACCEPTABLE') { verdict = 'ACCEPTABLE-WITH-CONDITIONS' }
 
 log('Witness complete: ' + verdict + ' - ' + blocking.length + ' blocking, ' + findings.length
   + ' finding(s) total, ' + judgement.length + ' for Bdo'
@@ -158,6 +158,6 @@ return {
   lenses_returning_nothing: silent,
   judgement_queue: judgement,
   standing_note: 'This observation supports at most BUILT -> WITNESSED, and only if the invoking session writes it to '
-    + 'record_path. It is not a ratification and it is not a settlement. Only Bdo ratifies. A lens that returned '
+    + 'record_path. It is not a acceptance and it is not a settlement. Only Bdo accepts. A lens that returned '
     + 'nothing is recorded as uncovered, not as clean.',
 }

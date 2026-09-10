@@ -1,6 +1,6 @@
 # Console Service Requirements — Founding and Phase I
 
-Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-RATIFIED`
+Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-ACCEPTED`
 
 Scoped copy of `PRD.md`'s shape for one service, per `decisions/0093-service-srd-spec-ground.md`.
 This is a projection at service scope of decisions already made at root scope. It
@@ -40,9 +40,9 @@ node's own participants and the Gateway that fronts it:
 
 ## Requirements
 
-Same lifecycle as `PRD.md`: `OPEN → BUILT → WITNESSED → RATIFIED`. `BUILT` is
+Same lifecycle as `PRD.md`: `OPEN → BUILT → WITNESSED → ACCEPTED`. `BUILT` is
 an implementation claim; `WITNESSED` requires independent evidence this
-document does not itself supply; `RATIFIED` requires the declared right. Status
+document does not itself supply; `ACCEPTED` requires the declared right. Status
 below reflects `contracts/service.json` operation standing and `KNOWN-GAPS.md`
 as read on 2026-08-27, not an inference from charter intent.
 
@@ -95,7 +95,7 @@ A judgement request is resolved only through a typed, scoped, live human
 `JUDGEMENT` grant checked at the transition; a model attempt is `REFUSED`.
 Serves PROD-I-5 (Typed authority) directly.
 
-Defeating case: a machine right ratifies judgement-typed truth (`PRD.md`
+Defeating case: a machine right accepts judgement-typed truth (`PRD.md`
 PROD-I-5); `judgement-resolution.schema.json` fixes `resolver_kind` to the
 constant `HUMAN`. Not built: `resolve-judgement` is `PROPOSED`
 (`KNOWN-GAPS.md`, Judgement resolutions row).

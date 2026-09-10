@@ -181,7 +181,7 @@
     },
     {
       "address": "services/asset/src/soveraeign_asset_service/custody.py",
-      "digest": "9c0f172d925469e10f461f8489c949adeec3855e1ed69da96c14fc656d3ae924"
+      "digest": "52ab6cc948348af6ee2cfbf3f6c48972ce1822845270e677f53b79d1b52e0f8d"
     },
     {
       "address": "services/asset/src/soveraeign_asset_service/operational.py",
@@ -193,7 +193,7 @@
     },
     {
       "address": "services/asset/src/soveraeign_asset_service/store.py",
-      "digest": "64da876e23da077aec3119a2d3e7b50e4f43e4fb1cec3d42a3e26cd9e5642459"
+      "digest": "9cb43c12f351827b5c5b2f02e8e5f3d0008b5b7e7b5c3fcfa7263d5688e20faf"
     },
     {
       "address": "services/console/contracts/service.json",
@@ -288,7 +288,7 @@
       "digest": "150834886995a8e0c32334beb5ef53dbc69cbb244172b510a06b056e608bf4b0"
     }
   ],
-  "input_state_digest": "271ff62c1a483b1d805b67277c7c9dc61fe1145964fffea0a0b1f2845a16e45e",
+  "input_state_digest": "d2a52ed4c70a6c1c6142b2a59c015e8fe005cb81402e7670bf9a9b11e968f669",
   "counts": {
     "declared": 135,
     "bound": 135,
@@ -1108,7 +1108,7 @@
         },
         {
           "address": "services/asset/src/soveraeign_asset_service/custody.py",
-          "digest": "9c0f172d925469e10f461f8489c949adeec3855e1ed69da96c14fc656d3ae924"
+          "digest": "52ab6cc948348af6ee2cfbf3f6c48972ce1822845270e677f53b79d1b52e0f8d"
         },
         {
           "address": "services/asset/src/soveraeign_asset_service/operational.py",
@@ -1120,7 +1120,7 @@
         },
         {
           "address": "services/asset/src/soveraeign_asset_service/store.py",
-          "digest": "64da876e23da077aec3119a2d3e7b50e4f43e4fb1cec3d42a3e26cd9e5642459"
+          "digest": "9cb43c12f351827b5c5b2f02e8e5f3d0008b5b7e7b5c3fcfa7263d5688e20faf"
         },
         {
           "address": "services/gateway/src/soveraeign_gateway_service/attribution.py",
@@ -1140,7 +1140,7 @@
         "reason_code": "EXACT_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this operation."
       },
-      "record_digest": "7712c9b3ad9560ee0799e3a939f9e7c09b70f077825d4c105919fb2d108a345f"
+      "record_digest": "ca186783db55db2f88f225661949ff884881a12357ac4d96075a496daa97f106"
     },
     {
       "operation_id": "asset.propose-description",
@@ -2242,7 +2242,7 @@
         },
         {
           "address": "services/asset/src/soveraeign_asset_service/custody.py",
-          "digest": "9c0f172d925469e10f461f8489c949adeec3855e1ed69da96c14fc656d3ae924"
+          "digest": "52ab6cc948348af6ee2cfbf3f6c48972ce1822845270e677f53b79d1b52e0f8d"
         },
         {
           "address": "services/asset/src/soveraeign_asset_service/operational.py",
@@ -2254,7 +2254,7 @@
         },
         {
           "address": "services/asset/src/soveraeign_asset_service/store.py",
-          "digest": "64da876e23da077aec3119a2d3e7b50e4f43e4fb1cec3d42a3e26cd9e5642459"
+          "digest": "9cb43c12f351827b5c5b2f02e8e5f3d0008b5b7e7b5c3fcfa7263d5688e20faf"
         },
         {
           "address": "services/gateway/src/soveraeign_gateway_service/attribution.py",
@@ -2274,7 +2274,7 @@
         "reason_code": "EXACT_READ_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this read."
       },
-      "record_digest": "ea3d6b38ec709080620be88113dda1edb0f3d55f25bee8688a6934596957655b"
+      "record_digest": "908c16dd218e33651dddcfd00eabec24e58771be3472fcc13aa8451ad38f487b"
     },
     {
       "operation_id": "asset.read-version-history",

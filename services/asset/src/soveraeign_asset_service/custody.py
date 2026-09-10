@@ -86,10 +86,13 @@ def read_version(service: Any, version_id: str, actor: str) -> dict[str, Any]:
     try:
         blob = service.store.payload_path(row["digest"])
     except PayloadIntegrityError as error:
+        recorded = row["digest"]
+        if isinstance(recorded, bytes):
+            recorded = {"sqlite_type": "blob", "hex": recorded.hex()}
         receipt = service._receipt(
             "REFUSED", "asset.read-version", "version", version_id, actor,
             {"reason": "DIGEST_MISMATCH", "version_id": version_id,
-             "asset_id": row["asset_id"], "recorded": row["digest"], "observed": None},
+             "asset_id": row["asset_id"], "recorded": recorded, "observed": None},
         )
         raise DigestMismatch(f"{version_id}: invalid recorded digest", receipt) from error
     if not blob.is_file():

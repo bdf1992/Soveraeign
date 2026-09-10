@@ -19,6 +19,7 @@ from soveraeign_asset_service.custody import (  # noqa: E402
     UnknownRecord,
     read_version,
 )
+from soveraeign_asset_service.routes import AssetRoutes  # noqa: E402
 from soveraeign_asset_service.store import PayloadIntegrityError  # noqa: E402
 
 
@@ -150,8 +151,46 @@ class CustodyRelocation(unittest.TestCase):
                                    (digest, self.version_id))
                 service.db.commit()
                 with patch.object(Path, "read_bytes") as reads:
-                    self.assert_refused(service, "DIGEST_MISMATCH")
+                    payload = self.assert_refused(service, "DIGEST_MISMATCH")
                     reads.assert_not_called()
+                self.assertEqual(payload["recorded"], digest)
+
+    def test_blob_digest_route_refusal_survives_reopening_without_payload_read(self) -> None:
+        service = self.open_current(move=True)
+        malformed = b"\x00\xff"
+        service.db.execute("UPDATE versions SET digest=? WHERE id=?",
+                           (malformed, self.version_id))
+        service.db.commit()
+        with patch.object(Path, "read_bytes") as reads:
+            with self.assertRaises(PayloadIntegrityError):
+                service.store.verified_version(self.version_id)
+            receipt = AssetRoutes(service).call(
+                "read-version", {"version_id": self.version_id}, "reader")
+            reads.assert_not_called()
+        self.assertEqual(receipt["outcome"], "REFUSED")
+        self.assertEqual(receipt["event"], "asset.read-version")
+        self.assertEqual(receipt["subject_type"], "version")
+        self.assertEqual(receipt["subject_id"], self.version_id)
+        self.assertEqual(receipt["actor"], "reader")
+        payload = json.loads(receipt["payload_json"])
+        self.assertEqual(payload, {
+            "reason": "DIGEST_MISMATCH", "version_id": self.version_id,
+            "asset_id": self.captured["asset_id"], "observed": None,
+            "recorded": {"sqlite_type": "blob", "hex": "00ff"},
+        })
+        service.close()
+        reopened = AssetService(self.current)
+        self.addCleanup(reopened.close)
+        recovered = next(r for r in reopened.receipts() if r["id"] == receipt["id"])
+        self.assertEqual(recovered, receipt)
+        self.assertEqual(len(reopened.receipts()), len(self.receipts) + 1)
+        self.assertIn(receipt["id"], reopened.store.pending_operational_history())
+        stored = reopened.db.execute(
+            "SELECT digest,typeof(digest) FROM versions WHERE id=?", (self.version_id,)
+        ).fetchone()
+        self.assertEqual(tuple(stored), (malformed, "blob"))
+        recorded = json.loads(recovered["payload_json"])["recorded"]
+        self.assertEqual(bytes.fromhex(recorded["hex"]), malformed)
 
     def test_verified_version_retains_size_check_after_move(self) -> None:
         service = self.open_current(move=True)

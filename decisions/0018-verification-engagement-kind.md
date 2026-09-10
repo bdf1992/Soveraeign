@@ -1,6 +1,6 @@
 # 0018 · Verification engagement as a ticket kind
 
-Status: `PROPOSED · OWNER RATIFICATION PENDING`
+Status: `PROPOSED · OWNER ACCEPTANCE PENDING`
 
 Numbering note: decisions 0014 and 0015 are held for questions drafted on
 concurrent branches. This decision uses 0018 so those histories can merge
@@ -77,7 +77,7 @@ engagement. Kind is vocabulary, not authority.
 ## Open review
 
 The kind, its identity pattern, and the two target fields are proposed, not
-ratified. `contracts/` is owner-reviewed; this decision reaches `RATIFIED` only
+accepted. `contracts/` is owner-reviewed; this decision reaches `ACCEPTED` only
 through owner judgement on the pull request, never through a green check.
 
 ## Source and authority

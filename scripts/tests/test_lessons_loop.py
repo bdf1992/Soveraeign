@@ -96,7 +96,7 @@ class FalseAdmitted(unittest.TestCase):
 
     def test_a_decision_landing_is_not_graded_for_a_path(self):
         """A judgement landing has no fixture to point at and is not asked for one."""
-        text = page(entry(standing="RATIFIED", landing="decision"))
+        text = page(entry(standing="ACCEPTED", landing="decision"))
         self.assertNotIn("FALSE_ADMITTED", codes(lessons.grade(text, contract())))
 
 
@@ -191,7 +191,7 @@ class TheContractMatchesItsRecord(unittest.TestCase):
     """decisions/0029 owns the loop; this contract may not quietly restate it wrong."""
 
     def test_the_four_standings_are_the_ones_the_record_names(self):
-        self.assertEqual({"RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"},
+        self.assertEqual({"RECORDED", "ADMITTED", "ACCEPTED", "EFFECTIVE"},
                          set(contract()["standings"]))
 
     def test_the_threshold_is_the_one_the_record_set(self):

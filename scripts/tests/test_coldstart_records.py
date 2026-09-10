@@ -176,8 +176,8 @@ class DefectsRefuse(unittest.TestCase):
     def test_a_run_cannot_record_itself_as_witnessed(self) -> None:
         self.assertIn("STANDING_OVERCLAIMED", self._codes({"standing": "WITNESSED"}))
 
-    def test_a_run_cannot_record_itself_as_ratified(self) -> None:
-        self.assertIn("STANDING_OVERCLAIMED", self._codes({"standing": "RATIFIED"}))
+    def test_a_run_cannot_record_itself_as_accepted(self) -> None:
+        self.assertIn("STANDING_OVERCLAIMED", self._codes({"standing": "ACCEPTED"}))
 
     def test_hand_graded_answers_need_a_verdict_file_someone_else_wrote(self) -> None:
         codes = self._codes({
@@ -266,9 +266,9 @@ class TheLiveCorpusIsStructurallySound(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "corpus.json"
             path.write_text(json.dumps({"questions": [
-                {"id": "Z2", "section": "s", "tier": 1, "q": "?", "expected": "RATIFIED",
+                {"id": "Z2", "section": "s", "tier": 1, "q": "?", "expected": "ACCEPTED",
                  "why": "w", "severity_on_failure": "MED",
-                 "probe": {"kind": "regex_count", "file": "x", "pattern": "RATIFIED"}}]}),
+                 "probe": {"kind": "regex_count", "file": "x", "pattern": "ACCEPTED"}}]}),
                 encoding="utf-8")
             self.assertTrue(any("its own expected value" in d for d in _corpus_defects(path)))
 
@@ -889,7 +889,7 @@ class SetComparisonForgivesWhatExactForgives(unittest.TestCase):
         self.assertFalse(compare("OPEN,BUILT", "OPEN.", "set_eq"))
 
     def test_a_superset_is_still_wrong(self) -> None:
-        self.assertFalse(compare("OPEN,BUILT", "OPEN, BUILT, RATIFIED", "set_eq"))
+        self.assertFalse(compare("OPEN,BUILT", "OPEN, BUILT, ACCEPTED", "set_eq"))
 
 
 class TheRecordDirectorySurvivesATornFile(unittest.TestCase):

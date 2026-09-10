@@ -257,7 +257,7 @@ def _set(field: str, value: Any) -> Callable[[dict[str, Any]], dict[str, Any]]:
 MUTATIONS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "basis-dropped": _drop_source,
     "no-sources": _no_sources,
-    "standing-taken": _set("standing", "RATIFIED"),
+    "standing-taken": _set("standing", "ACCEPTED"),
     "authority-taken": _set("authority_effect", "BINDING"),
 }
 """Variants that defeat the candidate itself, applied to the observation the oracle grades.

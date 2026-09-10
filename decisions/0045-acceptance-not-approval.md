@@ -91,8 +91,8 @@ build failure.
 
 - Seventeen founding questions leave the owner queue. `0046` records what each
   became.
-- `WITNESSED -> RATIFIED` requires an `acceptance_packet` in its evidence
-  (`contracts/ticket-transitions.json`), so ratification cannot be asked for as a
+- `WITNESSED -> ACCEPTED` requires an `acceptance_packet` in its evidence
+  (`contracts/ticket-transitions.json`), so acceptance cannot be asked for as a
   bare question. `TC-017` proves the refusal.
 - `WITNESSED` stops being a waiting room in
   `contracts/ticket-queue-policy.json`; its next action is to present.
@@ -115,7 +115,7 @@ build failure.
 ## Demotion
 
 Demote this policy if the absence of pre-approval becomes cover for external
-effects, owner impersonation, evidence inflation, or self-ratification; or if
+effects, owner impersonation, evidence inflation, or self-acceptance; or if
 acceptance packets become presentations that omit their defeaters. Both failures
 are visible in the ledger and in the packets themselves.
 

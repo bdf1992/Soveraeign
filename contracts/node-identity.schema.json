@@ -53,7 +53,7 @@
       "description": "The local seat that admitted this peer. Null for SELF. A peer that no local seat admitted is not in the registry at all."
     },
     "standing": {
-      "enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]
+      "enum": ["RECORDED", "ADMITTED", "ACCEPTED", "EFFECTIVE"]
     }
   },
   "allOf": [

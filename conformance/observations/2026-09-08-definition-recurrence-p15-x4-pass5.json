@@ -1,7 +1,7 @@
 {
   "case_id": "WITNESS-2026-09-08-DEFINITION-RECURRENCE-P15-X4-PASS-5",
   "record_kind": "OBSERVATION",
-  "record_note": "An observation, not a settlement and not a ratification. This participant built nothing in the subject and edited no file other than this record. Every claim it relies on was re-derived from the artifact in a throwaway copy; the pass-4 record was read to locate the claims under test and none of its conclusions is carried forward untested.",
+  "record_note": "An observation, not a settlement and not a acceptance. This participant built nothing in the subject and edited no file other than this record. Every claim it relies on was re-derived from the artifact in a throwaway copy; the pass-4 record was read to locate the claims under test and none of its conclusions is carried forward untested.",
   "participant_id": "claude-opus-5/sov-witness@2026-09-08/pass-5",
   "independence": {
     "contributed_to_build_of_subject": false,

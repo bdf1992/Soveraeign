@@ -41,11 +41,11 @@
           "kernel_transition": "settle_run"
         },
         {
-          "fact": "an actor without judgement authority may not ratify",
-          "participant_refusal": "OWNER_RATIFICATION_REQUIRED",
+          "fact": "an actor without judgement authority may not accept",
+          "participant_refusal": "OWNER_ACCEPTANCE_REQUIRED",
           "kernel_refusal": "AUTHORITY_REFUSED",
-          "kernel_transition": "ratify",
-          "note": "The participant splits one kernel refusal into two names by target: OWNER_RATIFICATION_REQUIRED when the target is RATIFIED, OWNER_JUDGEMENT_REQUIRED for any other owner-reserved transition. The kernel makes no such distinction. A finer participant vocabulary over the same kernel refusal is permitted; a coarser one that admitted what the kernel refuses would not be."
+          "kernel_transition": "accept",
+          "note": "The participant splits one kernel refusal into two names by target: OWNER_ACCEPTANCE_REQUIRED when the target is ACCEPTED, OWNER_JUDGEMENT_REQUIRED for any other owner-reserved transition. The kernel makes no such distinction. A finer participant vocabulary over the same kernel refusal is permitted; a coarser one that admitted what the kernel refuses would not be."
         },
         {
           "fact": "an external effect outside every declared scope is refused",

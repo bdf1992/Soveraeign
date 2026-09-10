@@ -1,6 +1,6 @@
 # 0102 · Open Phase 1.5
 
-Status: `OWNER-DIRECTED · ROOT ACT PERFORMED · NOT SELF-RATIFYING`
+Status: `OWNER-DIRECTED · ROOT ACT PERFORMED · NOT SELF-ACCEPTING`
 
 Bdo, occupying the root seat, directed on 2026-09-03 that Phase 1.5 be open, in his own
 words in the session that prepared this branch. Opening a phase is a root act
@@ -76,7 +76,7 @@ Reversible choices; Bdo may overturn any without defeating the act.
 - A pinned archive that differs from the `PRD.md` or `SPEC.md` bytes at commit `900326e`.
 - An unmet clause with no live custody, or a custody whose closure names a command that
   does not run.
-- A reader that treats `phase:1-5` as ratified, or that reads a prepared predicate as
+- A reader that treats `phase:1-5` as accepted, or that reads a prepared predicate as
   satisfied because the phase is open.
 
 ## Judgement queue for Bdo

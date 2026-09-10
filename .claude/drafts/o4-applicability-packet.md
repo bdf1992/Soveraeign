@@ -60,7 +60,7 @@ Four flagged. Inspected individually:
 - `service-map.md` is genuinely wrong — it renders Console as `chartered, not built — O14`,
   and the merge renumbered Console to O18.
 - `standing-transition.md` reads `CLASSIFICATION.md` for the standing chain
-  `RECORDED → ADMITTED → RATIFIED → EFFECTIVE`. The changed paragraph concerned the
+  `RECORDED → ADMITTED → ACCEPTED → EFFECTIVE`. The changed paragraph concerned the
   Asset/Proofing/Console service split. The diagram is flagged and correct.
 
 The mechanism is not broken: `CONTRACT.md`, `SPEC.md`, and `PRD.md` digests all still match,

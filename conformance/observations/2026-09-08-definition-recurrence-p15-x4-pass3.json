@@ -1,7 +1,7 @@
 {
   "case_id": "WITNESS-2026-09-08-DEFINITION-RECURRENCE-P15-X4-PASS-3",
   "record_kind": "OBSERVATION",
-  "record_note": "An observation, not a settlement and not a ratification. Written under .local/ at the launching agent's direction; the builder may carry it to conformance/observations/ as it did passes 1 and 2.",
+  "record_note": "An observation, not a settlement and not a acceptance. Written under .local/ at the launching agent's direction; the builder may carry it to conformance/observations/ as it did passes 1 and 2.",
   "participant_id": "claude-opus-5/sov-witness@2026-09-08/pass-3",
   "independence": {
     "contributed_to_build": false,
@@ -169,10 +169,10 @@
     "selfcheck exit 0 and run exit 1; 38 settled sources across P15-X1/X2/X3; 9 of 10 primitives resolved; four closed vocabularies printed as reported-not-graded; P15-Q4.1 and Q4.2 hold and P15-Q4.3 does not",
     "each of the 7 defeating variants fails exactly its declared predicate and no other, with no other_defects; the positive variant cites 6 sources and does not cite the BUILT-only fixture member",
     "selfcheck and run write nothing: git status stays at 0 lines through selfcheck, run and two full verify passes",
-    "standing is compared as whole tokens against ('WITNESSED','RATIFIED'), so NOT_WITNESSED is refused (trap T3)",
+    "standing is compared as whole tokens against ('WITNESSED','ACCEPTED'), so NOT_WITNESSED is refused (trap T3)",
     "scripts/README.md: 61 sov_*.py entrypoints, 40 with a row, 21 without; sov_f2_gate.py is the single digit-bearing name that a sov_[a-z_]+\\.py pattern misses",
     "both prior witness records resolve at 9253eb5 and are not gitignored",
-    "16 files changed against d00f46a, all in scope; no unrelated files; lint 0 with no new debt; largest new module 185 lines; RECORDED and RATIFIED are correct SPEC.md vocabulary (SPEC.md:481) and no synonym was minted",
+    "16 files changed against d00f46a, all in scope; no unrelated files; lint 0 with no new debt; largest new module 185 lines; RECORDED and ACCEPTED are correct SPEC.md vocabulary (SPEC.md:481) and no synonym was minted",
     "conformance/commissioning.py is untouched by this branch and imports only __future__ and typing",
     "the tree is stable: 9253eb5 with 0 dirty lines in the shared checkout and in the frozen worktree, before and after every measurement, and the full surface re-run at the end gave identical results"
   ],

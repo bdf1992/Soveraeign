@@ -50,8 +50,8 @@ The logical flow is:
 4. A recording or proposal begins as recorded, not authoritative.
 5. Admission marks that the proposal passed the admission gate. It does not make the
    proposal true.
-6. A holder of the required typed authority may ratify the claim.
-7. Runtime attestation checks whether the ratified claim currently reproduces.
+6. A holder of the required typed authority may accept the claim.
+7. Runtime attestation checks whether the accepted claim currently reproduces.
 8. Effective state may condition later operations.
 9. Operations leave receipts and can be checked through an independent observation path.
 10. Correction or retraction changes what applies now without erasing what happened.
@@ -60,12 +60,12 @@ The logical flow is:
 
 | Dimension | Distinctions |
 | --- | --- |
-| Standing | recorded · admitted · ratified · effective |
+| Standing | recorded · admitted · accepted · effective |
 | Data | payload · source · reading · view · recording · proposal · receipt · witness |
 | Identity | identity · address · digest · label · route · handle |
 | Event | attempted · committed · failed · refused · countered · unresolved |
 | Effect | record-local · resource consumption · external-world mutation |
-| Authority signal | proposal authority · ratification authority · runtime attestation |
+| Authority signal | proposal authority · acceptance authority · runtime attestation |
 
 Two fields may contain the same value without becoming the same kind of thing. A digest is
 not an identity. A report is not an observation. A recorded proposal is not effective
@@ -80,7 +80,7 @@ services.
   to reconstruct what happened.
 - **Runtime kernel:** applies admission, transition, observation, settlement, receipt, and
   retraction rules.
-- **Authority:** represents typed, scoped, revocable grants and the rules for ratification.
+- **Authority:** represents typed, scoped, revocable grants and the rules for acceptance.
 - **Attestation:** records reproduction, dissent, and outcomes that cannot be attested
   without turning runtime success into authority.
 - **Discovery and projections:** expose addressable views, routes, available operations,
@@ -113,7 +113,7 @@ system that refused uncontained external effects and proved:
 - typed authority;
 - owner judgement that does not stop unrelated work;
 - reconstruction by a fresh witness;
-- runtime attestation after ratification;
+- runtime attestation after acceptance;
 - human/model use of the same governed state; and
 - portability across two materially different model bindings, including one supplied by
   the owner.

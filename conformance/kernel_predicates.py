@@ -55,7 +55,7 @@ def check_capture(observed: dict[str, Any]) -> list[str]:
 
 
 def check_effective(observed: dict[str, Any]) -> list[str]:
-    """`make_effective`: ratified, attestation policy met, no current counter, else refused."""
+    """`make_effective`: accepted, attestation policy met, no current counter, else refused."""
     claim = observed.get("claim") or {}
     defects = [f"claim missing {field}" for field in missing(claim, ("claim_id", "standing"))]
     policy = observed.get("attestation_policy") or {}
@@ -72,8 +72,8 @@ def check_effective(observed: dict[str, Any]) -> list[str]:
     transition = observed.get("transition") or {}
     outcome = transition.get("outcome")
     if outcome == "EFFECTIVE":
-        if claim.get("standing") != "RATIFIED":
-            defects.append("claim made effective without RATIFIED standing")
+        if claim.get("standing") != "ACCEPTED":
+            defects.append("claim made effective without ACCEPTED standing")
         if policy.get("requires_attestation") and not reproduced:
             defects.append("attestation policy unmet yet claim made effective")
         if adverse:

@@ -6,11 +6,11 @@ given:
   - one verification claim
   - one judgement claim
 when:
-  - the right attempts to ratify both claims
+  - the right attempts to accept both claims
 then:
-  - the verification claim may be ratified
+  - the verification claim may be accepted
   - the judgement claim is refused and receipted
 defeating:
-  - machine authority ratifies the judgement claim
+  - machine authority accepts the judgement claim
   - refusal leaves no receipt
 

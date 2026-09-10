@@ -65,7 +65,7 @@
       "id": "R119-5",
       "claim": "nothing was smuggled into the change",
       "method": "read the full 16-file merge-base diff and the 4-file repair commit, ran the docs check, scanned for secret shapes and vocabulary drift",
-      "finding": "confirmed. The two files that look unrelated are coherent: one KIND_RULES entry classifying witness records, and the regenerated documentation page whose own check passes. No secret shapes, no vocabulary outside OPEN/BUILT/WITNESSED/RATIFIED, and no oracle weakened."
+      "finding": "confirmed. The two files that look unrelated are coherent: one KIND_RULES entry classifying witness records, and the regenerated documentation page whose own check passes. No secret shapes, no vocabulary outside OPEN/BUILT/WITNESSED/ACCEPTED, and no oracle weakened."
     }
   ],
   "dissented": [
@@ -89,7 +89,7 @@
       "id": "R119-D3",
       "severity": "MATERIAL",
       "claim_defeated": "the gate grades what the record says against what the field claims",
-      "finding": "It compares nothing. 'OPEN -> BUILT', 'n/a', 'asdf' and 'RATIFIED is refused' all satisfy a WITNESSED claim, and 'OPEN -> BUILT' also satisfies a RATIFIED claim. Neither the standing nor the subject the record names is compared to the field's.",
+      "finding": "It compares nothing. 'OPEN -> BUILT', 'n/a', 'asdf' and 'ACCEPTED is refused' all satisfy a WITNESSED claim, and 'OPEN -> BUILT' also satisfies a ACCEPTED claim. Neither the standing nor the subject the record names is compared to the field's.",
       "consequence": "The module docstring says a record that observed the subject and declined to advance it must not count. A record saying exactly that - 'Standing supported: OPEN -> BUILT' - counts. A record naming a different subject entirely satisfies the field whose filename it matches.",
       "what_would_have_defeated_this_finding": "comparing the named standing and subject to the claim"
     },

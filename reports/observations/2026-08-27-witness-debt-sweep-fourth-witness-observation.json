@@ -65,9 +65,9 @@
     },
     {
       "id": "W4-5",
-      "claim": "RATIFIED semantics",
+      "claim": "ACCEPTED semantics",
       "method": "four gate runs across the claim-kind by record-state matrix",
-      "finding": "confirmed. A RATIFIED field is satisfiable by a WITNESSED record with an honest printed caveat; a record declaring RATIFIED is refused for both kinds as over-reach rather than reported as absent."
+      "finding": "confirmed. A ACCEPTED field is satisfiable by a WITNESSED record with an honest printed caveat; a record declaring ACCEPTED is refused for both kinds as over-reach rather than reported as absent."
     },
     {
       "id": "W4-6",

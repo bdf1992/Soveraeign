@@ -6,7 +6,7 @@ Ruling 1 says a question is settled at the lowest tier that can produce evidence
 defeating the alternatives, and only owner-held intent, naming, external
 commitment, irreversible effect, and the acceptance standing itself reach Bdo.
 
-Neither had a reader. `reports/2026-08-23-ratification-docket.md` is a hand-written
+Neither had a reader. `reports/2026-08-23-acceptance-docket.md` is a hand-written
 snapshot that was stale within hours, because a docket assembled by hand rots the
 moment a record is minted. This builds the same thing as a projection over
 `decisions/`, `contracts/decision-standing.json` and
@@ -173,7 +173,7 @@ def queue() -> int:
     print(NL + f"{len(headline)} of {len(asked)} questions come from a record that does not "
           f"enumerate its own; a further question such a record carries is not visible here.")
     print("Standing note: routing entries are claims with reasons, not settlements. "
-          "Nothing here ratifies anything.")
+          "Nothing here accepts anything.")
     return 0
 
 

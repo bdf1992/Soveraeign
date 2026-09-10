@@ -1,6 +1,6 @@
 # Asset Service Journeys
 
-Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT RATIFIED`
+Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT ACCEPTED`
 
 This is the piece `decisions/0093-service-srd-spec-ground.md` names as having
 no root-level analog. Each journey below is the abstract path a caller takes
@@ -85,15 +85,15 @@ the sharper defect in what does exist: "Any named actor can call `observe`,
 including the worker" — the executor-only settlement `GROUND-010` forbids is
 not yet structurally prevented.
 
-## J5 · Propose a description, then ratify it
+## J5 · Propose a description, then accept it
 
-**Path:** `propose-description` (human or model actor) → `ratify-proposal`
+**Path:** `propose-description` (human or model actor) → `accept-proposal`
 (human actor, live matching grant) → `EFFECTIVE`.
 
 **DEAD-ENDS-AT-admit.** `KNOWN-GAPS.md`'s "Admission standing" row: "Proposal
-ratification updates `RECORDED` directly to `RATIFIED`" — the four-step
+acceptance updates `RECORDED` directly to `ACCEPTED`" — the four-step
 ladder `CLASSIFICATION.md` and `SPEC.md` both fix (`RECORDED → ADMITTED →
-RATIFIED → EFFECTIVE`) collapses its middle step in this participant.
+ACCEPTED → EFFECTIVE`) collapses its middle step in this participant.
 Separately, the proposal itself does not yet satisfy `PROD-I-1`'s defeating
 case: `conformance/BASELINE.md` records `PROD-I-1 · Propose: FAIL` —
 "proposal lacks content address, source addresses, and cost record" — and
@@ -213,8 +213,8 @@ naming it here does not answer it either.
    picking a side.
 
 4. **Who keeps `rebuild-projection` and this service's own two projection
-   tables once the Asset Projection Service is ratified?**
+   tables once the Asset Projection Service is accepted?**
    `OPEN-SEAMS.md` S14 states this plainly: "Which service keeps
    `rebuild-projection` for the Asset Service's own two tables after
-   ratification is Bdo's call." Explicitly owner-gated, not this service's
+   acceptance is Bdo's call." Explicitly owner-gated, not this service's
    or this document's to decide.

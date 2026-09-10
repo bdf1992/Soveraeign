@@ -1,6 +1,6 @@
 # 0021 · The semantic cold-start task
 
-Status: `PROPOSED · OWNER RATIFICATION PENDING`
+Status: `PROPOSED · OWNER ACCEPTANCE PENDING`
 
 Answers open decision **O8**, and closes seam **S5**.
 
@@ -41,7 +41,7 @@ it is `custody.py`.
 
 `SPEC.md` states its own standing rule: self-authored fixtures establish `BUILT`,
 an independent run establishes `WITNESSED`, and the owner's recorded decision
-establishes `RATIFIED`. `PROD-I-7` requires `semantic_task_observed`, and no task
+establishes `ACCEPTED`. `PROD-I-7` requires `semantic_task_observed`, and no task
 existed to observe, so the first execution of `FOUND-007` was refused by the
 oracle with exactly that defect - correctly.
 
@@ -55,7 +55,7 @@ is one watched task whose success a fresh witness can determine independently,
 which is what S5 asks for and no more. Further tasks may be declared; this one
 does not become the definition of competence by being first.
 
-It does not ratify anything. Running it establishes `BUILT` evidence for the
+It does not accept anything. Running it establishes `BUILT` evidence for the
 participant and supplies the observation `PROD-I-7` requires. Owner judgement is
 still owner judgement.
 

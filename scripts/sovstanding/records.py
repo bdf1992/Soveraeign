@@ -20,9 +20,9 @@ WITNESS_DIR = ROOT / "witness"
 NOT_A_RECORD = {"readme", "index"}
 
 # A witness record carries a subject at most to WITNESSED. `AGENTS.md` reserves
-# ratification for a seat that settles JUDGEMENT, and `witness/README.md` says
+# acceptance for a seat that settles JUDGEMENT, and `witness/README.md` says
 # the same: depositing a record makes advancing standing possible and never
-# performs it. A record declaring RATIFIED has over-reached, and the gate names
+# performs it. A record declaring ACCEPTED has over-reached, and the gate names
 # that rather than quietly declining to count it.
 WITNESS_MAY_SUPPORT = "WITNESSED"
 
@@ -64,7 +64,7 @@ MAX_BLOCK_LINES = 8
 # different hand-written denial list, and such a list has no end. Inside a plain
 # text block there is no emphasis to strip either, so `WITNESSED*` and its
 # footnote are simply not this word.
-SUPPORTED_VALUES = {"WITNESSED": "WITNESSED", "RATIFIED": "RATIFIED"}
+SUPPORTED_VALUES = {"WITNESSED": "WITNESSED", "ACCEPTED": "ACCEPTED"}
 
 
 def declared_block(text: str) -> list[str] | None:

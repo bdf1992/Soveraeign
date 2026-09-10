@@ -1,6 +1,6 @@
 # Retroactive seat adoption, 2026-08-23
 
-Status: `RECORDED · RETROACTIVE · NOTHING RATIFIED`
+Status: `RECORDED · RETROACTIVE · NOTHING ACCEPTED`
 
 `decisions/0020-owner-seat-topology.md` defines Owner as a seat and admits
 that every run before the topology executed ownerless. An adoption record is
@@ -28,7 +28,7 @@ launched and directed on 2026-08-23).
 | A6 | This drafting run: decision 0020, seat-registry contract, fixtures, test, this file, on `docs/owner-seat-topology` | the session occupant directly | the branch and its PR | accepted as `BUILT` evidence only | no drafting grant; Bdo's "cont." directive in conversation |
 
 Settlement note: `seat:session-control` settles `VERIFICATION`-shaped
-evidence only. Nothing in this file ratifies anything; every `RIGHT-GREEN`
+evidence only. Nothing in this file accepts anything; every `RIGHT-GREEN`
 act over these runs belongs to `seat:root`.
 
 ## Pending adoption (evidence exists; launcher attribution incomplete)

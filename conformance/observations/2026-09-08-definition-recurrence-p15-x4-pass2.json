@@ -1,7 +1,7 @@
 {
   "case_id": "WITNESS-2026-09-08-DEFINITION-RECURRENCE-P15-X4-PASS-2",
   "record_kind": "OBSERVATION",
-  "record_note": "An observation, not a settlement and not a ratification. Written under .local/ at the launching agent's direction because witness/ and reports/ sit outside grant:standing-landing-loop.",
+  "record_note": "An observation, not a settlement and not a acceptance. Written under .local/ at the launching agent's direction because witness/ and reports/ sit outside grant:standing-landing-loop.",
   "participant_id": "claude-opus-5/sov-witness@2026-09-08/pass-2",
   "independence": {
     "contributed_to_build": false,
@@ -60,7 +60,7 @@
     },
     "F3_tree_digest": {"verdict": "REPRODUCED", "evidence": "pass 1's plant (drop `rolling.update(entry.read_bytes())`) now gives unittest exit 1 via test_the_tree_digest_reads_bytes_not_just_paths."},
     "F4_work_state_default": {"verdict": "REPRODUCED", "evidence": "pass 1's plant (`member.get(\"work_state\", LANDED)`) now gives unittest exit 1 via test_a_member_with_no_work_state_is_not_admitted."},
-    "F12_ratified_admitted": {"verdict": "REPRODUCED", "evidence": "SETTLED_STANDINGS = (\"WITNESSED\", \"RATIFIED\") compared by whole-token tuple membership, never substring; trap T3 avoided. test_a_member_settled_at_ratified_is_admitted covers it."},
+    "F12_accepted_admitted": {"verdict": "REPRODUCED", "evidence": "SETTLED_STANDINGS = (\"WITNESSED\", \"ACCEPTED\") compared by whole-token tuple membership, never substring; trap T3 avoided. test_a_member_settled_at_accepted_is_admitted covers it."},
     "F5_basis_can_no_longer_shrink_silently": {
       "verdict": "DISSENTED - repaired only for the exact plant, not for the property",
       "evidence": "Pass 1's plant (kill EVIDENCE_PATH entirely) is now caught: selfcheck, unittest and run all exit 1. But conformance/commissioning.py check_q41 is unchanged: it still compares `basis.issubset(source)` where recurrence.observe builds settled_evidence_addresses and candidate.source_addresses from the same gathered list, so in the live path it remains X.issubset(X) and cannot fail. The repair added a heuristic in experience.gather (lines 97-100) that fires only when `named` is empty AND the prose still contains the substring 'witness/' or 'reports/'. Two shrinks defeat it; both are in the findings as N1."

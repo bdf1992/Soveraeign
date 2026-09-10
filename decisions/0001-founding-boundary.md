@@ -1,6 +1,6 @@
 # 0001 · Founding boundary
 
-Status: `PROPOSED FOR BDO RATIFICATION`
+Status: `PROPOSED FOR BDO ACCEPTANCE`
 
 ## Decision
 

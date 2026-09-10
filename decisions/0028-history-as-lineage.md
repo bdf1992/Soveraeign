@@ -104,7 +104,7 @@ recorded `EXACT` (L-0004).
 - Deferred embeddings entirely. They are model output, `invoke_model` has no
   implementation, and a local embedding model is a runtime dependency requiring
   its own record — which `0027-local-model-adapter.md` now proposes. O12 gates
-  only `model_binding.ratify_contract`, so that path was never blocked; it was
+  only `model_binding.accept_contract`, so that path was never blocked; it was
   sequenced. Projection order stands as search, then graph, then embeddings.
 - Did not commit. The run leaves its changes in the working tree
   (`AGENTS.md`, Branch and commit strategy).
@@ -114,7 +114,7 @@ violated; Bdo may counter any of them in review.
 
 ## Gate names
 
-`lineage.ratify_corpus` — ratification of this corpus as attributed evidence
+`lineage.accept_corpus` — acceptance of this corpus as attributed evidence
 under `AGENTS.md` (Evidence and standing). Building on it, reading it, and
 rebuilding its projections are reachable without that ruling.
 

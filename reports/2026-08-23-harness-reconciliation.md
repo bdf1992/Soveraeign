@@ -1,6 +1,6 @@
 # Harness reconciliation, 2026-08-23
 
-Status: `PROPOSAL · NOT BUILT · NOT WITNESSED · NOTHING RATIFIED`
+Status: `PROPOSAL · NOT BUILT · NOT WITNESSED · NOTHING ACCEPTED`
 
 Governance-domain analysis of the collision between `decisions/0013-federation-harness.md`
 (local, untracked) and `decisions/0013-domain-mapped-sdlc-loop.md` (merged on `main` via

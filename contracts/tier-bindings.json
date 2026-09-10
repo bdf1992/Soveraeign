@@ -38,7 +38,7 @@
         "escalate"
       ],
       "may_not": [
-        "ratify_judgement",
+        "accept_judgement",
         "widen_own_grant",
         "hold_private_concern_state"
       ],
@@ -55,7 +55,7 @@
       "may_not": [
         "widen_received_grant",
         "settle_own_operation",
-        "ratify_judgement"
+        "accept_judgement"
       ],
       "max_effect_class": "RESOURCE_CONSUMPTION"
     },

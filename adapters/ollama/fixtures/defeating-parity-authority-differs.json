@@ -4,7 +4,7 @@
   "operation_id": "operation_byom_parity_001",
   "actor_id": "urn:soveraeign:actor:model:ollama:gpt-oss:20b",
   "interface_contract_id": "urn:soveraeign:contract:model-binding:proposed",
-  "required_authority": "grant:ratify:asset-description",
+  "required_authority": "grant:accept:asset-description",
   "requested_capability": "completion",
   "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
   "input_digest": "sha256:abababababababababababababababababababababababababababababababab",

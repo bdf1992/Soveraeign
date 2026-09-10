@@ -108,13 +108,13 @@
       ]
     },
     {
-      "operation": "ratify-decision",
+      "operation": "accept-decision",
       "standing": "PROPOSED",
-      "logical_endpoint": "sov://proofing/ratify-decision",
+      "logical_endpoint": "sov://proofing/accept-decision",
       "subject": "authorized-decision",
       "crud": "CREATE",
       "requirement": "PROD-I-5",
-      "kernel_transition": "ratify",
+      "kernel_transition": "accept",
       "preconditions": [
         "decision_proposal_recorded",
         "human_actor",
@@ -232,7 +232,7 @@
   ],
   "forbids": [
     "annotation-against-an-unpinned-version",
-    "self-ratified-decision",
+    "self-accepted-decision",
     "silent-round-close",
     "history-erasure"
   ]

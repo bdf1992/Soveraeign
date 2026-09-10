@@ -18,7 +18,7 @@
     "status": {
       "enum": [
         "PROPOSED",
-        "RATIFIED"
+        "ACCEPTED"
       ]
     },
     "root_seat": {

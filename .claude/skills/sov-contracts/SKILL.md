@@ -90,14 +90,14 @@ Use these exactly; never invent synonyms:
 
 - Effect classes: `RECORD_LOCAL`, `RESOURCE_CONSUMPTION`, `EXTERNAL_WORLD`
   (the last is refused in Phase I).
-- Record standing: `RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE`.
-- Artifact standing lifecycle: `OPEN -> BUILT -> WITNESSED -> RATIFIED`.
+- Record standing: `RECORDED -> ADMITTED -> ACCEPTED -> EFFECTIVE`.
+- Artifact standing lifecycle: `OPEN -> BUILT -> WITNESSED -> ACCEPTED`.
 - Event phase: `ATTEMPTED | REPORTED | OBSERVED | SETTLED | COUNTERED`.
 - Outcome: `ATTEMPTED | COMMITTED | FAILED | REFUSED | COUNTERED | UNRESOLVED`.
 - Attestation outcome: `REPRODUCED | DISSENTED | UNATTESTABLE`.
 - Actor kind: `HUMAN | MODEL | WORKER | SYSTEM`.
 - Authority type: `VERIFICATION | JUDGEMENT` — verification authority cannot
-  ratify a judgement claim.
+  accept a judgement claim.
 - Data boundary: `LOCAL_ONLY | REDACTED_REMOTE | REMOTE_ALLOWED`.
 - Roles: a Worker's report is not an Observation; a Witness is independent; a
   Projection is rebuildable and never authoritative by convenience; a Receipt

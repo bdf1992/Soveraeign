@@ -28,7 +28,7 @@ class OrganizationCase(unittest.TestCase):
         self.service = AssetService(self.root / "state")
         self.org = self.service.organization
         for capability in ("declare:collection-type", "declare:asset-collection",
-                           "organize:asset", "retract:record", "ratify:judgement"):
+                           "organize:asset", "retract:record", "accept:judgement"):
             self.service.grant("Bdo", "Bdo", capability)
 
     def tearDown(self):

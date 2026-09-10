@@ -22,4 +22,4 @@ participants tested against this contract until the F1 and F2 gates are closed.
 ## Open authority
 
 This specification is agent-authored synthesis. It advances no requirement to
-`RATIFIED` and does not close F1 without Bdo's freeze decision.
+`ACCEPTED` and does not close F1 without Bdo's freeze decision.

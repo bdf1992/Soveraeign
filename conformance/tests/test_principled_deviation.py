@@ -2,7 +2,7 @@
 
 The oracle reads governing context, append-only records, receipts, and witness
 facts from fixtures. It imports no participant implementation. Passing establishes
-BUILT evidence for decision 0101; it does not accept or ratify that policy.
+BUILT evidence for decision 0101; it does not accept or accept that policy.
 """
 
 from __future__ import annotations

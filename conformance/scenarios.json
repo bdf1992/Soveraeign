@@ -144,7 +144,7 @@
       "verification may commit and judgement must refuse"
     ],
     "gap": [
-      "a broad machine grant may silently ratify judgement"
+      "a broad machine grant may silently accept judgement"
     ],
     "requirements": [
       "live typed scope and budget checked",
@@ -154,7 +154,7 @@
       "the same model attempts both claims"
     ],
     "fitness_directive": "Enforce authority by claim type rather than actor confidence or convenience.",
-    "work_item": "attempt two differently typed ratifications",
+    "work_item": "attempt two differently typed acceptances",
     "watched_delta": [
       "grant checks",
       "claim standings",
@@ -215,7 +215,7 @@
     "forced_conditions": [
       "witness begins cold"
     ],
-    "fitness_directive": "Qualify the artifact from its own instructions without self-ratification.",
+    "fitness_directive": "Qualify the artifact from its own instructions without self-acceptance.",
     "work_item": "perform one clean-room qualification",
     "watched_delta": [
       "qualification record",
@@ -229,7 +229,7 @@
     "requirement": "PROD-I-8",
     "polarity": "participant",
     "given": [
-      "a ratified executable claim",
+      "a accepted executable claim",
       "original inputs",
       "changed current inputs"
     ],
@@ -243,17 +243,17 @@
       "validator and version named",
       "exact inputs and run named",
       "evidence addressed",
-      "ratification unchanged"
+      "acceptance unchanged"
     ],
     "forced_conditions": [
       "change an input after the first attestation"
     ],
-    "fitness_directive": "Re-run the claim against current inputs and preserve the distinction between ratification and attestation.",
+    "fitness_directive": "Re-run the claim against current inputs and preserve the distinction between acceptance and attestation.",
     "work_item": "attest before and after an input change",
     "watched_delta": [
       "two attestations",
       "current effectiveness",
-      "historical ratification"
+      "historical acceptance"
     ]
   },
   {

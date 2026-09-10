@@ -1,6 +1,6 @@
 # 0010 · Proofing Service boundary
 
-Status: `PROPOSED · OWNER RATIFICATION PENDING`
+Status: `PROPOSED · OWNER ACCEPTANCE PENDING`
 
 ## Decision
 
@@ -20,5 +20,5 @@ identity, payload custody, versions, and derivation lineage.
 ## Open authority
 
 The source corpus establishes shared-system and service constraints but does not
-ratify Proofing as the second service. That product-boundary choice remains
+accept Proofing as the second service. That product-boundary choice remains
 Bdo's judgement.

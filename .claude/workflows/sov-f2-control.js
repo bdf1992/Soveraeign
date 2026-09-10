@@ -16,7 +16,7 @@ export const meta = {
 // The loop runs in whatever working tree `root` names. It commits and reverts,
 // so `root` must be a tree nothing else is writing - a dedicated git worktree.
 // It never pushes, never leaves the tree dirty between ticks, and never claims
-// RATIFIED: a witnessed tick proposes BUILT->WITNESSED and nothing further.
+// ACCEPTED: a witnessed tick proposes BUILT->WITNESSED and nothing further.
 
 const ROOT = (args && args.root) ? args.root : null
 if (!ROOT) {
@@ -224,7 +224,7 @@ function buildPrompt(op, tick) {
     + 'If your change makes a verify.py check fail and you cannot repair it inside your own files, say so in residuals '
     + 'rather than widening scope. Report predicates_claimed honestly: list only predicates whose violation your '
     + 'new fixture actually detects. Your output is a builder self-report and establishes BUILT evidence only; '
-    + 'it cannot witness or ratify itself.'
+    + 'it cannot witness or accept itself.'
 }
 
 function witnessPrompt(claims, read, tick) {
@@ -249,7 +249,7 @@ function witnessPrompt(claims, read, tick) {
     + 'skipped test, a relaxed expected_oracle, a loosened schema, a defeating fixture that no longer '
     + 'defeats - and list each one in oracle_weakened. Report verify_failures as the exact "FAIL:" lines. '
     + 'Set standing_supported to BUILT->WITNESSED only when every verdict is reproduced, '
-    + 'fabricated_coverage and oracle_weakened are both empty, and verify_failures is empty. Otherwise none. Never RATIFIED: ratification is '
+    + 'fabricated_coverage and oracle_weakened are both empty, and verify_failures is empty. Otherwise none. Never ACCEPTED: acceptance is '
     + 'Bdo\'s alone. Do not edit, fix or commit anything - a witness that repairs what it observes has stopped '
     + 'being independent.'
 }

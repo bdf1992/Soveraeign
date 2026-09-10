@@ -29,7 +29,7 @@ class ProjectionAuthority(unittest.TestCase):
         self.tmp = TemporaryDirectory()
         self.root = Path(self.tmp.name)
         self.service = AssetService(self.root / "state")
-        self.service.grant("Bdo", "Bdo", "ratify:judgement")
+        self.service.grant("Bdo", "Bdo", "accept:judgement")
 
     def tearDown(self):
         self.service.close()
@@ -40,8 +40,8 @@ class ProjectionAuthority(unittest.TestCase):
         path.write_bytes(content)
         return path
 
-    def ratified_pair(self) -> tuple[str, str]:
-        """Ingest two assets and ratify one USED_BY relationship through the kernel."""
+    def accepted_pair(self) -> tuple[str, str]:
+        """Ingest two assets and accept one USED_BY relationship through the kernel."""
         hero = self.service.ingest(self.source("hero.txt", b"hero"), "Campaign Hero", "Bdo")
         campaign = self.service.ingest(
             self.source("campaign.txt", b"campaign"), "Autumn Campaign", "Bdo")
@@ -49,7 +49,7 @@ class ProjectionAuthority(unittest.TestCase):
             "description": "Primary visual for the autumn launch",
             "relationship": {"predicate": "USED_BY", "dst_asset": campaign["asset_id"]},
         })
-        self.service.ratify(proposal, "Bdo")
+        self.service.accept(proposal, "Bdo")
         return hero["asset_id"], campaign["asset_id"]
 
     def receipt_event(self, receipt_id: str) -> str | None:
@@ -57,8 +57,8 @@ class ProjectionAuthority(unittest.TestCase):
             "SELECT event FROM receipts WHERE id=?", (receipt_id,)).fetchone()
         return None if row is None else row["event"]
 
-    def test_rebuild_derives_projection_from_ratified_records(self):
-        hero, campaign = self.ratified_pair()
+    def test_rebuild_derives_projection_from_accepted_records(self):
+        hero, campaign = self.accepted_pair()
 
         counts = self.service.rebuild_projections()
 
@@ -68,12 +68,12 @@ class ProjectionAuthority(unittest.TestCase):
         self.assertEqual(edges[0]["src_asset"], hero)
         self.assertEqual(edges[0]["predicate"], "USED_BY")
         self.assertEqual(edges[0]["dst_asset"], campaign)
-        self.assertEqual(self.receipt_event(edges[0]["source_receipt"]), "asset.ratify-proposal")
+        self.assertEqual(self.receipt_event(edges[0]["source_receipt"]), "asset.accept-proposal")
         rebuilds = [r for r in self.service.receipts() if r["event"] == "asset.rebuild-projection"]
         self.assertEqual([r["outcome"] for r in rebuilds], ["COMMITTED"])
 
     def test_direct_projection_write_does_not_survive_rebuild(self):
-        hero, campaign = self.ratified_pair()
+        hero, campaign = self.accepted_pair()
 
         # Forge rows straight into the projection tables, bypassing every kernel
         # transition. Column order follows AssetService._schema exactly.
@@ -99,7 +99,7 @@ class ProjectionAuthority(unittest.TestCase):
         edges = self.service.neighbors(hero)
         self.assertEqual([e["predicate"] for e in edges], ["USED_BY"])
         self.assertNotEqual(edges[0]["source_receipt"], FORGED_RECEIPT)
-        self.assertEqual(self.receipt_event(edges[0]["source_receipt"]), "asset.ratify-proposal")
+        self.assertEqual(self.receipt_event(edges[0]["source_receipt"]), "asset.accept-proposal")
         self.assertEqual(self.service.search(FORGED_TEXT), [])
         self.assertNotIn(FORGED_ASSET, self.service.search("campaign"))
         self.assertEqual(self.service.db.execute(

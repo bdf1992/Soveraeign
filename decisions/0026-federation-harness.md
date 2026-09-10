@@ -41,7 +41,7 @@ under `.claude/`, structured as stable roles rather than per-domain agents:
   uncommitted for review.
 - `.claude/README.md` owns the harness layout; `AGENTS.md` remains the
   authority on agent conduct.
-- This record is a proposal; Bdo's ratification decides whether the harness
+- This record is a proposal; Bdo's acceptance decides whether the harness
   pattern becomes repository policy.
 
 ## Source and authority

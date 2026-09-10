@@ -55,15 +55,15 @@ The continuity record path is the only built slice. Notifications, settings, das
 - judgement resolution (proposed) — the answer record for one judgement
   request: the resolver, the grant checked at the transition, the decision, a
   rationale address and digest, and its receipt; the only console record whose
-  standing is expected to reach `RATIFIED`, and only by an appended event;
+  standing is expected to reach `ACCEPTED`, and only by an appended event;
 - operator setting — a typed, scoped preference held by an operator or by the
   node, with the authority required to change it;
 - projection view — a declared dashboard or activity view with its source
   addresses, omissions, rebuild operation, and rebuild time;
 - console receipt and history.
 
-Proposed initial lifecycles (service policy awaiting owner ratification; they
-do not replace the shared `RECORDED`, `ADMITTED`, `RATIFIED`, and `EFFECTIVE`
+Proposed initial lifecycles (service policy awaiting owner acceptance; they
+do not replace the shared `RECORDED`, `ADMITTED`, `ACCEPTED`, and `EFFECTIVE`
 standings):
 
 ```text
@@ -98,10 +98,10 @@ The Console Service:
    pulls the pending list from an operator session through the Human Binding;
 4. resolves a judgement request only through a typed, scoped, live human
    `JUDGEMENT` grant checked at the transition; a model attempt is `REFUSED`;
-   `resolve-judgement` (proposed) is the `SPEC.md` `ratify` transition row —
+   `resolve-judgement` (proposed) is the `SPEC.md` `accept` transition row —
    preconditions: proposal admitted and a live matching grant; refusals:
    `AUTHORITY_REFUSED` or `STALE_STATE` — in which the request's question is
-   the Proposal being ratified and the answer lands as a judgement resolution;
+   the Proposal being accepted and the answer lands as a judgement resolution;
 5. stores operator settings as records that condition projections and
    notification routing only; a setting never grants capability or authority;
 6. rebuilds dashboard and activity projections from authoritative records on
@@ -125,7 +125,7 @@ Humans and models operate the same console through different bindings:
 - a human holding a live `JUDGEMENT` grant may resolve a judgement request; a
   model may draft a recommendation into the thread but may not resolve;
 - machine verification authority may settle checkable dashboard predicates
-  (counts, digests, rebuild equality) but cannot ratify a judgement request;
+  (counts, digests, rebuild equality) but cannot accept a judgement request;
 - an administrative dashboard requires a scoped grant to read; holding it does
   not grant the right to change what it shows;
 - every open, post, request, resolution, acknowledgement, setting change, and
@@ -147,7 +147,7 @@ The service must continue to defeat authority widening, hidden pending rights, i
 - a resolution that enters through any surface that is not a kernel transition
   with a receipt — a code-owner review click, a chat reply, an edited file — is
   treated as the owner's judgement;
-- a judgement resolution reaches `RATIFIED` without its `RECORDED` event, the
+- a judgement resolution reaches `ACCEPTED` without its `RECORDED` event, the
   grant checked at the transition, or its receipt;
 - a judgement request addressed to the owner is absent from the owner's
   pending list;

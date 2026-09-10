@@ -33,7 +33,7 @@ ISSUE_SCHEMA_PATH = Path("contracts") / "issue-metadata.schema.json"
 LABEL_PROJECTION_PATH = Path("contracts") / "ticket-label-projection.json"
 
 SATISFYING_STANDINGS = frozenset(
-    {"BUILT_SELF_TESTED_NOT_WITNESSED", "WITNESSED", "RATIFIED"}
+    {"BUILT_SELF_TESTED_NOT_WITNESSED", "WITNESSED", "ACCEPTED"}
 )
 
 # The three states this module refuses to conflate, plus the two values each of the
@@ -268,7 +268,7 @@ def story_reading(issue: Issue, by_number: dict[int, Issue]) -> tuple[str, list[
         for support in (_reference(v) for v in block.get("leans_on") or [])
         if support is not None and not _satisfied(support, by_number)
     ]
-    if block.get("standing") in ("WITNESSED", "RATIFIED"):
+    if block.get("standing") in ("WITNESSED", "ACCEPTED"):
         return "walked", short
     if block.get("scenario") and not short:
         return "walkable", short

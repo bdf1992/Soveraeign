@@ -44,10 +44,10 @@ decision draft). Learning becomes testable instead of remembered.
 | sanitized history record | `Recording` | never replaces its source; carries reader id and version |
 | a lesson | `Proposal` | begins `RECORDED`, claims no authority |
 | "ways to test it" | `Observation` | `observer_relation` must not rely solely on the author |
-| check-in | standing ladder | `RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE` |
+| check-in | standing ladder | `RECORDED -> ADMITTED -> ACCEPTED -> EFFECTIVE` |
 
 A lesson is `RECORDED` when written, `ADMITTED` when a fixture or check passes for it,
-`RATIFIED` only by Bdo through a decision, `EFFECTIVE` when it runs in `verify.py` or
+`ACCEPTED` only by Bdo through a decision, `EFFECTIVE` when it runs in `verify.py` or
 `lint.py`. The queue of lessons awaiting Bdo is a PROD-I-6 pending-right record; it
 blocks nothing else.
 
@@ -88,7 +88,7 @@ blocks nothing else.
    this run: they are model output, `invoke_model` has no implementation, and a local
    embedding model is a runtime dependency needing its own decision record (named
    boundary, observed need, failure behaviour). O12 gates only
-   `model_binding.ratify_contract`; an unratified local adapter is admissible later, and
+   `model_binding.accept_contract`; an unaccepted local adapter is admissible later, and
    this corpus is its observed need.
 9. Reading GitHub uses `gh` read-only in this attended session. No write, no publish.
 

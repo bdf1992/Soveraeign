@@ -47,7 +47,7 @@
     },
     {
       "address": "witness/discovery-and-reuse.md",
-      "says": "five passes by a participant that built nothing here: NOT-YET at 26b1887 with eight findings, RATIFIABLE-WITH-CONDITIONS at b0c013c with the instrument claim supported at WITNESSED and one condition on the documentation page, RATIFIABLE at ea01dcc, at 57271f7 after the landing gate refused a candidate record that misdescribed its range, and at 60d5615 after the hosted runner crossed verify's catastrophic ceiling; the fifth observation is the one the grant landing consumed"
+      "says": "five passes by a participant that built nothing here: NOT-YET at 26b1887 with eight findings, ACCEPTABLE-WITH-CONDITIONS at b0c013c with the instrument claim supported at WITNESSED and one condition on the documentation page, ACCEPTABLE at ea01dcc, at 57271f7 after the landing gate refused a candidate record that misdescribed its range, and at 60d5615 after the hosted runner crossed verify's catastrophic ceiling; the fifth observation is the one the grant landing consumed"
     },
     {
       "address": "witness/fresh-participation.md",

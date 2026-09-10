@@ -7,7 +7,7 @@
     "subject": "the repair of F9 through F13: the kind set derived from ALL_CHECKS membership, SELFCLAIM made a member and described in the contract, the regression count moved onto a per-case shipped flag, both observes tuples widened, five fixture cases added or strengthened, and check_provenance split into scripts/sovharness/provenance.py",
     "verdict": "REPRODUCED_WITH_RESIDUALS",
     "standing_supported": "BUILT -> WITNESSED",
-    "standing_note": "An observation, not a settlement and not a ratification.",
+    "standing_note": "An observation, not a settlement and not a acceptance.",
     "supersedes": "reports/observations/2026-09-08-harness-claims-witness-observation-2.json (7373456) and -observation.json (99b7942). Neither is withdrawn; both subjects are ancestors of this one and what they attest still holds.",
     "candidate_commit": "3b1b578d68d34ed6fdebf7eb9c0e8bfee10eb758",
     "candidate_tree": "a98be790a19bbf74bd75130fe7ecb366c391572e",

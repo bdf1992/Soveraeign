@@ -1,6 +1,6 @@
 # Branch dispositions, 2026-08-26
 
-Status: `MEASURED · JUDGED · OBSERVED INDEPENDENTLY · NOTHING RATIFIED`
+Status: `MEASURED · JUDGED · OBSERVED INDEPENDENTLY · NOTHING ACCEPTED`
 
 An independent witness read this report at `4108185` and dissented: no
 disposition was wrong, but six rows misstated their own evidence and five counts
@@ -69,7 +69,7 @@ outstanding work, which is exactly why they have been sitting here.
 | Branch | Behind trunk by |
 | --- | --- |
 | `probe/rebase` | 4 |
-| `chore/reconcile-and-ratify` | 5 (PR #113, merged) |
+| `chore/reconcile-and-accept` | 5 (PR #113, merged) |
 | `feat/session-principal` | 204 (PR #101, merged) |
 | `wt/pr36` | 297 (PR #36, merged) |
 | `worktree-agent-aeb007dbe3ae39b96` | 0 — this session's own scratch branch, disposable when its worktree closes |

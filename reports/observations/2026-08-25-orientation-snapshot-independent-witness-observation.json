@@ -76,7 +76,7 @@
     {"command": "python scripts/verify.py", "exit_code": 0, "observed": "PASS: 40 checks in 11.789s wall, GRADE SILVER; repeated three times at 11.789s, 11.783s and 11.795s; the orientation snapshot check is present and costs 0.153 to 0.161s"},
     {"command": "python scripts/lint.py", "exit_code": 0, "observed": "PASS: 768 text files, 329 Python modules, 0 named debt"},
     {"command": "python scripts/sov_accept.py audit", "exit_code": 0, "observed": "PASS: 16 ruling(s), 1 presented for acceptance, 1 admissible hold(s), 0 open questions"},
-    {"command": "python scripts/sov_accept.py present A5", "exit_code": 0, "observed": "renders; subject CLAUDE.md, RATIFIED to RATIFIED"},
+    {"command": "python scripts/sov_accept.py present A5", "exit_code": 0, "observed": "renders; subject CLAUDE.md, ACCEPTED to ACCEPTED"},
     {"command": "worktree at f89b4f0 plus this concern's module, then sov_snapshot.py check against the committed page", "exit_code": 1, "observed": "FAIL verification checks: page says 36, record holds 40; FAIL declared operations: page says 102, record holds 133; eight further claims report that the page states no number. The packet's stated expect reproduces exactly."},
     {"command": "worktree at f89b4f0 plus only this concern's own files, then sov_snapshot.py check", "exit_code": 1, "observed": "FAIL skills: page says 22, record holds 21; FAIL workflows: page says 20, record holds 19. At F2 the concern would have landed red. See W1."},
     {"command": "worktree at d285cae plus only the in-scope subset, then sov_snapshot.py check and its tests", "exit_code": 0, "observed": "PASS 10 of 10, and Ran 21 tests OK. The blocking mechanism the packet names has dissolved. See W2."},
@@ -98,7 +98,7 @@
     "selfcheck catches a broken grade() and a broken drift(), and cmd_check then refuses rather than reporting on the page.",
     "MAX_TOLERANCE is enforced: a tolerance of 51 makes selfcheck fail.",
     "Every deriver refuses with Underivable rather than answering zero, across a missing directory, an unparseable check table, a shallow clone, a missing page, a directory of that name, and a non-UTF-8 page.",
-    "CLAUDE.md and STATUS.yaml are inside grant:standing-landing-loop scope.excluded_paths; LESSONS.md, acceptance/ and reports/ match none of its admitted prefixes. The grant is RATIFIED and typed VERIFICATION, which cannot ratify a JUDGEMENT claim in any case.",
+    "CLAUDE.md and STATUS.yaml are inside grant:standing-landing-loop scope.excluded_paths; LESSONS.md, acceptance/ and reports/ match none of its admitted prefixes. The grant is ACCEPTED and typed VERIFICATION, which cannot accept a JUDGEMENT claim in any case.",
     "acceptance/A5.json validates against contracts/acceptance-packet.schema.json."
   ],
   "dissented": [
@@ -169,10 +169,10 @@
     "transition": "BUILT -> WITNESSED",
     "subject": "scripts/sov_snapshot.py, scripts/sovsnapshot/, scripts/tests/test_sov_snapshot.py, and the orientation snapshot entry in scripts/sovverify/checks.py",
     "supported": true,
-    "note": "Supported for the gate as built. Not supported for the packet's authority conclusion, which W2 disputes. This observation settles nothing and ratifies nothing."
+    "note": "Supported for the gate as built. Not supported for the packet's authority conclusion, which W2 disputes. This observation settles nothing and accepts nothing."
   },
   "judgement_items": [
-    "Is a gate whose nine filesystem claims count untracked files the gate you want, given that it made an unrelated concern edit CLAUDE.md, a path the ratified standing grant excludes, within a minute of that concern adding one skill? The alternatives are all cheap: derive from git ls-files, widen the tolerance on the volatile counts, or accept that adding any skill, workflow, decision or report is now also a CLAUDE.md edit.",
+    "Is a gate whose nine filesystem claims count untracked files the gate you want, given that it made an unrelated concern edit CLAUDE.md, a path the accepted standing grant excludes, within a minute of that concern adding one skill? The alternatives are all cheap: derive from git ls-files, widen the tolerance on the volatile counts, or accept that adding any skill, workflow, decision or report is now also a CLAUDE.md edit.",
     "A5 asks acceptance for a hold that no longer holds. Its page correction landed at 00:03 inside another session's commit, and the gate now lands green under the existing grant. Do you accept the packet as written, accept the narrower amendment it offers as an alternative of making the snapshot section's counts writable by the loop that checks them, or return it to be re-presented against the state that now exists?",
     "decisions/0050 owns the verification time budget. This witness measured 11.79s three times with the tree quiet, so the packet's residual about failing past 15.000s under load is not reproducible today. Is the budget still the right question, or is it a load artifact to record and leave?"
   ]

@@ -8,7 +8,7 @@ and how many hops it sits from human interfacing; instances first; claims
 before keys; each model version its own principal; every identity linked to
 something already in the system; recovery by normal practices expressed as
 receipted transitions. Builds on `decisions/0020-owner-seat-topology.md`.
-Requirements are proposals; nothing here is implemented or ratified.
+Requirements are proposals; nothing here is implemented or accepted.
 
 ## Definition
 
@@ -237,7 +237,7 @@ Remaining:
 
 ## Judgement queue for Bdo
 
-1. Ratify, amend, or strike the three grade axes and requirements ID-1..10.
+1. Accept, amend, or strike the three grade axes and requirements ID-1..10.
 2. ID-11: choose the root break-glass form — with magic links this
    concretely means choosing the root recovery channel, the single most
    security-critical selection in the system.

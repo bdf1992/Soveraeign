@@ -19,13 +19,13 @@ graph, model provider, or repository layout.
 ### Trust model
 
 - The host provides execution and persistence mechanisms but does not receive
-  ratification authority merely by running the system.
+  acceptance authority merely by running the system.
 - Human and model operators are untrusted outside explicitly recorded grants.
 - Model output is always a proposal, recording, report, or observation; its
   fluency never changes standing.
 - Stored artifacts are trusted only to the degree that their addresses,
   digests, provenance, and required attestations verify.
-- The runtime may attest reproduction. It may not ratify judgement.
+- The runtime may attest reproduction. It may not accept judgement.
 
 ### Local operation
 
@@ -104,7 +104,7 @@ A file is a representation and a placement, not an identity every asset must
 hold, and no object below acquires a file's properties by having been captured
 from one. Metadata is likewise not an object class: a metadata statement targets
 the narrowest governed or observed subject for which it remains true, and
-governed descriptions continue to travel through `submit_proposal` and `ratify`
+governed descriptions continue to travel through `submit_proposal` and `accept`
 rather than through a generic bag.
 
 #### `Asset`
@@ -478,15 +478,15 @@ The witness may deposit this record. Only the owner may change
 
 ## Historical standing and current effectiveness
 
-Standing values are `RECORDED`, `ADMITTED`, `RATIFIED`, and `EFFECTIVE`.
+Standing values are `RECORDED`, `ADMITTED`, `ACCEPTED`, and `EFFECTIVE`.
 They do not collapse:
 
 1. `RECORDED` establishes attributable existence.
 2. `ADMITTED` records that an admission gate passed.
-3. `RATIFIED` records a typed authority decision.
-4. `EFFECTIVE` means the ratified record currently conditions operation.
+3. `ACCEPTED` records a typed authority decision.
+4. `EFFECTIVE` means the accepted record currently conditions operation.
 
-Historical ratification is never deleted. A dissenting attestation,
+Historical acceptance is never deleted. A dissenting attestation,
 superseding record, expiration, or authorized retraction may stop a record from
 conditioning current operation while preserving its history.
 
@@ -503,9 +503,9 @@ settle.
 | `read_source` | source digest verifies; reader fully declared | emit `Recording`; source unchanged | `SOURCE_CHANGED` or `READER_UNDECLARED` |
 | `submit_proposal` | actor, cost, source, scope, and required authority declared | record proposal as `RECORDED` | `INCOMPLETE_PROPOSAL` |
 | `admit` | admission predicates pass against exact proposal state | preserve `RECORDED`; add `ADMITTED` event | `ADMISSION_REFUSED` or `STALE_STATE` |
-| `ratify` | proposal admitted; live matching authority grant | preserve history; add `RATIFIED` event | `AUTHORITY_REFUSED` or `STALE_STATE` |
-| `attest` | ratified executable claim; declared validator and exact inputs | emit one attestation outcome | `VALIDATOR_UNDECLARED` |
-| `make_effective` | ratified; required attestation policy satisfied; no current counter | add `EFFECTIVE` event | `DISSENTED`, `UNATTESTABLE`, or `POLICY_REFUSED` |
+| `accept` | proposal admitted; live matching authority grant | preserve history; add `ACCEPTED` event | `AUTHORITY_REFUSED` or `STALE_STATE` |
+| `attest` | accepted executable claim; declared validator and exact inputs | emit one attestation outcome | `VALIDATOR_UNDECLARED` |
+| `make_effective` | accepted; required attestation policy satisfied; no current counter | add `EFFECTIVE` event | `DISSENTED`, `UNATTESTABLE`, or `POLICY_REFUSED` |
 | `begin_run` | complete plan; capability, budget, input, and effect gates pass | emit `ATTEMPTED`; issue lease if delegated | reasoned refusal |
 | `report_run` | current lease and fence; declared output records | store executor report; do not settle | `STALE_LEASE` |
 | `observe_run` | independent observer relation; expected predicates declared | emit observation | `OBSERVER_NOT_INDEPENDENT` |
@@ -547,7 +547,7 @@ transitions to change authoritative state.
 ### PROD-I-5 · Typed authority
 
 - Every consequential transition checks a live typed, scoped, budgeted grant.
-- `VERIFICATION` authority cannot ratify a `JUDGEMENT` claim.
+- `VERIFICATION` authority cannot accept a `JUDGEMENT` claim.
 - Revoked, expired, out-of-scope, and over-budget grants refuse visibly.
 
 ### PROD-I-6 · Founder judgement budget
@@ -565,10 +565,10 @@ transitions to change authoritative state.
 
 ### PROD-I-8 · Joint sign
 
-- A ratified executable claim has an attestation naming validator, version,
+- A accepted executable claim has an attestation naming validator, version,
   exact inputs, run, outcome, and evidence.
 - Changed inputs cannot inherit `REPRODUCED` from a historical run.
-- Attestation never changes ratification authority.
+- Attestation never changes acceptance authority.
 
 ### PROD-I-9 · Bring your own model
 
@@ -687,7 +687,7 @@ Every normative predicate above requires a positive and a defeating fixture.
 Fixtures observe state, authority checks, receipts, and effects rather than
 requiring a particular mechanism. Passing self-authored unit tests establishes
 `BUILT`; an independent run is required for `WITNESSED`; Bdo's recorded decision
-is required for `RATIFIED`.
+is required for `ACCEPTED`.
 
 ## Traceability
 

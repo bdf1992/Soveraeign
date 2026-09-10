@@ -1,6 +1,6 @@
 # Gateway Service Logical Specification
 
-Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT RATIFIED`
+Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT ACCEPTED`
 
 A service-scoped projection of `SPEC.md` under `decisions/0093-service-srd-spec-ground.md`. This
 file cites `contracts/kernel-transitions.json` and `services/gateway/contracts/service.json`

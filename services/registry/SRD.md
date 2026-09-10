@@ -38,13 +38,13 @@ freshly rebuilt index, or refuses rather than answer stale
 ## Requirement lifecycle
 
 ```text
-OPEN → BUILT → WITNESSED → RATIFIED
+OPEN → BUILT → WITNESSED → ACCEPTED
 ```
 
 Same vocabulary as `PRD.md`: `BUILT` is an implementation claim this document
 makes about the Registry's own code, not independent evidence. `WITNESSED`
 requires a party that did not write this document or the code it describes.
-`RATIFIED` requires the declared right. No requirement below may be advanced
+`ACCEPTED` requires the declared right. No requirement below may be advanced
 past `BUILT` by this drafting pass.
 
 ## Requirements
@@ -133,7 +133,7 @@ Defeating case: retiring an owner erases the earlier record instead of adding
 a counter-record (`CHARTER.md`, Defeating cases).
 
 Standing: `OPEN`. `retire-owner` is `PROPOSED` and, per
-`contracts/capability-offices.json`, requires `ratify:judgement` — a
+`contracts/capability-offices.json`, requires `accept:judgement` — a
 `JUDGEMENT`-typed authority, matching the `requires_authority_type:
 JUDGEMENT` the `retract` kernel transition declares in
 `contracts/kernel-transitions.json`.
@@ -142,7 +142,7 @@ JUDGEMENT` the `retract` kernel transition declares in
 
 Every `resolve` receipt records `standing_effect: NONE`. Resolving an entry,
 or reading an owner record, never advances that subject's own standing,
-authority, or ratification. Serves `PROD-I-5` and `GROUND-003` (authority is
+authority, or acceptance. Serves `PROD-I-5` and `GROUND-003` (authority is
 granted, never acquired).
 
 Defeating case: a registry entry is treated as standing, authority, or
@@ -163,6 +163,6 @@ every other operation, none of which are built yet.
 - Reconciling the eight hand-maintained tables the Registry is meant to
   eventually replace. Nothing in this document claims that reconciliation is
   underway; see `JOURNEYS.md` for what currently goes unreconciled.
-- Granting or ratifying authority. `owner-record` names an accountable
+- Granting or accepting authority. `owner-record` names an accountable
   participant; it does not hold authority itself (`CHARTER.md`, Owner
   records).

@@ -1,6 +1,6 @@
 # Parity pressure map: Polygres against the asset and record plans, 2026-08-23
 
-Status: `DRAFT MAP · NOT WITNESSED · NOTHING RATIFIED`
+Status: `DRAFT MAP · NOT WITNESSED · NOTHING ACCEPTED`
 
 Bdo asked for a feature-parity pressure map between Polygres
 (<https://polygres.com/>, docs at <https://docs.evokoa.com/polygres>) and
@@ -43,7 +43,7 @@ are chartered, which are deliberately deferred, and which do not belong.
 - Search: `search_projection` is one denormalised text column queried with
   `LIKE '%q%'`, ordered by `asset_id`, no ranking
   (`services/asset/src/soveraeign_asset_service/core.py` 293-326).
-- Graph: `graph_projection` holds edges copied from ratified proposals carrying
+- Graph: `graph_projection` holds edges copied from accepted proposals carrying
   a `relationship` key; `neighbors()` is one hop, one `SELECT`
   (`core.py` 308-332).
 - Rebuild deletes both tables and re-derives them from records, emitting a
@@ -119,7 +119,7 @@ simply a projection target, and not the first one we need.
 1. Whether vector or embedding retrieval belongs to any phase. No open
    decision asks this; `ENGINEERING.md` only defers it. If it belongs, it
    needs a number in `STATUS.yaml`.
-2. O12 — without a ratified binding contract there is no `invoke_model`, so
+2. O12 — without a accepted binding contract there is no `invoke_model`, so
    no embeddings and no addressed input projection.
 3. O2 — the SQLite baseline is still proposed; FTS5 and recursive CTEs ride on
    it.

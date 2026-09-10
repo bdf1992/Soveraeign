@@ -8,7 +8,7 @@ export const meta = {
     { title: 'Build', detail: 'worker executes it and reports the paths it changed' },
     { title: 'Orchestrator Review', detail: 'evidence mode forms a frozen participant-in-work Finding' },
     { title: 'Witness Review', detail: 'independent evidence mode forms a frozen WORK Finding' },
-    { title: 'Compare', detail: 'controller compares frozen cited Findings without ratifying them' },
+    { title: 'Compare', detail: 'controller compares frozen cited Findings without accepting them' },
     { title: 'Land', detail: 'the landing gate grades the request against the standing grant' },
   ],
 }
@@ -317,7 +317,7 @@ if (evidenceMode) {
     phase('Compare')
     invocations += 1
     comparison = await agent(
-      'Compare these two already-frozen Findings. You do not witness, ratify, settle, average, or rewrite them. Preserve both subjects, input ids, and citations. ' +
+      'Compare these two already-frozen Findings. You do not witness, accept, settle, average, or rewrite them. Preserve both subjects, input ids, and citations. ' +
       'Participant-in-work Finding: ' + JSON.stringify(orchestrationReview.finding) + '. WORK Finding: ' + JSON.stringify(witnessed.finding) + '. ' +
       'Use only these classifications: NO_CONFLICT, EVIDENCE_DIFFERENCE, INTERPRETATION_DIFFERENCE, WORK_DEFECT, WORKER_DEFECT, ORCHESTRATION_DEFECT, WITNESS_DEFECT, RECORD_DEFECT, POLICY_SEAM. ' +
       'Return status CLASSIFIED; both finding ids as input_finding_ids; authority_effect NONE; settlement_effect NONE; classifications; and concise evidence-based detail. This comparison envelope is not itself a Finding because this pre-opening workflow has no durable RecordProjection over the Finding set.',
@@ -395,5 +395,5 @@ return {
   agent_invocations: invocations,
   residuals: residuals,
   judgement_queue: judgementQueue,
-  standing: gate.exit_code === 0 ? 'LANDED_BUILT_AND_WITNESSED_NOT_RATIFIED' : 'HELD_AT_THE_GATE',
+  standing: gate.exit_code === 0 ? 'LANDED_BUILT_AND_WITNESSED_NOT_ACCEPTED' : 'HELD_AT_THE_GATE',
 }

@@ -89,7 +89,7 @@
       "exit_code": 0
     },
     {
-      "command": "read the LESSONS.md rules for how an entry moves, against the L-0001 entry at the pinned digest  # ADMITTED is honest, since a check passes for it. Nothing claims RATIFIED and the entry says ratification is Bdo's. By the same rules the check also runs inside scripts/verify.py, which that file defines as EFFECTIVE, and the four standings are declared not to collapse. The entry records only ADMITTED. DEFECT (f), an under-claim rather than an over-claim",
+      "command": "read the LESSONS.md rules for how an entry moves, against the L-0001 entry at the pinned digest  # ADMITTED is honest, since a check passes for it. Nothing claims ACCEPTED and the entry says acceptance is Bdo's. By the same rules the check also runs inside scripts/verify.py, which that file defines as EFFECTIVE, and the four standings are declared not to collapse. The entry records only ADMITTED. DEFECT (f), an under-claim rather than an over-claim",
       "exit_code": 0
     }
   ]

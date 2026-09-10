@@ -102,7 +102,7 @@
     },
     "typed_authority": {
       "result": "PASS",
-      "note": "Scoped: seat:root, and only for ENABLE. Attributable: the actor is in every record. Checked at the operation, not at the binding. Revocable in the sense that matters here - the grant table is data and a test proves flipping it changes the outcome, so the check is the table rather than a hard-coded branch. Verification authority ratifies nothing: the operation settles whether a switch moved, never whether it should have.",
+      "note": "Scoped: seat:root, and only for ENABLE. Attributable: the actor is in every record. Checked at the operation, not at the binding. Revocable in the sense that matters here - the grant table is data and a test proves flipping it changes the outcome, so the check is the table rather than a hard-coded branch. Verification authority accepts nothing: the operation settles whether a switch moved, never whether it should have.",
       "evidence": [
         {
           "kind": "file",

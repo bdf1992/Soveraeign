@@ -120,7 +120,7 @@
       "service": "repository",
       "operation": "verify",
       "effect_class": "RECORD_LOCAL",
-      "description": "Run scripts/verify.py and append the result as an OBSERVATION. Establishes BUILT evidence only; it witnesses and ratifies nothing.",
+      "description": "Run scripts/verify.py and append the result as an OBSERVATION. Establishes BUILT evidence only; it witnesses and accepts nothing.",
       "arguments": {},
       "realizes": null,
       "undeclared_because": "A repository check, not a service operation. No manifest declares it and none should."

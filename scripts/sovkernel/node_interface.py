@@ -157,7 +157,7 @@ def build(node_registry: dict[str, Any], topology: dict[str, Any],
     holder = selves[0]
     seams = {
         "built_not_reachable": [item["operation_id"] for item in operations
-                                if item["standing"] in ("BUILT", "WITNESSED", "RATIFIED")
+                                if item["standing"] in ("BUILT", "WITNESSED", "ACCEPTED")
                                 and not item["facts"]["reachable"]],
         "policy_active_not_reachable": [item["operation_id"] for item in operations
                                         if item["facts"]["policy_active"]

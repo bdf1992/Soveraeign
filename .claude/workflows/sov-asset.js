@@ -48,7 +48,7 @@ function buildPrompt(op) {
     + 'keep modules under 300 lines; stay inside services/asset. Never edit conformance/ scenarios or the '
     + 'oracle, never touch another service state, and never run git commit or git push. Run python '
     + 'scripts/verify.py from ' + ROOT + ' and record the exact command and exit code in checks. Your output '
-    + 'is a builder self-report: BUILT evidence only - it cannot witness or ratify itself.'
+    + 'is a builder self-report: BUILT evidence only - it cannot witness or accept itself.'
 }
 
 function filesAreDisjoint(ops) {
@@ -96,7 +96,7 @@ const witnessPrompt = 'You are an independent witness for the Soveraeign asset d
   + 'the claim list as authority. For each operation_id return a verdict: reproduced (independently confirmed '
   + 'in the repository), dissented (evidence contradicts the claim), or unattestable (cannot be independently '
   + 'confirmed). List residual defects. Set standing_supported to BUILT->WITNESSED only when every verdict is '
-  + 'reproduced and verification passed; otherwise none. Never RATIFIED - ratification is Bdo-only.'
+  + 'reproduced and verification passed; otherwise none. Never ACCEPTED - acceptance is Bdo-only.'
 
 const witness = await agent(witnessPrompt, { agentType: 'sov-witness', schema: WITNESS_SCHEMA, phase: 'Witness', label: 'witness' })
 if (witness && typeof witness.standing_supported === 'string') { witness.standing_supported = witness.standing_supported.split(' ').join('') }

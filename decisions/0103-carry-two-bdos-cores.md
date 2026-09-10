@@ -84,7 +84,7 @@ Three things it does not catch, so a green build is not read as more:
 - It cannot see upstream. `python scripts/sov_vendor.py sync <bdos tree>` can,
   for anyone holding both trees; CI holds one.
 
-This records enforcement. It does not ratify the decision, which is still
+This records enforcement. It does not accept the decision, which is still
 `PROPOSED` with the queue below unanswered.
 
 ## Judgement queue for Bdo

@@ -27,8 +27,8 @@ Proposed initial lifecycle:
 OPEN → IN_REVIEW → DECISION_PENDING → CLOSED
 ```
 
-This lifecycle is service policy awaiting owner ratification. It does not
-replace the shared `RECORDED`, `ADMITTED`, `RATIFIED`, and `EFFECTIVE`
+This lifecycle is service policy awaiting owner acceptance. It does not
+replace the shared `RECORDED`, `ADMITTED`, `ACCEPTED`, and `EFFECTIVE`
 standing distinctions.
 
 ## Asset Service integration
@@ -57,10 +57,10 @@ record and kernel prevent either service from becoming an authority island.
 Humans and models operate the same proofing session through different bindings:
 
 - a model may locate versions, compare representations, and propose findings;
-- a human may do the same and may ratify judgement when holding the required
+- a human may do the same and may accept judgement when holding the required
   authority;
 - machine verification authority may settle checkable properties but cannot
-  ratify aesthetic, business, or customer judgement;
+  accept aesthetic, business, or customer judgement;
 - every proposal, refusal, decision, and operation returns a receipt;
 - a worker's render or comparison report is not independent observation.
 
@@ -72,7 +72,7 @@ The Proofing Service is not implemented. The lifecycle and integration rules abo
 
 - proofing silently reviews “latest” instead of an exact version;
 - an annotation moves to a new version without a declared carry operation;
-- a model ratifies judgement-typed approval;
+- a model accepts judgement-typed approval;
 - a render worker's success report settles the comparison;
 - approval mutates Asset Service storage directly;
 - rejection erases the reviewed version or prior decision;

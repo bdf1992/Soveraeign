@@ -8,7 +8,7 @@
     "verdict": "REPRODUCED_WITH_RESIDUALS",
     "standing_supported": "BUILT -> WITNESSED",
     "standing_binds": "contracts/counted-populations.json, scripts/sov_counts.py, scripts/sovcounts/, scripts/sovverify/staleness.py and the two staleness entries plus the capability-map entry in scripts/sovverify/checks.py, at b93a721 only.",
-    "standing_note": "This is an observation, not a settlement and not a ratification. It supports the standing proposal BUILT -> WITNESSED for the mechanism as built at this revision. It settles nothing about whether the numbers this check does not reach are correct, and nothing about phase, requirement, or service standing.",
+    "standing_note": "This is an observation, not a settlement and not a acceptance. It supports the standing proposal BUILT -> WITNESSED for the mechanism as built at this revision. It settles nothing about whether the numbers this check does not reach are correct, and nothing about phase, requirement, or service standing.",
     "candidate_commit": "b93a721a5fa3fb32cac952ac1402b2dff3233d02",
     "candidate_tree": "dcdbc8ebb368f6eee7093628598aea710a1d65a9",
     "base_commit": "b1448eeb458afa4a8c60b57c1cb46906246af7f7",

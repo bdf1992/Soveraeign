@@ -5,7 +5,7 @@ seat. It names what stands, what it cost, what the session got wrong, and one
 design question the owner asked at the end.
 
 Standing claimed here is `BUILT` or `WITNESSED` as marked. Nothing in this
-document ratifies anything.
+document accepts anything.
 
 ## What stands now
 
@@ -190,7 +190,7 @@ new store, contract or vocabulary.
 `AGENTS.md` settles this already, and the answer is not either of the two options
 as posed:
 
-> Only a seat that settles `JUDGEMENT` can ratify a judgement claim, and it does
+> Only a seat that settles `JUDGEMENT` can accept a judgement claim, and it does
 > so by accepting a presented result rather than by answering a question.
 
 and
@@ -210,7 +210,7 @@ So:
   not to perform it.
 - **Judge is a role — a seat — occupied under a grant.** The root seat occupies it
   today. An agent may later occupy it the way `sov` occupies the landing loop:
-  through a typed, scoped, ratified grant, with evidence rules that refuse rather
+  through a typed, scoped, accepted grant, with evidence rules that refuse rather
   than permissions that allow.
 
 ### Recommended sequence

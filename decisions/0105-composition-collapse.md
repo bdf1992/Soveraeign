@@ -8,7 +8,7 @@ component system whose compositions collapse, under a context, into an
 object-shaped template that a domain can instantiate. This record names that
 style, says why neither standard style meets the need, states the rules learned
 from the styles it draws on, and names the one primitive the style adds that
-the repositories do not yet declare. It proposes; it ratifies nothing.
+the repositories do not yet declare. It proposes; it accepts nothing.
 
 ## Decision
 

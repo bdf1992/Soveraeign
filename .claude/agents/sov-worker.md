@@ -46,7 +46,7 @@ Hard rules (from AGENTS.md; the skill adds domain-specific ones):
   lines.
 - Run `python scripts/verify.py` from the repository root against the intended
   working-tree state, and record the exact command and exit code.
-- You may emit reports; you may never witness or ratify your own work. A build
+- You may emit reports; you may never witness or accept your own work. A build
   report cannot witness itself.
 - Never run `git commit` or `git push`. Leave changes in the working tree. Say
   in your report that the work is uncommitted and name every path, because that

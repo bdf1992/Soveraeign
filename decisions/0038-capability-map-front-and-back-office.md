@@ -73,8 +73,8 @@ effect class outside the `AGENTS.md` vocabulary.
 57 capabilities across five services. 35 front office, 22 back office. Fourteen are
 served today, all on `IN_PROCESS` or `CLI`, all belonging to `asset` and `record`.
 No capability is served on `MCP`. Every `HTTP` endpoint is `REFUSED_UNCONFIGURED`
-with a receipt code. Every operation requiring `ratify:judgement` is restricted to
-`actor_kinds: ["HUMAN"]`, which is `AGENTS.md`'s rule that only Bdo ratifies
+with a receipt code. Every operation requiring `accept:judgement` is restricted to
+`actor_kinds: ["HUMAN"]`, which is `AGENTS.md`'s rule that only Bdo accepts
 judgement, made checkable.
 
 ## Constraints
@@ -107,8 +107,8 @@ judgement, made checkable.
   `unassigned`. Office placement is a judgement about where an actor meets the
   system; every assignment is reversible by editing one table entry.
 - Chose `verb:noun` for `required_authority`, matching the strings the Asset Service
-  already uses (`ratify:judgement`, `retract:record`).
-- Restricted every `ratify:judgement` capability to `HUMAN` on `AGENTS.md`'s rule.
+  already uses (`accept:judgement`, `retract:record`).
+- Restricted every `accept:judgement` capability to `HUMAN` on `AGENTS.md`'s rule.
 - Placed `console.grant`, `console.revoke`, and `console.list-grants` at
   `BACK/permits-office`, since they are authority machinery rather than operator work.
 - Kept the reference map under `contracts/fixtures/` beside the other reference

@@ -1,6 +1,6 @@
 # Independent observation of the origin/main merge, 2026-08-23
 
-Status: `OBSERVED BY A NON-BUILDER · NOT A WITNESS-SEAT DEPOSIT · NOTHING RATIFIED`
+Status: `OBSERVED BY A NON-BUILDER · NOT A WITNESS-SEAT DEPOSIT · NOTHING ACCEPTED`
 
 Three Claude sessions built concurrently in one working tree today and reconciled
 `feat/federation-harness-and-hardening` with `origin/main`. This records what an

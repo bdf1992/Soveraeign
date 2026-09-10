@@ -13,7 +13,7 @@ Lanes:
 
 - **Phase I** — buildable from the standard library once fixtures exist and
   the `core.py` split (`ENGINEERING.md` lines 171-173) is done;
-- **after O12** — needs a ratified Model Binding so `invoke_model` can
+- **after O12** — needs a accepted Model Binding so `invoke_model` can
   produce embeddings with provenance;
 - **port** — declared interface, refuses `UNCONFIGURED`, needs an observed
   need plus a decision record before any implementation;

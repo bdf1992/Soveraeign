@@ -14,7 +14,7 @@
       "2026-09-08-counted-populations-witness-observation-3.json (42c8ed2, unreachable)"
     ],
     "standing_binds": "contracts/counted-populations.json, scripts/sov_counts.py, scripts/sovcounts/, scripts/sovverify/staleness.py, scripts/tests/test_sov_counts.py, and the two staleness entries plus the capability-map entry in scripts/sovverify/checks.py, at 8e23ec9 only.",
-    "standing_note": "An observation, not a settlement and not a ratification.",
+    "standing_note": "An observation, not a settlement and not a acceptance.",
     "candidate_commit": "8e23ec9143a67f34b7ddf07bc29bb7f4dacfea8c",
     "candidate_tree": "c53c452874725b48a0d7f64283837023a23ab7ab",
     "base_commit": "c08d59df7636234ea39412986810a820b46acaad",

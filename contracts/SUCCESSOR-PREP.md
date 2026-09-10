@@ -52,7 +52,7 @@ Each seam names the claim it blocked at `SUCCESSOR_PHASE_OPENING`; the opening o
 - **S7 — CARRIED.** Definition/Gauge operator behavior has not been fully re-derived through typed bindings rather than named participants. It blocks claiming those operator bindings are machine-complete at `SUCCESSOR_PHASE_OPENING`.
 - **S8 — CARRIED.** Some cited raw evidence is not portable as independent source material. It blocks claiming portable evidence across participants at `SUCCESSOR_PHASE_OPENING`.
 - **S10 — CARRIED.** The validated internal-runtime versus dependent-user product boundary was not settled by Phase I. It blocks importing a settled product-boundary claim at `SUCCESSOR_PHASE_OPENING`.
-- **S12 — CARRIED.** The owner ratification mechanism remains unresolved between the proposed CODEOWNERS path and the owner-used Human Binding path. It blocks claiming one ratification mechanism at `SUCCESSOR_PHASE_OPENING`.
+- **S12 — CARRIED.** The owner acceptance mechanism remains unresolved between the proposed CODEOWNERS path and the owner-used Human Binding path. It blocks claiming one acceptance mechanism at `SUCCESSOR_PHASE_OPENING`.
 - **S13 — CARRIED.** Retraction's exact place in the all-`FULL` Soveraeign bar remains unresolved. It blocks claiming a complete qualification bar at `SUCCESSOR_PHASE_OPENING`.
 - **S14 — CARRIED.** The accepted asset/projection boundary decision explicitly leaves the overlapping projection-ownership claim unresolved. It blocks claiming a single projection owner at `SUCCESSOR_PHASE_OPENING`.
 - **S15 — CARRIED.** Unblock-request normalization did not eliminate the separate judgement projection or prove the two surfaces derive from one source. It blocks claiming unified owner-request semantics at `SUCCESSOR_PHASE_OPENING`.

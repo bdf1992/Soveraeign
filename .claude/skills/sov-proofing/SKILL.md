@@ -9,7 +9,7 @@ description: Working knowledge for the Soveraeign proofing domain — the servic
 
 Advance the Proofing Service boundary of the Soveraeign repository — charter,
 contracts, and defeating fixtures — without crossing the protected boundary
-that forbids runtime code before a ratified logical spec and executable
+that forbids runtime code before a accepted logical spec and executable
 defeating fixtures. The domain governs review-and-approval lifecycles for
 exact asset versions; it references the Asset Service and never becomes a
 second source of asset truth.
@@ -27,7 +27,7 @@ Must not: implement runtime code before its defeating fixtures exist
 touch Asset Service state or write another service's directory; modify
 `lineage/evidence/` (immutable); create `EXTERNAL_WORLD` effects (none in
 Phase I); write directly to asset storage or review an implicit "latest"
-version; let a model ratify judgement or an executor report count as
+version; let a model accept judgement or an executor report count as
 observation; run `git commit` or `git push`.
 
 ## Key files
@@ -87,8 +87,8 @@ observation; run `git commit` or `git push`.
 
 ## Vocabulary (exact; no synonyms)
 
-- Repository artifact standing: `OPEN -> BUILT -> WITNESSED -> RATIFIED`.
-- Record standing: `RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE`.
+- Repository artifact standing: `OPEN -> BUILT -> WITNESSED -> ACCEPTED`.
+- Record standing: `RECORDED -> ADMITTED -> ACCEPTED -> EFFECTIVE`.
 - Event outcome: `ATTEMPTED | COMMITTED | FAILED | REFUSED | COUNTERED |
   UNRESOLVED`.
 - Attestation outcome: `REPRODUCED | DISSENTED | UNATTESTABLE`.

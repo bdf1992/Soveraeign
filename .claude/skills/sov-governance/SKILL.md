@@ -26,7 +26,7 @@ OPEN-SEAMS.md; and routing of owner decisions to the exact transition they gate.
 Per AGENTS.md directory boundaries, `/decisions` owns consequential choices,
 status, rationale, and consequences - never mutable runtime state.
 
-Must not: ratify judgement-typed claims (Bdo-only); present agent synthesis as
+Must not: accept judgement-typed claims (Bdo-only); present agent synthesis as
 Bdo judgement; duplicate a rule in a second document as competing authority
 (link to the owning document); erase or rewrite history (evidence files are
 immutable; superseded records stay); write runtime code (that belongs to
@@ -164,9 +164,9 @@ Record the exact command and exit code for every check observed.
 
 ## Vocabulary (exact, from CLASSIFICATION.md and SPEC.md)
 
-- Record standing: `RECORDED`, `ADMITTED`, `RATIFIED`, `EFFECTIVE` - distinct,
+- Record standing: `RECORDED`, `ADMITTED`, `ACCEPTED`, `EFFECTIVE` - distinct,
   never collapsed. Work-standing lifecycle: OPEN -> BUILT -> WITNESSED ->
-  RATIFIED.
+  ACCEPTED.
 - Event outcomes: `ATTEMPTED`, `COMMITTED`, `FAILED`, `REFUSED`, `COUNTERED`,
   `UNRESOLVED` (`COUNTERED` is an outcome, not a fifth standing).
 - Effect classes: `RECORD_LOCAL`, `RESOURCE_CONSUMPTION`, `EXTERNAL_WORLD`.
@@ -180,6 +180,6 @@ Record the exact command and exit code for every check observed.
 
 Report: files changed (repo-relative); checks observed (commands with exit
 codes); authoritative producers changed or clarified; standing proposals
-(transition supported, never RATIFIED); owner items split into material blockers
+(transition supported, never ACCEPTED); owner items split into material blockers
 and later/non-blocking items; next bounded operation; gap visibility reading when
 requested.

@@ -31,13 +31,13 @@ revocable, and recorded.
 
 ## C4 · Standing does not collapse
 
-Recorded, admitted, ratified, and effective are distinct. Admission does not
-ratify. Ratification does not prove current applicability. Retraction does not
+Recorded, admitted, accepted, and effective are distinct. Admission does not
+accept. Acceptance does not prove current applicability. Retraction does not
 erase occurrence.
 
-## C5 · Ratification and attestation differ
+## C5 · Acceptance and attestation differ
 
-A right hand may ratify within its type. Runtime attestation reports
+A right hand may accept within its type. Runtime attestation reports
 `reproduced`, `dissented`, or `unattestable`; it occupies no authority slot and
 cannot alter a sign.
 
@@ -73,7 +73,7 @@ an intentional declared equivalence. Coincidence is not equivalence.
 ## C11 · No claim enters as authoritative
 
 New claims enter as proposals or recordings. They become authoritative only
-through witnessed evidence and typed ratification—not through a preloaded wise
+through witnessed evidence and typed acceptance—not through a preloaded wise
 model, universal ontology, inherited reputation, or confident assertion.
 
 ## C12 · Fresh operation is a test

@@ -1,6 +1,6 @@
 # Coherence pass witness, 2026-08-23
 
-Status: `WITNESSED BY A SEPARATE AGENT · NOTHING RATIFIED`
+Status: `WITNESSED BY A SEPARATE AGENT · NOTHING ACCEPTED`
 
 Bdo supplied a zip of twenty edited governing, harness, and CI files
 (`CLAUDE(20260823-171454).zip`, stamped 12:35). The interactive session diffed
@@ -18,13 +18,13 @@ of Soveraeign") was applied as ruled, not as a proposal.
 | `python scripts/verify.py` | exit 0, `PASS: repository checks completed in 1.536s`; 20 conformance cases, 0 coverage gaps |
 | `python scripts/lint.py` | exit 0, 207 text files, 39 modules, 1 named debt |
 | CRLF bytes in changed blobs | none |
-| `CLASSIFICATION.md` names `OPEN → BUILT → WITNESSED → RATIFIED` beside record standing | reproduced |
+| `CLASSIFICATION.md` names `OPEN → BUILT → WITNESSED → ACCEPTED` beside record standing | reproduced |
 | `SPEC.md` receipt text agrees with its own `report_run` row | reproduced |
 | `PRD.md` PROD-I-6 agrees with `SPEC.md` and `conformance/run.py` `check_i6` | reproduced |
 | `AI-NATIVE.md` template lists all nine Soveraeign checks | reproduced |
 | `AI-NATIVE.md` in the `AGENTS.md` Design System of Record and `CODEOWNERS` | reproduced |
 | `## Two-binding proof` heading unchanged; 20 cross-references resolve | reproduced |
-| Held-back items (retraction=`FULL`, Red-lane inputs, CODEOWNERS-as-ratification) absent from the diff | reproduced |
+| Held-back items (retraction=`FULL`, Red-lane inputs, CODEOWNERS-as-acceptance) absent from the diff | reproduced |
 | Workflow `name:` fields unchanged | reproduced |
 
 Verdict: `OPEN -> BUILT` supported. `BUILT -> WITNESSED` supported for the
@@ -62,7 +62,7 @@ with residuals 1 and 2 below named as defects.
    a gated objective instead of returning an empty plan. `decisions/0018` is
    silent. Admissible without amending 0018?
 4. S11, S12, S13 in `OPEN-SEAMS.md`: each is a direction only the owner picks.
-5. `CLASSIFICATION.md` says "An operational record may be ratified under a
+5. `CLASSIFICATION.md` says "An operational record may be accepted under a
    matching live grant." Does "matching" carry that a judgement-typed record
    still needs Bdo (PROD-I-5, `SPEC.md` authority rule)?
 6. From `scripts/sov_next.py --strict` (another session's work, uncommitted at

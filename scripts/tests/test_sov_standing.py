@@ -76,7 +76,7 @@ def _record(directory: Path, name: str, supports: str = "WITNESSED") -> None:
 class ClaimedStanding(unittest.TestCase):
     def test_a_bare_claim_is_read(self):
         self.assertEqual(sov_standing.claimed_standing("WITNESSED"), "WITNESSED")
-        self.assertEqual(sov_standing.claimed_standing("RATIFIED"), "RATIFIED")
+        self.assertEqual(sov_standing.claimed_standing("ACCEPTED"), "ACCEPTED")
 
     def test_a_compound_claim_is_read(self):
         self.assertEqual(sov_standing.claimed_standing("BUILT_WITNESSED_OWNER_PENDING"), "WITNESSED")
@@ -84,7 +84,7 @@ class ClaimedStanding(unittest.TestCase):
     def test_a_negated_claim_is_not_a_claim(self):
         """The defeating case: NOT_WITNESSED contains WITNESSED and asserts the opposite."""
         self.assertIsNone(sov_standing.claimed_standing("BUILT_SELF_TESTED_NOT_WITNESSED"))
-        self.assertIsNone(sov_standing.claimed_standing("NOT_RATIFIED"))
+        self.assertIsNone(sov_standing.claimed_standing("NOT_ACCEPTED"))
 
     def test_every_negated_spelling_live_in_the_repository_reads_as_no_claim(self):
         """Grounded in the real values, not invented ones."""
@@ -97,7 +97,7 @@ class ClaimedStanding(unittest.TestCase):
 
     def test_a_token_that_merely_contains_a_standing_is_not_a_claim(self):
         self.assertIsNone(sov_standing.claimed_standing("UNWITNESSED"))
-        self.assertIsNone(sov_standing.claimed_standing("PRERATIFIED"))
+        self.assertIsNone(sov_standing.claimed_standing("PREACCEPTED"))
 
     def test_an_unrelated_value_claims_nothing(self):
         self.assertIsNone(sov_standing.claimed_standing("CHARTERED_NOT_IMPLEMENTED"))
@@ -146,7 +146,7 @@ class GateBehaviour(unittest.TestCase):
         self.assertEqual(len(gaps), 1)
 
     def test_a_missing_witness_directory_refuses_rather_than_passing(self):
-        path = _status("asset_service_status: BUILT_RATIFIED" + LF)
+        path = _status("asset_service_status: BUILT_ACCEPTED" + LF)
         gaps = sov_standing.unsupported(path, Path(tempfile.gettempdir()) / "no-such-witness-dir")
         self.assertEqual(len(gaps), 1)
 
@@ -294,7 +294,7 @@ class WhatTheRecordSaysIsGraded(unittest.TestCase):
         rewrite that reintroduces scanning has to defeat it again.
         """
         self.assertFalse(self._promotes(self._observation("WITNESSED is refused.")))
-        self.assertFalse(self._promotes(self._observation("RATIFIED is refused.")))
+        self.assertFalse(self._promotes(self._observation("ACCEPTED is refused.")))
 
     def test_naming_both_standings_is_ambiguous_and_supports_nothing(self):
         """Asserted on the reading rather than the verdict, deliberately.
@@ -307,30 +307,30 @@ class WhatTheRecordSaysIsGraded(unittest.TestCase):
         """
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "asset-service.md"
-            path.write_text(self._observation("WITNESSED and RATIFIED."),
+            path.write_text(self._observation("WITNESSED and ACCEPTED."),
                             encoding="utf-8", newline=LF)
             self.assertIsNone(sov_standing.supported_standing(path))
-        self.assertFalse(self._promotes(self._observation("WITNESSED and RATIFIED.")))
+        self.assertFalse(self._promotes(self._observation("WITNESSED and ACCEPTED.")))
 
     def test_an_honest_record_still_supports_the_claim(self):
         self.assertTrue(self._promotes(self._observation("WITNESSED")))
         self.assertTrue(self._promotes(_body()))
 
-    def test_a_record_may_not_declare_ratified(self):
+    def test_a_record_may_not_declare_accepted(self):
         """`witness/README.md`: a record supports a transition at most as far as
         BUILT -> WITNESSED. A record declaring more has over-reached, for both
         kinds of claim, and the gate must not read the over-reach as support."""
-        self.assertFalse(self._promotes(self._observation("RATIFIED.")))
-        self.assertFalse(self._promotes(self._observation("RATIFIED."), claim="BUILT_RATIFIED"))
+        self.assertFalse(self._promotes(self._observation("ACCEPTED.")))
+        self.assertFalse(self._promotes(self._observation("ACCEPTED."), claim="BUILT_ACCEPTED"))
 
     def test_the_refusal_names_the_over_reach_rather_than_reporting_absence(self):
         """A record that is present and wrong must not be reported as missing."""
         path = _status(f"asset_service_status: BUILT_WITNESSED{LF}")
         with tempfile.TemporaryDirectory() as tmp:
             (Path(tmp) / "asset-service.md").write_text(
-                self._observation("RATIFIED"), encoding="utf-8", newline=LF)
+                self._observation("ACCEPTED"), encoding="utf-8", newline=LF)
             reason = sov_standing.refusal(sov_standing.read_claims(path)[0], Path(tmp))
-        self.assertIn("declares RATIFIED", reason)
+        self.assertIn("declares ACCEPTED", reason)
         self.assertIn("the owner settles the rest", reason)
 
     def test_no_record_on_file_over_reaches(self):
@@ -395,7 +395,7 @@ class TheValueIsAStandingOrItIsNot(unittest.TestCase):
     def test_a_qualified_verdict_supports_nothing(self):
         """Each of these defeated a different hand-written denial list, which is
         the argument against having one. `subject to conditions` is not invented:
-        it is reachable from README's own RATIFIABLE-WITH-CONDITIONS verdict."""
+        it is reachable from README's own ACCEPTABLE-WITH-CONDITIONS verdict."""
         for value in ("WITNESSED (retracted).", "WITNESSED - withdrawn.",
                       "WITNESSED subject to conditions.", "WITNESSED, pending repair."):
             with self.subTest(value=value):
@@ -619,7 +619,7 @@ class TheClaimSideMustNotUnderRead(unittest.TestCase):
 
     def test_a_quoted_value_is_still_a_claim(self):
         self.assertEqual(self._claims('asset_service_status: "BUILT_WITNESSED"'), ["WITNESSED"])
-        self.assertEqual(self._claims("asset_service_status: 'BUILT_RATIFIED'"), ["RATIFIED"])
+        self.assertEqual(self._claims("asset_service_status: 'BUILT_ACCEPTED'"), ["ACCEPTED"])
 
     def test_a_trailing_comment_does_not_hide_the_claim(self):
         self.assertEqual(

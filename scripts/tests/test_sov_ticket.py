@@ -90,8 +90,8 @@ class TransitionTableTests(unittest.TestCase):
                 self.assertTrue(entry.get("requires_evidence"), "a transition must name its evidence")
                 self.assertTrue(entry.get("actor_kinds"), "a transition must name its actor kinds")
 
-    def test_ratification_is_reserved_to_a_human_owner(self) -> None:
-        entry = next(e for e in self.table["transitions"] if e["to"] == "RATIFIED")
+    def test_acceptance_is_reserved_to_a_human_owner(self) -> None:
+        entry = next(e for e in self.table["transitions"] if e["to"] == "ACCEPTED")
         self.assertEqual(entry["actor_kinds"], ["HUMAN"])
         self.assertTrue(entry["requires_owner"])
 

@@ -59,7 +59,7 @@ Standing: `BUILT_SELF_TESTED_NOT_WITNESSED`
 ## Residuals and next gate
 
 This is Blue/self-test evidence only. It does not witness the implementation,
-ratify the Phase-I specification, close issue #27, or introduce a model binding.
+accept the Phase-I specification, close issue #27, or introduce a model binding.
 It also does not attest that a worker semantically executed the addressed reader
 artifact; that belongs to the later observation and model-binding gates.
 An independent Red engagement must attempt provenance substitution, source and

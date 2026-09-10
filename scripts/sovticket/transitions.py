@@ -2,7 +2,7 @@
 
 The evaluator answers one question: may this coordination surface accept this standing
 change from this actor on this evidence. An ``ALLOWED`` answer is not a settlement, a
-witness, or a ratification. Standing changes land in the owning governing documents;
+witness, or a acceptance. Standing changes land in the owning governing documents;
 this module only refuses the ones the contract already forbids.
 """
 
@@ -253,7 +253,7 @@ def evaluate(request: dict[str, Any], table: dict[str, Any]) -> Decision:
             f"actor_kind {request['actor_kind']} may not perform {source} -> {target}",
         )
     if entry.get("requires_owner") and request["actor_id"] not in table["owner_actor_ids"]:
-        code = "OWNER_RATIFICATION_REQUIRED" if target == "RATIFIED" else "OWNER_JUDGEMENT_REQUIRED"
+        code = "OWNER_ACCEPTANCE_REQUIRED" if target == "ACCEPTED" else "OWNER_JUDGEMENT_REQUIRED"
         return Decision(
             False, code, f"{source} -> {target} is owner judgement; {request['actor_id']} is not the owner"
         )

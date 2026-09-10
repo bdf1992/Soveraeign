@@ -30,14 +30,14 @@ except by hand (`decisions/0044-github-coordination-write-crossing.md`).
 
 The registrar is a **projection of a coordination surface in both directions**: it reads
 what GitHub says, and it writes back only what a local declaration already determined.
-Under `AGENTS.md`, Directory boundaries, an adapter may not own standing, ratification,
+Under `AGENTS.md`, Directory boundaries, an adapter may not own standing, acceptance,
 settlement, or hidden fallback, and it receives no authority by operating successfully.
 
 - It **captures** what GitHub currently says, with exact provenance.
 - It **never** decides standing. `scripts/sov_ticket.py` evaluates; the owning
   governing documents hold the answer.
-- It **never** writes ratification. `CODEOWNERS` protects governed paths but is not
-  itself the owner's judgement surface; ratification requires an explicit recorded
+- It **never** writes acceptance. `CODEOWNERS` protects governed paths but is not
+  itself the owner's judgement surface; acceptance requires an explicit recorded
   root-seat action, not a label, bot, or repository write credential.
 - Absence of GitHub produces a visible refusal, never a silent fallback to a cached or
   assumed board.
@@ -69,7 +69,7 @@ settlement, or hidden fallback, and it receives no authority by operating succes
 What it will not do, by construction: open, close, comment on, assign, or milestone an
 issue; label one outside the governed axes; land a body the ticket contract refuses or a
 blank one; delete a label the catalogue does not name in its `retire:` section; write
-standing, ratification, or settlement in any form. A label is a projection, and a
+standing, acceptance, or settlement in any form. A label is a projection, and a
 projection that starts deciding things is a second authority. Typing `standing:
 WITNESSED` into a block is not witnessing it: the evidence rules in `AGENTS.md` decide
 whether the claim is true, whoever is permitted to write the word.
@@ -154,7 +154,7 @@ transport. It is queued, not built. Two rules bind it in advance:
    API. A tool that hands a model arbitrary GitHub write access has replaced a declared
    adapter with an undeclared one.
 2. It is a transport, never a second authority path. An MCP call may capture, propose,
-   and refuse. It may not settle, witness, or ratify.
+   and refuse. It may not settle, witness, or accept.
 
 The gateway seam that would host it is open work; see `decisions/0016-github-coordination-registrar.md`
 and the deployment topology ticket on the board. Until a two-node crossing case exists,

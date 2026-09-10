@@ -1,6 +1,6 @@
 # Asset Service Specification
 
-Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT RATIFIED`
+Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT ACCEPTED`
 
 A service-scoped projection of `SPEC.md`'s shape onto the Asset Service, under
 `decisions/0093-service-srd-spec-ground.md`. It cites
@@ -36,11 +36,11 @@ Observation Service, `decisions/0041`).
 
 ## Service-local states
 
-Reuses `SPEC.md`'s standing ladder unchanged — `RECORDED → ADMITTED → RATIFIED
+Reuses `SPEC.md`'s standing ladder unchanged — `RECORDED → ADMITTED → ACCEPTED
 → EFFECTIVE` — and its collapse rule: nothing here treats being written, being
 confident, or being agreed with as entry into that ladder (`GROUND-011`).
 `KNOWN-GAPS.md`'s "Admission standing" row records that the current
-participant updates `RECORDED` directly to `RATIFIED`, so `ADMITTED` is not
+participant updates `RECORDED` directly to `ACCEPTED`, so `ADMITTED` is not
 yet a separately visible transition in this service today; the ladder is the
 target, not yet the observed behavior.
 
@@ -49,12 +49,12 @@ analog — the library conformance verdict (`librarian.py`), read fresh on every
 call and never stored:
 
 ```text
-CONFORMING | CLAIMED_UNRATIFIED | MISSING_FIELD | VOCABULARY_REFUSED | MEMBER_KIND_REFUSED
+CONFORMING | CLAIMED_UNACCEPTED | MISSING_FIELD | VOCABULARY_REFUSED | MEMBER_KIND_REFUSED
 ```
 
-`CONFORMING` requires a ratified description carrying a value the type's
-vocabulary admits. `CLAIMED_UNRATIFIED` is the deliberately named middle
-state: someone recorded the field, nobody ratified it, and it must never be
+`CONFORMING` requires a accepted description carrying a value the type's
+vocabulary admits. `CLAIMED_UNACCEPTED` is the deliberately named middle
+state: someone recorded the field, nobody accepted it, and it must never be
 counted as conformance (`librarian.py`; `AGENTS.md`, Evidence and standing).
 `MEMBER_KIND_REFUSED` is refused earlier, at filing time, by
 `organization.py`, and appears here only on a type re-read after members were
@@ -70,7 +70,7 @@ set `service.json` carries per operation (not re-derived here):
 | --- | --- | --- | --- | --- |
 | `ingest-asset` | `capture_source` | readable bytes, label, locator, live grant | `COMMITTED` | `DIGEST_MISMATCH`, `GRANT_NOT_COVERED`, `MISSING_PRECONDITION`, `PAYLOAD_ABSENT` |
 | `propose-description` | `submit_proposal` | asset exists, declared actor and payload | `RECORDED` | `INCOMPLETE_PROPOSAL`, `GRANT_NOT_COVERED` |
-| `ratify-proposal` | `ratify` | proposal recorded, live matching grant, human actor | `EFFECTIVE` | `AUTHORITY_REFUSED`, `GRANT_NOT_COVERED`, `STALE_STATE` |
+| `accept-proposal` | `accept` | proposal recorded, live matching grant, human actor | `EFFECTIVE` | `AUTHORITY_REFUSED`, `GRANT_NOT_COVERED`, `STALE_STATE` |
 | `read-version` | `read_source` | version exists, stored digest verifies | `DERIVED` | `PAYLOAD_ABSENT`, `DIGEST_MISMATCH`, `SOURCE_UNREACHABLE`, `SOURCE_CHANGED`, `VERSION_UNKNOWN` |
 | `request-derivative` | `begin_run` | source version exists, declared plan, live grant | `COMMITTED` | `GRANT_NOT_COVERED`, `STALE_LEASE` |
 | `retract-record` | `retract` | target exists, live retraction grant, declared reason | `COUNTERED` | `AUTHORITY_REFUSED`, `GRANT_NOT_COVERED` |
@@ -130,7 +130,7 @@ still resolves to a receipted, reasoned outcome.
 - **Assets, versions, operations, authority, receipts**: the SQLite ledger in
   `store.py`; canonical reference binding for this participant.
 - **Search and relationship traversal**: `projections.py`'s two SQLite tables,
-  dropped and rebuilt from ratified records on every rebuild — "a row written
+  dropped and rebuilt from accepted records on every rebuild — "a row written
   straight into one survives only until the next rebuild and carries no
   receipt behind it" (`projections.py`). Never authoritative
   (`SPEC.md`, Projection rule).
@@ -150,8 +150,8 @@ credential (`authority.py`). `KNOWN-GAPS.md`'s "Authority envelope" row
 records that type, issuer authority, and scope are enforced today; budget and
 revocation enforcement are not yet complete. Machine (`VERIFICATION`) and
 human (`JUDGEMENT`) authority types are distinct at the manifest level
-(`ratify-proposal` requires `human_actor`); the general rule that
-`VERIFICATION` cannot ratify `JUDGEMENT` is `PRD.md` `PROD-I-5`'s defeating
+(`accept-proposal` requires `human_actor`); the general rule that
+`VERIFICATION` cannot accept `JUDGEMENT` is `PRD.md` `PROD-I-5`'s defeating
 case and is not yet demonstrated end to end for this participant
 (`conformance/BASELINE.md`, `PROD-I-5 FAIL`).
 
@@ -163,7 +163,7 @@ participant's own `tests/` establishes `BUILT`
 (`python -m unittest discover -s tests`; `conformance/PROD-I-2-BUILD.md`
 records 96 passing after the current-main reconciliation it covers); an
 independent run is required for
-`WITNESSED`; Bdo's recorded decision is required for `RATIFIED`. The frozen
+`WITNESSED`; Bdo's recorded decision is required for `ACCEPTED`. The frozen
 scenario source is `conformance/scenarios.json` at root scope, graded against
 this participant by `conformance/run.py` and this service's own
 `scripts/conformance_observations.py` (`conformance/README.md`).

@@ -21,7 +21,7 @@ human, plus one new artifact the root pattern has no analog for:
   product outcome (one sentence, scoped to this service), enumerated callers,
   numbered requirements `SVC-<DOMAIN>-<n>` each with a defeating case, each
   citing which `PROD-I-<n>` it serves if any, non-goals. Same
-  `OPEN → BUILT → WITNESSED → RATIFIED` lifecycle as `PRD.md` requirements.
+  `OPEN → BUILT → WITNESSED → ACCEPTED` lifecycle as `PRD.md` requirements.
 - **`SERVICE-SPEC.md`** — mirrors `SPEC.md`'s shape at service scope: owned
   domain records, service-local states, legal transitions (citing
   `contracts/kernel-transitions.json` and `services/<domain>/contracts/service.json`
@@ -91,5 +91,5 @@ and nothing elsewhere reads these four files as a dependency.
 - Requirement IDs use `SVC-<DOMAIN>-<n>` to stay visibly distinct from
   `PROD-I-<n>`.
 - Standing on every instance starts `BUILT` at most (self-report by the
-  drafting session); none may claim `WITNESSED` or `RATIFIED` on first
+  drafting session); none may claim `WITNESSED` or `ACCEPTED` on first
   landing.

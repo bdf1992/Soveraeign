@@ -15,7 +15,7 @@ admitted here only when the entry states both that field and what it defeats, so
 the gap in the schema is recorded rather than silently tolerated.
 
 A passing run establishes at most ``BUILT`` for the fixture pair; it does not witness or
-ratify the contract.
+accept the contract.
 """
 
 from __future__ import annotations

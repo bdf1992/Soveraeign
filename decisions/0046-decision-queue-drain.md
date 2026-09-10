@@ -58,7 +58,7 @@ which `CONTRACT.md` already forbids elsewhere.
 collapses evidence strength into right-to-act, which is a settled source claim.
 
 **O6, unattestable claims.** `UNATTESTABLE` keeps a claim out of `EFFECTIVE`
-while preserving its historical `RATIFIED` standing, and the absence stays
+while preserving its historical `ACCEPTED` standing, and the absence stays
 visible. No silent degrade from required to optional.
 
 **O8, semantic cold-start.** The observation shape is a named domain task
@@ -68,7 +68,7 @@ ruling it records what is true rather than choosing something new.
 
 **O9, classification vocabulary.** `CLASSIFICATION.md` is canonical for this
 phase, subject to versioned change. A vocabulary that cannot be used until it is
-ratified is not a vocabulary.
+accepted is not a vocabulary.
 
 **O11, Proofing boundary.** Second boundary, at chartered standing. The counter
 is a conformance case showing it is the asset lifecycle renamed, which is the
@@ -103,7 +103,7 @@ accepting it does not freeze the mechanism.
 
 `0020` closed with four questions for Bdo. Three are ruled here; one is presented.
 
-1. *Ratify, amend, or strike the seat definition of Owner.* — Applied, and
+1. *Accept, amend, or strike the seat definition of Owner.* — Applied, and
    presented inside `acceptance/A3.json`. Rejecting A3 reverts it.
 2. *Name the root seat.* — Left unnamed. Naming is owner-held
    (`OWNER_IDENTITY_OR_NAMING`) and nothing needs the name to proceed; the

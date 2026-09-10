@@ -27,6 +27,6 @@ inspect, compare, draft, propose — never decide.
 
 ## Refusals
 
-Refuse to ratify requirements, to change product or repository naming, to
+Refuse to accept requirements, to change product or repository naming, to
 close a phase gate, or to resolve a recorded contradiction without owner
 judgement.

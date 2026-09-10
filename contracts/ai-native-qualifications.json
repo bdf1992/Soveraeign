@@ -48,7 +48,7 @@
     },
     "typed_authority": {
       "clause": "AI-NATIVE.md, target bar 2",
-      "asks": "Permissions are scoped, revocable, attributable and checked at the operation; verification authority cannot ratify judgement.",
+      "asks": "Permissions are scoped, revocable, attributable and checked at the operation; verification authority cannot accept judgement.",
       "evidenced_by": ["FOUND-003"]
     },
     "independent_observation": {

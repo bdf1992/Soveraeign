@@ -3,7 +3,7 @@
   "note": "Positive and defeating cases for contracts/authority-grant.schema.json and the evaluator in scripts/sovkernel/authority.py. Four cases prove a live grant covers a request; thirty-three prove a refusal, and every refusal code the evaluator can report has at least one case proving it actually fires. Each case is a patch over base_grant and base_request, so what a case says is exactly what it changes; a field a case does not mention is the base value, and a field neither mentions is absent rather than satisfied.",
   "base_grant": {
     "grant_schema": "soveraeign-authority-grant/v1",
-    "status": "RATIFIED",
+    "status": "ACCEPTED",
     "grant_id": "grant:corpus-landing",
     "issuer_id": "bdo",
     "actor_id": "sov",
@@ -59,7 +59,7 @@
       "request_patch": {"capability": "repository.commit", "effect_class": "RECORD_LOCAL"}
     },
     {
-      "case_id": "D-001-grant-not-yet-ratified",
+      "case_id": "D-001-grant-not-yet-accepted",
       "expect": "AUTHORITY_REFUSED",
       "proves": "Writing a grant is not the same act as switching it on. A grant at PROPOSED standing is inert, so a participant cannot author its own authority into effect.",
       "grant_patch": {"status": "PROPOSED"},
@@ -75,9 +75,9 @@
     {
       "case_id": "D-003-capability-not-carried",
       "expect": "AUTHORITY_REFUSED",
-      "proves": "Scope is per capability. A grant that can land cannot thereby ratify; the capability list is exhaustive.",
+      "proves": "Scope is per capability. A grant that can land cannot thereby accept; the capability list is exhaustive.",
       "grant_patch": {},
-      "request_patch": {"capability": "standing.ratify"}
+      "request_patch": {"capability": "standing.accept"}
     },
     {
       "case_id": "D-004-grant-revoked",
@@ -117,7 +117,7 @@
     {
       "case_id": "D-008b-dot-dot-walks-out-of-an-admitted-prefix",
       "expect": "AUTHORITY_REFUSED",
-      "proves": "scripts/../STATUS.yaml begins with an admitted prefix and names an excluded file. Found live on main on 2026-08-25, with the grant ratified, by a witness that had already dissented once. A prefix comparison cannot see through a `..` segment, so the evaluator refuses the spelling rather than pretending to grade it.",
+      "proves": "scripts/../STATUS.yaml begins with an admitted prefix and names an excluded file. Found live on main on 2026-08-25, with the grant accepted, by a witness that had already dissented once. A prefix comparison cannot see through a `..` segment, so the evaluator refuses the spelling rather than pretending to grade it.",
       "grant_patch": {},
       "request_patch": {"paths": ["scripts/../STATUS.yaml"]}
     },
@@ -240,14 +240,14 @@
       "grant_patch": {
         "authority_type": "JUDGEMENT",
         "issuer_id": "sov",
-        "capabilities": ["standing.ratify"]
+        "capabilities": ["standing.accept"]
       },
-      "request_patch": {"capability": "standing.ratify"}
+      "request_patch": {"capability": "standing.accept"}
     },
     {
       "case_id": "P-004-scoped-external-world-effect-covered",
       "expect": "PERMITTED",
-      "proves": "External-world effects are scoped rather than globally refused. A ratified grant whose explicit effect ceiling reaches EXTERNAL_WORLD still has to satisfy the same actor, capability, scope, budget, check, and independent-observation requirements as every other grant.",
+      "proves": "External-world effects are scoped rather than globally refused. A accepted grant whose explicit effect ceiling reaches EXTERNAL_WORLD still has to satisfy the same actor, capability, scope, budget, check, and independent-observation requirements as every other grant.",
       "grant_patch": {"effect_ceiling": "EXTERNAL_WORLD"},
       "request_patch": {"effect_class": "EXTERNAL_WORLD"}
     },

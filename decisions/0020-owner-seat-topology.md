@@ -1,6 +1,6 @@
 # 0020 · Owner as a typed, topologically located seat
 
-Status: `PROPOSED · DRAFTED AT OWNER DIRECTION · RATIFICATION PENDING`
+Status: `PROPOSED · DRAFTED AT OWNER DIRECTION · OWNER ACCEPTANCE PENDING`
 
 Numbering note: decisions 0018 and 0019 are already occupied twice across
 concurrent branches (`verification-engagement-kind` and
@@ -38,7 +38,7 @@ owner(X) = the seat that issued X's live grant and settles X's receipts
   the owning seat settles; no seat settles its own output (C7, generalized
   from workers to every tier).
 
-**The root seat.** A purely relational Owner makes "only the owner ratifies"
+**The root seat.** A purely relational Owner makes "only the owner accepts"
 circular, so exactly one seat owns no one and is owned by no one: the root.
 It holds product-intent, naming, judgement, and phase-gate authority — not
 because its occupant is human, but because `decisions/0001` seated them
@@ -105,8 +105,8 @@ to:
 > owner is the seat one edge up: the seat that issued the live grant and
 > settles the receipts.
 
-`AGENTS.md`, Evidence and standing — from "only Bdo can ratify judgement
-claims" to "only the root seat can ratify judgement claims".
+`AGENTS.md`, Evidence and standing — from "only Bdo can accept judgement
+claims" to "only the root seat can accept judgement claims".
 
 `STATUS.yaml`, authority block — each entry gains the seat form:
 
@@ -133,7 +133,7 @@ authority:
 
 ## Judgement queue for Bdo
 
-1. Ratify, amend, or strike the seat definition of Owner.
+1. Accept, amend, or strike the seat definition of Owner.
 2. Name the root seat.
 3. Tree confirmed, or is matrix ownership wanted sooner?
 4. Should the seat registry live as a repository file, a Record Service

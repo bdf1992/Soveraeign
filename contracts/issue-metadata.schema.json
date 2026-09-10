@@ -308,7 +308,7 @@
         "CHARTERED_NOT_IMPLEMENTED",
         "BUILT_SELF_TESTED_NOT_WITNESSED",
         "WITNESSED",
-        "RATIFIED",
+        "ACCEPTED",
         "DEMOTED"
       ]
     },
@@ -560,7 +560,7 @@
               "CHARTERED_NOT_IMPLEMENTED",
               "BUILT_SELF_TESTED_NOT_WITNESSED",
               "WITNESSED",
-              "RATIFIED"
+              "ACCEPTED"
             ]
           }
         },

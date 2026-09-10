@@ -21,7 +21,7 @@ From `CHARTER.md` Owned records:
 
 ## Service-local states and standing
 
-`SPEC.md`'s historical-standing ladder (`RECORDED → ADMITTED → RATIFIED → EFFECTIVE`) does not
+`SPEC.md`'s historical-standing ladder (`RECORDED → ADMITTED → ACCEPTED → EFFECTIVE`) does not
 apply to `host-health` readings at all. `read-health` commits `DERIVED`
 (`contracts/service.json`), and `contracts/service-manifest.schema.json` defines that value:
 "A READ commits `DERIVED` and writes no authoritative record." Confirmed in

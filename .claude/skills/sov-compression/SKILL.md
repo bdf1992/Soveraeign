@@ -154,7 +154,7 @@ only when an independent fresh reader can, from the current repository alone:
    Phase-I archaeology, duplicate truth, or reconciliation debris.
 
 `GAP_OPERATIONALLY_INVISIBLE` is **not** an earned exit clause, acceptance,
-ratification, or permission to mutate `contracts/phases.json` or `STATUS.yaml`. It
+acceptance, or permission to mutate `contracts/phases.json` or `STATUS.yaml`. It
 means the seam between closed Phase I and the open phase has stopped imposing a
 special operational tax. Once this reading
 is independently supported, stop minting gap-specific work unless a regression

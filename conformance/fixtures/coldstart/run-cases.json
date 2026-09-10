@@ -99,7 +99,7 @@
           "id": "principal:fixture-participant",
           "host": "fixture",
           "answers": "conformance/fixtures/coldstart/answers.fixture.json",
-          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658"
+          "answers_digest": "sha256:e30abfef29fe6cbca7f6294406d419e4370f04c5ccc1baec94c1980fe10692f8"
         },
         "graded_by": {
           "owner_verdicts": null,
@@ -589,7 +589,7 @@
         "participant": {
           "id": "principal:claude-opus-5",
           "host": "claude-code on win32",
-          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658",
+          "answers_digest": "sha256:e30abfef29fe6cbca7f6294406d419e4370f04c5ccc1baec94c1980fe10692f8",
           "answers": "conformance/fixtures/coldstart/answers.fixture.json"
         },
         "graded_by": {
@@ -1123,7 +1123,7 @@
         "participant": {
           "id": "principal:claude-opus-5",
           "host": "claude-code on win32",
-          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658",
+          "answers_digest": "sha256:e30abfef29fe6cbca7f6294406d419e4370f04c5ccc1baec94c1980fe10692f8",
           "answers": "conformance/fixtures/coldstart/answers.fixture.json"
         },
         "sections": {
@@ -1204,7 +1204,7 @@
         "participant": {
           "id": "p",
           "host": "h",
-          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658",
+          "answers_digest": "sha256:e30abfef29fe6cbca7f6294406d419e4370f04c5ccc1baec94c1980fe10692f8",
           "answers": "conformance/fixtures/coldstart/answers.fixture.json"
         },
         "graded_by": {
@@ -1236,7 +1236,7 @@
           "id": "p",
           "host": "h",
           "answers": "conformance/fixtures/coldstart/answers.fixture.json",
-          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658"
+          "answers_digest": "sha256:e30abfef29fe6cbca7f6294406d419e4370f04c5ccc1baec94c1980fe10692f8"
         },
         "graded_by": {
           "owner_verdicts": "conformance/fixtures/coldstart/owner-verdicts.fixture.json",
@@ -1267,12 +1267,12 @@
         "participant": {
           "id": "p",
           "host": "h",
-          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658",
+          "answers_digest": "sha256:e30abfef29fe6cbca7f6294406d419e4370f04c5ccc1baec94c1980fe10692f8",
           "answers": "conformance/fixtures/coldstart/answers.fixture.json"
         },
         "graded_by": {
           "owner_verdicts": "conformance/fixtures/coldstart/owner-verdicts.fixture.json",
-          "owner_verdicts_digest": "sha256:58d4dc0628ad668792c3d4a5120b99a409a368c122e9391744856b77dcdc1477",
+          "owner_verdicts_digest": "sha256:e7e5370340618b5bf6afea95a2ad00fe28a12a1900e3da667601533d224c1e07",
           "manual_asked": 0,
           "manual_graded": 99
         },
@@ -1371,11 +1371,11 @@
           "id": "principal:fixture-participant",
           "host": "fixture",
           "answers": "conformance/fixtures/coldstart/answers.fixture.json",
-          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658"
+          "answers_digest": "sha256:e30abfef29fe6cbca7f6294406d419e4370f04c5ccc1baec94c1980fe10692f8"
         },
         "graded_by": {
           "owner_verdicts": "conformance/fixtures/coldstart/owner-verdicts.fixture.json",
-          "owner_verdicts_digest": "sha256:58d4dc0628ad668792c3d4a5120b99a409a368c122e9391744856b77dcdc1477",
+          "owner_verdicts_digest": "sha256:e7e5370340618b5bf6afea95a2ad00fe28a12a1900e3da667601533d224c1e07",
           "manual_asked": 1,
           "manual_graded": 1
         },
@@ -1453,7 +1453,7 @@
           "id": "principal:fixture-participant",
           "host": "fixture",
           "answers": "conformance/fixtures/coldstart/answers.fixture.json",
-          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658"
+          "answers_digest": "sha256:e30abfef29fe6cbca7f6294406d419e4370f04c5ccc1baec94c1980fe10692f8"
         },
         "graded_by": {
           "owner_verdicts": null,
@@ -1543,7 +1543,7 @@
           "id": "principal:fixture-participant",
           "host": "fixture",
           "answers": "conformance/fixtures/coldstart/answers.fixture.json",
-          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658"
+          "answers_digest": "sha256:e30abfef29fe6cbca7f6294406d419e4370f04c5ccc1baec94c1980fe10692f8"
         },
         "graded_by": {
           "owner_verdicts": null,

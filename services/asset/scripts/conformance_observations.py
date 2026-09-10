@@ -114,12 +114,12 @@ def main() -> int:
             campaign_path = root / "campaign.txt"
             campaign_path.write_bytes(b"campaign\n")
             campaign = service.ingest(campaign_path, "Campaign", "Bdo")
-            service.grant("Bdo", "Bdo", "ratify:judgement")
+            service.grant("Bdo", "Bdo", "accept:judgement")
             service.grant("Bdo", "Bdo", "retract:record")
             relation_proposal = service.propose(original["asset_id"], "model-1", {
                 "relationship": {"predicate": "USED_BY", "dst_asset": campaign["asset_id"]}
             })
-            ratify_receipt = service.ratify(relation_proposal, "Bdo")
+            accept_receipt = service.accept(relation_proposal, "Bdo")
             relation_id = service.db.execute(
                 "SELECT id FROM relationships WHERE proposal_id=?", (relation_proposal,)
             ).fetchone()[0]
@@ -145,14 +145,14 @@ def main() -> int:
                     "outcome": retract_receipt["outcome"],
                     "target_receipt_id": retract_payload.get("target_receipt_id"),
                 },
-                "reconstructed_prior_receipt_id": ratify_receipt,
+                "reconstructed_prior_receipt_id": accept_receipt,
             })
 
             refused_proposal = service.propose(
                 original["asset_id"], "model-1", {"description": "judgement"}
             )
             try:
-                service.ratify(refused_proposal, "model-1")
+                service.accept(refused_proposal, "model-1")
                 authority_outcome = "COMMITTED"
             except AuthorityRefused:
                 authority_outcome = "REFUSED"
@@ -188,7 +188,7 @@ def main() -> int:
                 "owner_acceptance": "PENDING",
             })
             i8 = item("RUN-I8-ATTEST", {
-                "ratification_before": "RATIFIED", "ratification_after": "RATIFIED",
+                "acceptance_before": "ACCEPTED", "acceptance_after": "ACCEPTED",
                 "validator_changed_authority": False, "attestations": [],
             })
             i9 = item("RUN-I9-BYOM", {

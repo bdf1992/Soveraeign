@@ -60,13 +60,13 @@
       ]
     },
     {
-      "operation": "ratify-proposal",
+      "operation": "accept-proposal",
       "standing": "BUILT",
-      "logical_endpoint": "sov://asset/ratify-proposal",
+      "logical_endpoint": "sov://asset/accept-proposal",
       "subject": "asset",
       "crud": "SUPERSEDE",
       "requirement": "PROD-I-5",
-      "kernel_transition": "ratify",
+      "kernel_transition": "accept",
       "preconditions": [
         "proposal_recorded",
         "live_matching_grant",

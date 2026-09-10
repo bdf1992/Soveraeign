@@ -31,7 +31,7 @@ class GraderRefusesFuzzyCredit(unittest.TestCase):
 
     def test_an_answer_contained_in_the_truth_is_wrong(self):
         question = {"grade": "exact"}
-        self.assertEqual(judge(question, "O", "OPEN,BUILT,WITNESSED,RATIFIED", None), "WRONG")
+        self.assertEqual(judge(question, "O", "OPEN,BUILT,WITNESSED,ACCEPTED", None), "WRONG")
 
     def test_one_member_does_not_satisfy_a_set(self):
         question = {"grade": "set_eq"}

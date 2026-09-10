@@ -117,7 +117,7 @@
       "schema": "finding.schema.json",
       "valid": false,
       "set": {
-        "standing": "RATIFIED"
+        "standing": "ACCEPTED"
       }
     },
     {

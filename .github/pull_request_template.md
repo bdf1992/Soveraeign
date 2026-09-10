@@ -32,7 +32,7 @@
 <!-- Name implementation stubs or other tickets this change touches without implying
      settlement. Use `Closes #N` only under the satisfies rule above. A branch or pull
      request cannot by itself close a bit, promote a village, satisfy independent witness,
-     or ratify the epic. -->
+     or accept the epic. -->
 
 Related #
 

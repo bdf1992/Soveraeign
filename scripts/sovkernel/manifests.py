@@ -24,7 +24,7 @@ SCHEMA_PATH = ROOT / "contracts" / "service-manifest.schema.json"
 KERNEL_PATH = ROOT / "contracts" / "kernel-transitions.json"
 PRD_PATH = ROOT / "PRD.md"
 
-STANDING_ORDER = ("PROPOSED", "BUILT", "WITNESSED", "RATIFIED")
+STANDING_ORDER = ("PROPOSED", "BUILT", "WITNESSED", "ACCEPTED")
 
 #: What a satisfied operation may commit, per CRUD verb. A READ writes no authoritative record;
 #: a REBUILD recomputes a projection only; a COUNTER adds a counter-record and erases nothing.

@@ -46,7 +46,7 @@ the operator Gateway exists.
 Console Service. `bindings/console/` declares the Human Binding interface for
 its first slice, the owner's judgement surface: `interface.json` names the
 operations the binding invokes, maps `resolve-judgement` to the `SPEC.md`
-`ratify` transition, and states what the binding must expose under the five
+`accept` transition, and states what the binding must expose under the five
 requirements above. It is a declaration only, standing `PROPOSED`: it holds no
 code and grants no authority. Implementing it is admissible under the paragraph
 above; what it lacks is an implementation, not a permission.

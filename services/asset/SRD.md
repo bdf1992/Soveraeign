@@ -1,6 +1,6 @@
 # Asset Service Requirements Document
 
-Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT RATIFIED`
+Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT ACCEPTED`
 
 A service-scoped projection of `PRD.md`'s shape onto the Asset Service, under
 `decisions/0093-service-srd-spec-ground.md`. The named user here is the node
@@ -28,7 +28,7 @@ operations, not an aspirational list:
   `remove-member`, `conformance` subcommands).
 - **Model operator**, as the `MODEL` half of `actor_kind` on a proposal
   (`SPEC.md` `Proposal`; `CHARTER.md`: "allow a model adapter to propose
-  metadata and relationships... ratify only through typed authority").
+  metadata and relationships... accept only through typed authority").
 - **Leased worker**, claiming a fenced lease on `request-derivative`
   (`core.py`: "Lease a run to one worker and return its fencing token";
   `runs.py`).
@@ -52,7 +52,7 @@ binding (`KNOWN-GAPS.md`, "Two bindings" row). See Non-goals.
 
 ## Requirements
 
-Lifecycle: `OPEN → BUILT → WITNESSED → RATIFIED`, identical in meaning to
+Lifecycle: `OPEN → BUILT → WITNESSED → ACCEPTED`, identical in meaning to
 `PRD.md`'s ladder and distinct from the operational record standing in
 `SPEC.md`. `BUILT` below means an implementation exists and its own unit
 tests pass; it is not independent evidence.
@@ -107,7 +107,7 @@ or output-only success conceals later source corruption
 Standing: `BUILT`, incompletely. Serves `PROD-I-1`.
 
 `propose-description` records an attributed proposal at `RECORDED` standing
-before any ratification (`service.json`: `kernel_transition:
+before any acceptance (`service.json`: `kernel_transition:
 submit_proposal`, `commit: RECORDED`). The participant does not yet meet the
 full `PROD-I-1` defeating case: `conformance/BASELINE.md` records `PROD-I-1 ·
 Propose: FAIL` — "proposal lacks content address, source addresses, and cost
@@ -125,19 +125,19 @@ participant): a proposal missing author, cost, source, or proposal standing is
 admitted; a proposal is admitted without reaching an operator surface; an
 instanced session's asserted authority is honored as held authority.
 
-### SVC-ASSET-5 · Ratification requires a live matching human grant
+### SVC-ASSET-5 · Acceptance requires a live matching human grant
 
 Standing: `BUILT`, incompletely. Serves `PROD-I-5`.
 
-`ratify-proposal` requires `proposal_recorded`, `live_matching_grant`, and
+`accept-proposal` requires `proposal_recorded`, `live_matching_grant`, and
 `human_actor` (`service.json`). `conformance/BASELINE.md` records `PROD-I-5 ·
 Typed authority: FAIL` — "judgement refusal exists, but the participant
 cannot demonstrate the paired typed verification grant and commit."
 `KNOWN-GAPS.md`'s "Authority envelope" row adds that budget and revocation are
 not yet enforced alongside type and scope.
 
-Defeating case: a machine-typed (`VERIFICATION`) grant ratifies a
-judgement-typed claim, or a revoked, expired, or out-of-scope grant ratifies
+Defeating case: a machine-typed (`VERIFICATION`) grant accepts a
+judgement-typed claim, or a revoked, expired, or out-of-scope grant accepts
 anything.
 
 ### SVC-ASSET-6 · Retraction preserves the original record
@@ -178,11 +178,11 @@ the organizational operations); cites `GROUND-011`.
 `declare-collection-type`, `declare-collection`, `add-member`,
 `remove-member`, `read-collection`, and `read-library-conformance` implement
 a curated typed collection and a derived-on-every-call conformance read that
-keeps `CONFORMING` (a ratified description carrying an admitted value),
-`CLAIMED_UNRATIFIED` (recorded but never ratified), and `MISSING_FIELD`
+keeps `CONFORMING` (a accepted description carrying an admitted value),
+`CLAIMED_UNACCEPTED` (recorded but never accepted), and `MISSING_FIELD`
 distinct (`librarian.py`; `decisions/0063-asset-collections-and-the-librarian.md`).
 
-Defeating case: a `CLAIMED_UNRATIFIED` field is reported as `CONFORMING`, or a
+Defeating case: a `CLAIMED_UNACCEPTED` field is reported as `CONFORMING`, or a
 stored conformance verdict is read back instead of recomputed and goes stale.
 
 ### SVC-ASSET-9 · The service is discoverable from its manifest alone

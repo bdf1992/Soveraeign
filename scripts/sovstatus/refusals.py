@@ -13,7 +13,7 @@ witnesses broke three attempts at it. The first read a standing from prose and a
 `WITNESSED` on a value reading `NOT_WITNESSED`. The second compared whole tokens and treated
 `NOT` as denial, and fell to `NOT_YET`, `NEVER`, `AWAITING`, and to `BUILT-NOT_WITNESSED`,
 where a hyphen hid the negator. The third asked only what the value led with, and fell to
-`WITNESSED_RETRACTED`, `RATIFIED_NOT` and `-WITNESSED`, where splitting on non-alphanumerics
+`WITNESSED_RETRACTED`, `ACCEPTED_NOT` and `-WITNESSED`, where splitting on non-alphanumerics
 deletes a negator rather than seeing it. Each draft closed the instance it was shown and left
 the class open in a new spelling.
 

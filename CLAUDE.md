@@ -105,7 +105,7 @@ cannot outlive what it warns about.
   blocked. A job gated off by a repository variable still reports as satisfying
   the check that requires it.
 - **T6 · Several sessions write this tree at once.** Files appear and change
-  mid-read. Freeze a commit before witnessing, measuring, or ratifying, and
+  mid-read. Freeze a commit before witnessing, measuring, or accepting, and
   work in a worktree rather than racing the shared branch.
 
 T4 through T6 need network or live observation, so this offline trap checker
@@ -216,8 +216,8 @@ evidenced result, never permission to begin
   domain: "...", plan_only: true }`. It runs control, orchestration, work, an
   independent witness, then `python scripts/sov_land.py`, the only place in the
   repository that commits and merges. The gate grades the landing against
-  `contracts/standing-grants.json`. `grant:standing-landing-loop` is `RATIFIED`
-  (Bdo, 2026-08-25, `decisions/0065-standing-grant-ratified.md`): actor `sov`,
+  `contracts/standing-grants.json`. `grant:standing-landing-loop` is `ACCEPTED`
+  (Bdo, 2026-08-25, `decisions/0065-standing-grant-accepted.md`): actor `sov`,
   capabilities `repository.commit` and `repository.land`, scope excluding
   `decisions/`, `STATUS.yaml`, `lineage/`, `.github/` and every root governing
   document. What refuses a landing now is evidence, not permission: the grant

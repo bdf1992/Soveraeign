@@ -169,7 +169,7 @@ def check_i5(observed: dict[str, Any]) -> list[str]:
                 attempt.get("authority_type") == "VERIFICATION" and
                 attempt.get("claim_type") == "JUDGEMENT" and
                 attempt.get("outcome") != "REFUSED"):
-            defects.append("machine verification authority ratified judgement")
+            defects.append("machine verification authority accepted judgement")
     verification_attempts = [attempt for attempt in attempts if attempt.get("claim_type") == "VERIFICATION"]
     if not any(attempt.get("outcome") == "COMMITTED" for attempt in verification_attempts):
         defects.append("delegated verification claim did not commit")
@@ -209,8 +209,8 @@ def check_i7(observed: dict[str, Any]) -> list[str]:
 
 def check_i8(observed: dict[str, Any]) -> list[str]:
     defects: list[str] = []
-    if observed.get("ratification_before") != observed.get("ratification_after"):
-        defects.append("attestation changed historical ratification")
+    if observed.get("acceptance_before") != observed.get("acceptance_after"):
+        defects.append("attestation changed historical acceptance")
     if observed.get("validator_changed_authority"):
         defects.append("validator occupied authority slot")
     attestations = observed.get("attestations") or []

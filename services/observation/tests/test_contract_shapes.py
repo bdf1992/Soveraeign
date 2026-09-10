@@ -138,7 +138,7 @@ class EdgeVocabulary(unittest.TestCase):
         refusals = {code for entry in MANIFEST["operations"] for code in entry["refusals"]}
         vocabulary = enforced | refusals | {"DIRECT", "INDEPENDENT", "UNDETERMINED", "COMPLETE",
                                             "INCOMPLETE", "REPRODUCED", "DISSENTED", "BUILT",
-                                            "WITNESSED", "PROPOSED", "RATIFIED", "SYSTEM",
+                                            "WITNESSED", "PROPOSED", "ACCEPTED", "SYSTEM",
                                             "OBSERVATION", "CHARTER", "SPEC", "PROD"}
         stray = {word for word in documented if word not in vocabulary}
         self.assertEqual(set(), stray,

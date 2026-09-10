@@ -232,7 +232,7 @@ def conversation_defects(conversation: list[dict[str, Any]], topology: dict[str,
     """Every etiquette defect in a conversation, in the order the statements were made.
 
     An empty list means every statement was one its speaker was entitled to make. It does
-    not mean any statement is true, observed, settled, or ratified.
+    not mean any statement is true, observed, settled, or accepted.
     """
     seats = _seat_index(topology)
     by_id: dict[str, dict[str, Any]] = {}

@@ -18,7 +18,7 @@
     "CHARTERED_NOT_IMPLEMENTED",
     "BUILT_SELF_TESTED_NOT_WITNESSED",
     "WITNESSED",
-    "RATIFIED"
+    "ACCEPTED"
   ],
   "horizon_rank": {
     "NOW": 0,
@@ -36,7 +36,7 @@
     "PROPOSED": 4,
     "OPEN": 5,
     "WITNESSED": 6,
-    "RATIFIED": 7
+    "ACCEPTED": 7
   },
   "kind_rank": {
     "unblock": 0,
@@ -55,7 +55,7 @@
     "PROPOSED": "declare the owned boundary in the repository",
     "OPEN": "draft the obligation, priors, and closure contract",
     "WITNESSED": "present it for acceptance: python scripts/sov_accept.py present <packet>",
-    "RATIFIED": "no further action at this gate"
+    "ACCEPTED": "no further action at this gate"
   },
   "order_by": [
     "blocked",

@@ -103,7 +103,7 @@ owns only the terms.
 | Term | Use |
 | --- | --- |
 | **Concern** | A registered unit of monitored work with an owning domain, governing contract, standing, next gate, and effect envelope |
-| **Controller** | The operator holding the loop's Control tier; never ratifies judgement, may machine-ratify verification-typed claims only under explicit delegation |
+| **Controller** | The operator holding the loop's Control tier; never accepts judgement, may machine-accept verification-typed claims only under explicit delegation |
 | **Orchestrator** | The operator holding the loop's Orchestration tier for one launched operation |
 
 Stances are typed hands an operator holds under grant, never a named person,
@@ -112,7 +112,7 @@ model, or provider:
 | Stance | Dyad | Use |
 | --- | --- | --- |
 | `LEFT` | Authority | Synthesis: inspect, compare, draft, implement, propose |
-| `RIGHT` | Authority | Judgement: intent, naming, ratification, phase gates |
+| `RIGHT` | Authority | Judgement: intent, naming, acceptance, phase gates |
 | `BLUE` | Verification | Construction: build the positive path and its declared positive and defeating cases |
 | `RED` | Verification | Adversarial witnessing: seek undeclared defeats of the built artifact |
 
@@ -122,11 +122,11 @@ operator holds and never a new standing:
 | Outcome | Combination | Names |
 | --- | --- | --- |
 | `PURPLE` | `RED` + `BLUE` | The settled verification engagement receipt |
-| `JOINED` | `LEFT` + `RIGHT` | The ratification receipt over a synthesis proposal |
+| `JOINED` | `LEFT` + `RIGHT` | The acceptance receipt over a synthesis proposal |
 | `GREEN` | `PURPLE` + `JOINED` | The derived go-state of a concern at its current gate |
 
 `RED`/`BLUE` are engagement stances; `positive` and `defeating` remain the
-artifact-level terms. `JOINED` names a combination receipt; `RATIFIED`
+artifact-level terms. `JOINED` names a combination receipt; `ACCEPTED`
 remains the standing term.
 
 ## Information roles
@@ -146,7 +146,7 @@ remains the standing term.
 | **Reading** | An interpretation that leaves its source unchanged |
 | **View** | A presentation or projection of authoritative records |
 | **Recording** | A deposited result of a declared derivation |
-| **Proposal** | An attributed claim without ratified standing |
+| **Proposal** | An attributed claim without accepted standing |
 | **Receipt** | The record returned by an attempted crossing or operation |
 | **Observation** | Independent evidence of what occurred |
 | **Retraction** | A counter-record that changes effective standing without erasing history |
@@ -173,18 +173,18 @@ qualified name; seam S22 holds the collision open.
 
 Operational record standing is orthogonal to information role:
 
-`RECORDED → ADMITTED → RATIFIED → EFFECTIVE`
+`RECORDED → ADMITTED → ACCEPTED → EFFECTIVE`
 
 The transition is not automatic. Each step requires its declared gate and
-receipt. Ratification remains historical even when a later observation changes
+receipt. Acceptance remains historical even when a later observation changes
 current effectiveness.
 
 Repository requirements and concerns use a separate artifact lifecycle:
 
-`OPEN → BUILT → WITNESSED → RATIFIED`
+`OPEN → BUILT → WITNESSED → ACCEPTED`
 
-The shared word `RATIFIED` names a typed authority decision, but the authority
-and carrier differ. An operational record may be ratified under a matching live
+The shared word `ACCEPTED` names a typed authority decision, but the authority
+and carrier differ. An operational record may be accepted under a matching live
 grant; a design artifact or concern requires Bdo's judgement. Advancing one
 never advances the other implicitly.
 
@@ -273,5 +273,5 @@ in `ANCHOR.md`, `SUBSTRATE.md`, `PRODUCT(1).md`, and `PRD-PRODUCT(1).md`.
 The concrete `Service`/`Component` normalization, the initial
 Asset/Proofing/Console/Asset Projection split, the Root/Kernel construction
 vocabulary, and the operating-loop role and stance vocabulary are new proposed
-policy. Bdo's ratification is required before this file becomes authoritative
+policy. Bdo's acceptance is required before this file becomes authoritative
 vocabulary.

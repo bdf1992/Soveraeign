@@ -122,7 +122,7 @@
       }
     },
     "authority": {
-      "description": "The live grant the caller is acting under. Verification authority cannot ratify a judgement claim.",
+      "description": "The live grant the caller is acting under. Verification authority cannot accept a judgement claim.",
       "type": "object",
       "additionalProperties": false,
       "required": [

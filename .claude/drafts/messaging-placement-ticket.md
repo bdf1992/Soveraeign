@@ -1,11 +1,11 @@
 # Placement draft · Messaging
 
-Status: `PROPOSED · DRAFT · TESTS ANSWERED · WITNESSED · NOT REGISTERED · NOT OWNER-RATIFIED`
+Status: `PROPOSED · DRAFT · TESTS ANSWERED · WITNESSED · NOT REGISTERED · NOT OWNER-ACCEPTED`
 
 A placement study, drafted for Bdo, carrying its own answers and the corrections an
 independent witness made to them. It is not an issue: no GitHub issue is created, no
 number is claimed, and nothing here changes `STATUS.yaml`, a charter, or the epic tree.
-`AGENTS.md` Authority — a draft proposes, it does not register or ratify.
+`AGENTS.md` Authority — a draft proposes, it does not register or accept.
 
 Witnessed at `cc95d85` by a participant that did not build it:
 `reports/observations/2026-08-27-messaging-placement-witness-observation.json`. Six claims

@@ -50,7 +50,6 @@
         "REFUSE",
         "STALL",
         "AGGREGATE",
-        "RATIFY",
         "ACCEPT",
         "HOLD"
       ]
@@ -72,7 +71,7 @@
       ]
     },
     "standing_proposed": {
-      "description": "The artifact-standing transition this statement supports, or null when it supports none. A proposal, never a settlement: AGENTS.md reserves ratification to Bdo, and no seat may propose past its act ceiling.",
+      "description": "The artifact-standing transition this statement supports, or null when it supports none. A proposal, never a settlement: AGENTS.md reserves acceptance to Bdo, and no seat may propose past its act ceiling.",
       "anyOf": [
         {
           "$ref": "#/$defs/standing"
@@ -209,7 +208,7 @@
           "enum": [
             "BUILT",
             "WITNESSED",
-            "RATIFIED"
+            "ACCEPTED"
           ]
         }
       }

@@ -9,7 +9,7 @@ throughout. No phase opened; `STATUS.yaml` stays `NONE_ACTIVE` and the next gate
 ## Terminal
 
 Presented on the branch for acceptance. Not landed on `main`: the changes touch
-`STATUS.yaml`, `PRD.md`, `CLAUDE.md`, and `.claude/agents/sov.md`, which the ratified
+`STATUS.yaml`, `PRD.md`, `CLAUDE.md`, and `.claude/agents/sov.md`, which the accepted
 standing grant excludes, so the landing gate is not the path for this change and Bdo's
 review of the branch is.
 
@@ -77,8 +77,8 @@ gate reading and dissented on these points, each repaired in the second commit:
   what happened.
 
 A second witness pass observed commit `540bc01` through the same surfaces and found every
-pass-one route closed. Its verdict: `RATIFIABLE-WITH-CONDITIONS`, `standing_supported
-WITNESSED` for `observation_service_status`, with one condition carried for ratification (the
+pass-one route closed. Its verdict: `ACCEPTABLE-WITH-CONDITIONS`, `standing_supported
+WITNESSED` for `observation_service_status`, with one condition carried for acceptance (the
 capability map reads the five built operations `ACTIVE` at an in-process address the Node
 Interface does not route; by the map's own rule in `scripts/sovkernel/capability_map.py`
 in-process means importable, and the Record Service reads the same way) and nine residuals
@@ -104,11 +104,11 @@ A third pass, scoped to the residual repairs, observed commit `3087714`: R1, R2,
 and R8 repaired through the surface, R3 and R5 as documented, pass-two conclusions holding on
 the new bytes, and four new residuals (R10 to R13) recorded in `KNOWN-GAPS.md` rather than
 repaired, so the witnessed bytes stay the witnessed bytes. Its verdict:
-`RATIFIABLE-WITH-CONDITIONS`, and the record supports `BUILT -> WITNESSED` for
+`ACCEPTABLE-WITH-CONDITIONS`, and the record supports `BUILT -> WITNESSED` for
 `observation_service_status` at `3087714`. The field moves to
 `BUILT_THIN_SLICE_WITNESSED_REMAINDER_DECLARED` in the fifth commit, the first `WITNESSED`
 standing on file. It asserts the thin slice as code, observed by a participant that did not
-build it; it asserts no reachability, no ratification, and no observed run.
+build it; it asserts no reachability, no acceptance, and no observed run.
 
 ## Problems discovered and carried
 
@@ -142,7 +142,7 @@ build it; it asserts no reachability, no ratification, and no observed run.
   `contracts/status-claims.json`, the service manifest, `services/README.md`, the charter,
   the orientation page, and the status remarks in `PRD.md` and `.claude/agents/sov.md`.
 - `contracts/phase-progress.json` floor: 36 to 44, exclusions cleared.
-- One field is `WITNESSED`, on a record by a separate participant. Nothing is `RATIFIED`. No
+- One field is `WITNESSED`, on a record by a separate participant. Nothing is `ACCEPTED`. No
   phase is open.
 
 ## Defaults taken

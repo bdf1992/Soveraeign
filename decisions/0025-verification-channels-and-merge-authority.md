@@ -9,7 +9,7 @@ Renumbered from `0019`: that number went upstream to
 unmerged record moves.
 
 Bdo directed this design in session on 2026-08-23. Direction is not
-ratification: under `AGENTS.md` only Bdo ratifies, and ratification reaches the
+acceptance: under `AGENTS.md` only Bdo accepts, and acceptance reaches the
 repository through code owner review on `STATUS.yaml` and `decisions/`. This
 record is the proposal that review would rule on.
 
@@ -131,7 +131,7 @@ scoring, which needs no key and cannot fail open.
 - `SDLC.md` two dyads, combination outcomes, and release gate — the vocabulary
   this record projects over and does not alter
 - `AGENTS.md` authority, evidence, and standing: a build report never witnesses
-  itself, and only Bdo ratifies
+  itself, and only Bdo accepts
 - `STATUS.yaml` O16 (coordination activation, unruled), protected boundary
   `no_external_effects_in_phase_i`, and the service standing fields read in
   Consequences

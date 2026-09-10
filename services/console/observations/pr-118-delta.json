@@ -239,10 +239,10 @@
       "BY-ID-IS-A-DECLARATION: the strengthened case's key set is hand-kept and already short for the next three operations.",
       "Reported rather than closed by the builder and unchanged by this observation: the repository-wide absence of any check comparing a declared precondition against its implementing check. Confirmed by reading - preconditions are consumed only by scripts/sovkernel/capability_map.py and scripts/sovkernel/node_interface.py, which copy them into projections, and asserted-as-declared once at services/console/tests/test_discovery.py:116."
     ],
-    "standing_note": "An observation by a participant that did not build the change and wrote no repository file except this one. It proposes at most BUILT -> WITNESSED for the parts named above and settles nothing. Only Bdo ratifies judgement.",
+    "standing_note": "An observation by a participant that did not build the change and wrote no repository file except this one. It proposes at most BUILT -> WITNESSED for the parts named above and settles nothing. Only Bdo accepts judgement.",
     "standing_supported": {
       "for": "The driven behaviour of this delta: local_node_record enforcement on console.revoke and its declaration, the cli.py docstring correction, the two KNOWN-GAPS prose corrections, and the three parser-read guarantees the strengthened test does deliver. This observation supports the standing proposal BUILT -> WITNESSED for those.",
-      "note": "This is an observation. It settles nothing and ratifies nothing, and no part of it is a claim of WITNESSED or RATIFIED standing.",
+      "note": "This is an observation. It settles nothing and accepts nothing, and no part of it is a claim of WITNESSED or ACCEPTED standing.",
       "withheld_from": "The manifest note as a whole, on NOTE-COUNT-NINE and NOTE-ORIGIN-OF-TWELVE; and the completeness of the strengthened test, on BY-ID-IS-A-DECLARATION."
     },
     "working_tree_state": {

@@ -50,7 +50,7 @@ none of those is true today.
 
 Metadata is not an object class. A metadata statement targets the narrowest
 governed or observed subject for which it remains true, and governed
-descriptions keep travelling through `submit_proposal` and `ratify` rather than
+descriptions keep travelling through `submit_proposal` and `accept` rather than
 through a generic bag. No `AssetMetadata` object exists and none is proposed.
 
 ## Ruling 2 — an asset holds no bytes, and no count is bounded at one
@@ -92,7 +92,7 @@ derivation. A matching digest, an unchanged locator and a source observation are
 evidence a resolution may cite. Where the evidence does not make one part
 unique, resolution takes a declared default, records the evidence it used, never
 blocks the operation, and never becomes a judgement claim; a counter-record
-overrides it. `decisions/0063` refused to route filing through ratification
+overrides it. `decisions/0063` refused to route filing through acceptance
 because two hundred filings would mint two hundred judgement claims, and four
 hundred resolved parts have the same shape.
 
@@ -139,7 +139,7 @@ Six hold, six are contradicted, eight are absent.
 | CONTRADICTED | a locator does not constitute identity | `identity.by_locator` resolves by file URI, so a rename minted a second identity. Tested at asset level; not a part-continuity test, because parts do not exist |
 | CONTRADICTED | custody form is below the asset contract | the row stores `blob_path`, a filesystem path, while `store.py` already returns a portable `cas:sha256:` address the lifecycle never uses |
 | CONTRADICTED | a source observation is provenance, never constitutive | the row carries a singular `source_id`, so a content state names exactly one origin and a second sighting of the same bytes cannot be recorded without minting another version |
-| HOLDS | descriptive facts attach to the governed identity | propose/ratify records a title against the asset id, not against a payload |
+| HOLDS | descriptive facts attach to the governed identity | propose/accept records a title against the asset id, not against a payload |
 | HOLDS | a media type is evidence, never authority | `mimetypes.guess_type` is stored and nothing reads it as authority |
 | HOLDS | a change makes a new state, predecessor resolves | one identity, two states, the earlier payload still verifies |
 | HOLDS | byte equality does not constitute identity | two identities over one stored payload |
@@ -237,4 +237,4 @@ reversible record-local work that proceeds without asking
 ## Standing
 
 `PROPOSED`. The objects inherit the `PROPOSED` standing `SPEC.md` already
-carries. Nothing here is ratified and no `STATUS.yaml` entry moved.
+carries. Nothing here is accepted and no `STATUS.yaml` entry moved.

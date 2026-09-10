@@ -32,7 +32,7 @@ class LibraryCase(unittest.TestCase):
         self.service = AssetService(self.state)
         self.org = self.service.organization
         for capability in ("declare:collection-type", "declare:asset-collection",
-                           "organize:asset", "retract:record", "ratify:judgement"):
+                           "organize:asset", "retract:record", "accept:judgement"):
             self.service.grant("Bdo", "Bdo", capability)
         self.org.declare_type("project", "Project", PROJECT_SPEC, "Bdo")
         self.collection_id = self.org.declare_collection(
@@ -52,10 +52,10 @@ class LibraryCase(unittest.TestCase):
         self.org.add_member(self.collection_id, asset_id, "Bdo")
         return asset_id
 
-    def describe(self, asset_id: str, payload: dict, ratify: bool = True) -> None:
+    def describe(self, asset_id: str, payload: dict, accept: bool = True) -> None:
         proposal = self.service.propose(asset_id, "Bdo", payload)
-        if ratify:
-            self.service.ratify(proposal, "Bdo")
+        if accept:
+            self.service.accept(proposal, "Bdo")
 
     def verdicts(self, asset_id: str) -> dict[str, str]:
         report = self.service.librarian.conformance(self.collection_id)
@@ -64,7 +64,7 @@ class LibraryCase(unittest.TestCase):
 
 
 class ConformanceTests(LibraryCase):
-    def test_a_fully_ratified_member_conforms(self):
+    def test_a_fully_accepted_member_conforms(self):
         asset_id = self.member()
         self.describe(asset_id, {"title": "Autumn", "owner": "Bdo", "status": "ACTIVE"})
         self.assertEqual(self.verdicts(asset_id),
@@ -75,20 +75,20 @@ class ConformanceTests(LibraryCase):
         self.describe(asset_id, {"title": "Autumn", "owner": "Bdo"})
         self.assertEqual(self.verdicts(asset_id)["status"], "MISSING_FIELD")
 
-    def test_an_unratified_description_is_a_claim_and_never_conformance(self):
+    def test_an_unaccepted_description_is_a_claim_and_never_conformance(self):
         asset_id = self.member()
         self.describe(asset_id, {"title": "Autumn", "owner": "Bdo", "status": "ACTIVE"},
-                      ratify=False)
+                      accept=False)
         self.assertEqual(self.verdicts(asset_id),
-                         {"title": "CLAIMED_UNRATIFIED", "owner": "CLAIMED_UNRATIFIED",
-                          "status": "CLAIMED_UNRATIFIED"})
+                         {"title": "CLAIMED_UNACCEPTED", "owner": "CLAIMED_UNACCEPTED",
+                          "status": "CLAIMED_UNACCEPTED"})
 
-    def test_ratifying_a_claim_turns_it_into_conformance(self):
+    def test_accepting_a_claim_turns_it_into_conformance(self):
         asset_id = self.member()
         proposal = self.service.propose(
             asset_id, "Bdo", {"title": "Autumn", "owner": "Bdo", "status": "ACTIVE"})
-        self.assertEqual(self.verdicts(asset_id)["title"], "CLAIMED_UNRATIFIED")
-        self.service.ratify(proposal, "Bdo")
+        self.assertEqual(self.verdicts(asset_id)["title"], "CLAIMED_UNACCEPTED")
+        self.service.accept(proposal, "Bdo")
         self.assertEqual(self.verdicts(asset_id)["title"], "CONFORMING")
 
     def test_a_value_outside_the_declared_vocabulary_is_refused(self):
@@ -115,7 +115,7 @@ class ConformanceTests(LibraryCase):
         other = self.asset("other.txt", b"other\n")
         self.describe(asset_id, {"relationship": {"predicate": "derived-from",
                                                   "dst_asset": other}})
-        self.assertNotIn("relationship", self.service.librarian.describe(asset_id)["ratified"])
+        self.assertNotIn("relationship", self.service.librarian.describe(asset_id)["accepted"])
 
     def test_an_empty_collection_is_a_finding_not_a_clean_bill(self):
         report = self.service.librarian.conformance(self.collection_id)

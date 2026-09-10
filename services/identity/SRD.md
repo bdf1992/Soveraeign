@@ -56,7 +56,7 @@ from `CHARTER.md` and `contracts/service.json`:
 
 ## Requirement lifecycle
 
-Same ladder as `PRD.md`: `OPEN → BUILT → WITNESSED → RATIFIED`. Nothing in
+Same ladder as `PRD.md`: `OPEN → BUILT → WITNESSED → ACCEPTED`. Nothing in
 this document claims past `BUILT` — a build cannot witness itself
 (`AGENTS.md`, Evidence and standing).
 

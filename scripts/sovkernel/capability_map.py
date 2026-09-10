@@ -31,7 +31,7 @@ from typing import Any
 import json
 
 MAP_SCHEMA = "soveraeign-capability-map/v1"
-BUILT_STANDINGS = ("BUILT", "WITNESSED", "RATIFIED")
+BUILT_STANDINGS = ("BUILT", "WITNESSED", "ACCEPTED")
 IN_PROCESS = "IN_PROCESS"
 MCP = "MCP"
 ACTIVE = "ACTIVE"

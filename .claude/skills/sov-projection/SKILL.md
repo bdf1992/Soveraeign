@@ -55,7 +55,7 @@ HTTP binding, or cross-node query as anything but `UNCONFIGURED`; modify
   needs embeddings, port, declined), and its precondition. A row reaches parity when its
   operation is BUILT with a positive and defeating fixture, then WITNESSED.
 - `services/projection/README.md` - the two implementation gates; boundary
-  ratification changes the standing word, not the build.
+  acceptance changes the standing word, not the build.
 - `services/projection/contracts/service.json` - manifest, standing PROPOSED.
 - `services/projection/conformance/` - seed fixtures PROJ-001..008
   (hit-resolves-to-source through context-package-budgeted); a future
@@ -122,11 +122,11 @@ HTTP binding, or cross-node query as anything but `UNCONFIGURED`; modify
 
 ## Vocabulary (exact; no synonyms)
 
-- Repository artifact standing: `OPEN -> BUILT -> WITNESSED -> RATIFIED`.
-- Record standing: `RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE`.
+- Repository artifact standing: `OPEN -> BUILT -> WITNESSED -> ACCEPTED`.
+- Record standing: `RECORDED -> ADMITTED -> ACCEPTED -> EFFECTIVE`.
 - Effect class: `RECORD_LOCAL`, `RESOURCE_CONSUMPTION`, `EXTERNAL_WORLD`.
 - Proposed collection lifecycle (CHARTER.md; service policy awaiting owner
-  ratification): `DECLARED -> READY -> STALE -> READY`. `READY` means a build
+  acceptance): `DECLARED -> READY -> STALE -> READY`. `READY` means a build
   exists whose `input_state_digest` matches the current source stream; a
   stale read still answers and declares the staleness as an omission.
 - Lanes: text, graph, dense vector, sparse vector, filter, fusion.

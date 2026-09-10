@@ -1,6 +1,6 @@
 # Console Service Journeys
 
-Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-RATIFIED`
+Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-ACCEPTED`
 
 Per `decisions/0093-service-srd-spec-ground.md`, this document has no root-level
 analog: it enumerates the abstract journeys a caller takes through the Console
@@ -82,9 +82,9 @@ question as a kernel `Proposal` and the conditioned operation receives an
 `JUDGEMENT_REQUESTED` notification addressed to the owner is issued →
 `list-pending-judgement-requests` shows it on the owner's pending list.
 **Path (answer).** The owner invokes `resolve-judgement` under a live
-`JUDGEMENT` grant, realized as the kernel `ratify` transition. **Path (land).**
+`JUDGEMENT` grant, realized as the kernel `accept` transition. **Path (land).**
 A `judgement-resolution` record carries the resolver, the grant checked, the
-decision, and the receipt; its standing reaches `RATIFIED` only by an appended
+decision, and the receipt; its standing reaches `ACCEPTED` only by an appended
 event; the conditioned operation's successor receipt names the answered
 `UNRESOLVED` receipt via `prior_receipt_id`.
 

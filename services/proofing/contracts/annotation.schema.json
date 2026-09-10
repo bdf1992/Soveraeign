@@ -16,7 +16,7 @@
     "body": {"type": "string", "minLength": 1},
     "anchor": {"type": "object", "required": ["scheme", "value"], "properties": {"scheme": {"type": "string", "minLength": 1}, "value": {}}},
     "created_at": {"type": "string", "format": "date-time"},
-    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]},
+    "standing": {"enum": ["RECORDED", "ADMITTED", "ACCEPTED", "EFFECTIVE"]},
     "version_relation": {"enum": ["CURRENT", "STALE", "CARRIED", "RESOLVED"]},
     "carried_from_annotation_id": {"type": ["string", "null"]}
   }

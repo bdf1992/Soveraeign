@@ -53,7 +53,7 @@ def _framed(item: dict[str, Any]) -> str:
 
 
 CONTROL = """You hold the Control tier. You may plan and delegate; you may not execute the work
-yourself and you may not ratify anything.
+yourself and you may not accept anything.
 
 Read the objective below and state the single next bounded operation, its declared
 check, and what evidence would settle it. Be specific and brief.

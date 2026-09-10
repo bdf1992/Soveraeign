@@ -26,9 +26,9 @@ Some cited raw evidence is not portable as independent source material. Dependen
 
 Phase I did not settle the boundary between the validated internal runtime and dependent-user product exposure. No later opening may inherit a settled product-boundary claim from Phase I.
 
-### S12 · Ratification mechanism — CARRIED
+### S12 · Acceptance mechanism — CARRIED
 
-The owner ratification mechanism remains unresolved between the proposed CODEOWNERS path and the Human Binding path the owner actually uses. Direction exists; the mechanism is not settled.
+The owner acceptance mechanism remains unresolved between the proposed CODEOWNERS path and the Human Binding path the owner actually uses. Direction exists; the mechanism is not settled.
 
 ### S13 · Retraction in the Soveraeign bar — CARRIED
 
@@ -88,12 +88,12 @@ These seams are not carried into the gap. Their closing evidence already exists;
 
 - **S2 · Reproduction versus applicability — CLOSED.** `decisions/0046-decision-queue-drain.md` O4 separates immutable historical Attestation from rebuildable CurrentEffectiveness.
 - **S3 · Authority in the Gauge — CLOSED.** `decisions/0046-decision-queue-drain.md` O5 keeps authority separate from evidence strength and gives Gauge no authority of its own.
-- **S4 · Unattestable effectiveness — CLOSED.** `decisions/0046-decision-queue-drain.md` O6 preserves ratified history while keeping an unattestable claim out of `EFFECTIVE`.
+- **S4 · Unattestable effectiveness — CLOSED.** `decisions/0046-decision-queue-drain.md` O6 preserves accepted history while keeping an unattestable claim out of `EFFECTIVE`.
 - **S5 · Cold-start semantics — CLOSED AS A SEMANTIC SEAM.** `decisions/0021-semantic-cold-start-task.md`, under the owner ruling in `decisions/0046-decision-queue-drain.md` O8, closes the semantic task shape. Cold-start competence remains a measured qualification gap because time-to-useful, adjustments, and correction effectiveness were not measured.
 - **S9 · External effects — CLOSED 2026-08-30.** Root acceptance A4 and PR #182 establish explicit scope, live grant, attributable receipt, and defeating above-ceiling behavior.
 - **S11 · Red-lane inputs — CLOSED 2026-08-23.** Independent verification may read builder tests as part of the artifact but never treats them as the oracle.
 - **S20 · Two ladders named requirement — CLOSED 2026-08-24.** `decisions/0052` reserves bare `Requirement` for the product ladder and names the skill-side concept `CompetenceRequirement`.
-- **S21 · The contract names a terminal no harness role can reach — CLOSED.** `decisions/0064-standing-authorization-and-the-landing-loop.md` separates bounded presentation from authorized landing; `decisions/0065-standing-grant-ratified.md` records the Phase-I standing grant and operational landing loop. That Phase-I grant does not survive phase closure.
+- **S21 · The contract names a terminal no harness role can reach — CLOSED.** `decisions/0064-standing-authorization-and-the-landing-loop.md` separates bounded presentation from authorized landing; `decisions/0065-standing-grant-accepted.md` records the Phase-I standing grant and operational landing loop. That Phase-I grant does not survive phase closure.
 - **S28 · Accepted document wording — CLOSED 2026-08-30.** The accepted wording repair is already recorded in the closed seam history.
 
 `contracts/SUCCESSOR-PREP.md` is the gap synthesis of the surviving residue. `STATUS.yaml` remains the machine source for current phase state.

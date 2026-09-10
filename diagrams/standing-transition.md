@@ -2,7 +2,7 @@
 
 ```text
 source          CLASSIFICATION.md · CONTRACT.md
-source_digest   caf2384160b00eed · f95acd076c4977d7
+source_digest   79826ef371e34160 · 76900029e000e83d
 reader          hand-authored · v1
 fidelity        LOSSY
 omissions       the specific gate and receipt required at each step;
@@ -15,7 +15,7 @@ flowchart LR
     subgraph chain["Historical standing — four distinct states"]
         direction LR
         REC["RECORDED"] -->|"gate + receipt"| ADM["ADMITTED"]
-        ADM -->|"gate + receipt"| RAT["RATIFIED"]
+        ADM -->|"gate + receipt"| RAT["ACCEPTED"]
         RAT -->|"gate + receipt"| EFF["EFFECTIVE"]
     end
 
@@ -31,7 +31,7 @@ flowchart LR
 ## What it shows
 
 Four states, and **no step is automatic**. Each transition requires its own
-declared gate and its own receipt. Admission does not ratify. Ratification does
+declared gate and its own receipt. Admission does not accept. Acceptance does
 not prove current applicability (`CONTRACT.md` C4).
 
 `COUNTERED` sits deliberately outside the chain. It is an event outcome that
@@ -51,7 +51,7 @@ governing documents no longer sit together. `STATUS.yaml` records
 `specification_status: OWNER_ACCEPTED_PHASE_I_LOGICAL_SPEC_WITH_SOVEREIGNTY_CLARIFICATION`
 (decision 0024, rulings on classification vocabulary and the Phase-I logical
 specification). `CONTRACT.md` has no acceptance field and its own header still
-reads `PROPOSED FOR OWNER RATIFICATION`.
+reads `PROPOSED FOR OWNER ACCEPTANCE`.
 
 Both `CLASSIFICATION.md` and `SPEC.md` also still carry `PROPOSED` in their own
 headers, and that is not automatically a contradiction. An acceptance field
@@ -59,7 +59,7 @@ names the version Bdo accepted; the file on disk has kept moving since. For
 `SPEC.md` the movement is named — `decisions/0034` adds two refusal codes to
 the transition contract and sits in `STATUS.yaml` under `unruled_proposals` —
 so its header describes a document that changed after acceptance rather than an
-acceptance that never happened. Flipping it would claim a ratification nobody
+acceptance that never happened. Flipping it would claim a acceptance nobody
 gave.
 
 `CLASSIFICATION.md` carries no equivalent note, so whether its header is simply

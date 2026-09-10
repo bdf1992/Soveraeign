@@ -43,7 +43,7 @@ SOURCE_MARKER = re.compile(
 #: Machine vocabulary. A person reading one of these has to translate it, which
 #: is the whole reason the Communications seat exists.
 INTERNAL_TOKENS = (
-    "WITNESSED", "RATIFIED", "UNATTESTABLE", "RECORD_DEFECT", "WORK_DEFECT",
+    "WITNESSED", "ACCEPTED", "UNATTESTABLE", "RECORD_DEFECT", "WORK_DEFECT",
     "WORKER_DEFECT", "ORCHESTRATION_DEFECT", "WITNESS_DEFECT", "POLICY_SEAM",
     "AUTHORITY_SEAM", "EFFECT_SEAM", "DEPENDENCY_SEAM", "ACCEPTANCE_SEAM",
     "RECORD_LOCAL", "RESOURCE_CONSUMPTION", "RESOURCE_COMMITMENT",
@@ -55,7 +55,7 @@ INTERNAL_TOKENS = (
 #: contains WITNESSED and a substring reading reports every unwitnessed subject
 #: in the repository as witnessed (CLAUDE.md trap T3).
 STANDING_CLAIM = re.compile(
-    r"(?<![A-Z_])(NOT_)?(WITNESSED|RATIFIED)(?![A-Z_])")
+    r"(?<![A-Z_])(NOT_)?(WITNESSED|ACCEPTED)(?![A-Z_])")
 
 
 @dataclass(frozen=True)
@@ -186,7 +186,7 @@ def supported_standing(root) -> set[str]:
 
 
 def check_unsupported_standing(where: str, text: str, supported: set[str]) -> list[Defect]:
-    """A WITNESSED or RATIFIED claim naming a subject the witness records do not carry."""
+    """A WITNESSED or ACCEPTED claim naming a subject the witness records do not carry."""
     defects: list[Defect] = []
     for index, line in enumerate(text.splitlines(), start=1):
         for match in STANDING_CLAIM.finditer(line):

@@ -21,7 +21,7 @@
   ],
   "properties": {
     "lease_schema": {"const": "soveraeign-work-lease/v1"},
-    "status": {"enum": ["PROPOSED", "RATIFIED"]},
+    "status": {"enum": ["PROPOSED", "ACCEPTED"]},
     "lease_id": {"type": "string", "pattern": "^lease:[a-z0-9][a-z0-9-]*$"},
     "concern": {"$ref": "#/$defs/concern"},
     "holder": {"$ref": "#/$defs/holder"},

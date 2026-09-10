@@ -29,7 +29,7 @@ class WalkingSkeleton(unittest.TestCase):
         self.root = Path(self.tmp.name)
         self.service = AssetService(self.root / "state")
         self.service.grant("Bdo", "Bdo", "operate:derive")
-        self.service.grant("Bdo", "Bdo", "ratify:judgement")
+        self.service.grant("Bdo", "Bdo", "accept:judgement")
         self.service.grant("Bdo", "Bdo", "retract:record")
         self.reader = ReaderDeclaration.from_materials(
             reader_id="asset.metadata-card",
@@ -110,8 +110,8 @@ class WalkingSkeleton(unittest.TestCase):
             "relationship": {"predicate": "USED_BY", "dst_asset": campaign_asset["asset_id"]},
         })
         with self.assertRaises(AuthorityRefused):
-            self.service.ratify(proposal, "claude-adapter")
-        self.service.ratify(proposal, "Bdo")
+            self.service.accept(proposal, "claude-adapter")
+        self.service.accept(proposal, "Bdo")
         counts = self.service.rebuild_projections()
         self.assertEqual(counts, {"search": 2, "edges": 1})
         self.assertIn(asset["asset_id"], self.service.search("autumn"))

@@ -13,7 +13,7 @@ function buildPrompt(op) {
     'Execute exactly one bounded operation. Operation ' + op.id + ': ' + op.description + '. Files in scope: ' + op.files.join(', ') + '. Effect class: ' + op.effect_class + '. ' +
     'Follow the AGENTS.md change protocol: record requested outcome and current authoritative state, affected contracts and fixtures, preconditions and expected observable result, effect class, and rollback or refusal boundary. ' +
     'Contract and defeating fixtures come before code; make the smallest change; run python scripts/verify.py from ' + ROOT + ' and record its exit code. ' +
-    'Hard limits: never run git commit or git push; never write proofing runtime code before its defeating fixtures exist; never witness or ratify your own work; never touch Asset Service state or lineage/evidence/. ' +
+    'Hard limits: never run git commit or git push; never write proofing runtime code before its defeating fixtures exist; never witness or accept your own work; never touch Asset Service state or lineage/evidence/. ' +
     'Report files changed, checks observed with commands and exit codes, standing proposals (at most BUILT), judgement items, and the next bounded operation. If the operation cannot proceed within these limits, return a reasoned refusal instead of forcing work.'
 }
 
@@ -82,7 +82,7 @@ const witness = await agent(
   'You are an independent witness for the Soveraeign repository at ' + ROOT + '. You receive only the claimed operations and changed files, never the builder reasoning; a builder report is not observation. ' +
   'Claimed operations: ' + JSON.stringify(claimed) + '. Changed files: ' + changedFiles.join(', ') + '. ' +
   'Independently inspect the working-tree diffs for those files (git status, git diff), check them against AGENTS.md, STATUS.yaml, CLASSIFICATION.md, and SPEC.md, and run python scripts/verify.py from ' + ROOT + ', recording its exit code. ' +
-  'For each claimed operation return a verdict: reproduced, dissented, or unattestable. List residual failures. State the highest standing transition your own observation supports: OPEN->BUILT, BUILT->WITNESSED, or none. Never propose RATIFIED; only Bdo ratifies judgement-typed claims.',
+  'For each claimed operation return a verdict: reproduced, dissented, or unattestable. List residual failures. State the highest standing transition your own observation supports: OPEN->BUILT, BUILT->WITNESSED, or none. Never propose ACCEPTED; only Bdo accepts judgement-typed claims.',
   { agentType: 'sov-witness', phase: 'Witness', schema: WITNESS_SCHEMA, label: 'witness' }
 )
 if (witness && typeof witness.standing_supported === 'string') { witness.standing_supported = witness.standing_supported.split(' ').join('') }

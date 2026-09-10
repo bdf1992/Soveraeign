@@ -292,7 +292,7 @@ def main() -> int:
         missing = "+".join(row["missing"])
         print(f"  OPEN    {row['id']:22} missing {missing:20} {row['text'][:60]}")
     print(f"{'CLOSED' if report['closed'] else 'OPEN'}: F2 milestone gate")
-    print("Standing note: this reads the gate; closing it is evidence, and ratifying it is Bdo's.")
+    print("Standing note: this reads the gate; closing it is evidence, and accepting it is Bdo's.")
     return 0 if report["closed"] else 1
 
 

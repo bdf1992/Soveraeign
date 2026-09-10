@@ -7,7 +7,7 @@
     "subject": "grade what the harness asserts against the records that own those claims (PR #233): four agent definitions stop declaring PowerShell, three skill descriptions and one workflow prompt stop asserting standing STATUS.yaml contradicts, two dead addresses repaired, and scripts/sov_harness.py added as a six-kind grader with contracts/harness-claims.json declaring its reach",
     "verdict": "REPRODUCED_WITH_RESIDUALS",
     "standing_supported": "BUILT -> WITNESSED",
-    "standing_note": "An observation, not a settlement and not a ratification. Nothing here accepts the change or authorises a landing.",
+    "standing_note": "An observation, not a settlement and not a acceptance. Nothing here accepts the change or authorises a landing.",
     "candidate_commit": "99b794234dafdf5b509bc2dea4b0b05c53f9c66d",
     "candidate_tree": "7281024bfa8d7ad9896e05957fdbef18fe327b03",
     "base_commit": "d00f46ad38448856fa692399d12cf0a324266004",

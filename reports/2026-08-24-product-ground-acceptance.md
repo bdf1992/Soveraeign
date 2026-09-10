@@ -261,7 +261,7 @@ human-operator
 | `proofing.request-comparison` | PROD-I-2 | `begin_run` | `DECLARED_UNREACHABLE` |
 | `proofing.request-revision` | PROD-I-1 | — | `DECLARED_UNREACHABLE` |
 | `proofing.propose-decision` | PROD-I-1 | `submit_proposal` | `DECLARED_UNREACHABLE` |
-| `proofing.ratify-decision` | PROD-I-5 | `ratify` | `DECLARED_UNREACHABLE` |
+| `proofing.accept-decision` | PROD-I-5 | `accept` | `DECLARED_UNREACHABLE` |
 | `proofing.close-session` | PROD-I-4 | — | `DECLARED_UNREACHABLE` |
 
 **Evidence today:** `services/proofing/` has a charter and eight declared operations with
@@ -774,8 +774,8 @@ reachability would become false. That is the temporal stability the layer exists
 
 **One deliberate deviation from your sketch.** You wrote `standing: OBSERVED`. The field is
 named `evidential_status`. `standing` already means the artifact lifecycle
-(`OPEN`/`BUILT`/`WITNESSED`/`RATIFIED`) and the record lifecycle
-(`RECORDED`/`ADMITTED`/`RATIFIED`/`EFFECTIVE`), and `AGENTS.md` forbids a synonym for an
+(`OPEN`/`BUILT`/`WITNESSED`/`ACCEPTED`) and the record lifecycle
+(`RECORDED`/`ADMITTED`/`ACCEPTED`/`EFFECTIVE`), and `AGENTS.md` forbids a synonym for an
 existing standing term. A third meaning on the same word would have been the `Requirement`
 collision, self-inflicted. The same reasoning renamed the promise field `standing` to
 `source`. Both are one-line reversals if you disagree.

@@ -144,5 +144,5 @@ return {
   blocking_count: blocking.length,
   refuted_count: refutedCount,
   judgement_queue: judgementQueue,
-  standing_note: 'Findings are PROPOSED. Each survived one independent reproduction attempt; that is not owner ratification, and this workflow posted nothing.',
+  standing_note: 'Findings are PROPOSED. Each survived one independent reproduction attempt; that is not owner acceptance, and this workflow posted nothing.',
 }

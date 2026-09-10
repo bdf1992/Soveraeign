@@ -200,4 +200,4 @@ interrupt against the SQLite file from outside. Twenty-one observations hold.
 payload, actor, or removed entry all stop verifying.
 
 An independent observation proposes at most `BUILT -> WITNESSED`. It does not
-settle it, and Bdo's recorded decision is what makes anything `RATIFIED`.
+settle it, and Bdo's recorded decision is what makes anything `ACCEPTED`.

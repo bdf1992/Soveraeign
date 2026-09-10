@@ -25,18 +25,18 @@ three; `librarian.py` owns the fourth. Both are reached at
 ## Ruling 1 — filing is curatorial, and description is judgement
 
 Declaring a type, opening a collection, and filing an asset commit directly
-under a live grant. They do not pass through `ratify`.
+under a live grant. They do not pass through `accept`.
 
-The alternative — routing every filing through propose/ratify the way an asset
+The alternative — routing every filing through propose/accept the way an asset
 relationship goes — was rejected because it makes an ordinary library
 unusable: an operator filing two hundred images would mint two hundred
-judgement claims, and `ratify:judgement` would stop meaning what it means
+judgement claims, and `accept:judgement` would stop meaning what it means
 everywhere else. Filing is reversible, record-local, and attributable, which is
 what a grant is for.
 
 What a member *claims about itself* keeps the existing rule unchanged. The
-conformance read counts only ratified descriptions as conformance, and reports
-a recorded-but-unratified field as `CLAIMED_UNRATIFIED` — a third state, never
+conformance read counts only accepted descriptions as conformance, and reports
+a recorded-but-unaccepted field as `CLAIMED_UNACCEPTED` — a third state, never
 folded into either pass or fail. That is `AGENTS.md`, Evidence and standing,
 applied to metadata rather than restated.
 
@@ -64,22 +64,22 @@ here. The collision is recorded as seam S22.
 seen from two sides — an index that is also the curated set. If that holds, one
 service owns both and the qualifier is hiding a duplicated concept.
 
-## Ruling 3 — the librarian proposes and never ratifies
+## Ruling 3 — the librarian proposes and never accepts
 
 The librarian is a stance, not a new harness role. `.claude/skills/sov-librarian/`
 carries what it knows and it runs on the existing worker and witness agents,
 because domain knowledge lives in skills and roles stay stable.
 
 Within it: a librarian may file and unfile assets under `organize:asset`, and
-may record a description under `propose:description`. It may not ratify one.
-A model that could ratify its own metadata would turn `CLAIMED_UNRATIFIED` into
+may record a description under `propose:description`. It may not accept one.
+A model that could accept its own metadata would turn `CLAIMED_UNACCEPTED` into
 a formality, which is the exact defect Ruling 1 exists to prevent. It also may
 not invent a value outside a declared vocabulary: an unrepresentable value is a
 finding against the type, not a reason to widen it.
 
 **What would defeat this ruling:** a declared field whose correct value is
 mechanically derivable from the payload — a digest, a MIME type, a pixel
-dimension. That is not judgement and holding it to ratification would be
+dimension. That is not judgement and holding it to acceptance would be
 ceremony. Such fields are not in scope here and would need their own ruling.
 
 ## Effect class and rollback
@@ -111,4 +111,4 @@ capability map; nothing else reads them.
 Proposed. The implementation is `BUILT` and self-tested: 40 cases in
 `services/asset/tests/test_organization.py` and `test_librarian.py`, every
 declared refusal produced by at least one of them. That is `BUILT` evidence
-only. Independent witnessing has not run, and only Bdo ratifies.
+only. Independent witnessing has not run, and only Bdo accepts.

@@ -24,7 +24,7 @@ Must not: admit provider SDK types into kernel or service contracts; permit
 silent provider fallback; let bindings or adapters make authoritative writes or
 semantic forks (AGENTS.md directory boundaries: `/bindings` must not own
 authoritative writes or semantic forks; `/adapters` must not own standing,
-ratification, settlement, or hidden fallback); let model selection change
+acceptance, settlement, or hidden fallback); let model selection change
 authority.
 
 ## Key files
@@ -85,12 +85,12 @@ authority.
 - `invoke_model` refusals: `MODEL_UNAVAILABLE`, `MODEL_INCOMPATIBLE`, `DATA_BOUNDARY_REFUSED`.
 - Information roles: **Proposal**, **Recording**, **Receipt**, **Projection**; model output enters as proposal or recording, never as authoritative state.
 - Effect classes: `RECORD_LOCAL`, `RESOURCE_CONSUMPTION`, `EXTERNAL_WORLD` (refused in Phase I).
-- Repository standing lifecycle: `OPEN -> BUILT -> WITNESSED -> RATIFIED`; record standing: `RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE`; attestation outcomes: `REPRODUCED | DISSENTED | UNATTESTABLE`.
+- Repository standing lifecycle: `OPEN -> BUILT -> WITNESSED -> ACCEPTED`; record standing: `RECORDED -> ADMITTED -> ACCEPTED -> EFFECTIVE`; attestation outcomes: `REPRODUCED | DISSENTED | UNATTESTABLE`.
 
 ## Report format
 
 - files_changed: exact repo-relative paths.
 - checks_observed: commands run with exit codes and bounded output excerpts.
-- standing_proposals: at most `OPEN -> BUILT` from a builder; `BUILT -> WITNESSED` requires an independent witness; only Bdo ratifies.
+- standing_proposals: at most `OPEN -> BUILT` from a builder; `BUILT -> WITNESSED` requires an independent witness; only Bdo accepts.
 - judgement_items: questions queued for Bdo, stated as questions.
 - next_bounded_operation: the single next operation, or none.

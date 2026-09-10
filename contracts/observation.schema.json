@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/bdf1992/Soveraeign/blob/main/contracts/observation.schema.json",
   "title": "Soveraeign Observation",
-  "description": "Independent evidence of what occurred, per the SPEC.md Observation object. An observation records what an observer looked at, how it avoided relying solely on the executor's report, and which predicates held. It settles nothing: executor output alone cannot establish success, and an observation is not a receipt, a ratification, or a witness.",
+  "description": "Independent evidence of what occurred, per the SPEC.md Observation object. An observation records what an observer looked at, how it avoided relying solely on the executor's report, and which predicates held. It settles nothing: executor output alone cannot establish success, and an observation is not a receipt, a acceptance, or a witness.",
   "type": "object",
   "additionalProperties": false,
   "required": [

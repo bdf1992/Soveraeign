@@ -6,7 +6,7 @@ code that joins its split contaminant parts, in memory only; no joined
 contaminant is ever written to a committed file. pii-v1 is configured with
 the synthetic identities the corpus carries (username example, the joined
 example.com address), never a real identity. These cases establish BUILT
-evidence only; they witness and ratify nothing.
+evidence only; they witness and accept nothing.
 """
 
 from __future__ import annotations

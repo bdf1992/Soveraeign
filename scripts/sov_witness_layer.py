@@ -24,7 +24,7 @@ what does catch a probe that misreports; it is not claimed to be caught here.
 Nothing here settles standing. A receipt that still matches the tree is not
 thereby correct, and a probe that still reaches its subject has not thereby
 witnessed anything. This reports whether the evidence is still live; what it
-earns stays the reader's judgement, and ratification stays Bdo's.
+earns stays the reader's judgement, and acceptance stays Bdo's.
 """
 
 from __future__ import annotations

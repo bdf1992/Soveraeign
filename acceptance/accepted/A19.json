@@ -55,6 +55,6 @@
     "reaching main travels with the trunk reconciliation (merge/one-trunk-reconciliation); this branch carries grant-excluded paths and can never pass the standing landing gate, which is the gate working as designed",
     "four verify failures remain on this shared tree - acceptance routing, diagram provenance, documentation reader, repository tooling tests - all pre-existing, owned elsewhere per decisions/0098, and untouched by this change; the fifth, orientation snapshot, was repaired by this concern"
   ],
-  "on_accept": "Record ACCEPT through python scripts/sov_accept.py accept A19 --seat seat:root --actor urn:soveraeign:actor:bdo; decisions/0100's status line records the ratification, the packet moves to acceptance/accepted/, and the corrected doctrine is the operative closure rule for every participant working under AGENTS.md.",
+  "on_accept": "Record ACCEPT through python scripts/sov_accept.py accept A19 --seat seat:root --actor urn:soveraeign:actor:bdo; decisions/0100's status line records the acceptance, the packet moves to acceptance/accepted/, and the corrected doctrine is the operative closure rule for every participant working under AGENTS.md.",
   "on_reject": "git revert 8da93a2 restores the prior loop, fixtures, documents, and snapshot counts in one commit; delete acceptance/A19.json; decisions/0100 is struck to REJECTED with the reason, and the memory note steering future sessions toward witness-launching is deleted."
 }

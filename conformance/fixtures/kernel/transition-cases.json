@@ -70,12 +70,12 @@
       }
     },
     {
-      "case_id": "K-003-judgement-authority-may-ratify",
+      "case_id": "K-003-judgement-authority-may-accept",
       "expect": "PERMITTED",
-      "proves": "Ratification is permitted under a live judgement grant against the current state.",
+      "proves": "Acceptance is permitted under a live judgement grant against the current state.",
       "request": {
         "request_schema": "soveraeign-kernel-transition/v1",
-        "transition": "ratify",
+        "transition": "accept",
         "actor_id": "Bdo",
         "actor_kind": "HUMAN",
         "effect_class": "RECORD_LOCAL",
@@ -354,12 +354,12 @@
       }
     },
     {
-      "case_id": "K-012-verification-authority-cannot-ratify",
+      "case_id": "K-012-verification-authority-cannot-accept",
       "expect": "AUTHORITY_REFUSED",
-      "proves": "CLASSIFICATION.md: verification authority cannot ratify a judgement claim.",
+      "proves": "CLASSIFICATION.md: verification authority cannot accept a judgement claim.",
       "request": {
         "request_schema": "soveraeign-kernel-transition/v1",
-        "transition": "ratify",
+        "transition": "accept",
         "actor_id": "model/verifier",
         "actor_kind": "MODEL",
         "effect_class": "RECORD_LOCAL",

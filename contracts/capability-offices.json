@@ -125,10 +125,10 @@
         "MODEL"
       ]
     },
-    "asset.ratify-proposal": {
+    "asset.accept-proposal": {
       "office": "FRONT",
       "counter": "operator-desk",
-      "required_authority": "ratify:judgement",
+      "required_authority": "accept:judgement",
       "effect_class": "RECORD_LOCAL",
       "actor_kinds": [
         "HUMAN"
@@ -433,7 +433,7 @@
     "console.resolve-judgement": {
       "office": "FRONT",
       "counter": "operator-desk",
-      "required_authority": "ratify:judgement",
+      "required_authority": "accept:judgement",
       "effect_class": "RECORD_LOCAL",
       "actor_kinds": [
         "HUMAN"
@@ -1024,10 +1024,10 @@
         "MODEL"
       ]
     },
-    "proofing.ratify-decision": {
+    "proofing.accept-decision": {
       "office": "FRONT",
       "counter": "review-desk",
-      "required_authority": "ratify:judgement",
+      "required_authority": "accept:judgement",
       "effect_class": "RECORD_LOCAL",
       "actor_kinds": [
         "HUMAN"
@@ -1259,7 +1259,7 @@
     "registry.retire-owner": {
       "office": "BACK",
       "counter": "permits-office",
-      "required_authority": "ratify:judgement",
+      "required_authority": "accept:judgement",
       "effect_class": "RECORD_LOCAL",
       "actor_kinds": [
         "HUMAN"

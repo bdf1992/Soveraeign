@@ -1,11 +1,11 @@
 # Console judgement slice, 2026-08-23
 
-Status: `BUILT · WITNESSED IN PART BY SEPARATE AGENTS · NOTHING RATIFIED`
+Status: `BUILT · WITNESSED IN PART BY SEPARATE AGENTS · NOTHING ACCEPTED`
 
 Bdo directed, 2026-08-23: "We should create and deliver appropriate interfaces
 for user interaction with the system's integration and implementations," and
 separately that a GitHub code-owner review click cannot be the owner's
-ratification surface because Bdo will rarely be on GitHub (`OPEN-SEAMS.md`
+acceptance surface because Bdo will rarely be on GitHub (`OPEN-SEAMS.md`
 S12). The Console Service is the chartered home for that interface. A
 `sov-orchestrator` planned the first slice, the owner's judgement surface;
 six `sov-worker` operations built it; a `sov-witness` found eleven defects; a
@@ -22,11 +22,11 @@ One path, three legs, all records:
   with delivery `LOCAL` is addressed to the owner; the owner pulls the pending
   list through the Human Binding (Phase I has no push);
 - answer: the owner invokes `resolve-judgement` through the binding; the
-  console realizes it as the `SPEC.md` `ratify` transition; the request's
-  question is the Proposal ratified;
+  console realizes it as the `SPEC.md` `accept` transition; the request's
+  question is the Proposal accepted;
 - land: a new owned record, `judgement-resolution`, carries resolver, the
   grant checked, the decision, a rationale address, and its receipt; its
-  standing reaches `RATIFIED` by an appended event, never by overwrite; the
+  standing reaches `ACCEPTED` by an appended event, never by overwrite; the
   request carries only a `resolution_id` back-reference.
 
 No runtime code. O18 gates `console_implementation`; every file here is
@@ -38,10 +38,10 @@ charter, contract, fixture, declaration, or draft. Everything is a proposal.
 | --- | --- | --- |
 | Charter | `services/console/CHARTER.md` | one line open, since fixed by the session (`BUILT`) |
 | Contracts | `services/console/contracts/service.json`, `judgement-request.schema.json`, `judgement-resolution.schema.json`, `contracts/fixtures/judgement-request.fixtures.json`, `judgement-resolution.fixtures.json` | `WITNESSED` supported, machine-checked |
-| Seed fixtures | `services/console/conformance/002-*.yaml` (updated), `008-judgement-request-reaches-owner.yaml`, `009-owner-resolution-lands-ratified.yaml` | `WITNESSED` supported as SEED text; two defeating lines added after, by the session (`BUILT`) |
+| Seed fixtures | `services/console/conformance/002-*.yaml` (updated), `008-judgement-request-reaches-owner.yaml`, `009-owner-resolution-lands-accepted.yaml` | `WITNESSED` supported as SEED text; two defeating lines added after, by the session (`BUILT`) |
 | Doc coherence | `services/console/README.md` | `WITNESSED` supported, one residual |
 | Binding declaration | `bindings/console/README.md`, `bindings/console/interface.json`, `bindings/README.md` (Console section, append-only) | `WITNESSED` supported |
-| Owner packet | `.claude/drafts/o18-console-ratification-packet.md` | supported as a proposal document |
+| Owner packet | `.claude/drafts/o18-console-acceptance-packet.md` | supported as a proposal document |
 
 ## What the witnesses checked
 
@@ -70,24 +70,24 @@ instead of recipients; packet citation errors.
 - `services/console/contracts/notification.schema.json` (outside the slice)
   describes `source_address` as post, receipt, request, or counter-record; a
   resolution is now also a source. Description drift.
-- `services/console/README.md` gate-4 sentence "ratifying the boundary itself
+- `services/console/README.md` gate-4 sentence "accepting the boundary itself
   gates only the standing word" was written by the other session; a README
-  stating what a ratification gates reads as a decision. Queued.
+  stating what a acceptance gates reads as a decision. Queued.
 - The other session's uncommitted `STATUS.yaml` splits O18 into two named
   gates (`decisions/0023`). The slice cites O18 as one id; if 0023 lands, the
   charter's "O18 gates `console_implementation`" wording goes stale.
 - Where the request's question is admitted (inside `request-judgement` or by
-  a separate `admit`) before `ratify` can fire is open; CONS-009 says so.
+  a separate `admit`) before `accept` can fire is open; CONS-009 says so.
 
 ## Judgement items for Bdo
 
-The packet at `.claude/drafts/o18-console-ratification-packet.md` holds six
+The packet at `.claude/drafts/o18-console-acceptance-packet.md` holds six
 yes/no questions: O18's three halves (boundary, provisional local-CLI binding,
 name) and three new ones (self-issued founding grant; this record as the
-ratification surface replacing the 0016 click; `ACCEPTED | STRUCK | DEFERRED`
+acceptance surface replacing the 0016 click; `ACCEPTED | STRUCK | DEFERRED`
 as the answer vocabulary). The witnesses added: does `JUDGEMENT_RESOLVED`
 point at the resolution or the request; may a service README say what a
-ratification gates; is the two-gate O18 split the form Bdo wants.
+acceptance gates; is the two-gate O18 split the form Bdo wants.
 
 ## Left unread
 

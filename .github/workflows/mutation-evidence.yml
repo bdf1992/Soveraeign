@@ -89,6 +89,6 @@ jobs:
             echo '## Mutation evidence'
             echo
             echo "Subject SHA: $GITHUB_SHA"
-            echo 'This is asynchronous evidence about test quality. It does not witness product behavior and does not ratify standing.'
+            echo 'This is asynchronous evidence about test quality. It does not witness product behavior and does not accept standing.'
             echo 'Surviving mutants are engineering findings to reconcile under normal custody; no score threshold is currently authoritative.'
           } >> "$GITHUB_STEP_SUMMARY"

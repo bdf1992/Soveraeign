@@ -19,7 +19,7 @@
     "status": {
       "enum": [
         "PROPOSED",
-        "RATIFIED"
+        "ACCEPTED"
       ]
     },
     "phase": {

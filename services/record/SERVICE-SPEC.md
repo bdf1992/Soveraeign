@@ -1,7 +1,7 @@
 # Record Service Logical Specification
 
 Status: `BUILT` (self-report, drafting session, 2026-08-27 — not `WITNESSED`,
-not `RATIFIED`)
+not `ACCEPTED`)
 
 Service-scoped projection of `SPEC.md`, per `decisions/0067`. Named
 `SERVICE-SPEC.md`, not `SPEC.md` — the root document owns that name. This file

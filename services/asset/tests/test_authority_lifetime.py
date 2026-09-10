@@ -6,7 +6,7 @@ operating successfully. Before these cases the `grants` table had no expiry and
 the only disqualifier was `revoked`, so any grant ever issued was a permanent
 credential - the exact thing the rule forbids.
 
-These establish BUILT evidence only. They do not witness or ratify anything.
+These establish BUILT evidence only. They do not witness or accept anything.
 """
 
 from __future__ import annotations
@@ -47,24 +47,24 @@ class GrantLifetime(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_a_live_grant_authorizes(self):
-        self.service.grant("Bdo", "Bdo", "ratify:judgement", ttl_seconds=900)
-        self.assertTrue(self.service._authorized("Bdo", "ratify:judgement", "any-scope"))
+        self.service.grant("Bdo", "Bdo", "accept:judgement", ttl_seconds=900)
+        self.assertTrue(self.service._authorized("Bdo", "accept:judgement", "any-scope"))
 
     def test_an_expired_grant_stops_authorizing(self):
         """The defeating case: time alone withdraws authority, with no revocation."""
-        self.service.grant("Bdo", "Bdo", "ratify:judgement", ttl_seconds=900)
+        self.service.grant("Bdo", "Bdo", "accept:judgement", ttl_seconds=900)
         self.clock.advance(901)
-        self.assertFalse(self.service._authorized("Bdo", "ratify:judgement", "any-scope"))
+        self.assertFalse(self.service._authorized("Bdo", "accept:judgement", "any-scope"))
 
     def test_an_expired_grant_refuses_the_transition_with_a_receipt(self):
         source = self.root / "hero.txt"
         source.write_bytes(b"ORIGINAL\n")
-        self.service.grant("Bdo", "Bdo", "ratify:judgement", ttl_seconds=900)
+        self.service.grant("Bdo", "Bdo", "accept:judgement", ttl_seconds=900)
         asset = self.service.ingest(source, "Hero", "Bdo")
         proposal = self.service.propose(asset["asset_id"], "Bdo", {"description": "a hero"})
         self.clock.advance(901)
         with self.assertRaises(AuthorityRefused):
-            self.service.ratify(proposal, "Bdo")
+            self.service.accept(proposal, "Bdo")
         refusals = [r for r in self.service.receipts()
                     if r["outcome"] == "REFUSED" and r["event"] == "authority.check"]
         self.assertEqual(len(refusals), 1)
@@ -81,7 +81,7 @@ class SessionBinding(unittest.TestCase):
         self.tmp = TemporaryDirectory()
         self.clock = Clock()
         self.service = AssetService(Path(self.tmp.name) / "state", clock=self.clock)
-        self.service.grant("Bdo", "Bdo", "ratify:judgement", ttl_seconds=3600)
+        self.service.grant("Bdo", "Bdo", "accept:judgement", ttl_seconds=3600)
 
     def tearDown(self):
         self.service.close()
@@ -90,24 +90,24 @@ class SessionBinding(unittest.TestCase):
     def test_a_session_bound_grant_dies_with_its_session(self):
         """The defeating case: closing the session withdraws authority immediately."""
         session = self.service.open_session("claude", "claude-opus-5", ttl_seconds=3600)
-        self.service.grant("Bdo", "claude", "ratify:judgement", ttl_seconds=900,
+        self.service.grant("Bdo", "claude", "accept:judgement", ttl_seconds=900,
                            session_id=session)
-        self.assertTrue(self.service._authorized("claude", "ratify:judgement", "x"))
+        self.assertTrue(self.service._authorized("claude", "accept:judgement", "x"))
         self.service.close_session(session, "Bdo")
-        self.assertFalse(self.service._authorized("claude", "ratify:judgement", "x"))
+        self.assertFalse(self.service._authorized("claude", "accept:judgement", "x"))
 
     def test_a_grant_never_outlives_its_session(self):
         session = self.service.open_session("claude", "claude-opus-5", ttl_seconds=60)
-        self.service.grant("Bdo", "claude", "ratify:judgement", ttl_seconds=9000,
+        self.service.grant("Bdo", "claude", "accept:judgement", ttl_seconds=9000,
                            session_id=session)
         self.clock.advance(61)
-        self.assertFalse(self.service._authorized("claude", "ratify:judgement", "x"))
+        self.assertFalse(self.service._authorized("claude", "accept:judgement", "x"))
 
     def test_an_expired_session_cannot_carry_a_new_grant(self):
         session = self.service.open_session("claude", "claude-opus-5", ttl_seconds=60)
         self.clock.advance(61)
         with self.assertRaises(AuthorityRefused):
-            self.service.grant("Bdo", "claude", "ratify:judgement", session_id=session)
+            self.service.grant("Bdo", "claude", "accept:judgement", session_id=session)
 
 
 class Attenuation(unittest.TestCase):
@@ -118,7 +118,7 @@ class Attenuation(unittest.TestCase):
         self.clock = Clock()
         self.service = AssetService(Path(self.tmp.name) / "state", clock=self.clock)
         # The first issuer against an empty store is recorded as the root.
-        self.service.grant("Bdo", "claude", "ratify:judgement", scope="asset_1",
+        self.service.grant("Bdo", "claude", "accept:judgement", scope="asset_1",
                            ttl_seconds=900)
 
     def tearDown(self):
@@ -129,9 +129,9 @@ class Attenuation(unittest.TestCase):
         self.assertEqual(self.service.authority.root_issuer(), "Bdo")
 
     def test_a_holder_may_pass_on_what_it_holds(self):
-        self.service.grant("claude", "worker", "ratify:judgement", scope="asset_1",
+        self.service.grant("claude", "worker", "accept:judgement", scope="asset_1",
                            ttl_seconds=300)
-        self.assertTrue(self.service._authorized("worker", "ratify:judgement", "asset_1"))
+        self.assertTrue(self.service._authorized("worker", "accept:judgement", "asset_1"))
 
     def test_an_issuer_cannot_grant_a_capability_it_does_not_hold(self):
         """The defeating case: no covering grant means no issue."""
@@ -140,11 +140,11 @@ class Attenuation(unittest.TestCase):
 
     def test_an_issuer_cannot_widen_scope(self):
         with self.assertRaises(AuthorityRefused):
-            self.service.grant("claude", "worker", "ratify:judgement", scope="*")
+            self.service.grant("claude", "worker", "accept:judgement", scope="*")
 
     def test_an_issuer_cannot_grant_past_its_own_expiry(self):
         with self.assertRaises(AuthorityRefused):
-            self.service.grant("claude", "worker", "ratify:judgement", scope="asset_1",
+            self.service.grant("claude", "worker", "accept:judgement", scope="asset_1",
                                ttl_seconds=9000)
 
     def test_a_refused_issue_is_recorded(self):
@@ -169,14 +169,14 @@ class LegacyStoreMigration(unittest.TestCase):
                 "  scope TEXT NOT NULL, revoked INTEGER NOT NULL DEFAULT 0,"
                 "  created_at REAL NOT NULL);"
             )
-            db.execute("INSERT INTO grants VALUES('grant_legacy','Bdo','ratify:judgement',"
+            db.execute("INSERT INTO grants VALUES('grant_legacy','Bdo','accept:judgement',"
                        "'*',0,1.0)")
             db.commit()
             db.close()
 
             service = AssetService(root)
             try:
-                self.assertFalse(service._authorized("Bdo", "ratify:judgement", "x"))
+                self.assertFalse(service._authorized("Bdo", "accept:judgement", "x"))
             finally:
                 service.close()
 

@@ -10,8 +10,8 @@ can make decisions at their resolution, all the way to workers."
 `decisions/0023-acceptance-not-approval.md` already said the owner gate is
 acceptance over evidenced results, and `decisions/0024-open-decision-drain.md`
 already ruled seventeen of the docket's questions on `main`. This branch kept
-the queue anyway and produced `reports/2026-08-23-ratification-docket.md`, which
-answered a direct instruction to ratify with "NOT MET for every surface" and a
+the queue anyway and produced `reports/2026-08-23-acceptance-docket.md`, which
+answered a direct instruction to accept with "NOT MET for every surface" and a
 list of things only Bdo could supply. That report is the defect this record
 closes.
 
@@ -216,7 +216,7 @@ It does not touch `PUBLIC-CLEARANCE`. No agent may claim legal, trademark, or
 domain clearance, and this record claims none.
 
 It does not grant authority to the tier that wrote it. Ruling 1 assigns
-decisions to tiers; it does not let a tier widen its own scope, ratify owner
+decisions to tiers; it does not let a tier widen its own scope, accept owner
 judgement, or witness its own build. `AGENTS.md` is unchanged on every one of
 those points.
 
@@ -231,6 +231,6 @@ that ruling and names what defeated it.
 - Bdo's direction, 2026-08-23, quoted above.
 - `decisions/0023-acceptance-not-approval.md` — the acceptance gate.
 - `decisions/0024-open-decision-drain.md` — the seventeen prior rulings.
-- `reports/2026-08-23-ratification-docket.md` — the failure mode, preserved.
+- `reports/2026-08-23-acceptance-docket.md` — the failure mode, preserved.
 - `AGENTS.md`, Authority; Self-direction is not delegation; Blocked edge is not
   blocked frontier.

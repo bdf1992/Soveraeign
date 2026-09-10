@@ -70,10 +70,10 @@ class EveryRuleNamesItsDefect(unittest.TestCase):
         self.assertOnly(kernel.check_capture(observed), "refused capture still created a source")
 
     # make_effective
-    def test_effective_without_ratification(self) -> None:
+    def test_effective_without_acceptance(self) -> None:
         observed = positive("CONF-EFFECTIVE-POS"); observed["claim"]["standing"] = "ADMITTED"
         self.assertOnly(kernel.check_effective(observed),
-                        "claim made effective without RATIFIED standing")
+                        "claim made effective without ACCEPTED standing")
 
     def test_effective_with_policy_unmet(self) -> None:
         observed = positive("CONF-EFFECTIVE-POS"); observed["attestations"] = []

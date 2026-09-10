@@ -65,7 +65,7 @@ non-default effects remain visible.
 `standing:` is one axis for the whole artifact lifecycle, and its colours ramp
 with how much evidence stands behind the claim: `proposed`, `declared`,
 `chartered`, `self-tested` (amber, because the witness is still outstanding),
-`witnessed` (green), `ratified`, and `demoted` (red, a fall off the ramp rather
+`witnessed` (green), `accepted`, and `demoted` (red, a fall off the ramp rather
 than a rung on it). `OPEN` is the default and carries no label, like
 `effect: record-local`. Every standing projects to at most one label. The
 separate `witness:` axis said the same thing a second time and is retired; a
@@ -87,7 +87,7 @@ issue links inside the `sov:relations` delimiters so a reader sees them without
 parsing YAML. The metadata stays authoritative; the rendered block is a
 projection of it and never a second place to declare an edge. A branch or pull request may close
 an implementation stub; it cannot by itself close its bit, promote a village,
-satisfy independent witness, or ratify the epic.
+satisfy independent witness, or accept the epic.
 
 A **story** (`kind: story`, `type: story`) is one participant crossing one
 counter and finding the substrate short. It names its teller by the kernel's
@@ -186,12 +186,12 @@ python scripts/sov_ticket.py transition --body <pull-request-body.md>
 The table refuses what the contract forbids: skipped standings, a builder
 witnessing its own work, an unconverged Red engagement, a confirmed finding
 with no permanent defeating fixture, a finding the Red operator reproduced
-itself, and any machine claiming `RATIFIED`. Run
+itself, and any machine claiming `ACCEPTED`. Run
 `python scripts/sov_ticket.py selfcheck` to exercise every declared refusal;
 `python scripts/verify.py` runs it for you.
 
-Ratification is not reachable from a check. `.github/CODEOWNERS` protects
-governed paths but is not itself an owner judgement surface. Ratification requires
+Acceptance is not reachable from a check. `.github/CODEOWNERS` protects
+governed paths but is not itself an owner judgement surface. Acceptance requires
 an explicit recorded root-seat action; the exact Human Binding mechanism remains
 the open mechanism seam in `OPEN-SEAMS.md` S12.
 
@@ -331,7 +331,7 @@ alone and fails catastrophically only if the isolated check itself still exceeds
 - Preserve observed failures; never alter expectations merely to obtain green.
 
 A passing self-test is `BUILT` evidence. Independent reconstruction is needed
-for `WITNESSED`, and Bdo's judgement is needed for `RATIFIED`.
+for `WITNESSED`, and Bdo's judgement is needed for `ACCEPTED`.
 
 ## Context hygiene
 

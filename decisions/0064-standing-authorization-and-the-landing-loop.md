@@ -42,14 +42,14 @@ independently for the loop to settle anything:
 - the excluded paths keep it out of `decisions/`, `lineage/`, `STATUS.yaml`, `.github/`, and
   every root governing document, and out of its own registry and schema, so an exercise of
   the grant cannot widen the grant it is being exercised under;
-- the `VERIFICATION` authority type cannot ratify a `JUDGEMENT` claim (`SPEC.md`, PROD-I-5),
+- the `VERIFICATION` authority type cannot accept a `JUDGEMENT` claim (`SPEC.md`, PROD-I-5),
   so the grant could not be used to record standing even if a path slipped through;
 - `requires_independent_observation` means a build still cannot close itself, which is the
   rule `AGENTS.md` has held since the founding contract.
 
 A landed commit under this grant is `BUILT` plus an independent observation. It is not
 `WITNESSED` in the sense the artifact lifecycle reserves for a settled observation, and it is
-not `RATIFIED`. Landing removes a conversation about merging. It removes no gate.
+not `ACCEPTED`. Landing removes a conversation about merging. It removes no gate.
 
 ## What the grant costs to keep
 
@@ -68,7 +68,7 @@ No new refusal code was minted. The gate reports the codes
 
 | Code | Fires when |
 | --- | --- |
-| `AUTHORITY_REFUSED` | no live grant covers the request: unratified, revoked, expired, wrong actor, capability not carried, path out of scope, branch not admitted, budget exhausted, effect class above the ceiling |
+| `AUTHORITY_REFUSED` | no live grant covers the request: unaccepted, revoked, expired, wrong actor, capability not carried, path out of scope, branch not admitted, budget exhausted, effect class above the ceiling |
 | `EFFECT_CLASS_REFUSED` | the phase refuses the declared effect class outright, before any grant is consulted |
 | `OBSERVATION_MISSING` | the grant requires an independent observation and none was offered, or it did not confirm |
 | `OBSERVER_NOT_INDEPENDENT` | the observation came from a participant that contributed to the build |
@@ -117,13 +117,13 @@ exercise cannot sit in the registry looking authoritative. The check runs inside
 ## Residual
 
 Both paragraphs below were true when this record was written and are superseded by
-`decisions/0065-standing-grant-ratified.md`: Bdo ratified the grant on 2026-08-25, and the
+`decisions/0065-standing-grant-accepted.md`: Bdo accepted the grant on 2026-08-25, and the
 branch was brought level with `main` the same day. They are kept as written rather than
 edited, because a decision record states what was true when it was made.
 
 The grant ships at `PROPOSED` standing and the evaluator refuses a grant that is not
-`RATIFIED`, which means the loop is presently inert: it will run and the gate will refuse
-every landing. Flipping `status` to `RATIFIED` in `contracts/standing-grants.json` is Bdo's
+`ACCEPTED`, which means the loop is presently inert: it will run and the gate will refuse
+every landing. Flipping `status` to `ACCEPTED` in `contracts/standing-grants.json` is Bdo's
 act and nothing in the loop may perform it for him. That is the acceptance gate of
 `decisions/0023` doing its job, not an oversight.
 

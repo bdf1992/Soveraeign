@@ -15,7 +15,7 @@ Refusal reason codes: ``MODEL_UNAVAILABLE``, ``MODEL_INCOMPATIBLE``, and
 ``DATA_BOUNDARY_REFUSED`` are the declared ``invoke_model`` codes (``SPEC.md``).
 ``SILENT_FALLBACK_REFUSED``, ``PROVENANCE_INCOMPLETE``, and ``PROVENANCE_CONTRADICTED``
 are reasoned refusals proposed by this adapter and queued for Bdo under O12; the
-transition admits a reasoned refusal, but the exact code set is not ratified.
+transition admits a reasoned refusal, but the exact code set is not accepted.
 """
 
 from __future__ import annotations

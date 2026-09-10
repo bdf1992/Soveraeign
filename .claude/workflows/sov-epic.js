@@ -227,5 +227,5 @@ return {
   residuals: residuals,
   unrouted_work: unroutedWork,
   judgement_queue: judgementQueue,
-  standing_note: 'A walk observes and at most proposes BUILT -> WITNESSED. Only Bdo ratifies. HELD, UNROUTED and OWNER_HELD are distinct: only judgement_queue waits on Bdo.',
+  standing_note: 'A walk observes and at most proposes BUILT -> WITNESSED. Only Bdo accepts. HELD, UNROUTED and OWNER_HELD are distinct: only judgement_queue waits on Bdo.',
 }

@@ -62,7 +62,7 @@ New `kind: story`. Required beyond the common fields:
 | `DECLARED_NOT_IMPLEMENTED` | Bound. A scenario exists; some support on `leans_on` is not yet `BUILT`. |
 | `BUILT_SELF_TESTED_NOT_WITNESSED` | Walked by its builder. Every support is at least `BUILT` and the scenario passed under the builder's own run. |
 | `WITNESSED` | Walked under independent observation (`participant-observation.schema.json`). |
-| `RATIFIED` | Bdo. |
+| `ACCEPTED` | Bdo. |
 | `DEMOTED` | The counter or a support was demoted; the story is told again or withdrawn. |
 
 The walker derives a reading the way it derives `ready / held / unrouted` for

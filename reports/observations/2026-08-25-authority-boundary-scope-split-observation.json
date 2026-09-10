@@ -29,7 +29,7 @@
       "exit_code": 0
     },
     {
-      "command": "REGRESSION SWEEP: throwaway repo, 22 cases, each graded raw AND through repo_relative against the live RATIFIED grant and cross-checked against what git add stages  # all six escape classes (traversal, dot, empty, trailing separator, glob, single-char, char class, magic x3, absolute, bare directory, directory with slash) REFUSED by both routes; HOLES: none",
+      "command": "REGRESSION SWEEP: throwaway repo, 22 cases, each graded raw AND through repo_relative against the live ACCEPTED grant and cross-checked against what git add stages  # all six escape classes (traversal, dot, empty, trailing separator, glob, single-char, char class, magic x3, absolute, bare directory, directory with slash) REFUSED by both routes; HOLES: none",
       "exit_code": 0
     },
     {

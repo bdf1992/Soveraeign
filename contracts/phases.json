@@ -69,7 +69,7 @@
         },
         {
           "clause_id": "PHASE-I-X5",
-          "text": "the owner ratifies Phase-I operational acceptance",
+          "text": "the owner accepts Phase-I operational acceptance",
           "verdict": "NOT_REACHED",
           "reading": "Cannot truthfully occur before the preceding evidence exists. Recording this as NOT_EARNED would suggest it was attempted and refused; it was never reachable.",
           "held_by": "custody:phase-i/operational-acceptance"

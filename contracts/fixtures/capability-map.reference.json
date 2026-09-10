@@ -15,8 +15,59 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "b0ae913f108fbc8e0460a8567408dcfb229825f94fbce11638d375fa8182399b",
+  "input_state_digest": "ea075db9d5de79ed84a8201502c32ab6c70268ec0eccdac82926409c3fb75dab",
   "capabilities": [
+    {
+      "capability_id": "asset.accept-proposal",
+      "service_id": "asset",
+      "operation": "accept-proposal",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "accept:judgement",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/accept-proposal",
+        "subject": "asset",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-5",
+        "kernel_transition": "accept",
+        "preconditions": [
+          "proposal_recorded",
+          "live_matching_grant",
+          "human_actor"
+        ],
+        "commit": "EFFECTIVE",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "GRANT_NOT_COVERED",
+          "STALE_STATE"
+        ]
+      }
+    },
     {
       "capability_id": "asset.add-member",
       "service_id": "asset",
@@ -279,57 +330,6 @@
         "refusals": [
           "INCOMPLETE_PROPOSAL",
           "GRANT_NOT_COVERED"
-        ]
-      }
-    },
-    {
-      "capability_id": "asset.ratify-proposal",
-      "service_id": "asset",
-      "operation": "ratify-proposal",
-      "office": "FRONT",
-      "counter": "operator-desk",
-      "service_standing": "BUILT",
-      "effect_class": "RECORD_LOCAL",
-      "required_authority": "ratify:judgement",
-      "actor_kinds": [
-        "HUMAN"
-      ],
-      "endpoints": [
-        {
-          "transport": "IN_PROCESS",
-          "activation": "ACTIVE",
-          "address": "asset:in-process"
-        },
-        {
-          "transport": "CLI",
-          "activation": "DECLARED_NOT_ACTIVATED"
-        },
-        {
-          "transport": "MCP",
-          "activation": "DECLARED_NOT_ACTIVATED"
-        },
-        {
-          "transport": "HTTP",
-          "activation": "REFUSED_UNCONFIGURED",
-          "refusal_code": "UNCONFIGURED"
-        }
-      ],
-      "shape": {
-        "logical_endpoint": "sov://asset/ratify-proposal",
-        "subject": "asset",
-        "crud": "SUPERSEDE",
-        "requirement": "PROD-I-5",
-        "kernel_transition": "ratify",
-        "preconditions": [
-          "proposal_recorded",
-          "live_matching_grant",
-          "human_actor"
-        ],
-        "commit": "EFFECTIVE",
-        "refusals": [
-          "AUTHORITY_REFUSED",
-          "GRANT_NOT_COVERED",
-          "STALE_STATE"
         ]
       }
     },
@@ -1843,7 +1843,7 @@
       "counter": "operator-desk",
       "service_standing": "PROPOSED",
       "effect_class": "RECORD_LOCAL",
-      "required_authority": "ratify:judgement",
+      "required_authority": "accept:judgement",
       "actor_kinds": [
         "HUMAN"
       ],
@@ -1871,7 +1871,7 @@
         "subject": "judgement-resolution",
         "crud": "CREATE",
         "requirement": "PROD-I-6",
-        "kernel_transition": "ratify",
+        "kernel_transition": "accept",
         "preconditions": [
           "judgement_request_recorded",
           "human_actor",
@@ -4888,6 +4888,55 @@
       }
     },
     {
+      "capability_id": "proofing.accept-decision",
+      "service_id": "proofing",
+      "operation": "accept-decision",
+      "office": "FRONT",
+      "counter": "review-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "accept:judgement",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://proofing/accept-decision",
+        "subject": "authorized-decision",
+        "crud": "CREATE",
+        "requirement": "PROD-I-5",
+        "kernel_transition": "accept",
+        "preconditions": [
+          "decision_proposal_recorded",
+          "human_actor",
+          "live_matching_grant"
+        ],
+        "commit": "EFFECTIVE",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "STALE_STATE"
+        ]
+      }
+    },
+    {
       "capability_id": "proofing.add-annotation",
       "service_id": "proofing",
       "operation": "add-annotation",
@@ -5128,55 +5177,6 @@
         "commit": "RECORDED",
         "refusals": [
           "INCOMPLETE_PROPOSAL"
-        ]
-      }
-    },
-    {
-      "capability_id": "proofing.ratify-decision",
-      "service_id": "proofing",
-      "operation": "ratify-decision",
-      "office": "FRONT",
-      "counter": "review-desk",
-      "service_standing": "PROPOSED",
-      "effect_class": "RECORD_LOCAL",
-      "required_authority": "ratify:judgement",
-      "actor_kinds": [
-        "HUMAN"
-      ],
-      "endpoints": [
-        {
-          "transport": "IN_PROCESS",
-          "activation": "DECLARED_NOT_ACTIVATED"
-        },
-        {
-          "transport": "CLI",
-          "activation": "DECLARED_NOT_ACTIVATED"
-        },
-        {
-          "transport": "MCP",
-          "activation": "DECLARED_NOT_ACTIVATED"
-        },
-        {
-          "transport": "HTTP",
-          "activation": "REFUSED_UNCONFIGURED",
-          "refusal_code": "UNCONFIGURED"
-        }
-      ],
-      "shape": {
-        "logical_endpoint": "sov://proofing/ratify-decision",
-        "subject": "authorized-decision",
-        "crud": "CREATE",
-        "requirement": "PROD-I-5",
-        "kernel_transition": "ratify",
-        "preconditions": [
-          "decision_proposal_recorded",
-          "human_actor",
-          "live_matching_grant"
-        ],
-        "commit": "EFFECTIVE",
-        "refusals": [
-          "AUTHORITY_REFUSED",
-          "STALE_STATE"
         ]
       }
     },
@@ -6536,7 +6536,7 @@
       "counter": "permits-office",
       "service_standing": "PROPOSED",
       "effect_class": "RECORD_LOCAL",
-      "required_authority": "ratify:judgement",
+      "required_authority": "accept:judgement",
       "actor_kinds": [
         "HUMAN"
       ],

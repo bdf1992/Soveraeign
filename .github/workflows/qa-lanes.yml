@@ -16,7 +16,7 @@ name: qa lanes
 # Mutation execution is intentionally not on this critical path. This workflow
 # admits the exact candidate mutation work quickly; `.github/workflows/mutation-evidence.yml`
 # performs the expensive experiments asynchronously against landed immutable bytes.
-# No job here ratifies.
+# No job here accepts.
 #
 # Blue retains its per-check Observation records rather than reducing the lane to
 # an exit code; see the header of `.github/workflows/verify.yml` for why.
@@ -79,7 +79,7 @@ jobs:
             echo
             echo "Python ${{ matrix.python-version }} is one supported reading of candidate CI(C)."
             echo 'The Blue matrix establishes `BUILT` evidence only when every supported reading passes.'
-            echo 'It establishes nothing about the base+candidate integration subject, and it is not a witness or ratification.'
+            echo 'It establishes nothing about the base+candidate integration subject, and it is not a witness or acceptance.'
           } >> "$GITHUB_STEP_SUMMARY"
 
   blue-required:
@@ -238,5 +238,5 @@ jobs:
             echo 'This gate is bound to the exact candidate CI(C), not the synthetic integration commit.'
             echo 'A pull request that proposes no standing change passes this gate and establishes `BUILT` evidence only.'
             echo 'A pull request that proposes an advance past `BUILT` must carry a settled engagement receipt with an independent witness.'
-            echo '`RATIFIED` is unreachable here by design.'
+            echo '`ACCEPTED` is unreachable here by design.'
           } >> "$GITHUB_STEP_SUMMARY"

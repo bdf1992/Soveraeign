@@ -138,7 +138,7 @@ concern when work crosses a service boundary.
 
 ## What still waits on Bdo
 
-1. **Ratifying this record and the two contracts.** Both are `PROPOSED`.
+1. **Accepting this record and the two contracts.** Both are `PROPOSED`.
 2. **`L-0010`**, whether a proportion between records and demonstrated coverage
    is a governed constraint at all. It is a claim about how much governance is
    too much, which is the root seat's to place.

@@ -4,7 +4,7 @@ Status: `PROPOSED · OWNER ACCEPTANCE OVER EVIDENCE`
 
 This clarification follows the Gateway vertical work in PR #87 and the cleanup of
 `CLASSIFICATION.md`, `services/README.md`, the node/federation contracts, and the Kernel
-transition tooling. It does not ratify that vocabulary by being written. It proposes one
+transition tooling. It does not accept that vocabulary by being written. It proposes one
 consistent reading for owner acceptance and makes the contradictions it replaces explicit.
 
 ## Problem

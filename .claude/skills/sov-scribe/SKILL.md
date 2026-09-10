@@ -73,8 +73,8 @@ Draft and critique are different agents - a draft cannot witness itself:
 
 Soveraeign-facing artifacts use `CLASSIFICATION.md` and `SPEC.md` terms
 exactly. Keep the two lifecycles distinct: artifact standing
-`OPEN -> BUILT -> WITNESSED -> RATIFIED` versus record standing
-`RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE`. Effect classes are
+`OPEN -> BUILT -> WITNESSED -> ACCEPTED` versus record standing
+`RECORDED -> ADMITTED -> ACCEPTED -> EFFECTIVE`. Effect classes are
 `RECORD_LOCAL`, `RESOURCE_CONSUMPTION`, `EXTERNAL_WORLD` (the last is
 forbidden in Phase I).
 

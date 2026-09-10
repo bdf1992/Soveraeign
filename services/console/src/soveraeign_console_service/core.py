@@ -33,7 +33,7 @@ from soveraeign_console_service.refusals import (
 )
 from soveraeign_record_service import RecordService
 
-# A console record enters at RECORDED and never above it. Admission, ratification
+# A console record enters at RECORDED and never above it. Admission, acceptance
 # and effectiveness are kernel transitions this service does not own.
 ENTRY_STANDING = "RECORDED"
 # The node identifier shape `contracts/node-identity.schema.json` declares. Checked

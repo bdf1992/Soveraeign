@@ -1,6 +1,6 @@
 # Signpost alignment and the first kernel move, 2026-08-23
 
-Status: `BUILT · SELF-TESTED · NOT WITNESSED · NOTHING RATIFIED`
+Status: `BUILT · SELF-TESTED · NOT WITNESSED · NOTHING ACCEPTED`
 
 Bdo directed two operations in order: align the signposts that disagree about what happens
 next, then work the foundation. Both landed. One session did the work and wrote this report,

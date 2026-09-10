@@ -1,6 +1,6 @@
 # Gateway Service Requirements Document
 
-Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT RATIFIED`
+Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT ACCEPTED`
 
 This is a service-scoped projection of `PRD.md` under `decisions/0093-service-srd-spec-ground.md`.
 It states what the Gateway Service owes the callers that depend on it. It is not a new
@@ -36,7 +36,7 @@ The Gateway's caller is not a human end user; per `SYSTEM.md`/`AGENTS.md` framin
 
 ## Requirements
 
-Each requirement below carries its own `OPEN → BUILT → WITNESSED → RATIFIED` standing per
+Each requirement below carries its own `OPEN → BUILT → WITNESSED → ACCEPTED` standing per
 `PRD.md`. `BUILT` here is this drafting session's self-report against the evidence cited; it is
 not independent witness.
 

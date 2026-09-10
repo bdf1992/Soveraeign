@@ -2,7 +2,7 @@
 
 ```text
 source          PRD.md · SPEC.md · CONTRACT.md · STATUS.yaml
-source_digest   7e636591342c367c · 585b3d14f594b604 · f95acd076c4977d7 · 6e3491397bf842e5
+source_digest   e94bc710bd9e9263 · 011496c9c301996a · 76900029e000e83d · 1ff65b62dc0a97aa
 reader          hand-authored · v2
 fidelity        LOSSY
 omissions       campaign-specific qualification texts and defeating cases;
@@ -14,7 +14,7 @@ flowchart LR
     O["<b>OPEN</b>"]
     B["<b>BUILT</b><br/>implementation + defeating cases"]
     W["<b>WITNESSED</b><br/>independent observation"]
-    R["<b>RATIFIED / ACCEPTED</b><br/>typed owner-held settlement where required"]
+    R["<b>ACCEPTED / ACCEPTED</b><br/>typed owner-held settlement where required"]
 
     O --> B
     B -- "independent run,<br/>not builder report" --> W

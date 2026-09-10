@@ -47,7 +47,7 @@
     "CHARTERED_NOT_IMPLEMENTED": "standing: chartered",
     "BUILT_SELF_TESTED_NOT_WITNESSED": "standing: self-tested",
     "WITNESSED": "standing: witnessed",
-    "RATIFIED": "standing: ratified",
+    "ACCEPTED": "standing: accepted",
     "DEMOTED": "standing: demoted"
   },
   "kind_to_scope": {

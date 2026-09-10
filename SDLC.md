@@ -20,8 +20,8 @@ output is settled by the tier above it.
 
 | Tier | Role | May | May not |
 | --- | --- | --- | --- |
-| **Control** | Strategic planning and monitoring over registered concerns | Read the concern registry, select the next named operation, declare the operation plan, issue scoped grants, launch orchestrations, observe results independently, settle receipts, update standing, escalate to the owner | Ratify judgement, widen its own grant or effect class, keep private state about concerns |
-| **Orchestration** | Decomposition and supervision of one launched operation | Lease workers, fence execution, collect reports, run independent observation over durable outputs, settle worker-task outcomes, report settlement evidence upward | Widen the received grant, settle its own operation, ratify anything |
+| **Control** | Strategic planning and monitoring over registered concerns | Read the concern registry, select the next named operation, declare the operation plan, issue scoped grants, launch orchestrations, observe results independently, settle receipts, update standing, escalate to the owner | Accept judgement, widen its own grant or effect class, keep private state about concerns |
+| **Orchestration** | Decomposition and supervision of one launched operation | Lease workers, fence execution, collect reports, run independent observation over durable outputs, settle worker-task outcomes, report settlement evidence upward | Widen the received grant, settle its own operation, accept anything |
 | **Work** | Scoped leased execution in a declared environment | Execute the leased task, emit an attributed report | Settle, witness its own output, write authoritative state, outlive its lease |
 
 Escalation to the owner is a first-class transition, not a failure: judgement
@@ -41,9 +41,9 @@ results exist only in combination.
 **Left/Right — the authority dyad.**
 
 - `LEFT` — synthesis: inspect, compare, draft, implement, propose.
-- `RIGHT` — judgement: product intent, naming, ratification, phase gates.
+- `RIGHT` — judgement: product intent, naming, acceptance, phase gates.
 
-Left output is always a proposal. Right holds ratification. A left hand may
+Left output is always a proposal. Right holds acceptance. A left hand may
 never present its synthesis as the right hand's judgement.
 
 **Red/Blue — the verification dyad.**
@@ -66,13 +66,13 @@ goes green only when both have combined.
   proof plus Red's converged adversarial witnessing, recorded as the
   engagement receipt that satisfies the release gate.
 - `JOINED` — the settled combination of the authority dyad: a synthesis
-  proposal met by explicit judgement, recorded as a ratification receipt.
+  proposal met by explicit judgement, recorded as a acceptance receipt.
 - `GREEN` — the derived go-state of a concern at its current gate: its
   verification is `PURPLE` and its authority is `JOINED`.
 
 Combination outcomes name receipts and derived state, not stances or
 standings. No operator holds `PURPLE` or `JOINED`: an operator holding both
-hands of a dyad is the self-witnessing and self-ratifying failure the
+hands of a dyad is the self-witnessing and self-accepting failure the
 contract exists to prevent. `GREEN` is derived from recorded receipts, never
 selected directly, and lapses when either combination is countered or
 invalidated.
@@ -84,7 +84,7 @@ A **concern** is a registered unit of monitored work. Each concern records:
 - a stable name and its owning domain or service;
 - the governing contract and document set;
 - current artifact standing in the
-  `OPEN -> BUILT -> WITNESSED -> RATIFIED` lifecycle;
+  `OPEN -> BUILT -> WITNESSED -> ACCEPTED` lifecycle;
 - the next gate and its blocking open decisions;
 - the admitted effect envelope for the current phase.
 
@@ -122,7 +122,7 @@ contract into the SDLC and does not define a second vocabulary.
    acceptance, or settlement from one repository subject to another.
 
 This carrier lifecycle is orthogonal to artifact standing. `FROZEN` does not
-mean `WITNESSED`; `LANDED` does not mean `RATIFIED`. It only makes the subject of
+mean `WITNESSED`; `LANDED` does not mean `ACCEPTED`. It only makes the subject of
 those claims stable and reconstructable.
 
 ## Skill axes
@@ -201,7 +201,7 @@ the carrier lifecycle above. The gate's rules:
    Like the conformance oracle, the Red lane must not import the
    participant's implementation into its oracle.
 
-`RATIFIED` remains the owner's judgement and is not reachable by any
+`ACCEPTED` remains the owner's judgement and is not reachable by any
 combination of machine evidence.
 
 ## Bindings
@@ -231,7 +231,7 @@ This loop is `BUILT` when the governing documents register it, repository
 verification passes, and the binding skeleton exists at proposal standing. It
 is `WITNESSED` only after its own release gate is exercised against a real
 concern; a bounded, owner-directed provisional exercise is admitted for that
-witnessing before ratification. It is `RATIFIED` only when Bdo accepts the
+witnessing before acceptance. It is `ACCEPTED` only when Bdo accepts the
 tiers, dyads, registry derivation, and Red-gated release requirement recorded
 as open decision O13. O13 therefore gates activation — the loop becoming the
 required process — not the provisional exercise that witnesses it.

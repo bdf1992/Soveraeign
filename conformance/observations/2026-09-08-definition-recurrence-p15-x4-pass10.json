@@ -1,7 +1,7 @@
 {
   "case_id": "WITNESS-2026-09-08-DEFINITION-RECURRENCE-P15-X4-PASS-10",
   "record_kind": "OBSERVATION",
-  "record_note": "An observation, not a settlement and not a ratification. This participant built nothing in the subject and edited no file but this record. It was asked two questions separately and answers them in separate named fields: whether anything at 964abd7 makes landing the member at BUILT wrong, and whether the delta repaired what it claims and introduced anything new. The refusal of BUILT -> WITNESSED recorded by passes 1 through 9 is not reopened here and this record supports no standing transition.",
+  "record_note": "An observation, not a settlement and not a acceptance. This participant built nothing in the subject and edited no file but this record. It was asked two questions separately and answers them in separate named fields: whether anything at 964abd7 makes landing the member at BUILT wrong, and whether the delta repaired what it claims and introduced anything new. The refusal of BUILT -> WITNESSED recorded by passes 1 through 9 is not reopened here and this record supports no standing transition.",
   "participant_id": "claude-opus-5/sov-witness@2026-09-08/pass-10",
   "independence": {
     "contributed_to_build_of_subject": false,

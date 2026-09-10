@@ -17,4 +17,4 @@ capabilities.
 | Transport | In-process `read-health` only | No HTTP, remote agent, or arbitrary-shell transport is admitted |
 
 Passing participant tests establishes `BUILT` evidence for `read-health` only. It does
-not witness the result, ratify the service, or advance any deferred operation.
+not witness the result, accept the service, or advance any deferred operation.

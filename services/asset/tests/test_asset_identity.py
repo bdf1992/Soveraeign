@@ -31,7 +31,7 @@ class AssetCase(unittest.TestCase):
         self.root = Path(self.tmp.name)
         self.service = AssetService(self.root / "state")
         self.service.grant("Bdo", "Bdo", "operate:derive", ttl_seconds=900)
-        self.service.grant("Bdo", "Bdo", "ratify:judgement", ttl_seconds=900)
+        self.service.grant("Bdo", "Bdo", "accept:judgement", ttl_seconds=900)
 
     def tearDown(self):
         self.service.close()
@@ -181,17 +181,17 @@ class Related(AssetCase):
         second = self.service.ingest(self.source("b.md", b"b\n"), "B", "Bdo", locator="repo:b.md")
         return first, second
 
-    def test_a_ratified_relation_becomes_effective(self):
+    def test_a_accepted_relation_becomes_effective(self):
         first, second = self._two()
         proposal = self.service.propose(
             first["asset_id"], "Bdo",
             {"relationship": {"predicate": "cites", "dst_asset": second["asset_id"]}})
-        self.service.ratify(proposal, "Bdo")
+        self.service.accept(proposal, "Bdo")
         relations = self.service.relationships(first["asset_id"])
         self.assertEqual([(r["predicate"], r["standing"]) for r in relations],
                          [("cites", "EFFECTIVE")])
 
-    def test_an_unratified_relation_does_not_exist_yet(self):
+    def test_an_unaccepted_relation_does_not_exist_yet(self):
         """The defeating case: recording a proposal asserts nothing."""
         first, second = self._two()
         self.service.propose(
@@ -199,16 +199,16 @@ class Related(AssetCase):
             {"relationship": {"predicate": "cites", "dst_asset": second["asset_id"]}})
         self.assertEqual(self.service.relationships(first["asset_id"]), [])
 
-    def test_ratifying_without_authority_is_refused(self):
+    def test_accepting_without_authority_is_refused(self):
         first, second = self._two()
         proposal = self.service.propose(
             first["asset_id"], "Bdo",
             {"relationship": {"predicate": "cites", "dst_asset": second["asset_id"]}})
         with self.assertRaises(AuthorityRefused):
-            self.service.ratify(proposal, "nobody")
+            self.service.accept(proposal, "nobody")
         self.assertEqual(self.service.relationships(first["asset_id"]), [])
 
-    def test_derivation_needs_no_ratification_because_an_operation_produced_it(self):
+    def test_derivation_needs_no_acceptance_because_an_operation_produced_it(self):
         """Derivation and assertion are not the same edge and are not gated the same."""
         asset = self.service.ingest(self.source("h.txt", b"h\n"), "H", "Bdo",
                                     locator="repo:h.txt")

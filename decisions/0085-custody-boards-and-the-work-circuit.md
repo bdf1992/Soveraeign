@@ -26,7 +26,7 @@ are checking is the exit the phase opened with.
 | `PHASE-I-X2` fixtures run through one human and two model bindings | `NOT_EARNED` |
 | `PHASE-I-X3` independent observation can reconstruct the receipts | `NOT_EARNED` |
 | `PHASE-I-X4` open judgement calls are visible | `SUBSTANTIALLY_EARNED` |
-| `PHASE-I-X5` the owner ratifies operational acceptance | `NOT_REACHED` |
+| `PHASE-I-X5` the owner accepts operational acceptance | `NOT_REACHED` |
 
 `SUBSTANTIALLY_EARNED` is never rounded up. X4 falls short of `EARNED` because
 29 owner-routed questions name no hold reason from the seven
@@ -89,7 +89,7 @@ sequence requires, and `session-as-node` as a future product capability.
 
 The circuit — `ROOT_POINT → VERTICAL_SLICE → HORIZONTAL_SURFACE →
 EXPLODED_SURFACE → CAPABLE_NODE` — says how much of the system object has been
-drawn. Standing — `OPEN → BUILT → WITNESSED → RATIFIED` — says how well a claim
+drawn. Standing — `OPEN → BUILT → WITNESSED → ACCEPTED` — says how well a claim
 about it is evidenced. Work state — `CANDIDATE → READY → CLAIMED → IN_PROGRESS →
 PRESENTED → LANDED → RETIRED` — says where it sits in the queue.
 
@@ -193,12 +193,12 @@ the frontier: a custody is only as far along as its laggard.
 
 ## What still waits on Bdo
 
-1. **Ratifying the terminal.** `CLOSED / NOT_EARNED` is recorded as his ruling
+1. **Accepting the terminal.** `CLOSED / NOT_EARNED` is recorded as his ruling
    and the record is `PROPOSED`. Settling it is the root seat's.
 2. **The successor campaign's scope.** `succeeded_by` is deliberately null: the
    next phase is scoped after the residual custodies are attached, not before.
    His nomination is the Record path as one thin qualification slice.
-3. **Ratifying the four contracts.** `STATUS.yaml` fields are owed once he rules.
+3. **Accepting the four contracts.** `STATUS.yaml` fields are owed once he rules.
 
 ## Source and authority
 

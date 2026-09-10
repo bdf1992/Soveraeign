@@ -312,7 +312,7 @@
         "verdict": "REPRODUCED, and still reading a declaration in one place"
       }
     },
-    "standing_note": "This is an observation independent of the builder and independent of the participant that produced the observation at 5228e83. It proposes at most BUILT -> WITNESSED and settles nothing. A test may establish BUILT; it may not claim WITNESSED or RATIFIED. Only Bdo ratifies."
+    "standing_note": "This is an observation independent of the builder and independent of the participant that produced the observation at 5228e83. It proposes at most BUILT -> WITNESSED and settles nothing. A test may establish BUILT; it may not claim WITNESSED or ACCEPTED. Only Bdo accepts."
   },
   "participant_claim": "COMPLETED",
   "participant_id": "console-service-reference"

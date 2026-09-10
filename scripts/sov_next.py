@@ -89,7 +89,7 @@ def crosswalk(roadmap_text: str) -> list[dict[str, str]]:
 
 def epic_ready(issues: dict) -> list[dict[str, str]]:
     """Open tickets whose every requirement is satisfied, from the local projection."""
-    settled = {"WITNESSED", "RATIFIED", "DEMOTED"}
+    settled = {"WITNESSED", "ACCEPTED", "DEMOTED"}
     actionable = {"bit", "implementation-stub", "story"}
     ready = []
     for number, issue in issues.items():
@@ -143,7 +143,7 @@ def closed_unsettled(issues: dict) -> list[str]:
     governance act. When they disagree the tree says a job is finished and
     unfinished at once, so it is reported rather than resolved here.
     """
-    settled = {"WITNESSED", "RATIFIED", "DEMOTED"}
+    settled = {"WITNESSED", "ACCEPTED", "DEMOTED"}
     return sorted(
         (f"#{number} {issue.get('title', '')[:52]} "
          f"(closed, standing {(issue.get('metadata') or {}).get('standing')})"

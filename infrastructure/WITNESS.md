@@ -6,7 +6,7 @@ This protocol lets a fresh Red participant reproduce the local custody,
 custody-activation, and customer-Kubernetes claims without importing any of
 those implementation modules. It
 produces a candidate receipt; it cannot grant itself `WITNESSED` standing and
-cannot ratify O2 or O14.
+cannot accept O2 or O14.
 
 ## Witness boundary
 
@@ -60,7 +60,7 @@ the receipt. It performs only `RECORD_LOCAL` effects in temporary directories.
 ## What it does not establish
 
 - cryptographic proof of witness identity;
-- owner ratification;
+- owner acceptance;
 - a live cluster deployment;
 - production fitness;
 - an image entrypoint, listener, readiness probe, startup contract, or health
@@ -72,4 +72,4 @@ The Gateway remains unearned while Asset Service authority, receipt,
 independent-observation, and two-binding gaps remain open.
 
 Passing this protocol repairs the local-to-Kubernetes custody seam. It still
-does not accept issue #39 or ratify O14; Bdo retains both judgements.
+does not accept issue #39 or accept O14; Bdo retains both judgements.

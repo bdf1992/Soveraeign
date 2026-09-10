@@ -13,7 +13,7 @@ function buildPrompt(op) {
     'Execute exactly one bounded operation. Operation ' + op.id + ': ' + op.description + '. Files in scope: ' + op.files.join(', ') + '. Effect class: ' + op.effect_class + '. ' +
     'Follow the AGENTS.md change protocol: record requested outcome and current authoritative state, affected contracts and fixtures, preconditions and expected observable result, effect class, and rollback or refusal boundary. ' +
     'Work outward from services/identity/CHARTER.md and services/registry/CHARTER.md; never invent Identity or Registry semantics those charters do not already carry. Contract and defeating fixtures come before code; make the smallest change; run python scripts/verify.py from ' + ROOT + ' and record its exit code. ' +
-    'Hard limits: never run git commit or git push; never settle where principal identity lives (decisions/0048 judgement 3 is the owner seat\'s); never promote either service past BUILT_SELF_TESTED_NOT_WITNESSED; never witness or ratify your own work; never touch Asset Service state or lineage/evidence/. ' +
+    'Hard limits: never run git commit or git push; never settle where principal identity lives (decisions/0048 judgement 3 is the owner seat\'s); never promote either service past BUILT_SELF_TESTED_NOT_WITNESSED; never witness or accept your own work; never touch Asset Service state or lineage/evidence/. ' +
     'Report files changed, checks observed with commands and exit codes, standing proposals (at most BUILT), anything genuinely owner-held, and the next bounded operation. If the operation cannot proceed within these limits, return a reasoned refusal instead of forcing work.'
 }
 
@@ -84,7 +84,7 @@ const witness = await agent(
   'You are an independent witness for the Soveraeign repository at ' + ROOT + '. You receive only the claimed operations and changed files, never the builder reasoning; a builder report is not observation. ' +
   'Claimed operations: ' + JSON.stringify(claimed) + '. Changed files: ' + changedFiles.join(', ') + '. ' +
   'Independently inspect the working-tree diffs for those files (git status, git diff), check them against AGENTS.md, STATUS.yaml, CLASSIFICATION.md, services/identity/CHARTER.md, and services/registry/CHARTER.md, and run python scripts/verify.py from ' + ROOT + ', recording its exit code. Run python -m unittest discover -s tests from services/identity yourself rather than trusting the reported count. ' +
-  'For each claimed operation return a verdict: reproduced, dissented, or unattestable. List residual failures. State the highest standing transition your own observation supports: OPEN->BUILT, BUILT->WITNESSED, or none. Never propose RATIFIED; only Bdo ratifies.',
+  'For each claimed operation return a verdict: reproduced, dissented, or unattestable. List residual failures. State the highest standing transition your own observation supports: OPEN->BUILT, BUILT->WITNESSED, or none. Never propose ACCEPTED; only Bdo accepts.',
   { agentType: 'sov-witness', phase: 'Witness', schema: WITNESS_SCHEMA, label: 'witness' }
 )
 if (witness && typeof witness.standing_supported === 'string') { witness.standing_supported = witness.standing_supported.split(' ').join('') }

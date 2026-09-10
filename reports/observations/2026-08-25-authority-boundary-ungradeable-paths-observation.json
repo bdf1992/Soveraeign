@@ -9,7 +9,7 @@
       "exit_code": 0
     },
     {
-      "command": "python -c \"grant status on disk: grant:standing-landing-loop is RATIFIED, so the hole was live on main and not latent\"",
+      "command": "python -c \"grant status on disk: grant:standing-landing-loop is ACCEPTED, so the hole was live on main and not latent\"",
       "exit_code": 0
     },
     {
@@ -21,7 +21,7 @@
       "exit_code": 1
     },
     {
-      "command": "python -c \"27 spellings graded against the live RATIFIED grant with preconditions cleared to isolate scope: every .. spelling and every absolute spelling REFUSED; five spellings PERMITTED\"",
+      "command": "python -c \"27 spellings graded against the live ACCEPTED grant with preconditions cleared to isolate scope: every .. spelling and every absolute spelling REFUSED; five spellings PERMITTED\"",
       "exit_code": 0
     },
     {

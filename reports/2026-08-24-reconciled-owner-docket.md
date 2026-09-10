@@ -1,6 +1,6 @@
 # One docket, from two that disagreed, 2026-08-24
 
-Status: `SYNTHESIS · NOT WITNESSED · NOTHING RATIFIED`
+Status: `SYNTHESIS · NOT WITNESSED · NOTHING ACCEPTED`
 
 Two independent readings of what waits on Bdo landed within an hour of each
 other and produced different numbers.

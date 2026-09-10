@@ -1,6 +1,6 @@
 # 0035 · How seats speak to each other
 
-Status: `PROPOSED · DRAFTED AT OWNER DIRECTION · RATIFICATION PENDING`
+Status: `PROPOSED · DRAFTED AT OWNER DIRECTION · OWNER ACCEPTANCE PENDING`
 
 Numbering note: drafted as 0034 and renumbered to 0035 when an in-flight
 `git merge origin/main` landed `0034-spec-transition-refusal-codes.md` in the
@@ -43,7 +43,7 @@ Three claims:
 
 | Seat type | May speak | Highest standing it can propose |
 | --- | --- | --- |
-| `root` | DISPATCH, RATIFY, ACCEPT, HOLD | `WITNESSED -> RATIFIED` |
+| `root` | DISPATCH, ACCEPT, ACCEPT, HOLD | `WITNESSED -> ACCEPTED` |
 | `control` | DISPATCH, AGGREGATE, ASK, REFUSE, STALL | none; it forwards |
 | `orchestration` | PLAN, DISPATCH, AGGREGATE, ASK, REFUSE, STALL | none |
 | `work` | REPORT, ATTEST, DISSENT, UNATTESTABLE, ASK, REFUSE, STALL | `OPEN -> BUILT` as a builder, `BUILT -> WITNESSED` as a witness |
@@ -124,7 +124,7 @@ against live agent output yet — see the next section.
   instances of this envelope when Bdo says so.
 - It does not enforce anything at runtime. No agent is required to emit a seat
   message today.
-- It does not settle, ratify, or move any standing.
+- It does not settle, accept, or move any standing.
 - It does not add a seat type, name a seat, or touch `decisions/0020`.
 - It does not amend `AGENTS.md`, `SPEC.md`, or `CLASSIFICATION.md`. If the act
   vocabulary is to become governed terminology, that is a `CLASSIFICATION.md`
@@ -132,7 +132,7 @@ against live agent output yet — see the next section.
 
 ## Judgement queue for Bdo
 
-1. Ratify, amend, or strike the act vocabulary. Thirteen acts is a guess at the
+1. Accept, amend, or strike the act vocabulary. Thirteen acts is a guess at the
    right granularity; DISSENT and UNATTESTABLE could collapse into one, and
    ACCEPT and HOLD could be seen as one act with a reason field.
 2. Should the four `.claude/agents/*.md` report formats be rewritten as this

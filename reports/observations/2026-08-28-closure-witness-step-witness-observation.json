@@ -79,7 +79,7 @@
     "decisions/0100-launch-your-own-witness.md": "sha256:ec444c6e9cbbd127541f24f0432812c97e784ab30a9a8aad5afd5ee62fd44b14"
   },
   "builder_note_after_observation": "The undeclared AGENTS.md hunk the witness surfaced was claimed into decisions/0100's What-changed section after this observation was taken, which changes the digests of decisions/0100 and nothing else the observation graded. The witness's per-claim verdicts stand against the pinned bytes.",
-  "standing_supported": "BUILT -> WITNESSED for the closure-witness-step concern (the six pinned files); this observation is not a settlement and not a ratification.",
+  "standing_supported": "BUILT -> WITNESSED for the closure-witness-step concern (the six pinned files); this observation is not a settlement and not a acceptance.",
   "judgement_items": [
     "Should the unclaimed AGENTS.md testing-section hunk (0081 alignment) be claimed into decisions/0100's What-changed, or committed separately under the concern that owns the 0081 alignment, before AGENTS.md is committed whole?"
   ],

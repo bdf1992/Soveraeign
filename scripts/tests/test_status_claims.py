@@ -8,7 +8,7 @@ Three independent witnesses broke three drafts of a rule that tried to read an a
 standing out of the value's prose. The first read it from prose outright and admitted
 `WITNESSED` on a value reading `NOT_WITNESSED`. The second compared whole tokens and treated
 `NOT` as denial, and fell to `NOT_YET`, `NEVER`, `AWAITING` and a hyphenated `NOT`. The third
-asked only what the value led with, and fell to `WITNESSED_RETRACTED`, `RATIFIED_NOT` and
+asked only what the value led with, and fell to `WITNESSED_RETRACTED`, `ACCEPTED_NOT` and
 `-WITNESSED` - and also refused the correct entry on five live fields.
 
 There is no fourth spelling. The extraction is gone, `scripts/sov_standing.py` owns standing
@@ -117,7 +117,7 @@ class WhatWasRemoved(unittest.TestCase):
         """Each of these got a false standing past one of the three rules. None of them can
         now, because nothing reads a standing out of a value."""
         for value in ("NOT_WITNESSED", "NOT_YET_WITNESSED", "NEVER_WITNESSED",
-                      "BUILT-NOT_WITNESSED", "WITNESSED_RETRACTED", "RATIFIED_NOT",
+                      "BUILT-NOT_WITNESSED", "WITNESSED_RETRACTED", "ACCEPTED_NOT",
                       "-WITNESSED", "¬WITNESSED", "PROPOSED_CONTRACT_BUILT"):
             with self.subTest(value=value):
                 good = entry(field="x_status", value=value, subject="x")
@@ -133,7 +133,7 @@ class WitnessBypasses(unittest.TestCase):
         text = "record_service_status: BUILT_SELF_TESTED_NOT_WITNESSED"
         for extra in ("asserted_standing", "settled_by", "authority", "standing_source"):
             with self.subTest(extra=extra):
-                bad = dict(entry(), **{extra: "RATIFIED"})
+                bad = dict(entry(), **{extra: "ACCEPTED"})
                 self.assertEqual(codes([bad], text), {"ENTRY_UNKNOWN_KEY"})
 
     def test_a_renamed_subject_cannot_dissolve_a_collision(self):

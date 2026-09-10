@@ -64,7 +64,7 @@ one, so correct the drawing first and stamp second.
 | `source-reader-recording.md` | `SPEC.md`, `CONTRACT.md` C2 | The substrate move prose is worst at |
 | `standing-transition.md` | `CLASSIFICATION.md`, `CONTRACT.md` C4, C9 | Keeps `COUNTERED` out of the standing chain |
 | `service-map.md` | `CLASSIFICATION.md`, `STATUS.yaml` | Which services exist, which are drawn in pencil |
-| `authority-typing.md` | `PRD.md` PROD-I-5, `CONTRACT.md` C3, C5 | Who may ratify what, and what evidence cannot do |
+| `authority-typing.md` | `PRD.md` PROD-I-5, `CONTRACT.md` C3, C5 | Who may accept what, and what evidence cannot do |
 | `requirement-lifecycle.md` | `PRD.md` requirement lifecycle | Why a build report is not a witness |
 | `event-outcomes.md` | `CLASSIFICATION.md`, `SPEC.md` Effects | Outcome and effect class are separate axes |
 | `crossing-typology.md` | `SPEC.md` `cross`, `CLASSIFICATION.md` | The four crossing classes, and the obligations all four share |

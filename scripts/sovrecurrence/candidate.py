@@ -6,7 +6,7 @@ yields the same proposal and a moved basis yields a different one.
 
 It is emitted and not persisted. That is the point of the clause rather than a limitation
 of the reader: a candidate Definition acquires standing through `submit_proposal` and then
-`ratify`, which are separate governed transitions held by a seat. Writing this object into
+`accept`, which are separate governed transitions held by a seat. Writing this object into
 a governing path would be the very defeat P15-Q4.2 names, so the reader hands the
 participant an object to carry through the ordinary authority path and stops there.
 
@@ -82,7 +82,7 @@ def synthesize(root: Path, gathered: dict[str, Any],
         "recurs": recurs,
         "carried_by": None,
         "note": ("Emitted, not persisted. It becomes a Proposal only through submit_proposal "
-                 "by a participant that holds the authority, and binds nothing until ratify."),
+                 "by a participant that holds the authority, and binds nothing until accept."),
     }
 
 

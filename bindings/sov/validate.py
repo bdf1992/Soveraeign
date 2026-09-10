@@ -113,7 +113,7 @@ def validate_profile(profile: dict[str, Any]) -> None:
     forbidden = set(agency["may_not"])
     required_refusals = {
         "INFER_AUTHORITY_FROM_CONTEXT",
-        "RATIFY_JUDGEMENT",
+        "ACCEPT_JUDGEMENT",
         "SELF_WITNESS",
         "SELF_SETTLE",
         "KEEP_PRIVATE_STANDING",

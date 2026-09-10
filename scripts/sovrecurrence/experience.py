@@ -31,8 +31,8 @@ import json
 
 CUSTODY_COLLECTION = "contracts/custodies/phase-1-5.json"
 LANDED = "LANDED"
-SETTLED_STANDINGS = ("WITNESSED", "RATIFIED")
-"""Standings that mean an independent participant has judged the member. `RATIFIED` is
+SETTLED_STANDINGS = ("WITNESSED", "ACCEPTED")
+"""Standings that mean an independent participant has judged the member. `ACCEPTED` is
 above `WITNESSED` on the lifecycle, so admitting only the exact token `WITNESSED` would
 silently drop a member that a seat had since settled. Compared as whole tokens, never as
 substrings: `NOT_WITNESSED` contains `WITNESSED` (`CLAUDE.md`, trap T3). The fixture carries

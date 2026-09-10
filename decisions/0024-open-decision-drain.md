@@ -33,13 +33,13 @@ semantic authority, and may be replaced behind proved contracts.
 **Ruling:** bootstrap trust is explicit, local, and finite. The first attestor is admitted by a
 founding `BootstrapGrant` accepted by the owner and pinned to an exact attestor identity, validator
 version, capability, scope, validity, and artifact revision. It may attest verification-typed claims
-only and cannot ratify judgement. Every later attestor must resolve through ordinary authority and
+only and cannot accept judgement. Every later attestor must resolve through ordinary authority and
 identity lineage; bootstrap is not ambient root permission.
 
 ### O4 · Historical reproduction versus present applicability
 
 **Ruling:** represent them separately. An `Attestation` is immutable historical evidence about an
-exact claim/input/run. `CurrentEffectiveness` is a rebuildable evaluation over the ratified claim,
+exact claim/input/run. `CurrentEffectiveness` is a rebuildable evaluation over the accepted claim,
 latest applicable attestations, supersession, expiry, retraction, and policy. A historical
 `REPRODUCED` result is never rewritten when applicability changes.
 
@@ -53,7 +53,7 @@ admission and cannot collapse evidence strength into right-to-act.
 ### O6 · Unattestable claims in effective state
 
 **Ruling:** when a claim's effectiveness policy requires runtime attestation, `UNATTESTABLE` blocks
-that claim from becoming or remaining `EFFECTIVE` while preserving historical `RATIFIED` standing.
+that claim from becoming or remaining `EFFECTIVE` while preserving historical `ACCEPTED` standing.
 Claims whose policy does not require attestation may remain effective for non-executable semantics,
 but the absence of attestation must remain visible. No silent degrade from required to optional.
 

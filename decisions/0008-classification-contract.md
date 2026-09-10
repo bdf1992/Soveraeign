@@ -1,6 +1,6 @@
 # 0008 · Classification contract
 
-Status: `PROPOSED · OWNER RATIFICATION PENDING`
+Status: `PROPOSED · OWNER ACCEPTANCE PENDING`
 
 ## Decision
 
@@ -19,7 +19,7 @@ canonical documents while leaving historical evidence byte-identical.
 - `lineage/evidence/core/SUBSTRATE.md` V1-V5 and R1-R6
 - `lineage/evidence/core/PRD-PRODUCT(1).md` §§2b, 3, 8, 11
 - `lineage/evidence/core/PRODUCT(1).md` §§1 and 5
-- `lineage/evidence/core/GLOSSARY(20260822-185710).md`, explicitly unratified
+- `lineage/evidence/core/GLOSSARY(20260822-185710).md`, explicitly unaccepted
 
 ## Consequence
 

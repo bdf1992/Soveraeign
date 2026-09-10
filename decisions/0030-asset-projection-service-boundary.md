@@ -62,7 +62,7 @@ refuse `UNCONFIGURED` in Phase I.
 - The Asset Service's own `search_projection` and `graph_projection` become a
   compatibility path until this service exists; the Asset Service keeps
   `rebuild-projection` for them and the `graph-projection` port moves to this
-  boundary on ratification. The overlap is recorded as `OPEN-SEAMS.md` S14.
+  boundary on acceptance. The overlap is recorded as `OPEN-SEAMS.md` S14.
 - `services/asset/KNOWN-GAPS.md` gains the FTS row so charter and build agree.
 - A `sov-projection` skill and workflow are needed in the harness before the
   first worker is dispatched; they are not created by this decision.
@@ -76,7 +76,7 @@ refuse `UNCONFIGURED` in Phase I.
 - Kept the dense and sparse lanes in scope, behind the existing model-binding
   constraint (O12) rather than behind a new decision.
 - Build proceeds behind the declared fixtures and the `core.py` split; the
-  boundary's ratification (O21, gate `projection.ratify_boundary`) changes the
+  boundary's acceptance (O21, gate `projection.accept_boundary`) changes the
   standing word, not what may be built.
 
 These defaults remain proposals. Work continues unless a governing constraint

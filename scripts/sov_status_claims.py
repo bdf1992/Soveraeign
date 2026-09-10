@@ -23,7 +23,7 @@ refusal fires against a controlled case, alone, so the table cannot quietly stop
 
 Scope, stated so it is not mistaken for more: this checks what STATUS.yaml *asserts*, never
 whether the assertion holds. `scripts/sov_standing.py` is the check that a WITNESSED or
-RATIFIED claim has a witness record behind it; this one is about representation.
+ACCEPTED claim has a witness record behind it; this one is about representation.
 """
 
 from __future__ import annotations

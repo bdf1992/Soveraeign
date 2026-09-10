@@ -119,4 +119,4 @@ python -m unittest discover -s charting/tests -v
 
 The tests watch the current SDLC shape, exact binding-to-Skill resolution, explicit QA Requirement/Capability separation, source-content revision pinning, declared effect vocabulary, non-authoritative Chart governance, and fail-closed relation validation.
 
-`python scripts/verify.py` includes this suite. Self-tests establish implementation evidence only; they do not witness or ratify #40/#41.
+`python scripts/verify.py` includes this suite. Self-tests establish implementation evidence only; they do not witness or accept #40/#41.

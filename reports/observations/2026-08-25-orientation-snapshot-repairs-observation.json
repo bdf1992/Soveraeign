@@ -29,7 +29,7 @@
       "exit_code": 1
     },
     {
-      "command": "REPAIR (f) reproduced. L-0001 reads EFFECTIVE with the reason recorded, the header reads 6 RECORDED against 6 RECORDED entries, and nothing claims RATIFIED. The Standing field now carries EFFECTIVE where it carried ADMITTED, and the entry's prose narrates the ADMITTED step, so the two have not been collapsed. No further edit needed.",
+      "command": "REPAIR (f) reproduced. L-0001 reads EFFECTIVE with the reason recorded, the header reads 6 RECORDED against 6 RECORDED entries, and nothing claims ACCEPTED. The Standing field now carries EFFECTIVE where it carried ADMITTED, and the entry's prose narrates the ADMITTED step, so the two have not been collapsed. No further edit needed.",
       "exit_code": 0
     },
     {

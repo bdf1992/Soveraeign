@@ -21,8 +21,11 @@ what it kept and what it lost.
 
 ```text
 Entity      := an address; no fields, no behaviour
-Component   := (entity, axis, typed record); one axis per component
-Relation    := (from, type, to); a typed edge in a named graph
+Axis        := a composition of primitives: kind, bounds, set, order, ends, unit;
+               a shape is a preset over them
+Component   := (entity, axis, a value the axis admits); one axis per component
+Relation    := (from, type, to); a typed edge in a named graph, whose type
+               carries traits, each a preset over a guard and a closure
 System      := a declared operation: axes read, preconditions, refusals,
                kernel transition, receipt
 Invariant   := a distinction that may never collapse
@@ -111,34 +114,60 @@ mean nothing. That is the test for host code under this style.
 
 1. **An entity is an address and nothing else.** Fields and behaviour on the
    entity itself are a class in disguise.
-2. **One component, one axis.** Direction, access and authority are three
-   components, never three fields of one. An axis is named in a contract before
-   a component uses it.
-3. **Relations are typed edges in named graphs.** No hierarchy is inferred from
-   an edge, from co-location, or from interaction. A relation is a route and
-   never a grant.
-4. **A system is a declared operation.** It names the axes it reads, its
-   preconditions, its refusals, the kernel transition it performs, and it emits
-   a receipt. Nothing fires because components happen to match.
+2. **One component, one axis, and an axis has a shape.** Direction, access and
+   authority are three components, never three fields of one. An axis is a
+   composition of a few primitives, a kind, bounds, a closed set, an order over
+   it, names for its ends, a unit, and a shape is a preset over them declared
+   as data. A comparison on a shape with no order is refused when the physics
+   is read; a value past a bound or outside a set is refused when it is
+   written. An axis is named in a contract before a component uses it.
+3. **Relations are typed edges in named graphs, and a type carries traits.** A
+   trait is a preset over two primitives: a guard that must hold before an edge
+   joins, with the refusal it gives, and a closure naming the edges an edge
+   implies. Functional, acyclic, exclusive on target, symmetric are presets; a
+   domain declares its own. No hierarchy is inferred from an edge, from
+   co-location, or from interaction. A relation is a route and never a grant.
+   Two graphs over one node set is the minimum, not the count.
+4. **A system is a declared operation.** It names the axes it reads and writes,
+   its preconditions in order with the refusal each gives, its effects, the
+   kernel transition it performs, and it emits a receipt. A precondition is one
+   of a few primitive forms, an edge count, a reachability, a comparison of two
+   operands, or a preset over them, shipped or declared. Nothing fires because
+   components happen to match, and two systems whose preconditions both hold
+   are two attempted acts with two receipts, ordered by the orchestrator's
+   declared plan and never by salience.
 5. **A collapse is a declared, deterministic function.** It names its template
    and its context, digests every source, preserves the template's axes
    verbatim, lists every axis it projected, and yields an instance whose
-   standing is no higher than its weakest source.
-6. **An instance is a projection.** Deleting every instance and rebuilding from
-   components and relations must reproduce it byte for byte. An instance that
-   cannot be rebuilt is a hidden component.
+   standing is no higher than its weakest source. When the template, context
+   and relations leave more than one admissible instance it refuses
+   `UNDETERMINED` and names what is free; it never chooses.
+6. **An instance is a projection, and rebuilding has laws.** Collapsing
+   unchanged sources yields the same bytes, and an instance produced by a
+   collapse reads back as the components it was given. An instance edited in
+   place is a write through a declared lens or it is a hidden component write.
 7. **A template names no domain.** A domain instance is the same template
    collapsed under domain context. Domain-universal means one template, many
    contexts, and never a template per domain.
-8. **Code is host.** A class, module or process carries no claim a contract
+8. **Named things are presets over few primitives.** Shapes, traits and
+   predicates are declared as data, shipped or the domain's own, and no count
+   of them is a rule. What is closed is the primitive set, and a domain that
+   needs a primitive the engine lacks has found one; the record that proves the
+   need is how the engine grows.
+9. **Code is host.** A class, module or process carries no claim a contract
    does not state, and deployment confers no identity (`CLASSIFICATION.md`).
-9. **Diagram equals data.** A view renders components and relations that
-   records carry, and a drawn edge no record carries is stale
-   (`diagrams/README.md`). Under this rule a diagram is an executable input, not
-   a picture of one.
-10. **Invariants are checked from outside their fixtures.** Every rule above
+10. **Diagram equals data.** A view renders components and relations that
+    records carry, and a drawn edge no record carries is stale
+    (`diagrams/README.md`). Under this rule a diagram is an executable input,
+    not a picture of one.
+11. **Invariants are checked from outside their fixtures.** Every rule above
     has a defeating case, and the checker that presses it did not write the
     fixture it presses.
+
+Rules 2 through 6 and 8 carry the corrections
+`reports/2026-09-10-composition-collapse-common-ground.md` drew from prior
+art, and rule 8 records what practising the style found: an engine that grew
+by one named word per domain until the words became presets.
 
 ## What this adds that does not yet exist
 
@@ -198,10 +227,14 @@ rather than a naming exercise.
 
 ## Residuals
 
-0. The style is first practised as a bdos core, `declare-the-physics`, with an
-   inventory and a colour chain declared as data and proved by golden records.
-   That core is host plumbing in another repository and carries no standing
-   here.
+0. The style is practised as a bdos core, `declare-the-physics`: an engine of
+   few primitives, shapes, traits and predicates as presets over them, a
+   collapse with the laws in rules 5 and 6, and two domains declared as data
+   and proved by golden records. Three further domains were declared by
+   subagents through it and graded. That core is host plumbing in another
+   repository and carries no standing here, and the collapse contract this
+   record proposes for `contracts/` is still unbuilt; building it is a
+   contracts-domain concern of its own.
 1. No collapse contract or fixture is built here; the style is stated and its
    evidence is the existing hand-built collapses.
 2. The seat registry's `occupant` and schematically's Component both fold

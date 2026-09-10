@@ -1,4 +1,4 @@
-# 0105 · Composition collapse: the style this system is built in
+# 0105 · Logically dynamic: composition collapse as the style this system is built in
 
 Status: `OWNER-DIRECTED · PROPOSED`
 
@@ -12,8 +12,10 @@ the repositories do not yet declare. It proposes; it ratifies nothing.
 
 ## Decision
 
-**The style is composition collapse.** Data, relations, process and meaning are
-kept as four separate kinds of record, and an object-shaped instance is a
+**The style is data driven logically related domain dynamics, logically dynamic
+for short, and its mechanism is composition collapse.** Bdo named it on
+2026-09-10. Data, relations, process and meaning are kept as four separate
+kinds of record, and an object-shaped instance is a
 computed projection over them, produced by a declared function that records
 what it kept and what it lost.
 
@@ -184,8 +186,8 @@ rather than a naming exercise.
 
 ## What still waits on Bdo
 
-- **Naming.** "Composition collapse" is the name this record proposes; the
-  style's public name is his.
+- **Naming.** Bdo named the style in session; whether "logically dynamic" is
+  also its public name is his, and this record does not publish it.
 - **Adoption across four repositories.** This record binds Soveraeign only.
   Whether bdos, ide and schematically adopt the same rules and the shared
   collapse contract is a cross-repository product choice.
@@ -196,6 +198,10 @@ rather than a naming exercise.
 
 ## Residuals
 
+0. The style is first practised as a bdos core, `declare-the-physics`, with an
+   inventory and a colour chain declared as data and proved by golden records.
+   That core is host plumbing in another repository and carries no standing
+   here.
 1. No collapse contract or fixture is built here; the style is stated and its
    evidence is the existing hand-built collapses.
 2. The seat registry's `occupant` and schematically's Component both fold

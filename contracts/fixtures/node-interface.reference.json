@@ -181,7 +181,7 @@
     },
     {
       "address": "services/asset/src/soveraeign_asset_service/custody.py",
-      "digest": "52ab6cc948348af6ee2cfbf3f6c48972ce1822845270e677f53b79d1b52e0f8d"
+      "digest": "3ae10cbe1bde93138ad22423fed52aae4b13200a6fc4b5adbea7ce3970c17a8a"
     },
     {
       "address": "services/asset/src/soveraeign_asset_service/operational.py",
@@ -288,7 +288,7 @@
       "digest": "150834886995a8e0c32334beb5ef53dbc69cbb244172b510a06b056e608bf4b0"
     }
   ],
-  "input_state_digest": "d2a52ed4c70a6c1c6142b2a59c015e8fe005cb81402e7670bf9a9b11e968f669",
+  "input_state_digest": "7e5c0a583639433ab744c6112cc5743d90fd281bc66434cc697fc9e3f112d79d",
   "counts": {
     "declared": 135,
     "bound": 135,
@@ -1108,7 +1108,7 @@
         },
         {
           "address": "services/asset/src/soveraeign_asset_service/custody.py",
-          "digest": "52ab6cc948348af6ee2cfbf3f6c48972ce1822845270e677f53b79d1b52e0f8d"
+          "digest": "3ae10cbe1bde93138ad22423fed52aae4b13200a6fc4b5adbea7ce3970c17a8a"
         },
         {
           "address": "services/asset/src/soveraeign_asset_service/operational.py",
@@ -1140,7 +1140,7 @@
         "reason_code": "EXACT_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this operation."
       },
-      "record_digest": "ca186783db55db2f88f225661949ff884881a12357ac4d96075a496daa97f106"
+      "record_digest": "9d0b1b964f1f6f31165a8a0f0a4239cc60f95f25ec7fc6384e28a60ee21678ee"
     },
     {
       "operation_id": "asset.propose-description",
@@ -2242,7 +2242,7 @@
         },
         {
           "address": "services/asset/src/soveraeign_asset_service/custody.py",
-          "digest": "52ab6cc948348af6ee2cfbf3f6c48972ce1822845270e677f53b79d1b52e0f8d"
+          "digest": "3ae10cbe1bde93138ad22423fed52aae4b13200a6fc4b5adbea7ce3970c17a8a"
         },
         {
           "address": "services/asset/src/soveraeign_asset_service/operational.py",
@@ -2274,7 +2274,7 @@
         "reason_code": "EXACT_READ_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this read."
       },
-      "record_digest": "908c16dd218e33651dddcfd00eabec24e58771be3472fcc13aa8451ad38f487b"
+      "record_digest": "381d143062f6d7ab0c9fed11c664f9691e84a9fa7cbcbb8b0809fbd454c54594"
     },
     {
       "operation_id": "asset.read-version-history",

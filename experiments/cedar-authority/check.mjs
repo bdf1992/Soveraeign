@@ -1,6 +1,7 @@
 // Gate: exit 1 unless every CEDAR/SCOPE case matches the kernel, no OUTSIDE
 // case was ever sent to Cedar, tier counts sum to 37, and the working tree
-// under scripts/, contracts/, conformance/ is untouched relative to `dev`.
+// under scripts/, contracts/, conformance/ is untouched relative to
+// `origin/main`.
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -35,13 +36,13 @@ let diffClean = true;
 try {
   const diff = execFileSync(
     "git",
-    ["diff", "--quiet", "dev", "--", "scripts", "contracts", "conformance"],
+    ["diff", "--quiet", "origin/main", "--", "scripts", "contracts", "conformance"],
     { cwd: REPO_ROOT }
   );
 } catch (err) {
   diffClean = false;
   failures.push(
-    `git diff dev -- scripts contracts conformance is not clean: ${err.status === 1 ? "differs" : err.message}`
+    `git diff origin/main -- scripts contracts conformance is not clean: ${err.status === 1 ? "differs" : err.message}`
   );
 }
 

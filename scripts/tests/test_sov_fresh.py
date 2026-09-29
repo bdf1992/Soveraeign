@@ -130,8 +130,8 @@ class PositiveRun(ProbeCase):
             else:
                 os.environ[principals.ENV_REGISTRY] = saved
         self.assertEqual(result["root_principal"], "principal:other-root")
-        self.assertEqual(result["registry"], str(other))
-        self.assertEqual(result["observations"]["P15-Q1.1"]["registry"], str(other))
+        self.assertEqual(result["registry"], other.as_posix())
+        self.assertEqual(result["observations"]["P15-Q1.1"]["registry"], other.as_posix())
         self.assertEqual(result["node"]["refused_by"], "PROBE_ISSUER_GATE")
         self.assertIsNone(result["observations"]["P15-Q1.3"]["identities"]["grant_id"])
 

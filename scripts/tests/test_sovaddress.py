@@ -59,10 +59,10 @@ class Case(unittest.TestCase):
         self._temp = tempfile.TemporaryDirectory()
         self.addCleanup(self._temp.cleanup)
         self.root = Path(self._temp.name)
-        (self.root / "c.json").write_text(json.dumps(COLLECTION, indent=2), encoding="utf-8")
-        (self.root / "STATUS.yaml").write_text(STATUS, encoding="utf-8")
-        (self.root / "r.md").write_text(RECORD, encoding="utf-8")
-        (self.root / "p.py").write_text("print()\n", encoding="utf-8")
+        (self.root / "c.json").write_text(json.dumps(COLLECTION, indent=2), encoding="utf-8", newline="\n")
+        (self.root / "STATUS.yaml").write_text(STATUS, encoding="utf-8", newline="\n")
+        (self.root / "r.md").write_text(RECORD, encoding="utf-8", newline="\n")
+        (self.root / "p.py").write_text("print()\n", encoding="utf-8", newline="\n")
 
 
 class WholeFile(Case):
@@ -83,25 +83,25 @@ class JsonFragments(Case):
         document = json.loads((self.root / "c.json").read_text(encoding="utf-8"))
         document["custodies"][0]["members"][1]["note"] = "moved"
         document["custodies"].append({"custody_id": "custody:c", "members": []})
-        (self.root / "c.json").write_text(json.dumps(document), encoding="utf-8")
+        (self.root / "c.json").write_text(json.dumps(document), encoding="utf-8", newline="\n")
         self.assertEqual(sovaddress.digest(self.root, address), before)
         self.assertNotEqual(sovaddress.digest(self.root, "c.json"), before)
         document["custodies"][0]["members"][0]["note"] = "moved too"
-        (self.root / "c.json").write_text(json.dumps(document), encoding="utf-8")
+        (self.root / "c.json").write_text(json.dumps(document), encoding="utf-8", newline="\n")
         self.assertNotEqual(sovaddress.digest(self.root, address), before)
 
     def test_canonical_form_ignores_indentation_and_key_order(self) -> None:
         one = sovaddress.digest(self.root, "c.json#/custodies[custody_id=custody:b]")
         document = json.loads((self.root / "c.json").read_text(encoding="utf-8"))
         document["custodies"][1] = {"members": [], "custody_id": "custody:b"}
-        (self.root / "c.json").write_text(json.dumps(document, indent=4), encoding="utf-8")
+        (self.root / "c.json").write_text(json.dumps(document, indent=4), encoding="utf-8", newline="\n")
         self.assertEqual(sovaddress.digest(self.root, "c.json#/custodies[custody_id=custody:b]"),
                          one)
 
     def test_a_selector_value_may_hold_a_slash(self) -> None:
         document = json.loads((self.root / "c.json").read_text(encoding="utf-8"))
         document["custodies"][0]["custody_id"] = "custody:phase/a"
-        (self.root / "c.json").write_text(json.dumps(document), encoding="utf-8")
+        (self.root / "c.json").write_text(json.dumps(document), encoding="utf-8", newline="\n")
         address = "c.json#/custodies[custody_id=custody:phase/a]/members/0/note"
         self.assertEqual(sovaddress.resolve(self.root, address), b'"one"')
 
@@ -128,7 +128,7 @@ class JsonFragments(Case):
     def test_two_matching_elements_are_ambiguous(self) -> None:
         document = json.loads((self.root / "c.json").read_text(encoding="utf-8"))
         document["custodies"].append({"custody_id": "custody:a", "members": []})
-        (self.root / "c.json").write_text(json.dumps(document), encoding="utf-8")
+        (self.root / "c.json").write_text(json.dumps(document), encoding="utf-8", newline="\n")
         with self.assertRaises(sovaddress.AddressError) as refused:
             sovaddress.resolve(self.root, "c.json#/custodies[custody_id=custody:a]")
         self.assertEqual(refused.exception.code, "SELECTOR_AMBIGUOUS")
@@ -138,7 +138,7 @@ class RefusalsAndEdges(Case):
     def test_a_selector_never_matches_an_element_lacking_the_key(self) -> None:
         document = json.loads((self.root / "c.json").read_text(encoding="utf-8"))
         document["custodies"].append({"members": []})
-        (self.root / "c.json").write_text(json.dumps(document), encoding="utf-8")
+        (self.root / "c.json").write_text(json.dumps(document), encoding="utf-8", newline="\n")
         with self.assertRaises(sovaddress.AddressError) as refused:
             sovaddress.resolve(self.root, "c.json#/custodies[custody_id=None]")
         self.assertEqual(refused.exception.code, "FRAGMENT_NOT_FOUND")
@@ -152,14 +152,14 @@ class RefusalsAndEdges(Case):
             self.assertEqual(refused.exception.code, "FRAGMENT_MALFORMED", address)
 
     def test_a_duplicate_top_level_key_is_ambiguous(self) -> None:
-        (self.root / "STATUS.yaml").write_text(STATUS + "phase: again\n", encoding="utf-8")
+        (self.root / "STATUS.yaml").write_text(STATUS + "phase: again\n", encoding="utf-8", newline="\n")
         with self.assertRaises(sovaddress.AddressError) as refused:
             sovaddress.resolve(self.root, "STATUS.yaml#phase")
         self.assertEqual(refused.exception.code, "SELECTOR_AMBIGUOUS")
 
     def test_closing_marks_and_fenced_blocks_do_not_make_headings(self) -> None:
         text = "# Top ##\n\n```\n# not a heading\n```\n\nafter\n\n# Next\n"
-        (self.root / "f.md").write_text(text, encoding="utf-8")
+        (self.root / "f.md").write_text(text, encoding="utf-8", newline="\n")
         self.assertEqual(sovaddress.resolve(self.root, "f.md#Top"),
                          b"# Top ##\n\n```\n# not a heading\n```\n\nafter\n")
         with self.assertRaises(sovaddress.AddressError):
@@ -174,7 +174,7 @@ class YamlBlocks(Case):
     def test_a_sibling_block_change_leaves_the_digest_alone(self) -> None:
         before = sovaddress.digest(self.root, "STATUS.yaml#owner_holds")
         text = STATUS.replace("  - id: A1\n", "  - id: A24\n  - id: A1\n")
-        (self.root / "STATUS.yaml").write_text(text, encoding="utf-8")
+        (self.root / "STATUS.yaml").write_text(text, encoding="utf-8", newline="\n")
         self.assertEqual(sovaddress.digest(self.root, "STATUS.yaml#owner_holds"), before)
         self.assertNotEqual(sovaddress.digest(self.root, "STATUS.yaml#owner_accepted"),
                             sovaddress.DIGEST_PREFIX + "x")
@@ -197,14 +197,14 @@ class MarkdownSections(Case):
     def test_an_edit_to_another_section_leaves_the_digest_alone(self) -> None:
         before = sovaddress.digest(self.root, "r.md#Pass 1: commit a")
         (self.root / "r.md").write_text(RECORD.replace("body two", "body two, revised"),
-                                        encoding="utf-8")
+                                        encoding="utf-8", newline="\n")
         self.assertEqual(sovaddress.digest(self.root, "r.md#Pass 1: commit a"), before)
 
     def test_missing_and_duplicate_headings_refuse(self) -> None:
         with self.assertRaises(sovaddress.AddressError) as refused:
             sovaddress.resolve(self.root, "r.md#Pass 9")
         self.assertEqual(refused.exception.code, "FRAGMENT_NOT_FOUND")
-        (self.root / "r.md").write_text(RECORD + "\n## Detail\n", encoding="utf-8")
+        (self.root / "r.md").write_text(RECORD + "\n## Detail\n", encoding="utf-8", newline="\n")
         with self.assertRaises(sovaddress.AddressError) as refused:
             sovaddress.resolve(self.root, "r.md#Detail")
         self.assertEqual(refused.exception.code, "SELECTOR_AMBIGUOUS")

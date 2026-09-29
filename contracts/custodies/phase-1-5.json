@@ -214,6 +214,7 @@
       "serves_exit": null,
       "outside_phase_exit": null,
       "initiative": "One witnessed Definition-to-Value-to-Definition circuit on an exact revision, carried by fresh participants under explicit authority through execution, independent judgement, comparison, settlement, cleanup, discovery, and synthesis of an unprivileged candidate next Definition.",
+      "note": "Not started, and not assignable as a build. This clause is the whole lap: one Definition-to-Value-to-Definition circuit on an exact revision, composing X1 through X4. It gains a member stage by a circuit being run, never by a component being finished, which is why five days of component work moved it nowhere. The first piece of work was named on the opening day - decisions/0102 records that the commissioning circuit will need a reader of its own, which is P15-X5's first piece of work - and no P15-Q5 predicate exists in conformance/commissioning.py, so the closure check this custody declares grades nothing for the circuit itself.",
       "held_by": "seat:session-control",
       "roots": [
         {"root_kind": "PHASE", "reference": "PRD.md#Commissioning-terminal", "serves": "this clause is the Phase 1.5 commissioning terminal, stated in the pinned profile"},
@@ -235,8 +236,32 @@
         "maturity": "DISCOVERY_ENVELOPE",
         "dimensions": [{"dimension_id": "grants", "low": 1, "high": 1}, {"dimension_id": "judgement_units", "low": 1, "high": 1}]
       },
-      "members": [],
-      "depends_on": [],
+      "members": [
+        {
+          "member_kind": "TICKET",
+          "address": "PRD.md#commissioning-terminal",
+          "stage": "ROOT_POINT",
+          "standing": "OPEN",
+          "work_state": "READY",
+          "stage_observed_by": null,
+          "note": "Build the circuit reader decisions/0102 names as this clause's first piece of work. It cannot be written yet, and the reason is the first piece of work. The circuit this clause names - Definition, Request, Agenda, Queue/Custody/Lease, Participant Context, Execution, Record and report, independent perspective formation, frozen Findings, comparison and repair, Settlement, cleanup and Receipt, Discovery, Use, Experience, Synthesis, candidate next Definition - is declared in exactly one place, the ASCII block in contracts/phase-1-5-phase-ii-horizon.md, a document whose own header reads PREPARED, HUMAN-READABLE, NO PHASE STANDING. No contract, enum or schema anywhere carries those stage names as data; grepping for them in contracts/ returns nothing. contracts/work-circuit.json is a different circuit - the five maturity stages ROOT_POINT to CAPABLE_NODE - and does not hold this one. So the reader needs a declared sequence first: each stage, the evidence it emits, and what defeats it. Then the reader reports whether one run crossed every stage in order, which participant carried each, under which grant, and where each stage's evidence sits, and it must be able to fail - a run that skips a stage, that uses the builder as its own witness, or that cites an address resolving nowhere is not a circuit and the reader must say so."
+        },
+        {
+          "member_kind": "TICKET",
+          "address": "contracts/phase-1-5-phase-ii-horizon.md",
+          "stage": "ROOT_POINT",
+          "standing": "OPEN",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "Carry one bounded piece of real work all the way around the circuit on one exact revision: definition, request, custody and lease, a fresh participant holding a principal and session, execution, an operational record and report, an independent finding on the work and a separate one on the participant carrying it, both frozen before comparison, comparison and repair, settlement, receipt and cleanup, discovery by a second fresh participant who uses the result without the builder's private state, and synthesis of an unprivileged candidate next Definition. CANDIDATE and not READY: it has not passed the definition of ready because the circuit is not declared anywhere a machine can read and the reader above does not exist, so a completed run could not be graded. Running it anyway as reconnaissance, ungraded and claiming nothing, is admissible and is the cheapest way to learn which stages have no mechanism at all. The payload should not be maintenance of this repository. The phase is named Participant Delivery Substrate and nothing has been delivered through it."
+        }
+      ],
+      "depends_on": [
+        "custody:phase-1-5/fresh-participation",
+        "custody:phase-1-5/evidenced-judgement",
+        "custody:phase-1-5/discovery-and-reuse",
+        "custody:phase-1-5/definition-recurrence"
+      ],
       "cleanup_obligations": []
     },
     {
@@ -249,6 +274,7 @@
       "serves_exit": null,
       "outside_phase_exit": null,
       "initiative": "Root operational acceptance of Phase 1.5, a separate act after the technical criteria are evidenced.",
+      "note": "Empty by construction, and it stays empty. This clause is the root seat's acceptance act over evidence the other five produce; there is no work item to carry here and no participant may place one. Its verdict is NOT_REACHED rather than NOT_EARNED for exactly this reason. python scripts/sov_active_phase_progress.py will keep listing it among the clauses carrying no member, and the line beneath that list is the explanation: a root acceptance act has no member by construction.",
       "held_by": "seat:session-control",
       "roots": [
         {"root_kind": "PHASE", "reference": "PRD.md#Commissioning-terminal", "serves": "this clause is the acceptance sentence of the Phase 1.5 commissioning terminal"},
@@ -271,7 +297,9 @@
         "dimensions": [{"dimension_id": "grants", "low": 0, "high": 0}, {"dimension_id": "judgement_units", "low": 1, "high": 1}]
       },
       "members": [],
-      "depends_on": [],
+      "depends_on": [
+        "custody:phase-1-5/commissioning-circuit"
+      ],
       "cleanup_obligations": []
     }
   ]

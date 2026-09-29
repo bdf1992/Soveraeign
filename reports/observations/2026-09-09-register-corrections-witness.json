@@ -1,0 +1,293 @@
+{
+  "case_id": "REGISTER-CORRECTIONS-WITNESS-1",
+  "participant_id": "claude-opus-5/sov-witness@2026-09-09",
+  "artifact_revision": "0053654fce5543b3e80b1424c81571e6444f62ad",
+  "participant_claim": "COMPLETED",
+  "scope": "Narrow re-witness. Only whether the corrected text is true and whether the corrections introduced new false statements. Not a re-witness of the whole register.",
+  "review_envelope": {
+    "result": "UNATTESTABLE",
+    "finding": null,
+    "record_defect": "No RecordProjection was supplied for subject work:docs/findings-linear@0053654 and none can be reconstructed. Re-derived at the pinned commit: the only objects carrying record_projection_id are contracts/record-projection.schema.json, two conformance fixtures, SPEC.md, harness and test code, and prior observation records. None is a projection of this work. No projection id is invented to satisfy the schema.",
+    "note": "The evaluative envelope is UNATTESTABLE for want of a Record projection. That is orthogonal to the measurements below, which are reproducible at the named revision and are recorded as an observation."
+  },
+  "pinning": {
+    "head": "0053654fce5543b3e80b1424c81571e6444f62ad",
+    "tree": "bebfa287b954ae51a67dc55f49f016c156021a77",
+    "branch_checked_out": "docs/findings-linear",
+    "base": "origin/main = 64fe9856dabf679a79ebbc36a07a68b56e1f4a46",
+    "prior_subject": "926f06bf9473ec009fcc34f08816d150017ec96d",
+    "working_tree": "git status --porcelain empty at 2026-09-09T00:05Z and again at 2026-09-09T00:12:44Z; HEAD and tree hash identical at both reads",
+    "t6": "Trap T6 did not fire during this reading. Every textual reading came from `git show 0053654:<path>`, not from working-tree bytes. The only writes this witness made to the tree were the gitignored .local/landing/ledger.ndjson rows appended by its own verify run, and this observation record.",
+    "mutating_probes": "Ran in a throwaway clone at /tmp scratchpad pinned to 0053654, never in the subject tree."
+  },
+  "observer": {
+    "observer_relation": "INDEPENDENT_OF_BUILDER",
+    "contributed_to_build": false,
+    "basis": "Separate witness invocation. Built, edited, staged, committed, merged or rebased nothing in the subject. No helper recruited. Every verdict below is this witness's own measurement; several were taken by executing code rather than reading it.",
+    "helpers_recruited": 0
+  },
+  "verdict": "DISSENT",
+  "verdict_basis": "Eight of the ten corrections the builder made are true and independently reproduced, several by execution. But the corrected register introduces at least three new false statements, one of them in the sentence that is now the table's warranty, and it carries forward one false claim the prior reading did not name and one the prior reading did name and the builder did not repair. A register of findings whose stated purpose is that a reader can reproduce each address still describes itself inaccurately on its own first page.",
+  "standing_supported": "NONE",
+  "standing_note": "This observation does not support OPEN -> BUILT or BUILT -> WITNESSED. It is an observation, not a settlement and not a ratification, and it grants no authority. Findings return to the builder for repair inside the concern; none is filed as a separate ticket.",
+  "gates": {
+    "verify": {"command": "python scripts/verify.py", "exit": 0, "output": "PASS: 64 checks in 14.443s wall; 55.109s of check wall, 45.642s of check cpu. GRADE: SILVER at 14.443s. BUDGET DEBT: 9 check(s) over ceiling, 21.975s above budget; attributed, does not refuse.", "note": "Trap T2: exit 0 means unchanged, not qualified."},
+    "lint": {"command": "python scripts/lint.py", "exit": 0, "output": "PASS: repository hygiene (1310 text files, 601 Python modules, 10 named debt). Warnings are pre-existing: three duplicate STATUS.yaml keys and two named module-size debts. None introduced by this commit."},
+    "clarity": {"command": "python scripts/sov_clarity.py check", "exit": 0, "output": "PASS: clarity scope and receipts are well-formed and current"},
+    "phase_progress": {"command": "python scripts/sov_active_phase_progress.py", "exit": 0, "output": "PASS: no exit custody reads below the floor its phase opened against. 6 exit clauses, 0 earned. P15-X5 commissioning-circuit ROOT_POINT floor ROOT_POINT 2 member(s) NOT_EARNED. P15-X6 NO MEMBER NOT_REACHED."}
+  },
+  "no_standing_moved": {
+    "method": "The commit's own file list, plus the phase-progress reading above compared against the prior witness's reading of the same command at base 64fe985 and at 926f06b.",
+    "files_touched": [".clarity/coverage.json", "OPEN-SEAMS.md", "docs/documentation.html", "reports/2026-09-08-commissioning-circuit-findings.md", "reports/observations/2026-09-08-findings-register-witness.json"],
+    "conclusion": "CONFIRMED. No custody file, no STATUS.yaml, no contract, no test, no fixture, no oracle touched. No clause became earned, 0 earned before and after. Nothing claims standing it did not earn. docs/documentation.html changed only its derived chunk count, 1448 to 1450."
+  },
+  "corrected_claims": [
+    {
+      "id": "S32-receipt-emitted",
+      "claim": "A receipt IS emitted by bindings/mcp/observe_journey_02.py: it runs an operation under an issued grant, digests the body and writes it.",
+      "verdict": "TRUE",
+      "method": "EXECUTED, not read",
+      "evidence": "In a throwaway clone at 0053654: `python3 bindings/mcp/observe_journey_02.py` exit 0, printed 'declared 135, reachable 52, 2 journal entries, 0.0051s' and 'wrote bindings/mcp/observations/journey-02-receipt.json'. The freshly written file carries all fifteen required fields, receipt_digest 0a1a4b67d3d76de1e8f0..., created_at 2026-09-09T00:07:30Z, outcome COMMITTED, authority_grant_ids ['grant_5307ea5ba6774f89']. It is emitted, not hand-authored. The prior reading's own defeating condition for D1 is therefore closed."
+    },
+    {
+      "id": "S32-two-artifacts",
+      "claim": "Two artifacts carry all fifteen required receipt fields: contracts/fixtures/receipt.fixtures.json (a positive and defeating pair) and bindings/mcp/observations/journey-02-receipt.json.",
+      "verdict": "TRUE",
+      "method": "Scanned all 510 tracked JSON/NDJSON files at 0053654 against the fifteen required names, then validated with the repository's own scripts/sovkernel/jsonschema.validate.",
+      "evidence": "Files carrying all fifteen, excluding the schema's own /properties block: exactly two, the two named. Objects: three, because the fixtures file holds two records. Validation: journey-02-receipt.json defects []; CONTRACT-RECEIPT-POS defects []; CONTRACT-RECEIPT-DEF defects [\"/: missing required property 'reason_code'\"], which is the allOf conditional it declares as its defeat, not one of the fifteen. So exactly two objects satisfy the schema and exactly two files carry all fifteen. The seam's 'carry all fifteen' and the register's 'satisfy the schema' both land on two, by different routes, and both are true.",
+      "note": "The seam counts a conformance fixture as an artifact that carries the contract. Hold that standard; it is used against the seam four paragraphs earlier under S32-no-finding-instance."
+    },
+    {
+      "id": "S32-finding-schema-three-files",
+      "claim": "finding_schema appears in the schema, in conformance/fixtures/commissioning/evidence-contract-cases.json, and in .claude/workflows/sov-loop.js.",
+      "verdict": "TRUE",
+      "method": "git grep -c finding_schema 0053654",
+      "evidence": ".claude/workflows/sov-loop.js 4, OPEN-SEAMS.md 3, conformance/fixtures/commissioning/evidence-contract-cases.json 1, contracts/finding.schema.json 2, docs/documentation.html 1, reports/observations/2026-09-08-findings-register-witness.json 3. Six files. The three the seam does not name are the seam's own text, the generated documentation rendered from it, and the prior witness record. The corrected wording drops 'exactly two files', so it is an enumeration of non-derived sources and is complete. The prior reading's D3 is repaired."
+    },
+    {
+      "id": "S32-workflow-gates",
+      "claim": "The workflow shapes a Finding at runtime and gates on finding.finding_schema === 'soveraeign-finding/v1'.",
+      "verdict": "TRUE",
+      "method": "Read .claude/workflows/sov-loop.js at 0053654.",
+      "evidence": "Line 96 defines FINDING with the fifteen required names. Line 158 frozenFinding() requires finding_schema === 'soveraeign-finding/v1', subject.kind, a record_projection_id not in ['NONE','UNAVAILABLE','MISSING'], frozen_at, authority_effect NONE and settlement_effect NONE. It is called at 260, 273, 303, 314-315 and 339-340, and a FINDING result that fails it returns an error. This is a real gate, not a mention."
+    },
+    {
+      "id": "S32-no-finding-instance",
+      "claim": "No Finding instance is checked in anywhere. Also register O5: 'No Finding instance is checked in.'",
+      "verdict": "STILL FALSE",
+      "method": "Scanned all tracked JSON at 0053654 for objects carrying all fifteen required Finding fields, then validated with the repository's own validator.",
+      "evidence": "conformance/fixtures/commissioning/evidence-contract-cases.json case 'finding-work-positive' carries a record with all fifteen required fields, declared \"valid\": true, and `validate(record, contracts/finding.schema.json)` returns defects []. A second positive case, 'finding-participant-positive', inherits that record. scripts/tests/test_commissioning_evidence_contracts.py:test_declared_cases validates every one of these ten cases against the schema inside `python scripts/verify.py`. A conforming Finding instance is checked in, is addressed, and is graded by the suite.",
+      "why_it_matters": "The seam names that exact file in the same sentence that denies an instance exists. And it applies the opposite standard four paragraphs later, where contracts/fixtures/receipt.fixtures.json is counted as one of two artifacts that carry the receipt contract. One seam, two incompatible standards for whether a fixture is an instance, in a governing document, in a seam whose subject is that contracts are coherent and nothing writes them. Under the receipt paragraph's own standard the Finding paragraph is false; under the Finding paragraph's standard the receipt count is one, not two.",
+      "correct_statement_available": "No Finding instance reaches the operational Record. That is true, survives both standards, and is the claim P15-X2 actually needs."
+    },
+    {
+      "id": "S32-settlement",
+      "claim": "What no service operation does is emit one into the operational Record as part of its own settlement, which is what AGENTS.md requires of a consequential transition. Register O6: 'What no service does is emit one as part of its own settlement.'",
+      "verdict": "STILL FALSE on the plain reading; true only under a qualification the seam does not state",
+      "method": "git grep receipt across services/*/src at 0053654, then read the Record append path.",
+      "evidence": "services/record/src/soveraeign_record_service/core.py:178 `receipt()` appends a journal entry of kind RECEIPT. services/console/src/soveraeign_console_service/append.py:41 calls it on every console transition, and the receipt carries emitted_record_addresses, authority_grant_ids, effect_class, operation_type, interface_id and reason_code; its module docstring reads 'Every console transition ends the same way: one EVENT carrying the record, then one terminal RECEIPT naming what it emitted, under which grants, at which effect class.' Refusals are receipted too. services/registry/.../core.py:50, services/host/.../core.py:92, services/gateway/.../evidence.py:133 and services/observation/.../service.py do the same through the same call; services/asset/.../operational.py mirrors its terminal receipts into the Record as kind RECEIPT under RECORD_KIND 'asset-terminal-receipt'. Services do emit receipts into the operational Record as part of their own transitions.",
+      "what_is_actually_true": "No service emits a contracts/receipt.schema.json receipt. The token receipt_digest appears in no file under services/ at 0053654; the service receipt payload is {outcome, event, detail} and lacks event_id, input_addresses, input_state_digest, precondition_results, observed_evidence_addresses and receipt_digest as declared fields. The accurate seam sentence is that the Record's RECEIPT entries and the receipt contract are two different shapes and nothing joins them.",
+      "why_it_matters": "This is a new sentence, written in the repair, in a CARRIED seam in a governing document, ending in 'No implementation may resolve this by ...'. It repeats the exact failure the prior reading refused: an unqualified absolute about receipts that a module in the tree contradicts. AGENTS.md 'State and execution' requires an attributable event with actor, operation, reason, timestamp, addresses, grants, effect class and outcome; Console and Registry emit exactly that. The seam paraphrases that requirement as a receipt-into-Record obligation the services already meet."
+    },
+    {
+      "id": "S31-register-source-queue",
+      "claim": "A session can declare its own sources and queues at `register --source S --queue Q` and `console` projects them.",
+      "verdict": "TRUE",
+      "method": "EXECUTED in a throwaway clone at 0053654.",
+      "evidence": "`python3 scripts/sov_session.py register --concern concern:witness/reregister --source source:probe-in --queue queue:probe-work` exit 0, then `python3 scripts/sov_session.py console` printed 'sources: source:probe-in' and 'queues: queue:probe-work' under 'Work console (projection; grants no authority)'. The prior reading's D5 is repaired."
+    },
+    {
+      "id": "S31-no-producer",
+      "claim": "Nothing puts work there the session did not name itself.",
+      "verdict": "TRUE within this repository",
+      "method": "Traced every writer and reader of source_refs and queue_refs at 0053654.",
+      "evidence": "scripts/sovsession/concerns.py:44-56 session_fields() is the only producer; _refs() merges the CLI values with the comma-separated environment variables SOV_SOURCES and SOV_QUEUES. scripts/sovsession/brief.py:84-85 reads both from `own`, the session's own registration record, and lines 201-202 print them. Nothing else in the tree writes either field. Nothing in the tree sets SOV_SOURCES or SOV_QUEUES; the only other occurrence is scripts/tests/test_session_concerns.py:20, which clears them. concerns.record_route() writes queue_ref into a separate CONCERN_ROUTES_LOG that brief.py:216-218 counts and never converts into a queue entry; the probe console printed 'concern routes: 0'.",
+      "reachable_defeater": "A launcher that exports SOV_SOURCES or SOV_QUEUES would put entries in front of a session the session did not name. The seam's wording does not cover that route. Nothing in this repository takes it, so the claim holds today on measurement rather than on construction."
+    },
+    {
+      "id": "S31-no-request-no-agenda",
+      "claim": "No Request object and no Agenda object exist.",
+      "verdict": "TRUE for Agenda; LOOSE for Request",
+      "evidence": "'agenda' case-insensitive appears under contracts/, services/, scripts/ and conformance/ only in contracts/custodies/phase-1-5.json and contracts/phase-1-5-phase-ii-horizon.md, both of which are the circuit drawing itself. Two contract-typed Request objects do exist: services/console/contracts/judgement-request.schema.json and services/observation/contracts/observation-request.schema.json, each with fixtures. Neither is the circuit's Request stage, so the seam's intent survives; the sentence is an unqualified absolute in a governing document that a reader running one `ls` contests. Carried over from the earlier wording rather than introduced by this repair, and recorded rather than counted as a new defect."
+    },
+    {
+      "id": "routing-row",
+      "claim": "Observer independence is declared rather than measured; its home is reports/2026-09-07-controller-handoff.md finding 6, not decisions/0104.",
+      "verdict": "TRUE",
+      "method": "Opened both.",
+      "evidence": "reports/2026-09-07-controller-handoff.md:128 is the heading '### 6. Witness independence is declared, not measured', and its body: 'scripts/sovkernel/authority.py decides observer independence by reading the observation's own contributed_to_build field. Every witness this session launched was the same model family, reading the same repository, from the same host ... They are still correlated in a way nothing measures, and four passes are not four readings.' That covers both halves the earlier row named, declaration and correlated perspective. decisions/0104-communications-owns-fidelity-not-authority.md is 124 lines and returns 0 for a case-insensitive grep of independen|perspective|observer. The prior reading's D6 is repaired and the new address is the right one."
+    },
+    {
+      "id": "O11",
+      "claim": "234 rows, 195 grant:test, 39 with no grant, across many timestamps, growing six per verify run.",
+      "verdict": "TRUE, and the growth rate independently confirmed",
+      "method": "Counted the live gitignored file before and after this witness's own verify run, with timestamps.",
+      "evidence": "At 2026-09-09T00:08:19Z, before running anything: 240 rows, Counter({'grant:test': 200, None: 40}), 28 distinct minute buckets from 2026-09-08T14:34 to 2026-09-09T00:03. Ran `python scripts/verify.py` at 00:08:27Z, exit 0. At 00:08:47Z: 246 rows, Counter({'grant:test': 205, None: 41}). Delta exactly +6, of which +5 grant:test and +1 null. 240 = 234 + 6 and 246 = 234 + 12, so the builder's reading was taken exactly one verify run before this witness's first count. 234 = 39 runs x 6, and 195/39 = 5 grant:test and 39/39 = 1 null per run, which is the same per-run shape this witness measured. The count, the split and the growth rate are all correct as of the moment the builder measured, and this file changes on every verify run, including this one.",
+      "residual": "See NEW-2. The register still asks a reader to 'mark the twelve fixture rows'."
+    },
+    {
+      "id": "O9",
+      "claim": "contracts/custody.schema.json declares cleanup_obligations and the settlement path never reads it.",
+      "verdict": "TRUE; the address repair holds",
+      "evidence": "contracts/custody.schema.json:90 declares cleanup_obligations and the path resolves at 0053654; the earlier bare 'custody.schema.json' did not. The claim's substance was reproduced by the prior reading and is unchanged.",
+      "residual": "The row's Address column still reads 'source', which is not an address, and the row carries no read/run marker. See NEW-1."
+    },
+    {
+      "id": "O1",
+      "claim": "See S31-register-source-queue and S31-no-producer; O1 states the same corrected pair.",
+      "verdict": "TRUE"
+    },
+    {
+      "id": "O5",
+      "claim": "No Finding instance is checked in; sov-loop.js shapes one at runtime and gates on its schema, so the contract is exercised by the harness and never reaches the Record.",
+      "verdict": "MIXED: second and third clauses TRUE, first clause STILL FALSE",
+      "evidence": "The gate is real (see S32-workflow-gates) and nothing under services/ carries finding_schema, so 'never reaches the Record' is true. 'No Finding instance is checked in' is false for the reason given at S32-no-finding-instance. O5 was rewritten in this commit and carries no **Corrected** marker, so a reader comparing it against the prior witness record cannot see that the row moved."
+    },
+    {
+      "id": "O6",
+      "claim": "A receipt is emitted; two artifacts satisfy the schema, not one; what no service does is emit one as part of its own settlement.",
+      "verdict": "MIXED: first two clauses TRUE, third STILL FALSE",
+      "evidence": "See S32-receipt-emitted, S32-two-artifacts and S32-settlement. Exactly two objects satisfy contracts/receipt.schema.json under the repository's own validator, so 'two artifacts satisfy the schema' is true on the strict reading as well as the file-count reading."
+    },
+    {
+      "id": "C2",
+      "claim": "Defeated by a run whose work was chosen from a queue or ticket the participant did not itself name.",
+      "verdict": "REACHABLE",
+      "evidence": "The old defeater required a run entering at Request, which S31 declares impossible by construction, so it could never fire. The new one does not depend on a Request object. A ticket vocabulary exists and is addressable: scripts/sov_ticket.py, contracts/ticket-queue-policy.json, contracts/ticket-label-projection.json, adapters/github/export.py, and a host-local .local/registrar. S31's own conclusion is that a participant learns what to do from whoever launched it, so a launcher naming a ticket satisfies the antecedent. The defeater can fire.",
+      "note": "It may be so easily satisfied that C2 is already defeated by ordinary launched runs. The register does not say whether it has fired. That is a weakness of scope, not of falsifiability, and is not counted as a false statement."
+    },
+    {
+      "id": "C3",
+      "claim": "Defeated by a second concern whose definition was narrower than its concern and whose work nevertheless closed it, or by a reading showing the two were the same scope all along.",
+      "verdict": "REACHABLE",
+      "evidence": "The old C3 stated no defeater at all; grep -n 'Defeated' now returns three lines, one per conjecture. The second disjunct needs only a reading of the lap's own lease definition against its concern, both of which `python scripts/sov_lease.py status --all` and the lease record already carry. The first needs a second concern, which `sov_lease.py take --definition --closure --concern` produces. Both are reachable from this repository without new machinery."
+    }
+  ],
+  "new_false_statements_introduced": [
+    {
+      "id": "NEW-1",
+      "severity": "MATERIAL",
+      "location": "register, Observations table header",
+      "asserted": "Each row names how it was established. Rows marked *read* carry an address a reader can open; rows marked *run* were established by executing the command named.",
+      "observed": "Four of fourteen rows carry a marker: O1 *run.*, O5 *read.*, O6 *read.*, O11 *run.*. Ten rows carry none: O2, O3, O4, O7, O8, O9, O10, O12, O13, O14. Five of those ten still give a non-address in the Address column - O4 'readings: [], pressure: 0.0'; O8 'measured; the lap settled at BUILT for this reason'; O9 'source'; O12 'measured on the lap's own lease'; O13 'the cold-discovery run, recorded under Provenance'; O14 'measured twice'.",
+      "why_it_matters": "This replaced the header the prior reading refused ('Reproducible from the addresses given. Each was read, not inferred.', overstated for five rows) with a header overstated for ten. The commit message repeats it: 'each row now says whether it was read or run'. The warranty sentence of a register of findings is false about its own table, which is the exact defect class the register exists to record."
+    },
+    {
+      "id": "NEW-2",
+      "severity": "MATERIAL",
+      "location": "register, Observations table header, second sentence",
+      "asserted": "An independent reading on 2026-09-09 corrected four of these and struck one; the corrections are in the rows and the struck row is kept struck rather than deleted.",
+      "observed": "Three observation rows carry **Corrected**: O1, O6, O11. Five rows changed in the diff against 926f06b: O1, O5, O6, O9, O11. No row is struck: `grep -c '~~'` on the file returns 0, no row carries the word struck, and no row is deleted. There is no struck row to be 'kept struck rather than deleted'.",
+      "why_it_matters": "A self-descriptive count in a document whose subject is inaccurate self-description, disproved by the document's own bytes. The unlabelled changes are O5, whose claim is still false, and O9, whose address was silently repaired; a reader is told the corrections are visible in the rows and two of them are not."
+    },
+    {
+      "id": "NEW-3",
+      "severity": "MATERIAL",
+      "location": "OPEN-SEAMS.md S32, paragraph 2; register O6",
+      "asserted": "What no service operation does is emit one into the operational Record as part of its own settlement.",
+      "observed": "False as written. See corrected_claims/S32-settlement for the six services that do.",
+      "why_it_matters": "New text, in a governing document, in the same seam and the same repair that was made because the previous version of this sentence was false in the same way."
+    },
+    {
+      "id": "NEW-4",
+      "severity": "MINOR",
+      "location": "register, Work items, item 2",
+      "asserted": "Mark the twelve fixture rows in .local/landing/ledger.ndjson as fixtures, or move them out of a ledger a reader is told to trust.",
+      "observed": "O11 on the same page now strikes 'twelve' as false and records 234 growing six per verify run; this witness measured 240 then 246. The work item still names twelve, and still asks for an edit to a gitignored file the test suite rewrites on every verify run.",
+      "why_it_matters": "The correction repaired the finding and left the instruction that depends on it, so the page contradicts itself between the table and the work item."
+    },
+    {
+      "id": "NEW-5",
+      "severity": "MINOR",
+      "location": "register, Provenance, second bullet",
+      "asserted": "It resolves only on the branch of pull request #240 and not on main.",
+      "observed": "'not on main' is TRUE: `git cat-file -e` fails for the path at 0053654 and at origin/main. 'only on the branch of' is contradicted by measurement: the path resolves on refs/heads/claude/movement-72-hours-2claax, refs/heads/fix/settlement-linear, refs/heads/fix/settlement-record-a-clone-can-read, and remotes origin/claude/movement-72-hours-2claax and origin/fix/settlement-record-a-clone-can-read. At least three branches carry it. Which one is PR #240 is unverifiable here: `gh` is not installed on this host.",
+      "why_it_matters": "The disclosure is right and the qualifier is not. 'only' is a count and it is wrong; a PR number is unresolvable from the artifact and is offered as the address."
+    }
+  ],
+  "unrepaired_from_the_prior_reading": [
+    {
+      "id": "D8-unrepaired",
+      "location": "register O12, second clause",
+      "asserted": "the store location is named only in a source docstring",
+      "observed": "Still false and unchanged at 0053654. .claude/README.md:295 reads 'Under `git rev-parse --git-common-dir`/`sov-sessions/`, as two append-only logs'. witness/discovery-and-reuse.md:494 names `.git/sov-sessions/`, and witness/fresh-participation.md names `.local/sov-sessions/` at three places.",
+      "note": "The prior reading recorded this as D8 and it is not mentioned in the commit message, is not corrected in the row, and is not marked as declined. One of the prior reading's findings was neither repaired nor answered."
+    },
+    {
+      "id": "D12-partially",
+      "note": "The table-header warranty was rewritten rather than repaired; see NEW-1."
+    }
+  ],
+  "addresses": {
+    "method": "git cat-file -e 0053654:<path> for every in-repository address the register and the two seams cite.",
+    "result": "20 of 20 in-repository addresses resolve at the pinned commit: scripts/sov_session.py, scripts/sovcustody/board.py, scripts/sovcustody/model.py, scripts/sov_lease.py, scripts/sovkernel/work_lease.py, contracts/custody.schema.json, STATUS.yaml, acceptance/A24.json, reports/2026-09-07-controller-handoff.md, OPEN-SEAMS.md, contracts/phase-1-5-phase-ii-horizon.md, scripts/sov_ticket.py, contracts/finding.schema.json, contracts/receipt.schema.json, conformance/commissioning.py, conformance/fixtures/commissioning/evidence-contract-cases.json, bindings/mcp/observe_journey_02.py, bindings/mcp/observations/journey-02-receipt.json, contracts/fixtures/receipt.fixtures.json, .claude/workflows/sov-loop.js. adapters/github/ exists with export.py, apply.py, plan.py, catalogue.py, proofs.py.",
+    "line_addresses_checked": "STATUS.yaml:88 reads exactly '# .local/acceptance/ledger.ndjson and the packet is under acceptance/accepted/.'; contracts/custody.schema.json:90 declares cleanup_obligations; reports/2026-09-07-controller-handoff.md:128 is finding 6.",
+    "marked_as_not_resolving": {
+      "claim_under_test": "The register claims each unresolvable address is marked.",
+      "verdict": "TRUE for all four, with one qualifier",
+      "detail": [
+        ".local/acceptance/ledger.ndjson - O10 states 'which does not exist'. Marked, and this witness confirms .local/acceptance/ is absent.",
+        ".local/landing/ledger.ndjson - O11's Address column reads '.local/landing/ledger.ndjson, gitignored'. Marked, and .gitignore does exclude .local/.",
+        "The four schematically files - Provenance says 'Those four are in that repository and do not resolve here', and it names exactly four: LAP-EXECUTION-REPORT.md, FINDING-WORK.md, FINDING-PARTICIPANT.md, FINDING-GUARD.md. Marked.",
+        "The settlement record - Provenance says it 'resolves only on the branch of pull request #240 and not on main ... Stated rather than cited as though it resolved here'. Marked. The qualifier 'only on the branch of #240' is itself wrong; see NEW-5."
+      ]
+    },
+    "unverifiable_here": "PR numbers #35, #231, #240, #241 and #243 are untested: `gh` is not installed on this host. That is a capability this invocation did not grant, not a repository rule."
+  },
+  "clarity_receipt": {
+    "question": "Is the receipt current, and was the review warranted?",
+    "current": "YES. The recorded artifact_digest sha256:ebfed7e9c3855c7b43f96e93661cf9c06cdf0121fb6c64d47f40b09eae4edcb6 equals the sha256 of the committed OPEN-SEAMS.md bytes at 0053654, computed independently.",
+    "warranted": "YES, proved rather than assumed. In a throwaway clone at 0053654 the OPEN-SEAMS.md artifact_digest was reset to the base value 5de31fbf...; `python3 scripts/sov_clarity.py check` then printed 'STALE: OPEN-SEAMS.md: TEXT_STALE' and exited 1, and exited 0 with PASS when restored. Without a re-record the gate would have refused, so the re-review was required by the gate.",
+    "scope": "OPEN-SEAMS.md is covered: contracts/clarity.json campaign 'root' includes '*.md'. reports/**/*.md is in no campaign include list, so the register itself carries no clarity receipt and is not graded by this check.",
+    "witnessing_the_check": "The receipt for OPEN-SEAMS.md carries three fields only: artifact_digest, basis, changed. No reviewer, no timestamp, no verdict, no review content. review_state() in scripts/sov_clarity.py compares digests, and do_record() writes the digest of whatever is on disk. The gate therefore cannot distinguish a performed review from a digest refresh, and the commit message's 'sov_clarity.py check PASS after a second review of OPEN-SEAMS.md' is a claim the receipt cannot evidence either way. Recorded as a check that reads a declaration where it could have measured; pre-existing, not introduced by this change."
+  },
+  "witnessing_the_checks": [
+    "scripts/sov_clarity.py check grades digest equality, not that a review happened. See clarity_receipt.witnessing_the_check.",
+    ".claude/workflows/sov-loop.js:96 defines its FINDING shape as a hand-copied 'Harness shape of contracts/finding.schema.json' and reads no contract bytes. If contracts/finding.schema.json changes, the harness gate keeps grading the old required list and nothing detects the divergence. Pre-existing and not introduced by this change, but it is directly load-bearing for S32's surviving claim that the harness is where the Finding contract is exercised.",
+    "scripts/tests/test_commissioning_evidence_contracts.py does read the contract bytes and validate the fixtures against them, which is why the checked-in Finding instance at S32-no-finding-instance is a measured fact and not a reading.",
+    "python scripts/verify.py appends six rows to the gitignored .local/landing/ledger.ndjson on every run, five under grant:test and one with grant_id null and outcome REFUSED_AUTHORITY. The suite writes fixture landings into the live ledger a reader is told to trust; acceptance/A24.json already records this and the register's O11 now points at it."
+  ],
+  "residuals": [
+    "The change's own gates are clean, no oracle was weakened, no contract, test or fixture was touched, no custody stage moved, and no secret or module-size violation appeared. The dissent is entirely about the truth of statements the change lands.",
+    "OPEN-SEAMS.md is listed in excluded_paths of grant:standing-landing-loop in contracts/standing-grants.json, alongside AGENTS.md, CLAUDE.md, SPEC.md, STATUS.yaml, decisions/ and lineage/. This change cannot land under the standing grant whatever its evidence, so a green verify is not the operative constraint on it.",
+    "Both seams still end in an absolutist 'No implementation may resolve this by ...'. S31's now forbids treating a session's own registration as a Request, which is coherent. S32's forbids writing a conforming fixture and calling the contract exercised, which sits directly on top of the two paragraphs that count fixtures inconsistently.",
+    "verify.py records SILVER at 14.443s and BUDGET DEBT of 9 checks, 21.975s above budget. Pre-existing and attributed, not caused by this change.",
+    "This record is written under reports/observations/. Per carried seam S29 no such record can satisfy both contracts/participant-observation.schema.json and the gate in scripts/sovkernel/authority.py; this record does not attempt to and claims no landing authorisation.",
+    "The builder committed the prior witness's own observation record as part of this commit. Its bytes read as the witness wrote them and nothing in them was softened; recorded because a builder committing the witness record that refuses its predecessor is a shape a later reader should be able to check."
+  ],
+  "what_would_defeat_this_finding": [
+    "S32-no-finding-instance falls if 'Finding instance' is read to exclude a conformance fixture case. The seam does not say so, and its own receipt paragraph two hundred words later counts contracts/fixtures/receipt.fixtures.json as an artifact carrying the receipt contract. Either reading refutes one half of the seam; only a stated qualification saves both.",
+    "S32-settlement falls if 'one' is read as strictly 'a contracts/receipt.schema.json receipt', in which case the sentence is true and merely unqualified. The sentence does not carry that qualification, and the seam's title, 'The Finding and the receipt are shaped at the edges and never in the Record', repeats the unqualified form. If the builder states the qualification the finding is repaired rather than refuted.",
+    "NEW-1 falls if 'names how it was established' is read to include an Address column entry as an implicit 'read'. Five of the ten unmarked rows give a non-address, so the reading fails for at least those five and the header remains overstated.",
+    "NEW-2 falls only on a different reading of 'struck' than the file's bytes support; grep for '~~' returns 0 and no row carries the word.",
+    "NEW-5 falls if PR #240's branch is the only one that should count, which cannot be checked here because gh is not installed. It does not fall on 'only', which is a count over branches and is wrong at three.",
+    "S31-no-producer falls if a launcher in some environment exports SOV_SOURCES or SOV_QUEUES. Nothing in this repository does.",
+    "O11 falls as a repository claim in either direction, since the file is gitignored host scratch. It is recorded here with the timestamps of the two counts so a later reader can see it as a timestamped host observation and not as a repository fact.",
+    "The whole observation falls if the tree moved under this witness. It did not: HEAD 0053654 and tree bebfa287 with an empty git status at 2026-09-09T00:05Z and again at 00:12:44Z, and every textual reading was taken from `git show 0053654:<path>` rather than from working-tree bytes."
+  ],
+  "judgement_items": [
+    "S32 now applies two incompatible standards for whether a checked-in conformance fixture counts as an instance of a contract, and one of them makes the seam's own Finding paragraph false. Is a CARRIED seam whose two halves grade the same evidence class differently repaired in place inside this concern, or withdrawn and re-entered, given that OPEN-SEAMS.md is a root governing document that grant:standing-landing-loop excludes by name?",
+    "A register of findings has now been corrected once and its self-description is false in the correction. Does a second false warranty sentence refuse the artifact, or is the register repaired a third time inside the same concern?",
+    "One finding from the prior independent reading, D8 on O12, was neither repaired nor declined nor marked. Is silently leaving a witnessed finding unanswered inside a repair commit a defect the builder absorbs, or does it need to be recorded as a declined finding on the artifact?"
+  ],
+  "telemetry": {
+    "commands_run": [
+      "git rev-parse HEAD / HEAD^{tree} / origin/main; git status --porcelain (twice)",
+      "git show 0053654:<path> for every artifact read",
+      "python scripts/verify.py -> 0",
+      "python scripts/lint.py -> 0",
+      "python scripts/sov_clarity.py check -> 0",
+      "python scripts/sov_active_phase_progress.py -> 0",
+      "python3 bindings/mcp/observe_journey_02.py (throwaway clone) -> 0, emitted a 15-field receipt",
+      "python3 scripts/sov_session.py register --source --queue then console (throwaway clone) -> 0",
+      "python3 scripts/sov_clarity.py check with a reverted digest (throwaway clone) -> 1, TEXT_STALE",
+      "scripts/sovkernel/jsonschema.validate over the Finding and receipt fixtures and the emitted receipt",
+      "python3 scan of 510 tracked JSON/NDJSON files against the fifteen required receipt fields and the fifteen required Finding fields",
+      "line counts of .local/landing/ledger.ndjson at 00:08:19Z and 00:08:47Z, either side of one verify run",
+      "git for-each-ref plus git cat-file -e for the settlement record across every ref",
+      "git grep -c finding_schema; git grep across services/*/src for receipt and receipt_digest"
+    ],
+    "mutations_to_subject": "none",
+    "files_written": ["reports/observations/2026-09-09-register-corrections-witness.json"]
+  }
+}

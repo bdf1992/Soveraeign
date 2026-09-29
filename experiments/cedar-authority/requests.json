@@ -1,0 +1,1705 @@
+[
+  {
+    "case_id": "P-001-witnessed-green-in-scope-landing",
+    "tier": "CEDAR",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/P-001-witnessed-green-in-scope-landing"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "P-002-record-local-commit-under-a-heavier-ceiling",
+    "tier": "CEDAR",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.commit"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/P-002-record-local-commit-under-a-heavier-ceiling"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 0,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-001-grant-not-yet-ratified",
+    "tier": "CEDAR",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-001-grant-not-yet-ratified"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-002-grant-names-another-actor",
+    "tier": "CEDAR",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-002-grant-names-another-actor"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-003-capability-not-carried",
+    "tier": "CEDAR",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "standing.ratify"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-003-capability-not-carried"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-004-grant-revoked",
+    "tier": "CEDAR",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-004-grant-revoked"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-005-request-before-valid-from",
+    "tier": "CEDAR",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-005-request-before-valid-from"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-08-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-006-grant-expired",
+    "tier": "CEDAR",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-006-grant-expired"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2027-01-04T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-007-path-inside-an-excluded-prefix",
+    "tier": "SCOPE",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-007-path-inside-an-excluded-prefix"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      },
+      {
+        "raw_path": "decisions/0061-x.md",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "decisions/0061-x.md"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-007-path-inside-an-excluded-prefix"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008a-grant-cannot-widen-itself",
+    "tier": "SCOPE",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "contracts/standing-grants.json",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "contracts/standing-grants.json"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008a-grant-cannot-widen-itself"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008b-dot-dot-walks-out-of-an-admitted-prefix",
+    "tier": "SCOPE",
+    "precomputed": true,
+    "calls": [
+      {
+        "raw_path": "scripts/../STATUS.yaml",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "unresolved/D-008b-dot-dot-walks-out-of-an-admitted-prefix-0"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008b-dot-dot-walks-out-of-an-admitted-prefix"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008c-dot-dot-reaches-the-grant-registry-itself",
+    "tier": "SCOPE",
+    "precomputed": true,
+    "calls": [
+      {
+        "raw_path": "scripts/../contracts/standing-grants.json",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "unresolved/D-008c-dot-dot-reaches-the-grant-registry-itself-0"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008c-dot-dot-reaches-the-grant-registry-itself"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008d-dot-dot-leaves-the-repository-altogether",
+    "tier": "SCOPE",
+    "precomputed": true,
+    "calls": [
+      {
+        "raw_path": "scripts/../../etc/passwd",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "unresolved/D-008d-dot-dot-leaves-the-repository-altogether-0"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008d-dot-dot-leaves-the-repository-altogether"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008f-a-dot-segment-reaches-the-grant-registry",
+    "tier": "SCOPE",
+    "precomputed": true,
+    "calls": [
+      {
+        "raw_path": "contracts/./standing-grants.json",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "unresolved/D-008f-a-dot-segment-reaches-the-grant-registry-0"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008f-a-dot-segment-reaches-the-grant-registry"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008g-a-doubled-separator-reaches-the-grant-registry",
+    "tier": "SCOPE",
+    "precomputed": true,
+    "calls": [
+      {
+        "raw_path": "contracts//standing-grants.json",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "unresolved/D-008g-a-doubled-separator-reaches-the-grant-registry-0"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008g-a-doubled-separator-reaches-the-grant-registry"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008h-a-trailing-separator-does-not-name-a-file",
+    "tier": "SCOPE",
+    "precomputed": true,
+    "calls": [
+      {
+        "raw_path": "scripts/sov_land.py/",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "unresolved/D-008h-a-trailing-separator-does-not-name-a-file-0"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008h-a-trailing-separator-does-not-name-a-file"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008i-a-wildcard-selects-the-grant-registry-after-the-check",
+    "tier": "SCOPE",
+    "precomputed": true,
+    "calls": [
+      {
+        "raw_path": "contracts/*",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "unresolved/D-008i-a-wildcard-selects-the-grant-registry-after-the-check-0"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008i-a-wildcard-selects-the-grant-registry-after-the-check"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008j-a-single-character-wildcard-is-the-same-escape",
+    "tier": "SCOPE",
+    "precomputed": true,
+    "calls": [
+      {
+        "raw_path": "contracts/standing-grants.jso?",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "unresolved/D-008j-a-single-character-wildcard-is-the-same-escape-0"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008j-a-single-character-wildcard-is-the-same-escape"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008k-a-character-class-is-the-same-escape-again",
+    "tier": "SCOPE",
+    "precomputed": true,
+    "calls": [
+      {
+        "raw_path": "contracts/[s]tanding-grants.json",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "unresolved/D-008k-a-character-class-is-the-same-escape-again-0"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008k-a-character-class-is-the-same-escape-again"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008l-pathspec-magic-rewrites-what-a-string-selects",
+    "tier": "SCOPE",
+    "precomputed": true,
+    "calls": [
+      {
+        "raw_path": ":!contracts/standing-grants.json",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "unresolved/D-008l-pathspec-magic-rewrites-what-a-string-selects-0"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008l-pathspec-magic-rewrites-what-a-string-selects"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008m-a-bare-directory-selects-what-it-contains",
+    "tier": "SCOPE",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "contracts",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "contracts"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008m-a-bare-directory-selects-what-it-contains"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "P-003-a-directory-containing-nothing-excluded-still-lands",
+    "tier": "SCOPE",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "contracts/sub",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "contracts/sub"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/P-003-a-directory-containing-nothing-excluded-still-lands"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008e-an-absolute-path-cannot-be-graded-here",
+    "tier": "SCOPE",
+    "precomputed": true,
+    "calls": [
+      {
+        "raw_path": "C:/checkouts/Soveraeign/scripts/sov_land.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "unresolved/D-008e-an-absolute-path-cannot-be-graded-here-0"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008e-an-absolute-path-cannot-be-graded-here"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008-path-outside-every-included-prefix",
+    "tier": "SCOPE",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "README.md",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "README.md"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008-path-outside-every-included-prefix"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-009-branch-not-admitted",
+    "tier": "CEDAR",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-009-branch-not-admitted"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "release/1.0"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-010-budget-exceeded",
+    "tier": "CEDAR",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-010-budget-exceeded"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 61
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-011-effect-class-above-the-ceiling",
+    "tier": "CEDAR",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-011-effect-class-above-the-ceiling"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-012-judgement-authority-issued-by-a-non-owner",
+    "tier": "CEDAR",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "standing.ratify"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-012-judgement-authority-issued-by-a-non-owner"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "P-004-scoped-external-world-effect-covered",
+    "tier": "CEDAR",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/P-004-scoped-external-world-effect-covered"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 2,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-013b-external-world-effect-above-grant-ceiling",
+    "tier": "CEDAR",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-013b-external-world-effect-above-grant-ceiling"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 2,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-014-no-independent-observation-offered",
+    "tier": "OUTSIDE",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-014-no-independent-observation-offered"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-015-observation-did-not-confirm",
+    "tier": "OUTSIDE",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-015-observation-did-not-confirm"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-016-observer-was-inside-the-build",
+    "tier": "OUTSIDE",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-016-observer-was-inside-the-build"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-017-required-check-absent-from-the-evidence",
+    "tier": "OUTSIDE",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-017-required-check-absent-from-the-evidence"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-018-required-check-failed",
+    "tier": "OUTSIDE",
+    "precomputed": false,
+    "calls": [
+      {
+        "raw_path": "services/asset/src/soveraeign_asset_service/core.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "services/asset/src/soveraeign_asset_service/core.py"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-018-required-check-failed"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008c-a-backslash-names-two-different-files",
+    "tier": "SCOPE",
+    "precomputed": true,
+    "calls": [
+      {
+        "raw_path": "scripts\\tests\\x.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "unresolved/D-008c-a-backslash-names-two-different-files-0"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008c-a-backslash-names-two-different-files"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  },
+  {
+    "case_id": "D-008d-a-backslash-inside-an-admitted-prefix-is-still-refused",
+    "tier": "SCOPE",
+    "precomputed": true,
+    "calls": [
+      {
+        "raw_path": "scripts/tests\\x.py",
+        "principal": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        },
+        "action": {
+          "type": "SoveraeignAuthority::Action",
+          "id": "repository.land"
+        },
+        "resource": {
+          "type": "SoveraeignAuthority::Path",
+          "id": "unresolved/D-008d-a-backslash-inside-an-admitted-prefix-is-still-refused-0"
+        },
+        "context": {
+          "grant": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Grant",
+              "id": "grant/D-008d-a-backslash-inside-an-admitted-prefix-is-still-refused"
+            }
+          },
+          "now": {
+            "__extn": {
+              "fn": "datetime",
+              "arg": "2026-09-01T12:00:00Z"
+            }
+          },
+          "branch": {
+            "__entity": {
+              "type": "SoveraeignAuthority::Branch",
+              "id": "main"
+            }
+          },
+          "effectClassOrdinal": 1,
+          "spendUnit": "agent_invocations",
+          "spendAmount": 12
+        }
+      }
+    ]
+  }
+]

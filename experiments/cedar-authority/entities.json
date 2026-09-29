@@ -1,0 +1,4710 @@
+[
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "services"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "contracts"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "conformance"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "scripts"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": ".claude"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "contracts/standing-grants.json"
+    },
+    "attrs": {},
+    "parents": [
+      {
+        "type": "SoveraeignAuthority::Path",
+        "id": "contracts"
+      }
+    ]
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "decisions"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "STATUS.yaml"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "SPEC.md"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "AGENTS.md"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "README.md"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "contracts/sub"
+    },
+    "attrs": {},
+    "parents": [
+      {
+        "type": "SoveraeignAuthority::Path",
+        "id": "contracts"
+      }
+    ]
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "decisions/0061-x.md"
+    },
+    "attrs": {},
+    "parents": [
+      {
+        "type": "SoveraeignAuthority::Path",
+        "id": "decisions"
+      }
+    ]
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "services/asset/src/soveraeign_asset_service/core.py"
+    },
+    "attrs": {},
+    "parents": [
+      {
+        "type": "SoveraeignAuthority::Path",
+        "id": "services"
+      }
+    ]
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "services/asset/src/core.py"
+    },
+    "attrs": {},
+    "parents": [
+      {
+        "type": "SoveraeignAuthority::Path",
+        "id": "services"
+      }
+    ]
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Actor",
+      "id": "sov"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Action",
+      "id": "repository.commit"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Action",
+      "id": "repository.land"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Branch",
+      "id": "main"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/P-001-witnessed-green-in-scope-landing"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/P-002-record-local-commit-under-a-heavier-ceiling"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-001-grant-not-yet-ratified"
+    },
+    "attrs": {
+      "status": "PROPOSED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Actor",
+      "id": "some-other-profile"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-002-grant-names-another-actor"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "some-other-profile"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Action",
+      "id": "standing.ratify"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-003-capability-not-carried"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-004-grant-revoked"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60,
+      "revokedAt": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-30T00:00:00Z"
+        }
+      }
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-005-request-before-valid-from"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-006-grant-expired"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-007-path-inside-an-excluded-prefix"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008a-grant-cannot-widen-itself"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008b-dot-dot-walks-out-of-an-admitted-prefix"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "unresolved/D-008b-dot-dot-walks-out-of-an-admitted-prefix-0"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008c-dot-dot-reaches-the-grant-registry-itself"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "unresolved/D-008c-dot-dot-reaches-the-grant-registry-itself-0"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008d-dot-dot-leaves-the-repository-altogether"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "unresolved/D-008d-dot-dot-leaves-the-repository-altogether-0"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008f-a-dot-segment-reaches-the-grant-registry"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "unresolved/D-008f-a-dot-segment-reaches-the-grant-registry-0"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008g-a-doubled-separator-reaches-the-grant-registry"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "unresolved/D-008g-a-doubled-separator-reaches-the-grant-registry-0"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008h-a-trailing-separator-does-not-name-a-file"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "unresolved/D-008h-a-trailing-separator-does-not-name-a-file-0"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008i-a-wildcard-selects-the-grant-registry-after-the-check"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "unresolved/D-008i-a-wildcard-selects-the-grant-registry-after-the-check-0"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008j-a-single-character-wildcard-is-the-same-escape"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "unresolved/D-008j-a-single-character-wildcard-is-the-same-escape-0"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008k-a-character-class-is-the-same-escape-again"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "unresolved/D-008k-a-character-class-is-the-same-escape-again-0"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008l-pathspec-magic-rewrites-what-a-string-selects"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "unresolved/D-008l-pathspec-magic-rewrites-what-a-string-selects-0"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008m-a-bare-directory-selects-what-it-contains"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/P-003-a-directory-containing-nothing-excluded-still-lands"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008e-an-absolute-path-cannot-be-graded-here"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "unresolved/D-008e-an-absolute-path-cannot-be-graded-here-0"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008-path-outside-every-included-prefix"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-009-branch-not-admitted"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Branch",
+      "id": "release/1.0"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-010-budget-exceeded"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-011-effect-class-above-the-ceiling"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 0,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-012-judgement-authority-issued-by-a-non-owner"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "JUDGEMENT",
+      "issuerId": "sov",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "standing.ratify"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/P-004-scoped-external-world-effect-covered"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 2,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-013b-external-world-effect-above-grant-ceiling"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-014-no-independent-observation-offered"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-015-observation-did-not-confirm"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-016-observer-was-inside-the-build"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-017-required-check-absent-from-the-evidence"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-018-required-check-failed"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008c-a-backslash-names-two-different-files"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "unresolved/D-008c-a-backslash-names-two-different-files-0"
+    },
+    "attrs": {},
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Grant",
+      "id": "grant/D-008d-a-backslash-inside-an-admitted-prefix-is-still-refused"
+    },
+    "attrs": {
+      "status": "RATIFIED",
+      "actor": {
+        "__entity": {
+          "type": "SoveraeignAuthority::Actor",
+          "id": "sov"
+        }
+      },
+      "authorityType": "VERIFICATION",
+      "issuerId": "bdo",
+      "capabilities": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.commit"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Action",
+            "id": "repository.land"
+          }
+        }
+      ],
+      "includedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "services"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "conformance"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "scripts"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": ".claude"
+          }
+        }
+      ],
+      "excludedPaths": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "contracts/standing-grants.json"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "decisions"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "STATUS.yaml"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "SPEC.md"
+          }
+        },
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Path",
+            "id": "AGENTS.md"
+          }
+        }
+      ],
+      "effectCeilingOrdinal": 1,
+      "validFrom": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-08-25T00:00:00Z"
+        }
+      },
+      "validUntil": {
+        "__extn": {
+          "fn": "datetime",
+          "arg": "2026-11-23T00:00:00Z"
+        }
+      },
+      "branches": [
+        {
+          "__entity": {
+            "type": "SoveraeignAuthority::Branch",
+            "id": "main"
+          }
+        }
+      ],
+      "budgetUnit": "agent_invocations",
+      "budgetCeiling": 60
+    },
+    "parents": []
+  },
+  {
+    "uid": {
+      "type": "SoveraeignAuthority::Path",
+      "id": "unresolved/D-008d-a-backslash-inside-an-admitted-prefix-is-still-refused-0"
+    },
+    "attrs": {},
+    "parents": []
+  }
+]

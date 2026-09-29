@@ -1,0 +1,42 @@
+$ node --version
+v24.11.1
+$ npm --version
+11.6.2
+$ npm view @cedar-policy/cedar-wasm versions --json | tail -5
+  "4.11.1",
+  "4.11.2",
+  "4.12.0"
+$ npm install
+added 1 package, and audited 2 packages in 17s
+
+found 0 vulnerabilities
+$ node -e "import('@cedar-policy/cedar-wasm').then(m => console.log('loaded', Object.keys(m).slice(0,20)))"
+loaded [
+  'checkParseContext',   'checkParseEntities',
+  'checkParsePolicySet', 'checkParseSchema',
+  'formatPolicies',      'getCedarLangVersion',
+  'getCedarSDKVersion',  'getCedarVersion',
+  'getValidRequestEnvsPolicy', 'getValidRequestEnvsTemplate',
+  'isAuthorized',        'isAuthorizedPartial',
+  'policySetTextToParts', 'policyToJson',
+  'policyToText',        'preparsePolicySet',
+  'preparseSchema',      'schemaToJson',
+  'schemaToJsonWithResolvedTypes', 'schemaToText'
+]
+$ node -e "import('@cedar-policy/cedar-wasm').then(m => console.log(m.getCedarVersion()))"
+4.12.0
+
+The package installed and loaded on the first attempt under Node v24.11.1 and
+npm 11.6.2: no BLOCKED rule (contract step 4) was ever reached, and no upstream
+reference example needed to be built. `npm ls --all` after install showed one
+package with no transitive dependencies:
+  cedar-authority-spike@ ...
+  `-- @cedar-policy/cedar-wasm@4.12.0
+No `.node` native module was present anywhere under node_modules/; the package
+ships prebuilt `cedar_wasm_bg.wasm` for esm/nodejs/web targets instead
+(`find node_modules -iname "*.wasm"` listed the three build targets, none
+compiled locally). `du -sh node_modules` read 13M.
+node_modules/ is deleted from the working tree before every verify.py/lint.py
+run and before commit (this repository's lint.py has no exclusion for a
+vendored JS dependency tree, and none was added here - scripts/ is untouched
+per the contract). Re-run `npm install` in this directory to restore it.

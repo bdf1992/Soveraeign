@@ -119,6 +119,30 @@ def commissioning_instrument(root: Path = ROOT) -> dict:
     }
 
 
+def observed_report(out_dir: Path) -> dict:
+    """Grade every `P15-*.json` a participant emitted under `out_dir`, through
+    the one oracle (`commissioning.evaluate`) unchanged; separate from the
+    fixture instrument above."""
+    rows = []
+    for path in sorted(out_dir.glob("P15-*.json")) if out_dir.is_dir() else []:
+        predicate = path.stem
+        try:
+            observation = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as failure:
+            rows.append({"predicate": predicate, "verdict": "OPEN",
+                        "defects": [f"could not read emitted observation: {failure}"]})
+            continue
+        if predicate not in commissioning.PREDICATES:
+            rows.append({"predicate": predicate, "verdict": "OPEN",
+                        "defects": [f"{predicate} is not a predicate check_q11 or its "
+                                   "siblings grade"]})
+            continue
+        defects = commissioning.evaluate(predicate, observation)
+        rows.append({"predicate": predicate, "verdict": "PASS" if not defects else "OPEN",
+                    "defects": defects})
+    return {"rows": rows}
+
+
 def assess(root: Path = ROOT) -> dict:
     """Return a non-authoritative reading of whether the prepared opening is startable."""
     state = phase_context.collect(root)
@@ -225,8 +249,21 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--instrument", action="store_true",
                         help="read only the prepared P15 positive/defeating fixture instrument")
+    parser.add_argument("--observed", metavar="OUTDIR",
+                        help="grade every P15-*.json a participant emitted under OUTDIR")
     parser.add_argument("--require-ready", action="store_true")
     args = parser.parse_args(argv)
+    if args.observed:
+        report = observed_report(Path(args.observed))
+        if args.json:
+            print(json.dumps({"p15_observed": report}, indent=2, sort_keys=True))
+        else:
+            for row in report["rows"]:
+                tail = ": " + "; ".join(row["defects"]) if row["defects"] else ""
+                print(f"  {row['verdict']} {row['predicate']}{tail}")
+            if not report["rows"]:
+                print("  none emitted under " + args.observed)
+        return 0 if all(row["verdict"] == "PASS" for row in report["rows"]) else 1
     if args.instrument:
         report = commissioning_instrument(ROOT)
         if args.json:

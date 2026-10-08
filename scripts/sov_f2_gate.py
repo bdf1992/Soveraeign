@@ -35,6 +35,7 @@ OBSERVATIONS = "conformance/observations"
 PREDICATES_HEADING = "## Requirement predicates"
 TRANSITIONS_HEADING = "## Transition contract"
 PARITY_HEADING = "## Interface parity"
+COMMISSIONING_HEADING = "## Phase 1.5 commissioning predicates"
 
 #: Both polarities SPEC.md requires of every normative predicate.
 REQUIRED_POLARITIES = frozenset({"positive", "defeating"})
@@ -126,6 +127,30 @@ def parity_predicates(spec_text: str) -> list[dict[str, str]]:
             "requirement": "SPEC interface parity",
             "text": bullet.rstrip(";."),
         })
+    return predicates
+
+
+def commissioning_predicates(spec_text: str) -> list[dict[str, str]]:
+    """One entry per bullet under ``## Phase 1.5 commissioning predicates``.
+
+    Unlike the Phase-I families above, SPEC.md writes each id literally in
+    backticks at the bullet's start, so it is read, not synthesised. Kept out
+    of ``normative_predicates`` so the F2 gate's denominator does not move.
+    """
+    block = _section(spec_text, COMMISSIONING_HEADING)
+    predicates: list[dict[str, str]] = []
+    for match in re.finditer(r"^### ([^\n]+)\n(.*?)(?=^### |\Z)", block, re.M | re.S):
+        criterion = match.group(1).strip()
+        for bullet in _bullets(match.group(2)):
+            id_match = re.match(r"`(P15-Q[\d.]+)`\s*(.*)", bullet)
+            if not id_match:
+                continue
+            predicates.append({
+                "id": id_match.group(1),
+                "family": "commissioning",
+                "requirement": criterion,
+                "text": id_match.group(2),
+            })
     return predicates
 
 

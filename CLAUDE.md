@@ -74,8 +74,12 @@ second reading when useful, and keep independent witness separate from anyone wh
 built or edited the change. `python scripts/sov_closure.py loop` prints the closure
 rules and `python scripts/sov_land.py` owns the governed landing path.
 
-Human-facing output uses `.claude/skills/unslop/SKILL.md` by default. Persisted
-covered prose also needs a `clarity` review and receipt.
+Human-facing replies use the `Communications` output style
+(`.claude/output-styles/communications.md`, selected by `.claude/settings.json`); it
+is loaded by the harness, not chosen by the session, and a session asked for its
+style answers with that name. `.claude/skills/unslop/SKILL.md` is for prose that
+stays written, and persisted covered prose also needs a `clarity` review and
+receipt.
 
 ## Known traps
 

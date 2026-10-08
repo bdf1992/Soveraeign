@@ -166,3 +166,14 @@ def audit(root: Path) -> list[Defect]:
     defects += _audit_queue(register["owner_acceptance_queue"], root, policy, schema)
     defects += _audit_orphans(register["owner_acceptance_queue"], root)
     return defects
+
+
+def audit_packet(root: Path, packet: dict) -> list[Defect]:
+    """Validate one selected presentation, without substring matches to other IDs."""
+    policy = load_policy(root)
+    schema = json.loads((root / "contracts" / "acceptance-packet.schema.json").read_text("utf-8"))
+    queue = load_register(root)["owner_acceptance_queue"]
+    selected = [item for item in queue if item.get("id") == packet["packet_id"]]
+    if len(selected) != 1 or selected[0].get("packet") != f"acceptance/{packet['packet_id']}.json":
+        return [Defect("PACKET_INCOMPLETE", "the selected packet needs one exact queue entry")]
+    return _audit_queue(selected, root, policy, schema)

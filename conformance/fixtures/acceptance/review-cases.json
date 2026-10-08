@@ -1,0 +1,19 @@
+{
+  "contract": "contracts/acceptance-review.schema.json",
+  "positive": {
+    "review_schema": "soveraeign-acceptance-review/v1",
+    "packet_id": "A1",
+    "packet_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "subject": {
+      "artifact": "result.txt",
+      "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "review_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+  },
+  "defeating": [
+    {"remove": "subject", "reason": "A packet alone cannot identify the reviewed artifact bytes."},
+    {"remove": "packet_digest", "reason": "A subject alone cannot bind a changed claim or consequence."},
+    {"remove": "review_digest", "reason": "A new action must carry the review token."}
+  ],
+  "note": "These digests exercise schema shape only. CLI tests independently change packet and subject bytes and exercise concurrency, interruption and retry."
+}

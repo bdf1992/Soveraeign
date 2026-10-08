@@ -31,6 +31,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from sovaccept import packet as packets  # noqa: E402
 from sovaccept import policy as acceptance  # noqa: E402
+from sovaccept import review  # noqa: E402
 
 
 def _now() -> str:
@@ -89,7 +90,13 @@ def command_rulings(args: argparse.Namespace) -> int:
 def command_present(args: argparse.Namespace) -> int:
     """Render one finished result for the owner, optionally running its demo."""
     packet = packets.load(ROOT, args.packet_id)
-    print(packets.render(packet))
+    reviewed = None
+    if not (ROOT / "acceptance" / "accepted" / f"{args.packet_id}.json").exists():
+        try:
+            reviewed = review.capture(ROOT, packet)["review_digest"]
+        except review.AcceptanceError as error:
+            print(str(error))
+    print(packets.render(packet, reviewed))
     if args.run:
         print("\n  RUNNING THE DEMO\n")
         code, output = packets.run_demo(ROOT, packet)
@@ -102,19 +109,17 @@ def command_present(args: argparse.Namespace) -> int:
 
 def command_action(args: argparse.Namespace) -> int:
     """Record the owner's answer to one presented result."""
-    packet = packets.load(ROOT, args.packet_id)
     action = args.action.upper()
-    problems = packets.refusals(ROOT, packet, action, args.seat, args.actor)
-    problems += [str(d) for d in acceptance.audit(ROOT) if packet["packet_id"] in d.detail]
-    if problems:
-        print(f"REFUSED: {action} {packet['packet_id']}")
-        for problem in problems:
-            print(f"  {problem}")
+    try:
+        entry = packets.record(ROOT, {"packet_id": args.packet_id}, action, args.seat, args.actor,
+                               args.at or _now(), args.note, args.review)
+    except (ValueError, OSError) as error:
+        print(f"REFUSED: {action} {args.packet_id}\n  {error}")
         return 1
-    entry = packets.record(ROOT, packet, action, args.seat, args.actor,
-                           args.at or _now(), args.note)
     print(json.dumps(entry, indent=2, sort_keys=True))
-    print(f"\nRecorded. Now land the standing change in {packet['subject']['artifact']}:")
+    packet = entry["packet"]
+    print(f"\nDecision recorded for {packet['subject']['artifact']}. "
+          "Standing and external effects remain separate; a retry does not perform them.")
     print(f"  {packet['on_accept'] if action == 'ACCEPT' else packet['on_reject']}")
     return 0
 
@@ -138,6 +143,7 @@ def main(argv: list[str] | None = None) -> int:
                           help="the accepting seat, one edge up from the presenting seat")
         node.add_argument("--actor", required=True, help="the actor occupying that seat")
         node.add_argument("--note", default=None)
+        node.add_argument("--review", help="exact review token printed by present")
         node.add_argument("--at", default=None, help="ISO timestamp; defaults to now")
         node.set_defaults(action=action)
 
